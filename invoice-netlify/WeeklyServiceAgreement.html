@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Pool Service Agreement — A Quality Pool Company</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 700px; margin: 0 auto; padding: 24px; line-height: 1.6; color: #1a1a1a; }
+    h1 { font-size: 22px; border-bottom: 2px solid #0c4a6e; padding-bottom: 8px; }
+    h2 { font-size: 16px; margin-top: 24px; }
+    .field { margin: 12px 0; }
+    .field label { display: block; font-weight: 600; margin-bottom: 4px; }
+    .field input, .field select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .signature-line { border-bottom: 1px solid #000; margin-top: 32px; padding-top: 4px; font-size: 12px; color: #666; }
+    .notice { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; margin: 16px 0; }
+    p { margin: 10px 0; }
+    ul { margin: 10px 0; padding-left: 24px; }
+  </style>
+</head>
+<body>
+  <p style="text-align:center;font-weight:700;">A QUALITY POOL COMPANY</p>
+  <h1>Weekly Pool Service Agreement</h1>
+  <p><strong>Source document:</strong> AQualityPool_ServiceAgreement_2026.pdf — use this HTML as the online fillable version. Replace the placeholder text below with the actual terms from that PDF.</p>
+
+  <div class="field">
+    <label>Customer name</label>
+    <input type="text" id="customerName" placeholder="Full name">
+  </div>
+  <div class="field">
+    <label>Service address</label>
+    <input type="text" id="serviceAddress" placeholder="Street, City, State ZIP">
+  </div>
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="customerEmail" placeholder="email@example.com">
+  </div>
+  <div class="field">
+    <label>Preferred service day</label>
+    <select id="preferredDay">
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Frequency</label>
+    <select id="frequency">
+      <option value="Weekly">Weekly</option>
+      <option value="Biweekly">Biweekly</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Agreed price per visit ($)</label>
+    <input type="number" id="pricePerVisit" min="0" step="0.01" placeholder="e.g. 160">
+  </div>
+
+  <h2>Terms</h2>
+  <ul>
+    <li>Recurring pool cleaning and chemical balance on the selected day and frequency.</li>
+    <li><strong>Service call fee:</strong> Issues that require diagnosis while we are on-site may be subject to a <strong>$125 service call fee</strong>.</li>
+    <li><strong>Parts and materials:</strong> Any items that need to be ordered at the time of visit will be <strong>invoiced separately</strong>.</li>
+    <li>Payment by autopay (Stripe) as set up during enrollment.</li>
+  </ul>
+  <p>By signing below, Customer agrees to the terms of this agreement and to enroll in autopay for scheduled service charges.</p>
+
+  <div class="signature-line">
+    <span id="signatureDateDisplay"></span><br>
+    Customer signature: _______________________________
+  </div>
+
+  <script>
+    document.getElementById('signatureDateDisplay').textContent = 'Date: ' + new Date().toLocaleDateString('en-US');
+  </script>
+</body>
+</html>

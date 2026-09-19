@@ -1,0 +1,588 @@
+<!-- 
+TWILIO SMS SIGNUP POPUP - WEBFLOW CUSTOM CODE
+==============================================
+Add this code to Webflow: Settings > Custom Code > Footer Code (or Head Code for styles)
+
+INSTRUCTIONS:
+1. Copy the entire code below
+2. In Webflow, go to Project Settings > Custom Code
+3. Paste into "Footer Code" section (or split: CSS in Head, HTML/JS in Footer)
+4. Update GOOGLE_SCRIPT_URL with your actual Google Apps Script Web App URL
+5. Publish your site
+
+FEATURES:
+- Triggers at 80% scroll
+- Shows only once per session
+- Includes Twilio disclosure for compliance
+- Integrates with your existing Google Apps Script
+-->
+
+<style>
+/* Twilio Popup Styles */
+#twilio-popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 99999;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#twilio-popup-overlay.show {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(30px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+#twilio-popup {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+  border-radius: 20px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.4s ease;
+  position: relative;
+  border: 3px solid #0284c7;
+}
+
+#twilio-popup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=800') center/cover;
+  opacity: 0.1;
+  border-radius: 20px;
+  z-index: 0;
+}
+
+#twilio-popup > * {
+  position: relative;
+  z-index: 1;
+}
+
+.twilio-popup-header {
+  padding: 24px 24px 16px;
+  border-bottom: 3px solid #0284c7;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.twilio-popup-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.twilio-popup-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.twilio-popup-close:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+.twilio-popup-body {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.9);
+  margin: 16px;
+  border-radius: 16px;
+}
+
+.twilio-popup-intro {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  border: 2px solid #0284c7;
+}
+
+.twilio-popup-intro h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.twilio-popup-intro p {
+  margin: 0;
+  font-size: 14px;
+  color: #0c4a6e;
+  line-height: 1.5;
+}
+
+.twilio-form-group {
+  margin-bottom: 16px;
+}
+
+.twilio-form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.twilio-form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #bae6fd;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.2s;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.95);
+  box-sizing: border-box;
+}
+
+.twilio-form-input:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+  background: white;
+}
+
+.twilio-checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.twilio-checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.twilio-checkbox-group label {
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 1.5;
+  cursor: pointer;
+  color: #374151;
+  margin: 0;
+}
+
+.twilio-disclosure {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #856404;
+}
+
+.twilio-disclosure strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #856404;
+}
+
+.twilio-form-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.twilio-form-submit:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.5);
+}
+
+.twilio-form-submit:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.twilio-form-message {
+  display: none;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.twilio-form-message.success {
+  display: block;
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.twilio-form-message.error {
+  display: block;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+@media (max-width: 767px) {
+  #twilio-popup {
+    max-width: 95%;
+    max-height: 95vh;
+  }
+  
+  .twilio-popup-header {
+    padding: 20px 16px 12px;
+  }
+  
+  .twilio-popup-body {
+    padding: 20px 16px;
+    margin: 12px;
+  }
+  
+  .twilio-popup-header h2 {
+    font-size: 20px;
+  }
+}
+</style>
+
+<!-- Popup HTML -->
+<div id="twilio-popup-overlay">
+  <div id="twilio-popup">
+    <div class="twilio-popup-header">
+      <h2>🏊‍♂️ Stay Connected! 🌊</h2>
+      <button class="twilio-popup-close" onclick="closeTwilioPopup()">&times;</button>
+    </div>
+    <div class="twilio-popup-body">
+      <div class="twilio-popup-intro">
+        <h3>Get Pool Tips & Updates</h3>
+        <p>Sign up to receive SMS reminders and our newsletter!</p>
+      </div>
+      
+      <div id="twilioFormMessage" class="twilio-form-message"></div>
+      
+      <form id="twilioSignupForm">
+        <div class="twilio-form-group">
+          <label class="twilio-form-label" for="twilioName">Your Name *</label>
+          <input type="text" id="twilioName" class="twilio-form-input" placeholder="John Doe" required>
+        </div>
+        
+        <div class="twilio-form-group">
+          <label class="twilio-form-label" for="twilioPhone">Phone Number *</label>
+          <input type="tel" id="twilioPhone" class="twilio-form-input" placeholder="(555) 123-4567" required>
+        </div>
+        
+        <div class="twilio-form-group">
+          <label class="twilio-form-label" for="twilioEmail">Email (optional)</label>
+          <input type="email" id="twilioEmail" class="twilio-form-input" placeholder="your@email.com">
+        </div>
+        
+        <!-- Twilio Disclosure -->
+        <div class="twilio-disclosure">
+          <strong>📱 SMS Consent & Disclosure</strong>
+          By providing your phone number and checking the box below, you consent to receive automated SMS messages from A Quality Pool Company. Message and data rates may apply. Message frequency varies. Reply STOP to opt-out at any time. Reply HELP for help. Carriers are not liable for delayed or undelivered messages.
+        </div>
+        
+        <div class="twilio-checkbox-group">
+          <input type="checkbox" id="twilioSmsConsent" required>
+          <label for="twilioSmsConsent">
+            I agree to receive SMS reminders and updates. Message and data rates may apply. Reply STOP to opt-out.
+          </label>
+        </div>
+        
+        <div class="twilio-checkbox-group">
+          <input type="checkbox" id="twilioEmailConsent">
+          <label for="twilioEmailConsent">
+            I want to receive newsletters and updates via email
+          </label>
+        </div>
+        
+        <button type="submit" class="twilio-form-submit" id="twilioSubmitBtn">
+          Subscribe Now
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// CONFIGURATION: Update this with your Google Apps Script Web App URL
+// Get this from: Google Apps Script > Deploy > Web app > Copy the URL
+const TWILIO_GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+// Scroll detection and popup management
+(function() {
+  'use strict';
+  
+  let popupShown = false;
+  let scrollThreshold = 0.8; // 80% scroll
+  
+  // Check if popup was already shown in this session
+  if (sessionStorage.getItem('twilioPopupShown') === 'true') {
+    popupShown = true;
+  }
+  
+  // Phone number formatting
+  function formatPhoneNumber(input) {
+    let value = input.value.replace(/[^0-9]/g, '');
+    if (value.length > 10) value = value.slice(0, 10);
+    if (value.length > 0) {
+      let formatted = '(' + value.slice(0, 3);
+      if (value.length > 3) formatted += ') ' + value.slice(3, 6);
+      if (value.length > 6) formatted += '-' + value.slice(6);
+      input.value = formatted;
+    } else {
+      input.value = '';
+    }
+  }
+  
+  // Check scroll position
+  function checkScrollPosition() {
+    if (popupShown) return;
+    
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollPercentage = scrollTop / (documentHeight - windowHeight);
+    
+    if (scrollPercentage >= scrollThreshold) {
+      showTwilioPopup();
+      popupShown = true;
+      sessionStorage.setItem('twilioPopupShown', 'true');
+    }
+  }
+  
+  // Show popup
+  function showTwilioPopup() {
+    const overlay = document.getElementById('twilio-popup-overlay');
+    if (overlay) {
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  
+  // Close popup (global function for onclick)
+  window.closeTwilioPopup = function() {
+    const overlay = document.getElementById('twilio-popup-overlay');
+    if (overlay) {
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+  };
+  
+  // Close when clicking outside
+  document.addEventListener('DOMContentLoaded', function() {
+    const overlay = document.getElementById('twilio-popup-overlay');
+    if (overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+          closeTwilioPopup();
+        }
+      });
+    }
+    
+    // Phone number formatting
+    const phoneInput = document.getElementById('twilioPhone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function() {
+        formatPhoneNumber(this);
+      });
+    }
+    
+    // Form submission
+    const form = document.getElementById('twilioSignupForm');
+    if (form) {
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('twilioSubmitBtn');
+        const messageDiv = document.getElementById('twilioFormMessage');
+        
+        // Validate Google Script URL
+        if (!TWILIO_GOOGLE_SCRIPT_URL || TWILIO_GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+          if (messageDiv) {
+            messageDiv.className = 'twilio-form-message error';
+            messageDiv.textContent = 'Error: Please configure the Google Apps Script URL in the code.';
+            messageDiv.style.display = 'block';
+          }
+          return;
+        }
+        
+        // Disable submit button
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submitting...';
+        }
+        
+        // Get form data
+        const name = document.getElementById('twilioName').value.trim();
+        const phone = document.getElementById('twilioPhone').value.replace(/[^0-9]/g, '');
+        const email = document.getElementById('twilioEmail').value.trim();
+        const smsConsent = document.getElementById('twilioSmsConsent').checked;
+        const emailConsent = document.getElementById('twilioEmailConsent').checked;
+        
+        // Validate
+        if (!name || phone.length !== 10) {
+          if (messageDiv) {
+            messageDiv.className = 'twilio-form-message error';
+            messageDiv.textContent = 'Please enter a valid name and 10-digit phone number.';
+            messageDiv.style.display = 'block';
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Subscribe Now';
+          }
+          return;
+        }
+        
+        if (!smsConsent) {
+          if (messageDiv) {
+            messageDiv.className = 'twilio-form-message error';
+            messageDiv.textContent = 'SMS consent is required to subscribe.';
+            messageDiv.style.display = 'block';
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Subscribe Now';
+          }
+          return;
+        }
+        
+        // Prepare data
+        const formData = {
+          name: name,
+          phone: phone,
+          email: email || '',
+          smsConsent: smsConsent,
+          emailConsent: emailConsent
+        };
+        
+        try {
+          // Submit to Google Apps Script
+          const response = await fetch(TWILIO_GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Required for Google Apps Script
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+          });
+          
+          // Show success message (we can't read response with no-cors, but assume success)
+          if (messageDiv) {
+            messageDiv.className = 'twilio-form-message success';
+            messageDiv.textContent = '✓ Thank you! You have been subscribed successfully.';
+            messageDiv.style.display = 'block';
+          }
+          
+          // Reset form
+          if (form) {
+            form.reset();
+          }
+          
+          // Close popup after 2 seconds
+          setTimeout(() => {
+            closeTwilioPopup();
+          }, 2000);
+          
+        } catch (error) {
+          console.error('Form submission error:', error);
+          if (messageDiv) {
+            messageDiv.className = 'twilio-form-message error';
+            messageDiv.textContent = 'Error submitting form. Please try again or contact us directly.';
+            messageDiv.style.display = 'block';
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Subscribe Now';
+          }
+        }
+      });
+    }
+  });
+  
+  // Listen for scroll events
+  let ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(function() {
+        checkScrollPosition();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+  
+  // Also check on page load in case user refreshes at 80% scroll
+  window.addEventListener('load', function() {
+    setTimeout(checkScrollPosition, 500);
+  });
+})();
+</script>
+
+
+
+
+

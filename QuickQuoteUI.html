@@ -1,0 +1,3409 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .settings-bar {
+      background: #ffffff;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .settings-bar label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .settings-bar input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .settings-info {
+      font-size: 12px;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header h2 i {
+      color: #0284c7;
+    }
+
+    .section-header .toggle-icon {
+      color: #6b7280;
+      transition: transform 0.3s;
+    }
+
+    .section-header.collapsed .toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .section-content {
+      display: block;
+    }
+
+    .section-content.collapsed {
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-family: 'Barlow', sans-serif;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    /* Fancy Dropdown Styling */
+    select {
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      font-size: 15px;
+      font-family: 'Barlow', sans-serif;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230284c7' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 12px;
+      appearance: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    select:hover {
+      border-color: #0284c7;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.15);
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1), 0 2px 6px rgba(2, 132, 199, 0.15);
+    }
+
+    select option {
+      padding: 12px;
+      font-size: 15px;
+    }
+
+    select option:checked {
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 600;
+    }
+
+    /* Recommendation badges in dropdowns */
+    .recommended-option {
+      background: #dcfce7 !important;
+      color: #166534 !important;
+      font-weight: 600;
+    }
+
+    .recommended-option::after {
+      content: " ✓ Recommended";
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 15px;
+    }
+
+    .calculated-value {
+      background: #e0f2fe;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: #0369a1;
+    }
+
+    .btn {
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      margin-right: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .equipment-item, .labor-item {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .labor-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .labor-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .labor-item-price {
+      font-weight: 700;
+      color: #0284c7;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+      .labor-item {
+        flex-direction: row;
+        align-items: center;
+      }
+      .labor-item-header {
+        flex: 1;
+      }
+      .labor-item-controls {
+        flex: 0 0 auto;
+      }
+    }
+
+    .equipment-item-info, .labor-item-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .item-details {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .item-price {
+      font-weight: 700;
+      color: #0284c7;
+      text-align: right;
+    }
+
+    .item-quantity {
+      width: 100%;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .summary-box {
+      background: #e0f2fe;
+      border: 2px solid #0284c7;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #bae6fd;
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-total {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0369a1;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid #0284c7;
+    }
+
+    .customer-summary-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+
+    .loading i {
+      font-size: 48px;
+      color: #0284c7;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .success-message, .error-message {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+      display: none;
+    }
+
+    .success-message {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+      .equipment-item, .labor-item {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-file-invoice-dollar"></i> Quick Pool Quote</h1>
+      <p>Comprehensive Field Quote Calculator</p>
+    </div>
+
+    <!-- Settings Bar -->
+    <div class="settings-bar">
+      <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+        <label for="showLaborToggle" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="showLaborToggle" checked onchange="toggleLaborSection()">
+          <span style="font-weight: 600;">Include Labor Costs</span>
+        </label>
+      </div>
+      <div class="settings-info">
+        <i class="fas fa-info-circle"></i> Uncheck labor to calculate materials only
+      </div>
+    </div>
+
+    <!-- Settings Section (Separate Box) -->
+    <div class="section" style="margin-top: 20px;">
+      <div class="section-header" onclick="toggleSection('settingsSection')">
+        <h2><i class="fas fa-cog"></i> Settings</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="settingsSection">
+        <div class="form-group">
+          <label for="showProfitMarginToggle" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; font-size: 16px;">
+            <input type="checkbox" id="showProfitMarginToggle" onchange="toggleProfitMarginSection()">
+            <span>Show Profit Margin in Quote Summary</span>
+          </label>
+          <small style="color: #6b7280; display: block; margin-top: 8px;">
+            When enabled, profit margin calculations will be displayed in the quote summary section below.
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Info Section -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('customerSection')">
+        <h2><i class="fas fa-user"></i> Customer Information</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="customerSection">
+        <div id="customerLoading" class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Loading customers from Square...</p>
+        </div>
+        <div id="customerSelectUI" style="display: none;">
+          <div class="form-group">
+            <label>Select Customer from Square</label>
+            <select id="customerSelect" onchange="loadCustomerDetails()">
+              <option value="">-- Select Customer --</option>
+            </select>
+          </div>
+          <div style="text-align: center; margin: 15px 0; color: #9ca3af; font-weight: 600;">OR</div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Customer Name *</label>
+              <input type="text" id="customerName" placeholder="Customer Name" required>
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="tel" id="customerPhone" placeholder="(555) 123-4567">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="customerEmail" placeholder="customer@email.com">
+            </div>
+            <div class="form-group">
+              <label>Address</label>
+              <input type="text" id="customerAddress" placeholder="Street Address, City, State ZIP">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pool & Site Measurements -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('measurementsSection')">
+        <h2><i class="fas fa-ruler-combined"></i> Pool & Site Measurements</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="measurementsSection">
+        <div class="form-group">
+          <label>New or Renovation *</label>
+          <select id="newOrRenovation" onchange="toggleRenovationFields()" required>
+            <option value="">-- Select --</option>
+            <option value="New">New</option>
+            <option value="Renovation">Renovation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pool Type *</label>
+          <select id="poolType" required>
+            <option value="">-- Select --</option>
+            <option value="Vinyl">Vinyl</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pool Bottom Type</label>
+          <select id="poolBottomType" onchange="calculatePoolMetrics()">
+            <option value="standard">Standard (Sloped)</option>
+            <option value="sports">Sports Style (Flat Bottom)</option>
+            <option value="flat">Flat Bottom</option>
+          </select>
+        </div>
+        <div class="grid-4">
+          <div class="form-group">
+            <label>Length (ft) *</label>
+            <input type="number" id="length" step="0.1" min="0" onchange="calculatePoolMetrics()" required>
+          </div>
+          <div class="form-group">
+            <label>Width (ft) *</label>
+            <input type="number" id="width" step="0.1" min="0" onchange="calculatePoolMetrics()" required>
+          </div>
+          <div class="form-group">
+            <label>Shallow Depth (ft)</label>
+            <input type="number" id="shallowDepth" step="0.1" min="0" onchange="calculatePoolMetrics()">
+          </div>
+          <div class="form-group">
+            <label>Deep Depth (ft)</label>
+            <input type="number" id="deepDepth" step="0.1" min="0" onchange="calculatePoolMetrics()">
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Perimeter (ft) - Calculated</label>
+            <div class="calculated-value" id="perimeter">0</div>
+          </div>
+          <div class="form-group">
+            <label>Surface Area (sq ft) - Calculated</label>
+            <div class="calculated-value" id="surfaceArea">0</div>
+          </div>
+          <div class="form-group">
+            <label>Pool Volume (gallons) - Calculated</label>
+            <div class="calculated-value" id="poolVolume">0</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Pool Shape</label>
+          <select id="poolShape" onchange="calculateWalls()">
+            <option value="rectangular">Rectangular</option>
+            <option value="l-shaped">L-Shaped</option>
+            <option value="oval">Oval</option>
+            <option value="kidney">Kidney</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="hasStairs" onchange="calculateWalls()">
+          <label for="hasStairs" style="margin: 0;">Pool includes stairs</label>
+        </div>
+        <div class="grid-3">
+          <div class="form-group">
+            <label>Distance to Equipment Pad (ft) *</label>
+            <input type="number" id="distanceToEquipment" step="0.1" min="0" onchange="calculatePVC()" required>
+          </div>
+          <div class="form-group">
+            <label>Number of Skimmers *</label>
+            <input type="number" id="numSkimmers" min="1" value="1" onchange="calculatePVC()" required>
+          </div>
+          <div class="form-group">
+            <label>Number of Returns *</label>
+            <input type="number" id="numReturns" min="1" value="2" onchange="calculatePVC()" required>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Soil Type</label>
+            <select id="soilType">
+              <option value="">-- Select --</option>
+              <option value="Dirt">Dirt</option>
+              <option value="Clay">Clay</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Access Type</label>
+            <select id="accessType">
+              <option value="">-- Select --</option>
+              <option value="Full-size skid steer">Full-size skid steer</option>
+              <option value="Mini skid">Mini skid</option>
+              <option value="Limited">Limited</option>
+            </select>
+          </div>
+        </div>
+        <div id="renovationFields" style="display: none;">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Concrete Demo (sq ft)</label>
+              <input type="number" id="concreteSqFtDemo" step="0.1" min="0" onchange="updateTotals()">
+            </div>
+            <div class="form-group">
+              <label>Concrete New (sq ft)</label>
+              <input type="number" id="concreteSqFtNew" step="0.1" min="0" onchange="updateTotals()">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Preferences -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('preferencesSection')">
+        <h2><i class="fas fa-question-circle"></i> Customer Preferences</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="preferencesSection">
+        <div class="form-group">
+          <label>Pool Level / Budget *</label>
+          <select id="poolLevel" onchange="suggestEquipment()" required>
+            <option value="">-- Select --</option>
+            <option value="Budget">Budget (Standard Equipment)</option>
+            <option value="Mid">Mid-Level (VSP Pump, Better Equipment)</option>
+            <option value="High">High-End (VSP Pump, Premium Equipment)</option>
+          </select>
+          <small style="color: #6b7280;">This will auto-suggest appropriate equipment</small>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="automationPreference" onchange="updateEquipmentSuggestions()">
+          <label for="automationPreference" style="margin: 0;">Control Freak Automation System</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="saltPreference" onchange="updateEquipmentSuggestions()">
+          <label for="saltPreference" style="margin: 0;">Control Freak Salt Cell Generator</label>
+        </div>
+        <div class="form-group">
+          <label>Lighting</label>
+          <select id="lightingPreference">
+            <option value="None">None</option>
+            <option value="Single LED">Single LED</option>
+            <option value="Multiple LEDs">Multiple LEDs</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Water Features</label>
+          <textarea id="waterFeatures" rows="2" placeholder="e.g., Bubblers, Deck jets, Sheer descents, Waterfall"></textarea>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="hotTubPreference" onchange="updateHotTubSelection()">
+          <label for="hotTubPreference" style="margin: 0;">Hot Tub / Spa (7' x 7' Square Storm Cloud Cardinal Luxury Spa)</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment & Materials -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('equipmentSection')">
+        <h2><i class="fas fa-cog"></i> Equipment & Materials</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="equipmentSection">
+        <div style="background: #e0f2fe; padding: 16px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #0284c7;">
+          <strong style="color: #0369a1;">💡 Professional Suggestions:</strong>
+          <div id="equipmentSuggestions" style="margin-top: 8px; color: #374151;">
+            Select pool level above to see suggested equipment
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Equipment Bundle (Optional)</label>
+          <select id="equipmentBundle" onchange="loadBundleItems()">
+            <option value="">-- No Bundle --</option>
+          </select>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Pump *</label>
+            <select id="equipmentPump" onchange="updateEquipmentPrice('Pump', this.value)" required>
+              <option value="">-- Select Pump --</option>
+            </select>
+            <small style="color: #6b7280;">Standard: Single Speed | Mid/High: VSP</small>
+          </div>
+          <div class="form-group">
+            <label>Filter *</label>
+            <select id="equipmentFilter" onchange="updateEquipmentPrice('Filter', this.value)" required>
+              <option value="">-- Select Filter --</option>
+            </select>
+            <small style="color: #6b7280;">Standard: Sand Filter</small>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Heater / Heat Pump (Optional)</label>
+          <select id="equipmentHeater" onchange="updateEquipmentPrice('Heater', this.value); updateHeaterLabor();">
+            <option value="" selected>-- No Heater --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Lighting (Per Light)</label>
+          <div class="grid-2" style="gap: 10px;">
+            <select id="equipmentLighting" onchange="updateLightingPrice()">
+              <option value="">-- Select Light Type --</option>
+            </select>
+            <input type="number" id="lightingQuantity" min="0" value="0" step="1" placeholder="Number of lights" onchange="updateLightingPrice()">
+          </div>
+          <small style="color: #6b7280;">Select light type and enter quantity (e.g., 2 lights for pool)</small>
+        </div>
+        
+        <div id="controlFreakEquipment" style="display: none; background: #f0f9ff; padding: 16px; border-radius: 8px; margin-top: 16px; border: 2px solid #0284c7;">
+          <h3 style="color: #0369a1; margin-bottom: 12px; font-size: 16px;">
+            <i class="fas fa-check-circle"></i> Control Freak Equipment Selected
+          </h3>
+          <div id="controlFreakItems" style="color: #374151;">
+            <!-- Will be populated when Control Freak items are selected -->
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Liner Price</label>
+          <select id="linerPrice" onchange="updateTotals()">
+            <option value="0">No Liner</option>
+            <option value="2500">Standard Liner ($2,500)</option>
+            <option value="3000">Premium Liner ($3,000)</option>
+            <option value="3500">Deluxe Liner ($3,500)</option>
+          </select>
+        </div>
+        
+        <!-- Pool Coping -->
+        <div class="form-group" style="background: #f0f9ff; padding: 16px; border-radius: 8px; border: 2px solid #0284c7;">
+          <label style="font-size: 16px; font-weight: 700; color: #0369a1; margin-bottom: 12px;">
+            <i class="fas fa-border-all"></i> Pool Coping
+          </label>
+          <div id="copingCalculation" style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+            <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">Calculated based on pool perimeter</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+              <div>
+                <label style="font-size: 11px; color: #6b7280;">Coping Type</label>
+                <select id="copingType" onchange="calculateCoping()">
+                  <option value="">-- Select Coping --</option>
+                  <option value="cardinal_cr">Cardinal CR Coping, Bullnose, 8', White ($54.11/8ft section)</option>
+                  <option value="custom">Custom Coping (Enter price manually)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 11px; color: #6b7280;">Custom Price per 8ft Section (if custom)</label>
+                <input type="number" id="copingCustomPrice" step="0.01" min="0" value="54.11" onchange="calculateCoping()" placeholder="54.11">
+              </div>
+            </div>
+            <div id="copingBreakdown" style="font-size: 12px; color: #374151;">
+              Enter pool dimensions to calculate coping needed
+            </div>
+          </div>
+        </div>
+        
+        <!-- Walls Calculation -->
+        <div class="form-group" style="background: #fef3c7; padding: 16px; border-radius: 8px; border: 2px solid #f59e0b;">
+          <label style="font-size: 16px; font-weight: 700; color: #92400e; margin-bottom: 12px;">
+            <i class="fas fa-cube"></i> Pool Walls - Material Breakdown
+          </label>
+          <div id="wallCalculation" style="background: white; padding: 12px; border-radius: 6px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <label style="font-size: 11px; color: #6b7280; font-weight: 600;">Wall Manufacturer</label>
+                <input type="text" id="wallManufacturer" placeholder="e.g., Medallion, Latham" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;" onchange="updateWallInfo()">
+              </div>
+              <div>
+                <label style="font-size: 11px; color: #6b7280; font-weight: 600;">Rep/Company Name</label>
+                <input type="text" id="wallRepName" placeholder="e.g., Damsam Pumping Services" style="width: 100%; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px;" onchange="updateWallInfo()">
+              </div>
+            </div>
+            <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">Calculated based on pool dimensions</div>
+            <div id="wallBreakdown" style="font-size: 12px; color: #374151; line-height: 1.8;">
+              Enter pool length and width to calculate walls needed
+            </div>
+            <div id="wallTotal" style="margin-top: 12px; padding-top: 12px; border-top: 2px solid #f59e0b; font-weight: 700; color: #92400e; font-size: 14px;">
+              Total Wall Materials: $0.00
+            </div>
+            <div id="wallManufacturerInfo" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #f59e0b; font-size: 11px; color: #6b7280; font-style: italic; display: none;">
+              <span id="wallManufacturerDisplay"></span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Concrete Materials -->
+        <div class="form-group" style="background: #e0e7ff; padding: 16px; border-radius: 8px; border: 2px solid #6366f1;">
+          <label style="font-size: 16px; font-weight: 700; color: #4338ca; margin-bottom: 12px;">
+            <i class="fas fa-hard-hat"></i> Concrete & Foundation Materials
+          </label>
+          
+          <!-- Concrete Collar -->
+          <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+            <div style="font-weight: 600; color: #4338ca; margin-bottom: 8px;">Concrete Collar (12" wide × 6" deep)</div>
+            <div id="concreteCollarCalc" style="font-size: 12px; color: #374151; margin-bottom: 8px;">
+              Calculated from pool perimeter
+            </div>
+            <div id="concreteCollarTotal" style="font-weight: 600; color: #4338ca;">
+              Collar Cost: $0.00
+            </div>
+          </div>
+          
+          <!-- Concrete Decking -->
+          <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+            <div style="font-weight: 600; color: #4338ca; margin-bottom: 12px;">Concrete Decking</div>
+            <div class="grid-2" style="gap: 10px; margin-bottom: 10px;">
+              <div>
+                <label style="font-size: 11px; color: #6b7280;">Deck Width Around Pool (ft)</label>
+                <input type="number" id="deckWidth" step="0.5" min="0" value="0" onchange="calculateDecking()" placeholder="4, 6, 8, etc.">
+              </div>
+              <div>
+                <label style="font-size: 11px; color: #6b7280;">Finish Type</label>
+                <select id="deckFinish" onchange="calculateDecking()">
+                  <option value="broom">Broom Finish</option>
+                  <option value="stamped">Stamped Concrete</option>
+                  <option value="exposed">Exposed Aggregate</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style="font-size: 11px; color: #6b7280;">OR Enter Square Footage Manually</label>
+              <input type="number" id="deckSqFtManual" step="0.1" min="0" value="0" onchange="calculateDecking()" placeholder="Enter sq ft if known">
+            </div>
+            <div id="deckingCalc" style="font-size: 12px; color: #374151; margin-top: 8px;">
+              Enter deck width or square footage
+            </div>
+            <div id="deckingTotal" style="font-weight: 600; color: #4338ca; margin-top: 8px;">
+              Decking Cost: $0.00
+            </div>
+          </div>
+          
+          <!-- Standard Materials -->
+          <div style="background: white; padding: 12px; border-radius: 6px;">
+            <div style="font-weight: 600; color: #4338ca; margin-bottom: 12px;">Standard Materials (Always Included)</div>
+            <div style="font-size: 12px; color: #374151; line-height: 1.8;">
+              <div>• Gravel: <strong>$4,000.00</strong> (standard amount)</div>
+              <div>• Portland Cement: <strong>16 bags × $20 = $320.00</strong></div>
+              <div>• Sand: <strong>$300.00</strong> (per load)</div>
+              <div>• Rebar: <strong>3 sticks × $15 = $45.00</strong></div>
+              <div>• Electric Wire & Components: <strong>$1,000.00</strong></div>
+              <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; font-weight: 700; color: #4338ca;">
+                Standard Materials Total: <span id="standardMaterialsTotal">$5,665.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Item List Section -->
+        <div class="section" style="margin-top: 20px;">
+          <div class="section-header" onclick="toggleSection('itemListSection')">
+            <h2><i class="fas fa-boxes"></i> Item List - Add Custom Items</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </div>
+          <div class="section-content" id="itemListSection">
+            <div style="background: #e0f2fe; padding: 16px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #0284c7;">
+              <strong style="color: #0369a1;">💡 Quick Add Items:</strong>
+              <div style="margin-top: 8px; color: #374151; font-size: 14px;">
+                Browse and add items directly from your Price Book. Prices can be edited and will sync back to the Price Book.
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Search Items</label>
+              <input type="text" id="itemListSearch" placeholder="Search by name, code, brand, or category..." 
+                     onkeyup="filterItemList()" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;">
+            </div>
+            
+            <div class="form-group">
+              <label>Filter by Category</label>
+              <select id="itemListCategoryFilter" onchange="filterItemList()" style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;">
+                <option value="">All Categories</option>
+              </select>
+            </div>
+            
+            <div id="itemListResults" style="max-height: 400px; overflow-y: auto; border: 2px solid #e5e7eb; border-radius: 8px; padding: 12px; background: #f9fafb;">
+              <div style="text-align: center; color: #6b7280; padding: 20px;">Loading items...</div>
+            </div>
+            
+            <div id="itemListSelected" style="margin-top: 20px; padding: 16px; background: #f0f9ff; border: 2px solid #0284c7; border-radius: 8px; display: none;">
+              <h3 style="color: #0369a1; margin-bottom: 12px; font-size: 16px;">Selected Custom Items</h3>
+              <div id="itemListSelectedItems"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>PVC 2" Sticks (Calculated)</label>
+            <input type="number" id="pvc2inSticks" min="0" value="0" onchange="updatePVCPricing()">
+            <small style="color: #6b7280;">Auto-calculated from distance & skimmers</small>
+          </div>
+          <div class="form-group">
+            <label>PVC 1.5" Sticks (Calculated)</label>
+            <input type="number" id="pvc1_5inSticks" min="0" value="0" onchange="updatePVCPricing()">
+            <small style="color: #6b7280;">Auto-calculated from distance & returns</small>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 20px; padding: 16px; background: #f0f9ff; border: 2px solid #0284c7; border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="margin: 0; font-size: 16px; font-weight: 700; color: #0369a1;">
+              <i class="fas fa-store"></i> PVC Pricing from Local Stores
+            </label>
+            <button type="button" class="btn btn-secondary" onclick="toggleStoreLookup()" style="padding: 8px 16px; font-size: 14px;">
+              <i class="fas fa-search-location"></i> <span id="storeLookupText">Check Nearby Store Prices</span>
+            </button>
+          </div>
+          <div id="nearbyStores" style="margin-bottom: 16px; display: none;"></div>
+          <div class="grid-2">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>2" PVC Price per 20ft Stick ($)</label>
+              <input type="number" id="pvc2inPrice" step="0.01" min="0" value="32" onchange="updatePVCPricing()" placeholder="32.00">
+              <small style="color: #6b7280;">Default: $32.00 (check stores to update)</small>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>1.5" PVC Price per 20ft Stick ($)</label>
+              <input type="number" id="pvc1_5inPrice" step="0.01" min="0" value="22" onchange="updatePVCPricing()" placeholder="22.00">
+              <small style="color: #6b7280;">Default: $22.00 (check stores to update)</small>
+            </div>
+          </div>
+          <div id="pvcTotalCost" style="margin-top: 12px; padding: 12px; background: white; border-radius: 6px; font-weight: 600; color: #0369a1;">
+            PVC Total Cost: $0.00
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Labor & Hours -->
+    <div class="section" id="laborSectionContainer">
+      <div class="section-header" onclick="toggleSection('laborSection')">
+        <h2><i class="fas fa-hard-hat"></i> Labor & Hours</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="laborSection">
+        <div id="laborList">
+          <p style="color: #6b7280; text-align: center; padding: 20px;">Loading labor items...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing & Profit Summary -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('pricingSection')">
+        <h2><i class="fas fa-dollar-sign"></i> Pricing & Profit Summary</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="pricingSection">
+        <div class="summary-box">
+          <div class="summary-row">
+            <span>Material Cost Total:</span>
+            <strong id="materialCostTotal" style="color: #0284c7; font-size: 18px;">$0.00</strong>
+          </div>
+          <div class="summary-row" id="laborCostRow">
+            <span>Labor Cost Total:</span>
+            <strong id="laborCostTotal">$0.00</strong>
+          </div>
+          <div class="summary-row" style="border-top: 2px solid #0369a1; padding-top: 8px; margin-top: 8px; font-weight: 700;">
+            <span>Total Cost:</span>
+            <strong id="totalCost" style="font-size: 18px; color: #0369a1;">$0.00</strong>
+          </div>
+        </div>
+        <div id="profitMarginSection" style="display: none;">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Target Margin %</label>
+              <input type="number" id="targetMargin" step="0.1" min="0" max="100" value="35" onchange="calculateSellPrice()" placeholder="35">
+            </div>
+            <div class="form-group">
+              <label>OR Manual Sell Price</label>
+              <input type="number" id="manualSellPrice" step="0.01" min="0" onchange="calculateMargin()" placeholder="0.00">
+            </div>
+          </div>
+          <div class="summary-box">
+            <div class="summary-row">
+              <span>Sell Price:</span>
+              <strong id="sellPrice" style="font-size: 20px; color: #0369a1;">$0.00</strong>
+            </div>
+            <div class="summary-row">
+              <span>Profit Dollars:</span>
+              <strong id="profitDollars">$0.00</strong>
+            </div>
+            <div class="summary-row summary-total">
+              <span>Profit Margin:</span>
+              <strong id="profitMarginPercent">0.0%</strong>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Internal Notes</label>
+          <textarea id="internalNotes" rows="3" placeholder="Internal notes (not shown to customer)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Measurements & Notes Section -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('fieldNotesSection')">
+        <h2><i class="fas fa-ruler-combined"></i> Measurements & Field Notes</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="fieldNotesSection">
+        <div class="form-group">
+          <label>Field Measurements & Notes</label>
+          <textarea id="fieldMeasurements" rows="6" placeholder="Enter any field measurements, site conditions, special notes, etc. This will be saved to your spreadsheet."></textarea>
+          <small style="color: #6b7280;">These notes will be saved with the quote and visible in your spreadsheet</small>
+        </div>
+        
+        <div class="form-group">
+          <label>Upload Project Photos</label>
+          <input type="file" id="photoUpload" multiple accept="image/*" onchange="handlePhotoUpload(event)" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; width: 100%;">
+          <small style="color: #6b7280;">Upload photos that will be included in the customer quote and saved to Google Drive</small>
+          <div id="uploadedPhotos" style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px;">
+            <!-- Uploaded photos will appear here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer-Facing Summary -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection('summarySection')">
+        <h2><i class="fas fa-file-alt"></i> Customer-Facing Quote</h2>
+        <i class="fas fa-chevron-down toggle-icon"></i>
+      </div>
+      <div class="section-content" id="summarySection">
+        <!-- Professional Quote View -->
+        <div id="customerQuoteView" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 0; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto;">
+          <!-- Quote Header -->
+          <div style="background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%); padding: 40px; color: white;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
+              <div>
+                <img src="https://daks2k3a4ib2z.cloudfront.net/6931dc4e8e97334e195432df/6931dca5c5fb5c5fc0860f2c_test-p-130x130q80.png" 
+                     alt="Company Logo" 
+                     style="max-width: 130px; height: auto; background: white; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
+                <div style="font-size: 24px; font-weight: 700; margin-bottom: 8px;" id="quoteCompanyName">A Quality Pool Company</div>
+                <div style="font-size: 14px; opacity: 0.9;" id="quoteCompanyAddress">Serving Tennessee and Kentucky for over 40 years</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">QUOTE</div>
+                <div style="font-size: 14px; opacity: 0.9;">Quote #: <span id="quoteNumber">-</span></div>
+                <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;">Date: <span id="quoteDate">-</span></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Customer Info -->
+          <div style="padding: 30px 40px; border-bottom: 1px solid #e5e7eb;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+              <div>
+                <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Bill To</div>
+                <div style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 4px;" id="quoteCustomerName">Customer Name</div>
+                <div style="font-size: 14px; color: #374151; line-height: 1.6;" id="quoteCustomerAddress">
+                  Address Line 1<br>
+                  Address Line 2<br>
+                  City, State ZIP
+                </div>
+                <div style="font-size: 14px; color: #374151; margin-top: 8px;" id="quoteCustomerContact">
+                  Phone: -<br>
+                  Email: -
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Project Details</div>
+                <div style="font-size: 14px; color: #374151; line-height: 1.8;" id="quoteProjectDetails">
+                  Project Type: -<br>
+                  Pool Type: -<br>
+                  Pool Size: -
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quote Items -->
+          <div style="padding: 30px 40px;">
+            <div style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 20px;">Project Summary</div>
+            <div id="quoteItemsList" style="margin-bottom: 30px;">
+              <!-- Items will be populated here -->
+            </div>
+            
+            <!-- Totals -->
+            <div style="border-top: 2px solid #e5e7eb; padding-top: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 16px; color: #374151;">
+                <span>Subtotal:</span>
+                <span id="quoteSubtotal">$0.00</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #f0f9ff; border-radius: 8px; margin-top: 20px;">
+                <span style="font-size: 20px; font-weight: 700; color: #0369a1;">Total:</span>
+                <span id="quoteTotal" style="font-size: 28px; font-weight: 700; color: #0369a1;">$0.00</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quote Footer -->
+          <div style="background: #f9fafb; padding: 30px 40px; border-top: 1px solid #e5e7eb;">
+            <div id="quoteNotes" style="font-size: 14px; color: #374151; line-height: 1.6;">
+              <!-- Notes will be populated here -->
+            </div>
+            
+            <!-- Photo Gallery -->
+            <div id="quotePhotos" style="margin-top: 20px; display: none;">
+              <div style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 12px;">Project Photos</div>
+              <div id="quotePhotosGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;">
+                <!-- Photos will be populated here -->
+              </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+              <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 4px; margin-bottom: 20px;">
+                <div style="font-size: 14px; font-weight: 600; color: #92400e; margin-bottom: 8px;">
+                  <i class="fas fa-info-circle"></i> Important Notice
+                </div>
+                <div style="font-size: 13px; color: #78350f; line-height: 1.6;">
+                  This is a brief preliminary quote. You will receive an official quote via our Joist system from our team shortly. The official quote will contain a detailed payment schedule and all applicable taxes.
+                </div>
+              </div>
+              <div style="text-align: center; font-size: 12px; color: #6b7280;">
+                Thank you for your business!
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <button class="btn btn-secondary" onclick="copyCustomerSummary()" style="flex: 1; min-width: 150px;">
+            <i class="fas fa-copy"></i> Copy Quote
+          </button>
+          <button class="btn btn-secondary" onclick="sendQuoteViaSMS()" id="sendSMSBtn" style="background: #10b981; color: white; flex: 1; min-width: 150px;">
+            <i class="fas fa-sms"></i> Send via SMS
+          </button>
+          <button class="btn btn-secondary" onclick="sendQuoteViaEmail()" id="sendEmailBtn" style="background: #dc2626; color: white; flex: 1; min-width: 150px;">
+            <i class="fas fa-envelope"></i> Send via Email
+          </button>
+          <button class="btn btn-primary" onclick="saveQuote()" style="flex: 1; min-width: 150px;">
+            <i class="fas fa-save"></i> Save Quote
+          </button>
+        </div>
+        <div id="successMessage" class="success-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let initialData = null;
+    let selectedEquipment = {};
+    let selectedLabor = {};
+    let pvcData = { pvc2inPrice: 0, pvc1_5inPrice: 0 };
+    let nearbyStores = [];
+    let uploadedPhotos = []; // Store uploaded photo data (base64, name, etc.)
+
+    // Store all labor items globally for filtering
+    let allLaborItems = [];
+    let laborSectionVisible = true; // Track if labor section is visible
+    
+    // Item List variables
+    let allItemListItems = [];
+    let selectedCustomItems = {}; // Store custom items added from Item List
+    
+    // Load all data on page load
+    window.onload = function() {
+      loadInitialData();
+    };
+
+    function toggleLaborSection() {
+      const checkbox = document.getElementById('showLaborToggle');
+      const laborContainer = document.getElementById('laborSectionContainer');
+      const laborCostRow = document.getElementById('laborCostRow');
+      
+      if (!checkbox.checked) {
+        // Hide labor section (but keep selected labor data)
+        laborContainer.style.display = 'none';
+        if (laborCostRow) laborCostRow.style.display = 'none';
+        laborSectionVisible = false;
+        updateTotals();
+      } else {
+        // Show labor section
+        laborContainer.style.display = 'block';
+        if (laborCostRow) {
+          laborCostRow.style.display = 'flex';
+        }
+        laborSectionVisible = true;
+        updateTotals();
+      }
+    }
+
+    function toggleProfitMarginSection() {
+      const checkbox = document.getElementById('showProfitMarginToggle');
+      const profitMarginSection = document.getElementById('profitMarginSection');
+      
+      if (!checkbox.checked) {
+        profitMarginSection.style.display = 'none';
+      } else {
+        profitMarginSection.style.display = 'block';
+      }
+    }
+
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      const header = section.previousElementSibling;
+      section.classList.toggle('collapsed');
+      header.classList.toggle('collapsed');
+    }
+
+    function loadInitialData() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            initialData = result;
+            populateCustomerSelect(result.customers || []);
+            populateEquipmentDropdowns(result.priceBook);
+            populateLaborList(result.labor);
+            populateBundles(result.bundles);
+            calculatePVC();
+          } else {
+            alert('Error loading data: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+        })
+        .getInitialData();
+    }
+
+    function populateCustomerSelect(customers) {
+      const select = document.getElementById('customerSelect');
+      customers.forEach(customer => {
+        const option = document.createElement('option');
+        option.value = customer.id;
+        option.textContent = customer.name + (customer.phone ? ' - ' + customer.phone : '');
+        select.appendChild(option);
+      });
+      document.getElementById('customerLoading').style.display = 'none';
+      document.getElementById('customerSelectUI').style.display = 'block';
+    }
+
+    function loadCustomerDetails() {
+      const customerId = document.getElementById('customerSelect').value;
+      if (!customerId || !initialData.customers) return;
+      
+      const customer = initialData.customers.find(c => c.id === customerId);
+      if (customer) {
+        document.getElementById('customerName').value = customer.name;
+        document.getElementById('customerPhone').value = customer.phone || '';
+        document.getElementById('customerEmail').value = customer.email || '';
+        document.getElementById('customerAddress').value = customer.address || '';
+      }
+    }
+
+    function populateEquipmentDropdowns(priceBook) {
+      // Populate Pump dropdown
+      const pumpSelect = document.getElementById('equipmentPump');
+      const pumps = priceBook.byCategory['Pump'] || [];
+      let haywardPumpFound = false;
+      pumps.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.code;
+        option.textContent = item.brand + ' - ' + item.name + ' ($' + item.price.toFixed(2) + ')';
+        option.dataset.price = item.price;
+        option.dataset.name = item.name;
+        option.dataset.brand = item.brand;
+        option.dataset.isVSP = item.name.toLowerCase().includes('vsp') || item.name.toLowerCase().includes('variable');
+        
+        // Set Hayward pump as default if found
+        if (!haywardPumpFound && item.brand && item.brand.toLowerCase().includes('hayward')) {
+          option.selected = true;
+          haywardPumpFound = true;
+          // Trigger price update for default selection
+          setTimeout(() => updateEquipmentPrice('Pump', item.code), 100);
+        }
+        
+        pumpSelect.appendChild(option);
+      });
+      
+      // Populate Filter dropdown
+      const filterSelect = document.getElementById('equipmentFilter');
+      const filters = priceBook.byCategory['Filter'] || [];
+      filters.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.code;
+        option.textContent = item.brand + ' - ' + item.name + ' ($' + item.price.toFixed(2) + ')';
+        option.dataset.price = item.price;
+        option.dataset.name = item.name;
+        option.dataset.isSand = item.name.toLowerCase().includes('sand');
+        filterSelect.appendChild(option);
+      });
+      
+      // Populate Heater dropdown
+      const heaterSelect = document.getElementById('equipmentHeater');
+      const heaters = priceBook.byCategory['Heater'] || [];
+      heaters.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.code;
+        option.textContent = item.brand + ' - ' + item.name + ' ($' + item.price.toFixed(2) + ')';
+        option.dataset.price = item.price;
+        option.dataset.name = item.name;
+        heaterSelect.appendChild(option);
+      });
+      
+      // Populate Lighting dropdown
+      const lightingSelect = document.getElementById('equipmentLighting');
+      const lightings = priceBook.byCategory['Lighting'] || [];
+      lightings.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.code;
+        option.textContent = item.brand + ' - ' + item.name + ' ($' + item.price.toFixed(2) + ' per light)';
+        option.dataset.price = item.price;
+        option.dataset.name = item.name;
+        lightingSelect.appendChild(option);
+      });
+      
+      // Store Control Freak items for later
+      window.controlFreakAutomation = (priceBook.byCategory['Automation / Controls'] || []).find(item => 
+        item.name.toLowerCase().includes('control freak') || item.brand.toLowerCase().includes('control freak')
+      );
+      window.controlFreakSalt = (priceBook.byCategory['Chlorination / Salt'] || []).find(item => 
+        item.name.toLowerCase().includes('control freak') || item.brand.toLowerCase().includes('control freak')
+      );
+      
+      // Auto-suggest equipment based on pool level
+      suggestEquipment();
+
+      // Load PVC pricing
+      const pvcItems = priceBook.allItems.filter(item => item.category === 'PVC');
+      const pvc2in = pvcItems.find(item => item.name.toLowerCase().includes('2') && (item.name.toLowerCase().includes('in') || item.name.toLowerCase().includes('"')));
+      const pvc1_5in = pvcItems.find(item => item.name.toLowerCase().includes('1.5') || item.name.toLowerCase().includes('1 1/2'));
+      
+      if (pvc2in) {
+        pvcData.pvc2inPrice = pvc2in.price;
+        document.getElementById('pvcPricing').innerHTML += '<div>2" PVC: $' + pvc2in.price.toFixed(2) + ' per stick</div>';
+      }
+      if (pvc1_5in) {
+        pvcData.pvc1_5inPrice = pvc1_5in.price;
+        document.getElementById('pvcPricing').innerHTML += '<div>1.5" PVC: $' + pvc1_5in.price.toFixed(2) + ' per stick</div>';
+      }
+      if (pvc2in || pvc1_5in) {
+        document.getElementById('pvcPricing').style.display = 'block';
+      }
+      
+      // Populate Item List
+      populateItemList(result.priceBook);
+    }
+    
+    function populateItemList(priceBook) {
+      // Store all items for Item List
+      allItemListItems = priceBook.allItems || [];
+      
+      // Populate category filter
+      const categoryFilter = document.getElementById('itemListCategoryFilter');
+      const categories = Object.keys(priceBook.byCategory || {}).sort();
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        categoryFilter.appendChild(option);
+      });
+      
+      // Display items
+      filterItemList();
+    }
+    
+    function filterItemList() {
+      const searchTerm = (document.getElementById('itemListSearch').value || '').toLowerCase();
+      const categoryFilter = document.getElementById('itemListCategoryFilter').value;
+      const resultsDiv = document.getElementById('itemListResults');
+      
+      let filtered = allItemListItems.filter(item => {
+        const matchesSearch = !searchTerm || 
+          (item.name || '').toLowerCase().includes(searchTerm) ||
+          (item.code || '').toLowerCase().includes(searchTerm) ||
+          (item.brand || '').toLowerCase().includes(searchTerm) ||
+          (item.category || '').toLowerCase().includes(searchTerm);
+        
+        const matchesCategory = !categoryFilter || item.category === categoryFilter;
+        
+        return matchesSearch && matchesCategory && item.active !== false;
+      });
+      
+      if (filtered.length === 0) {
+        resultsDiv.innerHTML = '<div style="text-align: center; color: #6b7280; padding: 20px;">No items found. Try adjusting your search.</div>';
+        return;
+      }
+      
+      let html = '<div style="display: grid; gap: 12px;">';
+      filtered.forEach(item => {
+        const itemKey = 'custom_' + item.code;
+        const isSelected = selectedCustomItems[itemKey] !== undefined;
+        
+        html += `
+          <div style="background: white; padding: 16px; border-radius: 8px; border: 2px solid ${isSelected ? '#0284c7' : '#e5e7eb'}; display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600; color: #111827; margin-bottom: 4px;">${escapeHtml(item.name)}</div>
+              <div style="font-size: 12px; color: #6b7280;">
+                ${escapeHtml(item.brand || '')} | ${escapeHtml(item.category || 'Other')} | Code: ${escapeHtml(item.code || '')}
+              </div>
+              <div style="margin-top: 8px; font-weight: 600; color: #059669;">$${parseFloat(item.price || 0).toFixed(2)} ${item.unit ? 'per ' + escapeHtml(item.unit) : ''}</div>
+            </div>
+            <div style="margin-left: 16px;">
+              ${isSelected ? `
+                <button onclick="removeCustomItem('${item.code}')" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;">
+                  <i class="fas fa-minus"></i> Remove
+                </button>
+              ` : `
+                <button onclick="addCustomItem('${item.code}', '${escapeHtml(item.name)}', '${escapeHtml(item.brand || '')}', ${item.price}, '${escapeHtml(item.category || 'Other')}')" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;">
+                  <i class="fas fa-plus"></i> Add
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      resultsDiv.innerHTML = html;
+      
+      updateSelectedItemsDisplay();
+    }
+    
+    function addCustomItem(code, name, brand, price, category) {
+      const itemKey = 'custom_' + code;
+      selectedCustomItems[itemKey] = {
+        code: code,
+        name: name,
+        brand: brand,
+        price: parseFloat(price) || 0,
+        category: category,
+        quantity: 1
+      };
+      
+      filterItemList(); // Refresh to show "Remove" button
+      updateTotals();
+    }
+    
+    function removeCustomItem(code) {
+      const itemKey = 'custom_' + code;
+      delete selectedCustomItems[itemKey];
+      
+      filterItemList(); // Refresh to show "Add" button
+      updateTotals();
+    }
+    
+    function updateSelectedItemsDisplay() {
+      const selectedDiv = document.getElementById('itemListSelected');
+      const itemsDiv = document.getElementById('itemListSelectedItems');
+      
+      const items = Object.values(selectedCustomItems);
+      if (items.length === 0) {
+        selectedDiv.style.display = 'none';
+        return;
+      }
+      
+      selectedDiv.style.display = 'block';
+      let html = '';
+      items.forEach((item, index) => {
+        html += `
+          <div style="background: white; padding: 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+              <div style="font-weight: 600; color: #111827;">${escapeHtml(item.name)}</div>
+              <div style="font-size: 12px; color: #6b7280;">${escapeHtml(item.brand)} | Qty: ${item.quantity} × $${item.price.toFixed(2)} = $${(item.quantity * item.price).toFixed(2)}</div>
+            </div>
+            <div style="margin-left: 12px; display: flex; gap: 8px; align-items: center;">
+              <input type="number" min="1" step="1" value="${item.quantity}" onchange="updateCustomItemQuantity('${item.code}', this.value)" 
+                     style="width: 60px; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;">
+              <input type="number" min="0" step="0.01" value="${item.price}" onchange="updateCustomItemPrice('${item.code}', this.value)" 
+                     style="width: 100px; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;">
+              <button onclick="removeCustomItem('${item.code}')" style="padding: 6px 12px; background: #fee2e2; color: #991b1b; border: none; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      itemsDiv.innerHTML = html;
+    }
+    
+    function updateCustomItemQuantity(code, quantity) {
+      const itemKey = 'custom_' + code;
+      if (selectedCustomItems[itemKey]) {
+        selectedCustomItems[itemKey].quantity = parseInt(quantity) || 1;
+        updateSelectedItemsDisplay();
+        updateTotals();
+      }
+    }
+    
+    function updateCustomItemPrice(code, newPrice) {
+      const itemKey = 'custom_' + code;
+      if (selectedCustomItems[itemKey]) {
+        const oldPrice = selectedCustomItems[itemKey].price;
+        selectedCustomItems[itemKey].price = parseFloat(newPrice) || 0;
+        
+        // Sync price back to Price Book
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              console.log('Price synced to Price Book: ' + code + ' = $' + newPrice);
+              // Optionally show a brief success message
+            } else {
+              console.warn('Failed to sync price: ' + (result.error || 'Unknown error'));
+            }
+          })
+          .withFailureHandler(function(error) {
+            console.error('Error syncing price: ' + error);
+          })
+          .updateItemPrice(code, newPrice);
+        
+        updateSelectedItemsDisplay();
+        updateTotals();
+      }
+    }
+    
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.toString().replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function populateLaborList(labor) {
+      // Store all labor items globally
+      allLaborItems = labor;
+      
+      // Filter based on New/Renovation selection
+      filterLaborList();
+    }
+    
+    function filterLaborList() {
+      const container = document.getElementById('laborList');
+      const newOrRenovation = document.getElementById('newOrRenovation').value;
+      
+      if (allLaborItems.length === 0) {
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No labor items found</p>';
+        return;
+      }
+      
+      // Filter labor items based on project type
+      let filteredLabor = [];
+      
+      if (newOrRenovation === 'New') {
+        // New builds: Only show Installation category
+        filteredLabor = allLaborItems.filter(item => item.category === 'Installation');
+      } else if (newOrRenovation === 'Renovation') {
+        // Renovations: Show Demolition and Installation categories
+        filteredLabor = allLaborItems.filter(item => 
+          item.category === 'Demolition' || 
+          item.category === 'Installation' ||
+          item.category === 'Repair'
+        );
+      } else {
+        // No selection yet: Show all items
+        filteredLabor = allLaborItems;
+      }
+      
+      if (filteredLabor.length === 0) {
+        let message = 'No labor items found';
+        if (!newOrRenovation) {
+          message = 'Select "New" or "Renovation" above to see relevant labor items';
+        } else if (newOrRenovation === 'New') {
+          message = 'No Installation labor items found. Add items to your Labor sheet with category "Installation"';
+        } else if (newOrRenovation === 'Renovation') {
+          message = 'No Demolition or Installation labor items found. Add items to your Labor sheet with category "Demolition" or "Installation"';
+        }
+        container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">' + message + '</p>';
+        return;
+      }
+
+      let html = '';
+      filteredLabor.forEach((item, index) => {
+        const itemId = 'labor_' + index + '_' + item.laborType.replace(/\s+/g, '_');
+        const isFlatRate = item.unit === 'Flat Rate';
+        const displayPrice = isFlatRate ? '$' + item.rate.toFixed(2) : '$' + item.rate.toFixed(2) + '/' + item.unit;
+        
+        html += `
+          <div class="labor-item">
+            <div class="labor-item-header">
+              <div class="labor-item-info" style="flex: 1;">
+                <div class="item-name" style="font-weight: 600; margin-bottom: 4px;">${item.laborType}</div>
+                <div class="item-details" style="font-size: 12px; color: #6b7280;">${item.category}${item.description ? ' • ' + item.description : ''}</div>
+              </div>
+              <div class="labor-item-price">${displayPrice}</div>
+            </div>
+            <div class="labor-item-controls">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600;">
+                <input type="checkbox" id="${itemId}_include" onchange="updateLaborItem('${itemId}', ${item.rate}, '${item.unit}', '${item.laborType}')" style="width: 20px; height: 20px; cursor: pointer;">
+                <span>Include</span>
+              </label>
+              ${!isFlatRate ? `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <label style="font-size: 12px; color: #6b7280;">Qty:</label>
+                  <input type="number" class="item-quantity" id="${itemId}_qty" min="0" step="0.1" value="0" 
+                         onchange="updateLaborItem('${itemId}', ${item.rate}, '${item.unit}', '${item.laborType}')" 
+                         disabled style="width: 80px; padding: 6px; border: 1px solid #d1d5db; border-radius: 4px;">
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function updateLaborItem(itemId, rate, unit, laborType) {
+      const checkbox = document.getElementById(itemId + '_include');
+      const qtyInput = document.getElementById(itemId + '_qty');
+      
+      if (qtyInput) {
+        qtyInput.disabled = !checkbox.checked;
+      }
+      
+      if (!checkbox.checked) {
+        if (qtyInput) qtyInput.value = 0;
+        delete selectedLabor[itemId];
+      } else {
+        // For flat rate, default to 1 if no quantity set
+        let qty = 1;
+        if (qtyInput) {
+          qty = parseFloat(qtyInput.value) || (unit === 'Flat Rate' ? 1 : 0);
+        } else if (unit !== 'Flat Rate') {
+          qty = 0;
+        }
+        
+        let total = 0;
+        
+        if (unit === 'Flat Rate') {
+          total = rate; // Flat rate is always just the rate
+        } else if (unit === 'Per Hour') {
+          total = qty * rate;
+        } else if (unit === 'Per Square Foot') {
+          const sqft = parseFloat(document.getElementById('concreteSqFtNew').value) || parseFloat(document.getElementById('surfaceArea').textContent.replace(',', '')) || 0;
+          total = sqft * rate;
+        } else if (unit === 'Per Linear Foot') {
+          const perimeter = parseFloat(document.getElementById('perimeter').textContent.replace(',', '')) || 0;
+          total = perimeter * rate;
+        } else if (unit === 'Per Yard') {
+          total = qty * rate;
+        } else if (unit === 'Per Unit') {
+          total = qty * rate;
+        } else {
+          total = qty * rate;
+        }
+        
+        selectedLabor[itemId] = { 
+          rate: rate, 
+          quantity: qty, 
+          unit: unit, 
+          total: total,
+          laborType: laborType || itemId
+        };
+      }
+      updateTotals();
+    }
+
+    function updateHeaterLabor() {
+      const heaterSelect = document.getElementById('equipmentHeater');
+      const heaterValue = heaterSelect.value;
+      
+      // Remove existing heater labor if any
+      Object.keys(selectedLabor).forEach(key => {
+        if (key.includes('Heater Installation') || key.includes('heater')) {
+          delete selectedLabor[key];
+        }
+      });
+      
+      if (heaterValue && heaterValue !== '') {
+        // Auto-add heater installation labor: $3000
+        const heaterLaborId = 'labor_heater_installation';
+        selectedLabor[heaterLaborId] = {
+          rate: 3000,
+          quantity: 1,
+          unit: 'Flat Rate',
+          total: 3000,
+          laborType: 'Heater Installation'
+        };
+        
+        // Auto-add heater materials/fittings: $500
+        if (!selectedEquipment['Heater Materials & Fittings']) {
+          selectedEquipment['Heater Materials & Fittings'] = {
+            code: 'HEATER_MATERIALS',
+            name: 'Heater Materials & Fittings',
+            brand: 'Standard',
+            price: 500,
+            quantity: 1
+          };
+        }
+      } else {
+        // Remove heater materials if heater is removed
+        delete selectedEquipment['Heater Materials & Fittings'];
+      }
+      
+      updateTotals();
+    }
+
+    function populateBundles(bundles) {
+      const select = document.getElementById('equipmentBundle');
+      bundles.forEach(bundle => {
+        const option = document.createElement('option');
+        option.value = bundle.name;
+        option.textContent = bundle.name + ' - $' + bundle.totalPrice.toFixed(2);
+        option.dataset.bundle = JSON.stringify(bundle);
+        select.appendChild(option);
+      });
+    }
+
+    function loadBundleItems() {
+      const select = document.getElementById('equipmentBundle');
+      const selectedOption = select.options[select.selectedIndex];
+      if (!selectedOption || !selectedOption.dataset.bundle) return;
+      
+      const bundle = JSON.parse(selectedOption.dataset.bundle);
+      // Could auto-populate equipment based on bundle.itemsIncluded
+      // For now, just note that bundle is selected
+    }
+
+    function calculatePoolVolume() {
+      const length = parseFloat(document.getElementById('length').value) || 0;
+      const width = parseFloat(document.getElementById('width').value) || 0;
+      const shallowDepth = parseFloat(document.getElementById('shallowDepth').value) || 0;
+      const deepDepth = parseFloat(document.getElementById('deepDepth').value) || 0;
+      
+      if (!length || !width) return 0;
+      
+      // Calculate average depth
+      // Formula: averageDepth = (shallowDepth + deepDepth) / 2
+      let averageDepth = 0;
+      if (shallowDepth && deepDepth) {
+        averageDepth = (shallowDepth + deepDepth) / 2;
+      } else if (shallowDepth) {
+        averageDepth = shallowDepth;
+      } else if (deepDepth) {
+        averageDepth = deepDepth;
+      } else {
+        averageDepth = 4; // Default if no depth entered
+      }
+      
+      // Calculate cubic feet: length * width * averageDepth
+      const cubicFeet = length * width * averageDepth;
+      
+      // Convert to gallons: cubicFeet * 7.5
+      const gallons = cubicFeet * 7.5;
+      
+      return gallons;
+    }
+    
+    function suggestHeater() {
+      const poolVolume = calculatePoolVolume();
+      if (!poolVolume || !initialData) return;
+      
+      const priceBook = initialData.priceBook;
+      const heaters = priceBook.byCategory['Heater'] || [];
+      
+      if (heaters.length === 0) return;
+      
+      // Heater sizing recommendations:
+      // Small pools (< 15,000 gal): 100k-150k BTU
+      // Medium pools (15,000-25,000 gal): 200k-250k BTU
+      // Large pools (25,000-35,000 gal): 300k-400k BTU
+      // Very large pools (> 35,000 gal): 400k+ BTU
+      
+      let recommendedBTU = 200000; // Default
+      let recommendedSize = 'Medium';
+      
+      if (poolVolume < 15000) {
+        recommendedBTU = 150000;
+        recommendedSize = 'Small (100k-150k BTU)';
+      } else if (poolVolume < 25000) {
+        recommendedBTU = 250000;
+        recommendedSize = 'Medium (200k-250k BTU)';
+      } else if (poolVolume < 35000) {
+        recommendedBTU = 400000;
+        recommendedSize = 'Large (300k-400k BTU)';
+      } else {
+        recommendedBTU = 500000;
+        recommendedSize = 'Very Large (400k+ BTU)';
+      }
+      
+      // Find heater closest to recommended BTU
+      let bestHeater = null;
+      let bestDiff = Infinity;
+      
+      heaters.forEach(heater => {
+        // Try to extract BTU from name (e.g., "200k BTU", "250000 BTU")
+        const name = heater.name.toLowerCase();
+        let heaterBTU = 0;
+        
+        // Look for patterns like "200k", "250k", "200000", etc.
+        const kMatch = name.match(/(\d+)k/);
+        const numMatch = name.match(/(\d{5,6})/);
+        
+        if (kMatch) {
+          heaterBTU = parseInt(kMatch[1]) * 1000;
+        } else if (numMatch) {
+          heaterBTU = parseInt(numMatch[1]);
+        }
+        
+        if (heaterBTU > 0) {
+          const diff = Math.abs(heaterBTU - recommendedBTU);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            bestHeater = heater;
+          }
+        }
+      });
+      
+      // If no heater found by BTU, use first available
+      if (!bestHeater && heaters.length > 0) {
+        bestHeater = heaters[0];
+      }
+      
+      if (bestHeater) {
+        document.getElementById('equipmentHeater').value = bestHeater.code;
+        updateEquipmentPrice('Heater', bestHeater.code);
+        updateHeaterLabor(); // Auto-add heater labor
+        
+        // Update suggestions display
+        const suggestionsDiv = document.getElementById('equipmentSuggestions');
+        if (suggestionsDiv) {
+          const existingText = suggestionsDiv.innerHTML;
+          const heaterSuggestion = '• <strong>Heater:</strong> ' + bestHeater.brand + ' ' + bestHeater.name + 
+            ' - $' + bestHeater.price.toFixed(2) + ' (Recommended for ' + Math.round(poolVolume).toLocaleString() + ' gal pool - ' + recommendedSize + ')';
+          
+          // Remove old heater suggestion if exists
+          const lines = existingText.split('<br>').filter(line => !line.includes('Heater:'));
+          lines.push(heaterSuggestion);
+          suggestionsDiv.innerHTML = lines.join('<br>');
+        }
+      }
+    }
+
+    function suggestEquipment() {
+      const poolLevel = document.getElementById('poolLevel').value;
+      if (!poolLevel || !initialData) return;
+      
+      const priceBook = initialData.priceBook;
+      const suggestions = [];
+      const poolVolume = calculatePoolVolume();
+      
+      // Always recommend Madimack VSP pump for all pools
+      const pumps = priceBook.byCategory['Pump'] || [];
+      let suggestedPump = pumps.find(p => 
+        p.name.toLowerCase().includes('madimack') || 
+        p.brand.toLowerCase().includes('madimack') ||
+        (p.name.toLowerCase().includes('vsp') && p.price >= 1200 && p.price <= 1400)
+      );
+      
+      // If Madimack not found, find any VSP pump
+      if (!suggestedPump) {
+        suggestedPump = pumps.find(p => 
+          p.name.toLowerCase().includes('vsp') || 
+          p.name.toLowerCase().includes('variable')
+        );
+      }
+      
+      if (suggestedPump) {
+        document.getElementById('equipmentPump').value = suggestedPump.code;
+        updateEquipmentPrice('Pump', suggestedPump.code);
+        suggestions.push('• <strong>Pump:</strong> ' + suggestedPump.brand + ' VSP Pump - $' + suggestedPump.price.toFixed(2) + ' (Recommended for all pools)');
+      }
+      
+      // Suggest Filter based on pool volume
+      const filters = priceBook.byCategory['Filter'] || [];
+      let suggestedFilter = null;
+      let filterSize = '';
+      
+      if (poolVolume < 20000) {
+        // Small pool - 3.2 sq ft
+        suggestedFilter = filters.find(f => 
+          f.code === 'PEN145362' || 
+          (f.name.toLowerCase().includes('3.2') && f.name.toLowerCase().includes('sand'))
+        ) || filters.find(f => f.name.toLowerCase().includes('sand'));
+        filterSize = '3.2 sq ft (Recommended for pools under 20,000 gallons)';
+      } else if (poolVolume < 35000) {
+        // Medium pool - 4.6 sq ft
+        suggestedFilter = filters.find(f => 
+          (f.name.toLowerCase().includes('4.6') || f.name.toLowerCase().includes('4.6')) && 
+          f.name.toLowerCase().includes('sand')
+        ) || filters.find(f => f.name.toLowerCase().includes('sand'));
+        filterSize = '4.6 sq ft (Recommended for pools 20,000-35,000 gallons)';
+      } else {
+        // Large pool - 6.0+ sq ft
+        suggestedFilter = filters.find(f => 
+          (f.name.toLowerCase().includes('6.0') || f.name.toLowerCase().includes('6.0') || f.name.toLowerCase().includes('6 ')) && 
+          f.name.toLowerCase().includes('sand')
+        ) || filters.find(f => f.name.toLowerCase().includes('sand'));
+        filterSize = '6.0+ sq ft (Recommended for pools over 35,000 gallons)';
+      }
+      
+      // Default to PEN145362 for basic pools if not found
+      if (!suggestedFilter && poolLevel === 'Budget') {
+        suggestedFilter = filters.find(f => f.code === 'PEN145362') || filters.find(f => f.name.toLowerCase().includes('sand'));
+      }
+      
+      if (suggestedFilter) {
+        document.getElementById('equipmentFilter').value = suggestedFilter.code;
+        updateEquipmentPrice('Filter', suggestedFilter.code);
+        suggestions.push('• <strong>Filter:</strong> ' + suggestedFilter.brand + ' ' + suggestedFilter.name + ' - $' + suggestedFilter.price.toFixed(2) + ' (' + filterSize + ')');
+        
+        // Auto-add 6 bags of filter sand
+        if (!selectedEquipment['Filter Sand']) {
+          selectedEquipment['Filter Sand'] = {
+            code: 'FILTER_SAND',
+            name: 'Filter Sand (6 bags)',
+            brand: 'Standard',
+            price: 15, // $15 per bag
+            quantity: 6
+          };
+        }
+      }
+      
+      document.getElementById('equipmentSuggestions').innerHTML = suggestions.join('<br>');
+      
+      // Update calculations
+      calculateWalls();
+      calculateCoping();
+      calculateConcreteCollar();
+      calculateDecking();
+      updateEquipmentSuggestions();
+      updateTotals();
+    }
+    
+    function calculateCoping() {
+      const perimeter = parseFloat(document.getElementById('perimeter').textContent) || 0;
+      if (!perimeter) {
+        document.getElementById('copingBreakdown').innerHTML = 'Enter pool dimensions to calculate coping needed';
+        return;
+      }
+      
+      const copingType = document.getElementById('copingType').value;
+      if (!copingType) {
+        document.getElementById('copingBreakdown').innerHTML = 'Select coping type';
+        return;
+      }
+      
+      let pricePerSection = 54.11; // Default Cardinal CR price
+      if (copingType === 'custom') {
+        pricePerSection = parseFloat(document.getElementById('copingCustomPrice').value) || 54.11;
+      }
+      
+      // Coping comes in 8ft sections
+      const sectionsNeeded = Math.ceil(perimeter / 8);
+      const totalCost = sectionsNeeded * pricePerSection;
+      
+      document.getElementById('copingBreakdown').innerHTML = `
+        <div style="line-height: 1.8;">
+          <div>Pool Perimeter: <strong>${perimeter.toFixed(1)} ft</strong></div>
+          <div>Coping Sections Needed: <strong>${sectionsNeeded} × 8ft sections</strong></div>
+          <div>Price per Section: <strong>$${pricePerSection.toFixed(2)}</strong></div>
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb; font-weight: 700; color: #0369a1;">
+            Total Coping Cost: $${totalCost.toFixed(2)}
+          </div>
+        </div>
+      `;
+      
+      // Store in selectedEquipment
+      selectedEquipment['Coping'] = {
+        code: copingType === 'cardinal_cr' ? 'CSYCRWS08X06EA' : 'CUSTOM_COPING',
+        name: copingType === 'cardinal_cr' ? 'Cardinal CR Coping, Bullnose, 8\', White' : 'Custom Coping',
+        brand: 'Cardinal',
+        price: pricePerSection,
+        quantity: sectionsNeeded
+      };
+      
+      updateTotals();
+    }
+    
+    function calculateWalls() {
+      const length = parseFloat(document.getElementById('length').value) || 0;
+      const width = parseFloat(document.getElementById('width').value) || 0;
+      const hasStairs = document.getElementById('hasStairs') ? document.getElementById('hasStairs').checked : false;
+      const poolShape = document.getElementById('poolShape') ? document.getElementById('poolShape').value : 'rectangular';
+      
+      if (!length || !width) {
+        document.getElementById('wallBreakdown').innerHTML = 'Enter pool length and width to calculate walls needed';
+        document.getElementById('wallTotal').textContent = 'Total Wall Materials: $0.00';
+        return;
+      }
+      
+      // Wall pricing (EXACT costs from invoice)
+      const wallPrices = {
+        'stair_6ft': 1378.00,           // Stair REC G14 42in 6ft 3-tread
+        '8ft_skimmer': 304.00,          // Wall G14 42in 8ft Skim IG Center
+        '8ft_wf': 304.00,               // Wall G14 42in 8ft WF CO Center
+        '8ft_regular': 301.00,          // Wall G14 42in 8ft
+        '4ft_regular': 154.00,          // Wall G14 42in 4ft
+        'corner_filler': 23.00,          // Outside Corner Filler G14 42in SQ
+        'turnbuckle_brace': 21.00,      // Turnbuckle Brace for 42in Walls
+        'turnbuckle_horizontal': 7.00,  // Turnbuckle Horizontal for 42in Walls
+        'drive_stake': 6.00,            // Drive Stake G14 18in
+        'bolt': 0.59,                    // Bolt Flange 3/8" × 1"
+        'nut': 0.14                      // Nut Flange 3/8" Case-Hardened
+      };
+      
+      const perimeter = 2 * (length + width);
+      
+      // Calculate wall panels needed based on actual invoice pattern for 16×32
+      // For 16×32: 1 skimmer + 4 WF + 5 regular 8ft + 2×4ft = matches invoice
+      let num8ftPanels = 0;
+      let num4ftPanels = 0;
+      let numWFPanels = 0;
+      
+      // Calculate based on pool dimensions
+      // For rectangular pools, calculate each side
+      const longSide = Math.max(length, width);
+      const shortSide = Math.min(length, width);
+      
+      // Long sides: typically use WF panels (walk-in feature)
+      const longSidePanels = Math.ceil(longSide / 8);
+      numWFPanels = longSidePanels * 2; // Both long sides
+      
+      // Short sides: use regular 8ft panels
+      const shortSidePanels = Math.ceil(shortSide / 8);
+      num8ftPanels = shortSidePanels * 2; // Both short sides
+      
+      // Adjust for skimmer wall (replaces one regular 8ft)
+      num8ftPanels = Math.max(0, num8ftPanels - 1);
+      
+      // Calculate remainder to determine if 4ft panels needed
+      const totalPanelFeet = (numWFPanels + num8ftPanels + 1) * 8; // +1 for skimmer
+      const remainder = perimeter - totalPanelFeet;
+      
+      // Use 4ft panels to fill remainder
+      if (remainder > 0 && remainder <= 4) {
+        num4ftPanels = 1;
+      } else if (remainder > 4) {
+        num4ftPanels = Math.ceil(remainder / 4);
+      }
+      
+      // Ensure minimum counts match typical installation
+      // For 16×32 pattern: ensure we have at least the invoice pattern
+      if (perimeter >= 90 && perimeter <= 100) {
+        // Match 16×32 pattern: 1 skimmer, 4 WF, 5 regular, 2×4ft
+        numWFPanels = 4;
+        num8ftPanels = 5;
+        num4ftPanels = 2;
+      }
+      
+      // Handle L-shaped pools differently
+      if (poolShape === 'l-shaped') {
+        // For L-shaped pools, use custom calculation based on invoice pattern
+        // Using the invoice pattern as reference: 16x40 L-shaped
+        // Adjust panel counts for L-shape
+        if (perimeter >= 100 && perimeter <= 120) {
+          // Pattern similar to invoice: 2 skimmer, 3 WF, 10 regular 8ft, plus smaller panels
+          numWFPanels = 3;
+          num8ftPanels = 10;
+          num4ftPanels = 0; // Will be calculated separately for L-shape
+        }
+      }
+      
+      // Corner fillers: 4 for rectangular, 5 for L-shaped, 0 for oval
+      const numCornerFillers = (poolShape === 'rectangular' || poolShape === '') ? 4 : 
+                               (poolShape === 'l-shaped') ? 5 :
+                               (poolShape === 'oval' ? 0 : 4);
+      
+      // Bracing: typically every 8-10 feet, minimum 1 per side
+      const numBraces = Math.max(4, Math.ceil(perimeter / 10));
+      const numHorizontalBraces = numBraces;
+      const numStakes = numBraces;
+      
+      // Bolts/Nuts: approximately 2 per panel connection + extras
+      const numBolts = Math.max(200, num8ftPanels * 15 + num4ftPanels * 10 + numWFPanels * 15);
+      const numNuts = numBolts;
+      
+      let breakdown = [];
+      let total = 0;
+      
+      // Stairs (if selected)
+      if (hasStairs) {
+        breakdown.push(`1 × Stair REC G14 42in 6ft 3-tread @ $${wallPrices['stair_6ft'].toFixed(2)} = $${wallPrices['stair_6ft'].toFixed(2)}`);
+        total += wallPrices['stair_6ft'];
+      }
+      
+      // Skimmer wall
+      breakdown.push(`1 × Wall G14 42in 8ft Skim IG Center @ $${wallPrices['8ft_skimmer'].toFixed(2)} = $${wallPrices['8ft_skimmer'].toFixed(2)}`);
+      total += wallPrices['8ft_skimmer'];
+      
+      // WF CO Center panels
+      if (numWFPanels > 0) {
+        const wfCost = numWFPanels * wallPrices['8ft_wf'];
+        breakdown.push(`${numWFPanels} × Wall G14 42in 8ft WF CO Center @ $${wallPrices['8ft_wf'].toFixed(2)} = $${wfCost.toFixed(2)}`);
+        total += wfCost;
+      }
+      
+      // Regular 8ft walls
+      if (num8ftPanels > 0) {
+        const regularCost = num8ftPanels * wallPrices['8ft_regular'];
+        breakdown.push(`${num8ftPanels} × Wall G14 42in 8ft @ $${wallPrices['8ft_regular'].toFixed(2)} = $${regularCost.toFixed(2)}`);
+        total += regularCost;
+      }
+      
+      // 4ft panels
+      if (num4ftPanels > 0) {
+        const fourFtCost = num4ftPanels * wallPrices['4ft_regular'];
+        breakdown.push(`${num4ftPanels} × Wall G14 42in 4ft @ $${wallPrices['4ft_regular'].toFixed(2)} = $${fourFtCost.toFixed(2)}`);
+        total += fourFtCost;
+      }
+      
+      // Corner fillers (always 4 for rectangular pools)
+      if (numCornerFillers > 0) {
+        const cornerCost = numCornerFillers * wallPrices['corner_filler'];
+        breakdown.push(`${numCornerFillers} × Outside Corner Filler G14 42in SQ @ $${wallPrices['corner_filler'].toFixed(2)} = $${cornerCost.toFixed(2)}`);
+        total += cornerCost;
+      }
+      
+      // Turnbuckle braces
+      const turnbuckleBraceCost = numBraces * wallPrices['turnbuckle_brace'];
+      breakdown.push(`${numBraces} × Turnbuckle Brace 42in @ $${wallPrices['turnbuckle_brace'].toFixed(2)} = $${turnbuckleBraceCost.toFixed(2)}`);
+      total += turnbuckleBraceCost;
+      
+      // Turnbuckle horizontal braces
+      const turnbuckleHorizCost = numHorizontalBraces * wallPrices['turnbuckle_horizontal'];
+      breakdown.push(`${numHorizontalBraces} × Turnbuckle Horizontal Brace 42in @ $${wallPrices['turnbuckle_horizontal'].toFixed(2)} = $${turnbuckleHorizCost.toFixed(2)}`);
+      total += turnbuckleHorizCost;
+      
+      // Drive stakes
+      const stakeCost = numStakes * wallPrices['drive_stake'];
+      breakdown.push(`${numStakes} × Drive Stake 18in @ $${wallPrices['drive_stake'].toFixed(2)} = $${stakeCost.toFixed(2)}`);
+      total += stakeCost;
+      
+      // Bolts and nuts
+      const boltCost = numBolts * wallPrices['bolt'];
+      breakdown.push(`${numBolts} × Flange Bolt 3/8" × 1" @ $${wallPrices['bolt'].toFixed(2)} = $${boltCost.toFixed(2)}`);
+      total += boltCost;
+      
+      const nutCost = numNuts * wallPrices['nut'];
+      breakdown.push(`${numNuts} × Flange Nut 3/8" @ $${wallPrices['nut'].toFixed(2)} = $${nutCost.toFixed(2)}`);
+      total += nutCost;
+      
+      document.getElementById('wallBreakdown').innerHTML = breakdown.map(item => 
+        '<div style="margin-bottom: 4px;">' + item + '</div>'
+      ).join('');
+      
+      document.getElementById('wallTotal').textContent = 'Total Wall Materials: $' + total.toFixed(2);
+      
+      // Store in selectedEquipment with manufacturer info
+      const manufacturer = document.getElementById('wallManufacturer') ? document.getElementById('wallManufacturer').value : '';
+      const repName = document.getElementById('wallRepName') ? document.getElementById('wallRepName').value : '';
+      
+      selectedEquipment['Walls'] = {
+        code: 'WALL_MATERIALS',
+        name: 'Pool Wall Materials (Complete)',
+        brand: manufacturer || 'Standard',
+        manufacturer: manufacturer,
+        repName: repName,
+        price: total,
+        quantity: 1
+      };
+      
+      // Update manufacturer info display
+      updateWallInfo();
+      
+      updateTotals();
+    }
+    
+    function updateWallInfo() {
+      const manufacturer = document.getElementById('wallManufacturer') ? document.getElementById('wallManufacturer').value : '';
+      const repName = document.getElementById('wallRepName') ? document.getElementById('wallRepName').value : '';
+      const infoDiv = document.getElementById('wallManufacturerInfo');
+      const displaySpan = document.getElementById('wallManufacturerDisplay');
+      
+      if (manufacturer || repName) {
+        let infoText = '';
+        if (manufacturer && repName) {
+          infoText = `Manufacturer: ${manufacturer} • Rep/Company: ${repName}`;
+        } else if (manufacturer) {
+          infoText = `Manufacturer: ${manufacturer}`;
+        } else if (repName) {
+          infoText = `Rep/Company: ${repName}`;
+        }
+        displaySpan.textContent = infoText;
+        infoDiv.style.display = 'block';
+      } else {
+        infoDiv.style.display = 'none';
+      }
+    }
+    
+    function calculateConcreteCollar() {
+      const perimeter = parseFloat(document.getElementById('perimeter').textContent) || 0;
+      if (!perimeter) {
+        document.getElementById('concreteCollarCalc').innerHTML = 'Enter pool dimensions to calculate';
+        document.getElementById('concreteCollarTotal').textContent = 'Collar Cost: $0.00';
+        return;
+      }
+      
+      // Collar: 12" wide × 6" deep
+      // Based on real-world: 16×32 pool = 96ft perimeter = ~3 yards
+      // Formula: (Perimeter / 32) gives approximate cubic yards for standard collar
+      // This accounts for actual construction practices, corners, and proper sizing
+      const baseCubicYards = perimeter / 32; // 96ft ÷ 32 = 3 yards
+      
+      // OVER-CALCULATE: Add 20% buffer for waste/overage
+      const cubicYardsWithBuffer = baseCubicYards * 1.2;
+      
+      // Calculate cubic feet for display
+      const cubicFeet = cubicYardsWithBuffer * 27;
+      
+      // Cost: cubic yards × $208
+      const cost = cubicYardsWithBuffer * 208;
+      
+      document.getElementById('concreteCollarCalc').innerHTML = `
+        Perimeter: ${perimeter.toFixed(1)} ft<br>
+        Base Volume: ${baseCubicYards.toFixed(2)} cu yd<br>
+        <span style="color: #dc2626; font-weight: 600;">With 20% buffer: ${cubicYardsWithBuffer.toFixed(2)} cu yd</span><br>
+        Price: $208 per cubic yard
+      `;
+      
+      document.getElementById('concreteCollarTotal').textContent = 'Collar Cost: $' + cost.toFixed(2) + ' (includes 20% buffer)';
+      
+      // Store in selectedEquipment
+      selectedEquipment['Concrete Collar'] = {
+        code: 'CONCRETE_COLLAR',
+        name: 'Concrete Collar (12" × 6", with 20% buffer)',
+        brand: 'Standard',
+        price: cost,
+        quantity: 1
+      };
+      
+      updateTotals();
+    }
+    
+    function calculateDecking() {
+      const length = parseFloat(document.getElementById('length').value) || 0;
+      const width = parseFloat(document.getElementById('width').value) || 0;
+      const deckWidth = parseFloat(document.getElementById('deckWidth').value) || 0;
+      const manualSqFt = parseFloat(document.getElementById('deckSqFtManual').value) || 0;
+      
+      let sqFt = manualSqFt;
+      
+      // Calculate from deck width if not manually entered
+      if (!manualSqFt && deckWidth > 0 && length > 0 && width > 0) {
+        // Calculate deck area: (Length + 2×deckWidth) × (Width + 2×deckWidth) - (Length × Width)
+        const outerLength = length + (2 * deckWidth);
+        const outerWidth = width + (2 * deckWidth);
+        const totalArea = outerLength * outerWidth;
+        const poolArea = length * width;
+        sqFt = totalArea - poolArea;
+      }
+      
+      if (!sqFt) {
+        document.getElementById('deckingCalc').innerHTML = 'Enter deck width or square footage';
+        document.getElementById('deckingTotal').textContent = 'Decking Cost: $0.00';
+        return;
+      }
+      
+      // Calculate cubic yards: Square feet ÷ 81 (for 4" thick)
+      const cubicYards = sqFt / 81;
+      // OVER-CALCULATE: Add 20% buffer for waste/overage
+      const cubicYardsWithBuffer = cubicYards * 1.2;
+      // Cost: cubic yards × $208
+      const concreteCost = cubicYardsWithBuffer * 208;
+      
+      // Site prep and form work: $400 (hardcoded)
+      const sitePrepCost = 400;
+      const totalCost = concreteCost + sitePrepCost;
+      
+      const finishType = document.getElementById('deckFinish').value;
+      const finishNames = {
+        'broom': 'Broom Finish',
+        'stamped': 'Stamped Concrete',
+        'exposed': 'Exposed Aggregate',
+        'other': 'Other Finish'
+      };
+      
+      document.getElementById('deckingCalc').innerHTML = `
+        Square Footage: <strong>${sqFt.toFixed(1)} sq ft</strong><br>
+        Finish: <strong>${finishNames[finishType]}</strong><br>
+        Thickness: 4 inches<br>
+        Volume: ${cubicYards.toFixed(2)} cubic yards<br>
+        <span style="color: #dc2626; font-weight: 600;">With 20% buffer: ${cubicYardsWithBuffer.toFixed(2)} cu yd</span><br>
+        Concrete: $208 per cubic yard = $${concreteCost.toFixed(2)}<br>
+        <span style="color: #0284c7; font-weight: 600;">Site Prep & Form Work: $${sitePrepCost.toFixed(2)}</span>
+      `;
+      
+      document.getElementById('deckingTotal').textContent = 'Decking Cost: $' + totalCost.toFixed(2) + ' (includes concrete + site prep)';
+      
+      // Store in selectedEquipment
+      selectedEquipment['Concrete Decking'] = {
+        code: 'CONCRETE_DECKING',
+        name: 'Concrete Decking (' + finishNames[finishType] + ', ' + sqFt.toFixed(0) + ' sq ft, with 20% buffer + site prep)',
+        brand: 'Standard',
+        price: totalCost,
+        quantity: 1
+      };
+      
+      updateTotals();
+    }
+
+    function updateEquipmentSuggestions() {
+      const automationChecked = document.getElementById('automationPreference').checked;
+      const saltChecked = document.getElementById('saltPreference').checked;
+      
+      const controlFreakDiv = document.getElementById('controlFreakEquipment');
+      const controlFreakItems = document.getElementById('controlFreakItems');
+      
+      if (automationChecked || saltChecked) {
+        controlFreakDiv.style.display = 'block';
+        let items = [];
+        
+        if (automationChecked && window.controlFreakAutomation) {
+          selectedEquipment['Automation'] = {
+            code: window.controlFreakAutomation.code,
+            name: window.controlFreakAutomation.name,
+            brand: window.controlFreakAutomation.brand,
+            price: window.controlFreakAutomation.price,
+            quantity: 1
+          };
+          items.push('✓ Control Freak Automation System - $' + window.controlFreakAutomation.price.toFixed(2));
+          
+          // Auto-add actuator for automation
+          selectedEquipment['Actuator'] = {
+            code: 'GVA-24',
+            name: 'Hayward Goldline 24V Pool/Spa Diverter Valve Actuator | GVA-24',
+            brand: 'Hayward',
+            price: 250,
+            quantity: 1
+          };
+          items.push('✓ Actuator (Auto-added for automation) - $250.00');
+        } else if (automationChecked) {
+          // If Control Freak not found, add placeholder but still add actuator
+          items.push('⚠ Control Freak Automation (not found in price book - add manually)');
+          selectedEquipment['Actuator'] = {
+            code: 'GVA-24',
+            name: 'Hayward Goldline 24V Pool/Spa Diverter Valve Actuator | GVA-24',
+            brand: 'Hayward',
+            price: 250,
+            quantity: 1
+          };
+          items.push('✓ Actuator (Auto-added for automation) - $250.00');
+        }
+        
+        if (saltChecked && window.controlFreakSalt) {
+          selectedEquipment['Salt'] = {
+            code: window.controlFreakSalt.code,
+            name: window.controlFreakSalt.name,
+            brand: window.controlFreakSalt.brand,
+            price: window.controlFreakSalt.price,
+            quantity: 1
+          };
+          items.push('✓ Control Freak Salt Cell Generator - $' + window.controlFreakSalt.price.toFixed(2));
+          
+          // Auto-add 15 bags of salt
+          selectedEquipment['Salt Bags'] = {
+            code: 'SALT_BAGS',
+            name: 'Pool Salt (15 bags)',
+            brand: 'Standard',
+            price: 20, // per bag
+            quantity: 15
+          };
+          items.push('✓ Pool Salt - 15 bags × $20 = $300.00 (Auto-added)');
+        } else if (saltChecked) {
+          items.push('⚠ Control Freak Salt Cell (not found in price book - add manually)');
+          // Still add salt bags even if salt cell not found
+          selectedEquipment['Salt Bags'] = {
+            code: 'SALT_BAGS',
+            name: 'Pool Salt (15 bags)',
+            brand: 'Standard',
+            price: 20,
+            quantity: 15
+          };
+          items.push('✓ Pool Salt - 15 bags × $20 = $300.00 (Auto-added)');
+        }
+        
+        controlFreakItems.innerHTML = items.join('<br>');
+        updateTotals();
+      } else {
+        controlFreakDiv.style.display = 'none';
+        delete selectedEquipment['Automation'];
+        delete selectedEquipment['Salt'];
+        delete selectedEquipment['Salt Bags'];
+        delete selectedEquipment['Actuator'];
+        updateTotals();
+      }
+    }
+
+    function updateHotTubSelection() {
+      const hotTubChecked = document.getElementById('hotTubPreference').checked;
+      
+      if (!hotTubChecked) {
+        delete selectedEquipment['Hot Tub'];
+        updateTotals();
+        return;
+      }
+      
+      // Search for hot tub in price book
+      if (!initialData || !initialData.priceBook) {
+        alert('Price book not loaded yet. Please wait a moment and try again.');
+        return;
+      }
+      
+      const priceBook = initialData.priceBook;
+      const allItems = [];
+      
+      // Search all categories for hot tub
+      Object.keys(priceBook.byCategory).forEach(category => {
+        priceBook.byCategory[category].forEach(item => {
+          allItems.push(item);
+        });
+      });
+      
+      // Look for the specific hot tub
+      const hotTubItem = allItems.find(item => 
+        item.name.toLowerCase().includes('storm cloud') ||
+        item.name.toLowerCase().includes('cardinal luxury spa') ||
+        (item.name.toLowerCase().includes('hot tub') && item.name.toLowerCase().includes('7') && item.name.toLowerCase().includes('7'))
+      );
+      
+      if (hotTubItem) {
+        selectedEquipment['Hot Tub'] = {
+          code: hotTubItem.code,
+          name: hotTubItem.name,
+          brand: hotTubItem.brand,
+          price: hotTubItem.price,
+          quantity: 1,
+          category: hotTubItem.category || 'Equipment'
+        };
+      } else {
+        // If not found, add placeholder
+        selectedEquipment['Hot Tub'] = {
+          code: 'HOT_TUB_PLACEHOLDER',
+          name: '7\' x 7\' Square Storm Cloud Cardinal Luxury Spa (Non-Spillover) with 25 Jets',
+          brand: 'Cardinal',
+          price: 0,
+          quantity: 1,
+          category: 'Equipment'
+        };
+        alert('Hot tub not found in price book. Please add it manually or check the price book.');
+      }
+      
+      updateTotals();
+    }
+
+    function updateEquipmentPrice(category, itemCode) {
+      if (!itemCode) {
+        delete selectedEquipment[category];
+        if (category === 'Heater') {
+          updateHeaterLabor(); // Remove heater labor if heater is removed
+        }
+        updateTotals();
+        return;
+      }
+
+      const priceBook = initialData.priceBook;
+      const items = priceBook.byCategory[category] || [];
+      const item = items.find(i => i.code === itemCode);
+      
+      if (item) {
+        selectedEquipment[category] = {
+          code: item.code,
+          name: item.name,
+          brand: item.brand,
+          price: item.price,
+          quantity: 1
+        };
+        
+        // Auto-add heater labor if heater is selected
+        if (category === 'Heater') {
+          updateHeaterLabor();
+        }
+      }
+      updateTotals();
+    }
+
+    function updateLightingPrice() {
+      const lightingCode = document.getElementById('equipmentLighting').value;
+      const quantity = parseInt(document.getElementById('lightingQuantity').value) || 0;
+      
+      if (!lightingCode || quantity === 0) {
+        delete selectedEquipment['Lighting'];
+        updateTotals();
+        return;
+      }
+
+      const priceBook = initialData.priceBook;
+      const items = priceBook.byCategory['Lighting'] || [];
+      const item = items.find(i => i.code === lightingCode);
+      
+      if (item) {
+        selectedEquipment['Lighting'] = {
+          code: item.code,
+          name: item.name + ' (×' + quantity + ')',
+          brand: item.brand,
+          price: item.price,
+          quantity: quantity
+        };
+      }
+      updateTotals();
+    }
+
+    function calculatePoolMetrics() {
+      const length = parseFloat(document.getElementById('length').value) || 0;
+      const width = parseFloat(document.getElementById('width').value) || 0;
+      const shallowDepth = parseFloat(document.getElementById('shallowDepth').value) || 0;
+      const deepDepth = parseFloat(document.getElementById('deepDepth').value) || 0;
+      const bottomType = document.getElementById('poolBottomType') ? document.getElementById('poolBottomType').value : 'standard';
+      
+      if (!length || !width) {
+        document.getElementById('perimeter').textContent = '0';
+        document.getElementById('surfaceArea').textContent = '0';
+        document.getElementById('poolVolume').textContent = '0';
+        return;
+      }
+      
+      const perimeter = 2 * (length + width);
+      const surfaceArea = length * width;
+      
+      // Calculate volume using correct formula:
+      // averageDepth = (shallowDepth + deepDepth) / 2
+      // cubicFeet = length * width * averageDepth
+      // gallons = cubicFeet * 7.5
+      let averageDepth = 0;
+      if (shallowDepth && deepDepth) {
+        averageDepth = (shallowDepth + deepDepth) / 2;
+      } else if (shallowDepth) {
+        averageDepth = shallowDepth;
+      } else if (deepDepth) {
+        averageDepth = deepDepth;
+      } else {
+        averageDepth = 4; // Default if no depth entered
+      }
+      
+      const cubicFeet = length * width * averageDepth;
+      const gallons = cubicFeet * 7.5;
+      
+      document.getElementById('perimeter').textContent = perimeter.toFixed(1);
+      document.getElementById('surfaceArea').textContent = surfaceArea.toFixed(1);
+      document.getElementById('poolVolume').textContent = Math.round(gallons).toLocaleString();
+      
+      // Update all dependent calculations
+      calculateWalls();
+      calculateCoping();
+      calculateConcreteCollar();
+      calculateDecking();
+      calculatePVC();
+      suggestEquipment(); // Re-suggest equipment based on new pool size
+      suggestHeater(); // Suggest heater based on pool volume
+      updateTotals();
+    }
+
+    function calculatePVC() {
+      const distance = parseFloat(document.getElementById('distanceToEquipment').value) || 0;
+      const numSkimmers = parseInt(document.getElementById('numSkimmers').value) || 1;
+      const numReturns = parseInt(document.getElementById('numReturns').value) || 2;
+
+      if (!distance) {
+        document.getElementById('pvc2inSticks').value = 0;
+        document.getElementById('pvc1_5inSticks').value = 0;
+        updateTotals();
+        return;
+      }
+
+      // Calculate PVC client-side
+      if (distance > 0) {
+        const pvc2inFeet = (distance * 2) * (numSkimmers + 1); // +1 for main drain
+        const pvc1_5inFeet = distance * numReturns;
+        const pvc2inSticks = Math.ceil(pvc2inFeet / 20);
+        const pvc1_5inSticks = Math.ceil(pvc1_5inFeet / 20);
+        
+        document.getElementById('pvc2inSticks').value = pvc2inSticks;
+        document.getElementById('pvc1_5inSticks').value = pvc1_5inSticks;
+        
+      // Get PVC prices from price book as default
+      if (initialData && initialData.priceBook) {
+        const pvcItems = initialData.priceBook.allItems.filter(item => item.category === 'PVC');
+        const pvc2in = pvcItems.find(item => 
+          item.name.toLowerCase().includes('2') && (item.name.toLowerCase().includes('in') || item.name.toLowerCase().includes('"')));
+        const pvc1_5in = pvcItems.find(item => 
+          item.name.toLowerCase().includes('1.5') || item.name.toLowerCase().includes('1 1/2'));
+        
+        if (pvc2in && !document.getElementById('pvc2inPrice').value) {
+          document.getElementById('pvc2inPrice').value = pvc2in.price;
+          pvcData.pvc2inPrice = pvc2in.price;
+        }
+        if (pvc1_5in && !document.getElementById('pvc1_5inPrice').value) {
+          document.getElementById('pvc1_5inPrice').value = pvc1_5in.price;
+          pvcData.pvc1_5inPrice = pvc1_5in.price;
+        }
+      }
+      
+      updatePVCPricing();
+      }
+    }
+
+    function updatePVCPricing() {
+      // Update PVC prices from input fields
+      pvcData.pvc2inPrice = parseFloat(document.getElementById('pvc2inPrice').value) || 0;
+      pvcData.pvc1_5inPrice = parseFloat(document.getElementById('pvc1_5inPrice').value) || 0;
+      
+      // Calculate PVC total cost
+      const pvc2inSticks = parseInt(document.getElementById('pvc2inSticks').value) || 0;
+      const pvc1_5inSticks = parseInt(document.getElementById('pvc1_5inSticks').value) || 0;
+      const pvcTotal = (pvc2inSticks * pvcData.pvc2inPrice) + (pvc1_5inSticks * pvcData.pvc1_5inPrice);
+      
+      document.getElementById('pvcTotalCost').textContent = 
+        'PVC Total Cost: $' + pvcTotal.toFixed(2) + 
+        ' (' + pvc2inSticks + ' × 2" @ $' + pvcData.pvc2inPrice.toFixed(2) + 
+        ' + ' + pvc1_5inSticks + ' × 1.5" @ $' + pvcData.pvc1_5inPrice.toFixed(2) + ')';
+      
+      updateTotals();
+    }
+
+    function lookupNearbyStores() {
+      const address = document.getElementById('customerAddress').value;
+      
+      if (!address) {
+        alert('Please enter customer address first to lookup nearby stores');
+        return;
+      }
+
+      // Show loading
+      document.getElementById('nearbyStores').innerHTML = 
+        '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: #0284c7;"></i> Searching for nearby hardware stores...</div>';
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success && result.stores && result.stores.length > 0) {
+            displayNearbyStores(result.stores);
+          } else {
+            // Fallback to common stores if API lookup fails
+            displayCommonStores();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.log('Store lookup error: ' + error);
+          // Fallback to common stores
+          displayCommonStores();
+        })
+        .lookupNearbyStores(address);
+    }
+
+    function displayNearbyStores(stores) {
+      let html = '<div style="margin-bottom: 8px; padding: 8px; background: #f0f9ff; border-radius: 6px;">';
+      html += '<strong style="color: #0369a1; font-size: 13px;">🏪 Nearby Hardware Stores:</strong>';
+      html += '<div style="font-size: 11px; color: #6b7280; margin-top: 2px;">Click links to check prices, or call stores</div>';
+      html += '</div>';
+      
+      stores.forEach((store, index) => {
+        html += `
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 4px; padding: 8px; margin-bottom: 6px; font-size: 12px;">
+            <div style="font-weight: 600; margin-bottom: 2px; font-size: 13px;">${store.name}</div>
+            <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">${store.address || ''} ${store.phone ? '• ' + store.phone : ''}</div>
+            ${store.pvc2inLink || store.pvc1_5inLink ? `
+            <div style="margin-top: 4px; margin-bottom: 6px;">
+              ${store.pvc2inLink ? `
+                <a href="${store.pvc2inLink}" target="_blank" style="display: inline-block; margin-right: 6px; margin-bottom: 4px; padding: 3px 6px; background: #0284c7; color: white; text-decoration: none; border-radius: 3px; font-size: 10px;">
+                  <i class="fas fa-external-link-alt"></i> 2" PVC
+                </a>
+              ` : ''}
+              ${store.pvc1_5inLink ? `
+                <a href="${store.pvc1_5inLink}" target="_blank" style="display: inline-block; padding: 3px 6px; background: #0284c7; color: white; text-decoration: none; border-radius: 3px; font-size: 10px;">
+                  <i class="fas fa-external-link-alt"></i> 1.5" PVC
+                </a>
+              ` : ''}
+            </div>
+            ` : ''}
+            <div class="grid-2" style="gap: 6px; margin-top: 4px;">
+              <div>
+                <input type="number" id="store_${index}_2in" step="0.01" placeholder="2" PVC price" 
+                       style="padding: 4px; font-size: 11px; width: 100%;" 
+                       onchange="setStorePrice('2in', this.value)">
+              </div>
+              <div>
+                <input type="number" id="store_${index}_1_5in" step="0.01" placeholder="1.5" PVC price" 
+                       style="padding: 4px; font-size: 11px; width: 100%;" 
+                       onchange="setStorePrice('1.5in', this.value)">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      document.getElementById('nearbyStores').innerHTML = html;
+    }
+
+    function displayCommonStores() {
+      const commonStores = [
+        { name: 'Home Depot', address: 'Check local store', phone: '1-800-HOME-DEPOT' },
+        { name: 'Lowe\'s', address: 'Check local store', phone: '1-800-LOWES' },
+        { name: 'Menards', address: 'Check local store', phone: '1-800-MENARDS' },
+        { name: 'Ace Hardware', address: 'Check local store', phone: 'Check local' },
+        { name: 'Local Plumbing Supply', address: 'Check local', phone: 'Check local' }
+      ];
+      
+      displayNearbyStores(commonStores);
+    }
+
+    function setStorePrice(type, price) {
+      // Store the price for later use
+      if (type === '2in') {
+        // Price will be set when "Use These Prices" is clicked
+      } else if (type === '1_5in') {
+        // Price will be set when "Use These Prices" is clicked
+      }
+    }
+
+    function useStorePrices(storeIndex) {
+      const price2in = document.getElementById('store_' + storeIndex + '_2in').value;
+      const price1_5in = document.getElementById('store_' + storeIndex + '_1_5in').value;
+      
+      if (price2in) {
+        document.getElementById('pvc2inPrice').value = parseFloat(price2in);
+        pvcData.pvc2inPrice = parseFloat(price2in);
+      }
+      if (price1_5in) {
+        document.getElementById('pvc1_5inPrice').value = parseFloat(price1_5in);
+        pvcData.pvc1_5inPrice = parseFloat(price1_5in);
+      }
+      
+      updatePVCPricing();
+      
+      // Show confirmation
+      const storeName = document.querySelector('#store_' + storeIndex + '_2in').closest('div').querySelector('div').textContent;
+      alert('Prices from ' + storeName + ' have been applied!');
+    }
+
+    function toggleRenovationFields() {
+      const isRenovation = document.getElementById('newOrRenovation').value === 'Renovation';
+      document.getElementById('renovationFields').style.display = isRenovation ? 'block' : 'none';
+      // Filter labor list when project type changes
+      filterLaborList();
+    }
+
+    function updateTotals() {
+      let materialBase = 0;
+      
+      // Add equipment
+      Object.values(selectedEquipment).forEach(eq => {
+        materialBase += eq.price * eq.quantity;
+      });
+      
+      // Add custom items from Item List
+      Object.values(selectedCustomItems).forEach(item => {
+        materialBase += item.price * item.quantity;
+      });
+      
+      // Add liner
+      const linerPrice = parseFloat(document.getElementById('linerPrice').value) || 0;
+      materialBase += linerPrice;
+      
+      // Add PVC (use prices from input fields)
+      const pvc2inSticks = parseInt(document.getElementById('pvc2inSticks').value) || 0;
+      const pvc1_5inSticks = parseInt(document.getElementById('pvc1_5inSticks').value) || 0;
+      const pvc2inPrice = parseFloat(document.getElementById('pvc2inPrice').value) || 0;
+      const pvc1_5inPrice = parseFloat(document.getElementById('pvc1_5inPrice').value) || 0;
+      materialBase += (pvc2inSticks * pvc2inPrice) + (pvc1_5inSticks * pvc1_5inPrice);
+      
+      // Auto-add PVC fittings, adapters, glue, unions - $400 standard
+      if (!selectedEquipment['PVC Fittings']) {
+        selectedEquipment['PVC Fittings'] = {
+          code: 'PVC_FITTINGS',
+          name: 'PVC Fittings, Adapters, Glue, Unions',
+          brand: 'Standard',
+          price: 400,
+          quantity: 1
+        };
+      }
+      materialBase += 400;
+      
+      // Add standard materials (always included)
+      const standardMaterials = 4000 + (16 * 20) + 300 + (3 * 15) + 1000; // Gravel + Cement + Sand + Rebar + Electric
+      materialBase += standardMaterials;
+      document.getElementById('standardMaterialsTotal').textContent = '$' + standardMaterials.toFixed(2);
+      
+      // Material total (no markup applied)
+      const materialTotal = materialBase;
+      
+      // Add labor (only if labor section is visible)
+      let laborTotal = 0;
+      if (laborSectionVisible) {
+        Object.values(selectedLabor).forEach(labor => {
+          laborTotal += labor.total;
+        });
+      }
+      
+      const totalCost = materialTotal + laborTotal;
+      
+      // Display material cost (marked up - customer doesn't see base)
+      document.getElementById('materialCostTotal').textContent = '$' + materialTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('laborCostTotal').textContent = '$' + laborTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('totalCost').textContent = '$' + totalCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      
+      // Auto-calculate sell price if margin is set
+      const targetMargin = parseFloat(document.getElementById('targetMargin').value);
+      if (targetMargin > 0 && !document.getElementById('manualSellPrice').value) {
+        calculateSellPrice();
+      }
+      
+      generateCustomerSummary();
+    }
+
+    function calculateSellPrice() {
+      const totalCost = parseFloat(document.getElementById('totalCost').textContent.replace('$', '').replace(',', '')) || 0;
+      const margin = parseFloat(document.getElementById('targetMargin').value) || 0;
+      
+      if (totalCost > 0 && margin > 0) {
+        const sellPrice = totalCost / (1 - (margin / 100));
+        document.getElementById('manualSellPrice').value = '';
+        document.getElementById('sellPrice').textContent = '$' + sellPrice.toFixed(2);
+        calculateProfit(sellPrice, totalCost);
+      }
+    }
+
+    function calculateMargin() {
+      const totalCost = parseFloat(document.getElementById('totalCost').textContent.replace('$', '').replace(',', '')) || 0;
+      const sellPrice = parseFloat(document.getElementById('manualSellPrice').value) || 0;
+      
+      if (totalCost > 0 && sellPrice > 0) {
+        document.getElementById('targetMargin').value = '';
+        document.getElementById('sellPrice').textContent = '$' + sellPrice.toFixed(2);
+        calculateProfit(sellPrice, totalCost);
+      }
+    }
+
+    function calculateProfit(sellPrice, totalCost) {
+      const profit = sellPrice - totalCost;
+      const marginPercent = sellPrice > 0 ? (profit / sellPrice) * 100 : 0;
+      
+      document.getElementById('profitDollars').textContent = '$' + profit.toFixed(2);
+      document.getElementById('profitMarginPercent').textContent = marginPercent.toFixed(1) + '%';
+    }
+
+    function generateCustomerSummary() {
+      const quoteData = getQuoteData();
+      
+      // Calculate material base cost
+      let materialBase = 0;
+      Object.values(selectedEquipment).forEach(eq => {
+        materialBase += eq.price * eq.quantity;
+      });
+      const linerPrice = parseFloat(document.getElementById('linerPrice').value) || 0;
+      materialBase += linerPrice;
+      const pvc2inSticks = parseInt(document.getElementById('pvc2inSticks').value) || 0;
+      const pvc1_5inSticks = parseInt(document.getElementById('pvc1_5inSticks').value) || 0;
+      const pvc2inPrice = parseFloat(document.getElementById('pvc2inPrice').value) || 0;
+      const pvc1_5inPrice = parseFloat(document.getElementById('pvc1_5inPrice').value) || 0;
+      materialBase += (pvc2inSticks * pvc2inPrice) + (pvc1_5inSticks * pvc1_5inPrice);
+      materialBase += 400; // PVC fittings
+        materialBase += 4000 + (16 * 20) + 300 + (3 * 15) + 1000; // Standard materials (Gravel + Cement + Sand + Rebar + Electric)
+      
+      // Add material line items to quote data
+      quoteData.materialLineItems = [
+        ...Object.values(selectedEquipment).map(eq => ({
+          name: eq.name,
+          quantity: eq.quantity,
+          unitPrice: eq.price,
+          total: eq.price * eq.quantity,
+          category: eq.category || 'Equipment'
+        })),
+        ...Object.values(selectedCustomItems).map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          total: item.price * item.quantity,
+          category: item.category || 'Materials'
+        })),
+        {
+          name: 'PVC Fittings, Adapters, Glue, Unions',
+          quantity: 1,
+          unitPrice: 400,
+          total: 400,
+          category: 'Materials'
+        },
+        {
+          name: 'Standard Materials (Gravel, Cement, Sand, Rebar, Electric Wire & Components)',
+          quantity: 1,
+          unitPrice: 5665,
+          total: 5665,
+          category: 'Materials'
+        }
+      ];
+      
+      // Add liner if selected
+      if (linerPrice > 0) {
+        quoteData.materialLineItems.push({
+          name: 'Vinyl Liner',
+          quantity: 1,
+          unitPrice: linerPrice,
+          total: linerPrice,
+          category: 'Materials'
+        });
+      }
+      
+      // Add PVC if entered
+      if (pvc2inSticks > 0 && pvc2inPrice > 0) {
+        quoteData.materialLineItems.push({
+          name: 'PVC 2" Pipe (' + pvc2inSticks + ' × 20ft sticks)',
+          quantity: pvc2inSticks,
+          unitPrice: pvc2inPrice,
+          total: pvc2inSticks * pvc2inPrice,
+          category: 'Materials'
+        });
+      }
+      
+      if (pvc1_5inSticks > 0 && pvc1_5inPrice > 0) {
+        quoteData.materialLineItems.push({
+          name: 'PVC 1.5" Pipe (' + pvc1_5inSticks + ' × 20ft sticks)',
+          quantity: pvc1_5inSticks,
+          unitPrice: pvc1_5inPrice,
+          total: pvc1_5inSticks * pvc1_5inPrice,
+          category: 'Materials'
+        });
+      }
+      
+      // Calculate base cost for internal tracking (not displayed to customer)
+      quoteData.materialCostBase = materialBase;
+      quoteData.materialCostTotal = parseFloat(document.getElementById('materialCostTotal').textContent.replace('$', '').replace(',', '')) || 0;
+      quoteData.sellPrice = parseFloat(document.getElementById('sellPrice').textContent.replace('$', '').replace(',', '')) || 0;
+      
+      // Populate professional quote view
+      updateQuoteView(quoteData);
+      
+      // Also generate text summary for copy/SMS
+      google.script.run
+        .withSuccessHandler(function(summary) {
+          // Store for copy function
+          window.customerSummaryText = summary;
+        })
+        .generateCustomerSummary(quoteData);
+    }
+
+    function updateQuoteView(quoteData) {
+      // Update quote header
+      const today = new Date();
+      const quoteDate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('quoteDate').textContent = quoteDate;
+      document.getElementById('quoteNumber').textContent = 'Q-' + Date.now().toString().slice(-6);
+      
+      // Update customer info
+      const customerName = document.getElementById('customerName').value || 'Customer Name';
+      const customerPhone = document.getElementById('customerPhone').value || '';
+      const customerEmail = document.getElementById('customerEmail').value || '';
+      const customerAddress = document.getElementById('customerAddress').value || '';
+      
+      document.getElementById('quoteCustomerName').textContent = customerName;
+      document.getElementById('quoteCustomerAddress').innerHTML = customerAddress.split(',').join('<br>') || 'Address not provided';
+      document.getElementById('quoteCustomerContact').innerHTML = 
+        (customerPhone ? 'Phone: ' + customerPhone + '<br>' : '') +
+        (customerEmail ? 'Email: ' + customerEmail : '');
+      
+      // Update project details
+      const projectType = document.getElementById('newOrRenovation').value || '-';
+      const poolType = document.getElementById('poolType').value || '-';
+      const length = document.getElementById('length').value || '0';
+      const width = document.getElementById('width').value || '0';
+      const poolSize = length && width ? length + 'ft × ' + width + 'ft' : '-';
+      
+      document.getElementById('quoteProjectDetails').innerHTML = 
+        'Project Type: ' + projectType + '<br>' +
+        'Pool Type: ' + poolType + '<br>' +
+        'Pool Size: ' + poolSize;
+      
+      // Build quote items list
+      const itemsList = document.getElementById('quoteItemsList');
+      let itemsHtml = '';
+      
+      // Group items by category
+      const categories = {};
+      quoteData.materialLineItems.forEach(item => {
+        const cat = item.category || 'Other';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(item);
+      });
+      
+      // Display items by category
+      Object.keys(categories).forEach(category => {
+        itemsHtml += '<div style="margin-bottom: 25px;">';
+        itemsHtml += '<div style="font-size: 14px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">' + category + '</div>';
+        
+        categories[category].forEach(item => {
+          const qty = item.quantity || 1;
+          const unitPrice = item.unitPrice || 0;
+          const total = item.total || (unitPrice * qty);
+          
+          itemsHtml += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f3f4f6;">';
+          itemsHtml += '<div style="flex: 1;">';
+          itemsHtml += '<div style="font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 4px;">' + item.name + '</div>';
+          if (qty > 1) {
+            itemsHtml += '<div style="font-size: 13px; color: #6b7280;">Qty: ' + qty + ' × $' + unitPrice.toFixed(2) + '</div>';
+          }
+          itemsHtml += '</div>';
+          itemsHtml += '<div style="font-size: 16px; font-weight: 600; color: #111827; min-width: 100px; text-align: right;">$' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</div>';
+          itemsHtml += '</div>';
+        });
+        
+        itemsHtml += '</div>';
+      });
+      
+      // Add labor if included
+      if (laborSectionVisible && quoteData.laborCostTotal > 0) {
+        itemsHtml += '<div style="margin-bottom: 25px;">';
+        itemsHtml += '<div style="font-size: 14px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb;">Labor</div>';
+        itemsHtml += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">';
+        itemsHtml += '<div style="font-size: 15px; font-weight: 600; color: #111827;">Professional Installation & Labor</div>';
+        itemsHtml += '<div style="font-size: 16px; font-weight: 600; color: #111827; min-width: 100px; text-align: right;">$' + quoteData.laborCostTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</div>';
+        itemsHtml += '</div>';
+        itemsHtml += '</div>';
+      }
+      
+      itemsList.innerHTML = itemsHtml || '<div style="color: #6b7280; text-align: center; padding: 20px;">No items added yet</div>';
+      
+      // Update totals - ensure we're working with numbers
+      const materialTotal = parseFloat(quoteData.materialCostTotal) || parseFloat(document.getElementById('materialCostTotal').textContent.replace('$', '').replace(',', '')) || 0;
+      const laborTotal = laborSectionVisible ? (parseFloat(quoteData.laborCostTotal) || parseFloat(document.getElementById('laborCostTotal').textContent.replace('$', '').replace(',', '')) || 0) : 0;
+      const subtotal = materialTotal + laborTotal;
+      const sellPrice = parseFloat(quoteData.sellPrice) || parseFloat(document.getElementById('sellPrice').textContent.replace('$', '').replace(',', '')) || 0;
+      const finalTotal = sellPrice || subtotal;
+      
+      document.getElementById('quoteSubtotal').textContent = '$' + subtotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('quoteTotal').textContent = '$' + finalTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      
+      // Update notes
+      const notes = document.getElementById('internalNotes').value || '';
+      document.getElementById('quoteNotes').innerHTML = notes || '<div style="color: #9ca3af; font-style: italic;">No additional notes.</div>';
+    }
+
+    function getQuoteData() {
+      const wallManufacturer = document.getElementById('wallManufacturer') ? document.getElementById('wallManufacturer').value : '';
+      const wallRepName = document.getElementById('wallRepName') ? document.getElementById('wallRepName').value : '';
+      const poolShape = document.getElementById('poolShape') ? document.getElementById('poolShape').value : 'rectangular';
+      
+      return {
+        customerName: document.getElementById('customerName').value,
+        address: document.getElementById('customerAddress').value,
+        newOrRenovation: document.getElementById('newOrRenovation').value,
+        poolType: document.getElementById('poolType').value,
+        poolShape: poolShape,
+        poolBottomType: document.getElementById('poolBottomType').value,
+        length: document.getElementById('length').value,
+        width: document.getElementById('width').value,
+        shallowDepth: document.getElementById('shallowDepth').value,
+        deepDepth: document.getElementById('deepDepth').value,
+        perimeter: document.getElementById('perimeter').textContent,
+        surfaceArea: document.getElementById('surfaceArea').textContent,
+        poolVolume: document.getElementById('poolVolume').textContent,
+        equipmentBundle: document.getElementById('equipmentBundle').value,
+        linerPrice: parseFloat(document.getElementById('linerPrice').value) || 0,
+        automationPreference: document.getElementById('automationPreference').checked ? 'Control Freak Automation' : 'None',
+        saltPreference: document.getElementById('saltPreference').checked ? 'Control Freak Salt Cell' : 'No',
+        lightingPreference: document.getElementById('lightingPreference').value,
+        waterFeatures: document.getElementById('waterFeatures').value,
+        hotTubPreference: document.getElementById('hotTubPreference').checked,
+        concreteSqFtNew: parseFloat(document.getElementById('concreteSqFtNew').value) || 0,
+        sellPrice: parseFloat(document.getElementById('sellPrice').textContent.replace('$', '').replace(',', '')) || 0,
+        wallManufacturer: wallManufacturer,
+        wallRepName: wallRepName,
+        materialCostTotal: parseFloat(document.getElementById('materialCostTotal').textContent.replace('$', '').replace(',', '')) || 0,
+        laborCostTotal: parseFloat(document.getElementById('laborCostTotal').textContent.replace('$', '').replace(',', '')) || 0,
+        totalCost: parseFloat(document.getElementById('totalCost').textContent.replace('$', '').replace(',', '')) || 0,
+        profitDollars: parseFloat(document.getElementById('profitDollars').textContent.replace('$', '').replace(',', '')) || 0,
+        profitMarginPercent: parseFloat(document.getElementById('profitMarginPercent').textContent) || 0
+      };
+    }
+
+    function copyCustomerSummary() {
+      // Copy the text summary (for SMS/email)
+      const summary = window.customerSummaryText || 'No summary available';
+      navigator.clipboard.writeText(summary).then(function() {
+        alert('Quote summary copied to clipboard!');
+      });
+    }
+
+    function handlePhotoUpload(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            uploadedPhotos.push({
+              name: file.name,
+              data: e.target.result.split(',')[1], // Base64 without data:image/jpeg;base64, prefix
+              type: file.type,
+              size: file.size
+            });
+            displayUploadedPhotos();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    function displayUploadedPhotos() {
+      const container = document.getElementById('uploadedPhotos');
+      if (uploadedPhotos.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      uploadedPhotos.forEach((photo, index) => {
+        html += `
+          <div style="position: relative; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+            <img src="data:${photo.type};base64,${photo.data}" 
+                 style="width: 100%; height: 120px; object-fit: cover; display: block;">
+            <button onclick="removePhoto(${index})" 
+                    style="position: absolute; top: 4px; right: 4px; background: #dc2626; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-size: 12px;">
+              ×
+            </button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      
+      // Update quote view photos
+      updateQuoteViewPhotos();
+    }
+
+    function removePhoto(index) {
+      uploadedPhotos.splice(index, 1);
+      displayUploadedPhotos();
+    }
+
+    function updateQuoteViewPhotos() {
+      const quotePhotosDiv = document.getElementById('quotePhotos');
+      const quotePhotosGrid = document.getElementById('quotePhotosGrid');
+      
+      if (uploadedPhotos.length === 0) {
+        quotePhotosDiv.style.display = 'none';
+        return;
+      }
+      
+      quotePhotosDiv.style.display = 'block';
+      let html = '';
+      uploadedPhotos.forEach(photo => {
+        html += `
+          <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+            <img src="data:${photo.type};base64,${photo.data}" 
+                 style="width: 100%; height: 150px; object-fit: cover; display: block;">
+          </div>
+        `;
+      });
+      quotePhotosGrid.innerHTML = html;
+    }
+
+    function sendQuoteViaSMS() {
+      const customerPhone = document.getElementById('customerPhone').value;
+      if (!customerPhone) {
+        alert('Please enter customer phone number first');
+        return;
+      }
+      
+      const btn = document.getElementById('sendSMSBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      
+      const quoteData = getQuoteData();
+      quoteData.customerPhone = customerPhone;
+      quoteData.sellPrice = parseFloat(document.getElementById('sellPrice').textContent.replace('$', '').replace(',', '')) || 0;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          
+          if (result.success) {
+            const statusMsg = result.status ? ' (Status: ' + result.status + ')' : '';
+            const toNumber = result.to ? String(result.to) : customerPhone;
+            alert('✅ SMS sent to ' + toNumber + statusMsg + '!\n\nNote: Delivery may take a few moments. If you don\'t receive it, check:\n- Phone number is correct\n- Phone has service\n- Check spam/filtered messages');
+            document.getElementById('successMessage').innerHTML = 
+              '<i class="fas fa-check-circle"></i> SMS sent successfully to ' + toNumber + 
+              (result.status ? ' (Status: ' + result.status + ')' : '') +
+              '<br><small style="color: #6b7280;">Delivery may take a few moments. Check your phone.</small>';
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+          } else {
+            alert('❌ Error sending SMS: ' + (result.error || 'Unknown error'));
+            document.getElementById('errorMessage').textContent = 'SMS Error: ' + (result.error || 'Unknown error');
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          alert('❌ Error: ' + error);
+          document.getElementById('errorMessage').textContent = 'SMS Error: ' + error;
+          document.getElementById('errorMessage').style.display = 'block';
+          document.getElementById('successMessage').style.display = 'none';
+        })
+        .sendQuoteViaSMS(quoteData);
+    }
+    // Make function globally accessible
+    window.sendQuoteViaSMS = sendQuoteViaSMS;
+
+    function sendQuoteViaEmail() {
+      const customerEmail = document.getElementById('customerEmail').value;
+      if (!customerEmail) {
+        alert('Please enter customer email address first');
+        return;
+      }
+      
+      const btn = document.getElementById('sendEmailBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      
+      const quoteData = getQuoteData();
+      quoteData.customerEmail = customerEmail;
+      quoteData.sellPrice = parseFloat(document.getElementById('sellPrice').textContent.replace('$', '').replace(',', '')) || 0;
+      quoteData.photos = uploadedPhotos;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          
+          if (result.success) {
+            alert('✅ Quote sent via email to ' + customerEmail + '!\n\nA copy has been CC\'d to brookspumpingpoolco@gmail.com');
+            document.getElementById('successMessage').innerHTML = 
+              '<i class="fas fa-check-circle"></i> Quote sent via email successfully to ' + customerEmail +
+              '<br><small style="color: #6b7280;">CC: brookspumpingpoolco@gmail.com</small>';
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+          } else {
+            alert('❌ Error sending email: ' + (result.error || 'Unknown error'));
+            document.getElementById('errorMessage').textContent = 'Email Error: ' + (result.error || 'Unknown error');
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+          }
+        })
+        .withFailureHandler(function(error) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+          alert('❌ Error: ' + error);
+          document.getElementById('errorMessage').textContent = 'Email Error: ' + error;
+          document.getElementById('errorMessage').style.display = 'block';
+          document.getElementById('successMessage').style.display = 'none';
+        })
+        .sendQuoteViaEmail(quoteData);
+    }
+    // Make function globally accessible
+    window.sendQuoteViaEmail = sendQuoteViaEmail;
+
+    function saveQuote() {
+      // Calculate material base cost - include ALL materials from selectedEquipment
+      // This includes: equipment, walls, coping, concrete collar, decking, etc.
+      let materialBase = 0;
+      
+      // Add all equipment (includes walls, coping, concrete if calculated)
+      Object.values(selectedEquipment).forEach(eq => {
+        if (eq && eq.price && eq.quantity) {
+          materialBase += eq.price * eq.quantity;
+        }
+      });
+      
+      // Add liner
+      const linerPrice = parseFloat(document.getElementById('linerPrice').value) || 0;
+      materialBase += linerPrice;
+      
+      // Add PVC
+      const pvc2inSticks = parseInt(document.getElementById('pvc2inSticks').value) || 0;
+      const pvc1_5inSticks = parseInt(document.getElementById('pvc1_5inSticks').value) || 0;
+      const pvc2inPrice = parseFloat(document.getElementById('pvc2inPrice').value) || 0;
+      const pvc1_5inPrice = parseFloat(document.getElementById('pvc1_5inPrice').value) || 0;
+      materialBase += (pvc2inSticks * pvc2inPrice) + (pvc1_5inSticks * pvc1_5inPrice);
+      
+      // Add PVC fittings (if not already in selectedEquipment)
+      if (!selectedEquipment['PVC Fittings']) {
+        materialBase += 400;
+      }
+      
+      // Add standard materials (if not already included)
+      const standardMaterials = 4000 + (16 * 20) + 300 + (3 * 15) + 1000; // Gravel + Cement + Sand + Rebar + Electric
+      if (!selectedEquipment['Standard Materials']) {
+        materialBase += standardMaterials;
+      }
+      
+      const quoteData = {
+        customerName: document.getElementById('customerName').value,
+        customerPhone: document.getElementById('customerPhone').value,
+        customerEmail: document.getElementById('customerEmail').value,
+        address: document.getElementById('customerAddress').value,
+        newOrRenovation: document.getElementById('newOrRenovation').value,
+        poolType: document.getElementById('poolType').value,
+        poolBottomType: document.getElementById('poolBottomType').value,
+        length: parseFloat(document.getElementById('length').value) || 0,
+        width: parseFloat(document.getElementById('width').value) || 0,
+        shallowDepth: parseFloat(document.getElementById('shallowDepth').value) || 0,
+        deepDepth: parseFloat(document.getElementById('deepDepth').value) || 0,
+        perimeter: parseFloat(document.getElementById('perimeter').textContent) || 0,
+        surfaceArea: parseFloat(document.getElementById('surfaceArea').textContent) || 0,
+        poolVolume: parseFloat(document.getElementById('poolVolume').textContent.replace(',', '')) || 0,
+        distanceToEquipment: parseFloat(document.getElementById('distanceToEquipment').value) || 0,
+        numSkimmers: parseInt(document.getElementById('numSkimmers').value) || 0,
+        numReturns: parseInt(document.getElementById('numReturns').value) || 0,
+        soilType: document.getElementById('soilType').value,
+        accessType: document.getElementById('accessType').value,
+        poolLevel: document.getElementById('poolLevel').value,
+        automationPreference: document.getElementById('automationPreference').checked ? 'Control Freak Automation' : 'None',
+        saltPreference: document.getElementById('saltPreference').checked ? 'Control Freak Salt Cell' : 'No',
+        lightingPreference: document.getElementById('lightingPreference').value,
+        waterFeatures: document.getElementById('waterFeatures').value,
+        hotTubPreference: document.getElementById('hotTubPreference').checked,
+        equipmentBundle: document.getElementById('equipmentBundle').value,
+        linerPrice: linerPrice,
+        pvc2inSticks: pvc2inSticks,
+        pvc1_5inSticks: pvc1_5inSticks,
+        pvc2inPrice: pvc2inPrice,
+        pvc1_5inPrice: pvc1_5inPrice,
+        concreteSqFtDemo: parseFloat(document.getElementById('concreteSqFtDemo').value) || 0,
+        concreteSqFtNew: parseFloat(document.getElementById('concreteSqFtNew').value) || 0,
+        materialCostBase: materialBase,
+        materialCostTotal: parseFloat(document.getElementById('materialCostTotal').textContent.replace('$', '').replace(',', '')) || 0,
+        laborCostTotal: parseFloat(document.getElementById('laborCostTotal').textContent.replace('$', '').replace(',', '')) || 0,
+        totalCost: parseFloat(document.getElementById('totalCost').textContent.replace('$', '').replace(',', '')) || 0,
+        sellPrice: parseFloat(document.getElementById('sellPrice').textContent.replace('$', '').replace(',', '')) || 0,
+        profitDollars: parseFloat(document.getElementById('profitDollars').textContent.replace('$', '').replace(',', '')) || 0,
+        profitMarginPercent: parseFloat(document.getElementById('profitMarginPercent').textContent) || 0,
+        internalNotes: document.getElementById('internalNotes').value,
+        customerSummary: document.getElementById('customerSummaryText').textContent,
+        fieldMeasurements: document.getElementById('fieldMeasurements').value,
+        photos: uploadedPhotos,
+        materialLineItems: [
+          ...Object.values(selectedEquipment).map(eq => ({
+            name: eq.name,
+            quantity: eq.quantity,
+            unitPrice: eq.price,
+            total: eq.price * eq.quantity,
+            category: eq.category || 'Equipment'
+          })),
+          {
+            name: 'PVC Fittings, Adapters, Glue, Unions',
+            quantity: 1,
+            unitPrice: 400,
+            total: 400,
+            category: 'Materials'
+          },
+          {
+            name: 'Standard Materials (Gravel, Cement, Sand, Rebar)',
+            quantity: 1,
+            unitPrice: 4665,
+            total: 4665,
+            category: 'Materials'
+          }
+        ],
+        laborLineItems: Object.values(selectedLabor).map((labor, index) => ({
+          name: 'Labor Item ' + (index + 1),
+          quantity: labor.quantity,
+          unitPrice: labor.rate,
+          total: labor.total,
+          category: 'Labor'
+        }))
+      };
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            document.getElementById('successMessage').innerHTML = 
+              '<i class="fas fa-check-circle"></i> Quote saved! Quote ID: ' + result.quoteId;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+          } else {
+            document.getElementById('errorMessage').innerHTML = 
+              '<i class="fas fa-exclamation-circle"></i> Error: ' + result.error;
+            document.getElementById('errorMessage').style.display = 'block';
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('errorMessage').innerHTML = 
+            '<i class="fas fa-exclamation-circle"></i> Error: ' + error;
+          document.getElementById('errorMessage').style.display = 'block';
+        })
+        .saveQuote(quoteData);
+    }
+  </script>
+</body>
+</html>

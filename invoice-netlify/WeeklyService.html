@@ -1,0 +1,3875 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Service Dashboard — A Quality Pool Company</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ── Reset & Base ── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      background: #1a2537;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+    .sidebar-brand {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-brand img {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .sidebar-brand-text { overflow: hidden; }
+    .sidebar-brand-name {
+      font-size: 13px; font-weight: 700;
+      color: #fff; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+    .sidebar-brand-sub {
+      font-size: 11px; color: rgba(255,255,255,0.45);
+      margin-top: 2px;
+    }
+    .sidebar-nav { padding: 16px 12px; flex: 1; }
+    .sidebar-section-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      color: rgba(255,255,255,0.3);
+      padding: 0 8px;
+      margin: 16px 0 6px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: all 0.18s;
+      margin-bottom: 2px;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .sidebar-item i { width: 16px; text-align: center; font-size: 13px; }
+    .sidebar-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .sidebar-item.active { background: rgba(16,185,129,0.2); color: #10b981; }
+    .sidebar-item.active i { color: #10b981; }
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-footer .refresh-btn {
+      width: 100%; display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #10b981;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sidebar-footer .refresh-btn:hover {
+      background: rgba(16,185,129,0.25);
+    }
+
+    /* ── Main Area ── */
+    .main-area {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e8ecf0;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar h1 {
+      font-size: 18px; font-weight: 700; color: #0f172a;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .topbar h1 i { color: #10b981; font-size: 16px; }
+    .topbar p { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-logo { display: none; }
+
+    /* ── Container ── */
+    .container { padding: 24px 28px; max-width: 1400px; }
+
+    /* ── Stats Bar ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 20px;
+      border: 1px solid #e8ecf0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: box-shadow 0.2s, transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09); transform: translateY(-1px); }
+    .stat-icon {
+      width: 46px; height: 46px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .stat-icon.blue   { background: #eff6ff; color: #3b82f6; }
+    .stat-icon.green  { background: #f0fdf4; color: #10b981; }
+    .stat-icon.amber  { background: #fffbeb; color: #f59e0b; }
+    .stat-icon.purple { background: #faf5ff; color: #8b5cf6; }
+    .stat-value { font-size: 26px; font-weight: 800; color: #0f172a; line-height: 1; }
+    .stat-label { font-size: 12px; color: #64748b; font-weight: 500; margin-top: 3px; }
+
+    /* ── Section Card ── */
+    .section {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e8ecf0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: #fdfdff;
+    }
+    .section-header h2 {
+      font-size: 15px; font-weight: 700; color: #0f172a;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-header h2 .badge {
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 700;
+    }
+    .section-header h2 .badge.amber { background: #fef3c7; color: #b45309; }
+    .section-header h2 .badge.green { background: #dcfce7; color: #15803d; }
+
+    /* ── Search Bar ── */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 7px 12px;
+      min-width: 210px;
+    }
+    .search-bar input {
+      border: none; background: none; outline: none;
+      font-size: 13px; color: #374151; width: 100%;
+      font-family: inherit;
+    }
+    .search-bar i { color: #94a3b8; font-size: 13px; }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: #0f172a;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { background: #1e293b; box-shadow: 0 3px 10px rgba(0,0,0,0.15); }
+    .btn-success { background: #10b981; }
+    .btn-success:hover { background: #059669; box-shadow: 0 3px 10px rgba(16,185,129,0.25); }
+    .btn-danger  { background: #ef4444; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-secondary:hover { background: #e2e8f0; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #94a3b8;
+      background: #f8fafc;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    tbody tr { border-bottom: 1px solid #f8fafc; transition: background 0.12s; }
+    tbody tr:hover { background: #fafbff; }
+    tbody td { padding: 12px 16px; font-size: 13px; color: #475569; vertical-align: middle; }
+    .td-name { font-weight: 600; color: #0f172a; font-size: 14px; }
+    .td-sub  { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+    /* ── Customer Avatar ── */
+    .customer-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .customer-cell { display: flex; align-items: center; gap: 10px; }
+
+    /* ── Badges ── */
+    .badge-pill {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+    .pill-weekly   { background: #eff6ff; color: #2563eb; }
+    .pill-biweekly { background: #faf5ff; color: #7c3aed; }
+    .pill-monthly  { background: #ecfeff; color: #0f766e; }
+    .pill-pending  { background: #fffbeb; color: #d97706; }
+    .pill-active   { background: #f0fdf4; color: #15803d; }
+
+    /* ── Actions ── */
+    .actions { display: flex; gap: 5px; flex-wrap: wrap; }
+
+    /* ── Empty / Loading States ── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: #94a3b8;
+    }
+    .empty-state i { font-size: 44px; color: #cbd5e1; margin-bottom: 14px; display: block; }
+    .empty-state h3 { font-size: 15px; color: #475569; margin-bottom: 5px; }
+    .loading { text-align: center; padding: 44px 20px; color: #64748b; }
+    .loading i { font-size: 26px; animation: spin 0.9s linear infinite; display: block; margin-bottom: 12px; color: #10b981; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(15,23,42,0.5); z-index: 1000;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 16px;
+      padding: 28px;
+      max-width: 520px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+      animation: modalIn 0.18s ease;
+    }
+    @keyframes modalIn { from { transform: scale(0.96) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .modal h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 20px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid #e2e8f0; border-radius: 8px;
+      font-size: 14px; font-family: inherit; color: #0f172a;
+      transition: border-color 0.2s;
+      background: #fafafa;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none; border-color: #10b981; background: #fff;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 24px; justify-content: flex-end; }
+    .btn-cancel {
+      background: #f8fafc; color: #475569;
+      border: 1px solid #e2e8f0;
+      padding: 8px 16px; border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .btn-cancel:hover { background: #f1f5f9; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #0f172a; color: white;
+      padding: 12px 18px; border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+      z-index: 9999; transform: translateY(80px); opacity: 0;
+      transition: all 0.3s ease;
+      max-width: 360px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 4px solid #10b981; }
+    .toast.error   { border-left: 4px solid #ef4444; }
+    .toast.info    { border-left: 4px solid #3b82f6; }
+
+    /* ── Global loading overlay ── */
+    .global-loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+    }
+    .global-loading-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+    }
+    .global-loading-card i {
+      font-size: 18px;
+      color: #0369a1;
+      animation: spin 1s linear infinite;
+    }
+    .global-loading-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    /* ── Contract status badges ── */
+    .pill-draft    { background: #f8fafc; color: #475569; }
+    .pill-sent     { background: #eff6ff; color: #2563eb; }
+    .pill-signed   { background: #f0fdf4; color: #15803d; }
+    .pill-cancelled{ background: #fef2f2; color: #b91c1c; }
+
+    #contractBuilderModal .modal { max-width: 680px; }
+    .form-group textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1.5px solid #e2e8f0; border-radius: 8px;
+      font-size: 13px; font-family: inherit; color: #0f172a;
+      resize: vertical; min-height: 80px;
+      transition: border-color 0.2s; background: #fafafa;
+    }
+    .form-group textarea:focus {
+      outline: none; border-color: #10b981; background: #fff;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .sidebar { width: 200px; }
+      .main-area { margin-left: 200px; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-area { margin-left: 0; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .container { padding: 16px; }
+      .topbar { padding: 12px 16px; }
+      .topbar h1 { font-size: 15px; }
+    }
+    @media (max-width: 500px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763.jpg" alt="Logo">
+    <div class="sidebar-brand-text">
+      <div class="sidebar-brand-name">A Quality Pool Co.</div>
+      <div class="sidebar-brand-sub">Service Manager</div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="sidebar-section-label">Overview</div>
+    <button class="sidebar-item active" onclick="showView('dashboard')">
+      <i class="fas fa-th-large"></i> Dashboard
+    </button>
+    <button class="sidebar-item" onclick="showView('active')">
+      <i class="fas fa-check-circle"></i> Active Customers
+    </button>
+    <button class="sidebar-item" onclick="showView('pending')">
+      <i class="fas fa-hourglass-half"></i> Pending Approval
+    </button>
+    <div class="sidebar-section-label">Operations</div>
+    <button class="sidebar-item" onclick="showView('contracts')">
+      <i class="fas fa-file-contract"></i> Contracts
+    </button>
+    <button class="sidebar-item" onclick="openContractBuilder()">
+      <i class="fas fa-plus-circle"></i> New Contract
+    </button>
+    <button class="sidebar-item" onclick="openAddModal()">
+      <i class="fas fa-user-plus"></i> Add Customer
+    </button>
+    <div class="sidebar-section-label" style="margin-top: 20px;">Debugging</div>
+    <button class="sidebar-item" onclick="toggleDebugPanel()">
+      <i class="fas fa-bug"></i> Debug Logs
+    </button>
+  </div>
+  <div class="sidebar-footer">
+    <button class="refresh-btn" onclick="loadDashboard()">
+      <i class="fas fa-sync-alt" id="refreshIcon"></i> Refresh
+    </button>
+  </div>
+</nav>
+
+<!-- Debug Logs Panel -->
+<div id="debugPanel" style="display:none;position:fixed;bottom:0;right:0;width:500px;height:400px;background:white;border-left:2px solid #cbd5e1;border-top:2px solid #cbd5e1;box-shadow:0 -4px 20px rgba(0,0,0,0.1);z-index:5000;flex-direction:column;">
+  <div style="background:#1f2937;color:white;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #cbd5e1;">
+    <span style="font-weight:600;font-size:13px;">📊 Debug Logs</span>
+    <button onclick="toggleDebugPanel()" style="background:none;border:none;color:white;cursor:pointer;font-size:16px;">✕</button>
+  </div>
+  <div id="debugLogsContainer" style="flex:1;overflow-y:auto;padding:12px;font-family:monospace;font-size:11px;background:#f9fafb;">
+    <div style="color:#6b7280;text-align:center;padding:20px;">
+      <i class="fas fa-info-circle"></i> Logs will appear here
+    </div>
+  </div>
+  <div style="padding:8px 12px;background:#f1f5f9;border-top:1px solid #cbd5e1;display:flex;gap:6px;">
+    <button onclick="clearDebugLogs()" style="flex:1;padding:6px 8px;background:#ef4444;color:white;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">Clear Logs</button>
+    <button onclick="downloadDebugLogs()" style="flex:1;padding:6px 8px;background:#0284c7;color:white;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">Download</button>
+  </div>
+</div>
+
+<!-- Main Area -->
+<div class="main-area">
+
+<!-- Top Bar -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div>
+      <h1><i class="fas fa-swimming-pool"></i> Weekly Service Dashboard</h1>
+      <p>A Quality Pool Company — Recurring Service Management</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="lastRefreshed" style="font-size:12px;color:#94a3b8;"></span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-calendar-week"></i></div>
+      <div><div class="stat-value" id="statWeekly">—</div><div class="stat-label">Active Weekly</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="fas fa-calendar-alt"></i></div>
+      <div><div class="stat-value" id="statBiweekly">—</div><div class="stat-label">Active Biweekly</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+      <div><div class="stat-value" id="statPending">—</div><div class="stat-label">Pending Approval</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div>
+      <div><div class="stat-value" id="statRevenue">—</div><div class="stat-label">Est. Monthly Revenue</div></div>
+    </div>
+  </div>
+
+  <!-- Pending Requests -->
+  <div class="section" id="pendingSection">
+    <div class="section-header">
+      <h2><i class="fas fa-hourglass-half" style="color:#d97706;"></i> Pending Approval <span class="badge amber" id="pendingBadge">0</span></h2>
+    </div>
+    <div id="pendingContent">
+      <div class="loading"><i class="fas fa-spinner"></i> Loading…</div>
+    </div>
+  </div>
+
+  <!-- Active Customers -->
+  <div class="section" id="activeSection">
+    <div class="section-header">
+      <h2><i class="fas fa-check-circle" style="color:#059669;"></i> Active Customers <span class="badge green" id="activeBadge">0</span></h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search by name, address…" oninput="filterActive()">
+        </div>
+        <button class="btn-primary" onclick="openAddModal()">
+          <i class="fas fa-plus"></i> Add Customer
+        </button>
+      </div>
+    </div>
+    <div id="activeContent">
+      <div class="loading"><i class="fas fa-spinner"></i> Loading…</div>
+    </div>
+  </div>
+
+  <!-- Contracts Section -->
+  <div class="section" id="contractsSection">
+    <div class="section-header">
+      <h2><i class="fas fa-file-contract" style="color:#7c3aed;"></i> Service Contracts <span class="badge" id="contractsBadge" style="background:#ede9fe;color:#4c1d95;">0</span></h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="contractSearchInput" placeholder="Search by name, email…" oninput="filterContracts()">
+        </div>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);" onclick="openContractBuilder()">
+          <i class="fas fa-file-plus"></i> New Contract
+        </button>
+      </div>
+    </div>
+    <div id="contractsContent">
+      <div class="loading"><i class="fas fa-spinner"></i> Loading…</div>
+    </div>
+  </div>
+
+  <!-- Service History Section -->
+  <div class="section" id="historySection">
+    <div class="section-header">
+      <h2><i class="fas fa-history" style="color:#059669;"></i> Service History <span class="badge" id="historyBadge" style="background:#d1fae5;color:#065f46;">0</span></h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="historyCustomerEmail" placeholder="Search by email…" oninput="loadServiceHistoryForEmail()">
+        </div>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#059669,#10b981);" onclick="openLogServiceModal()">
+          <i class="fas fa-plus-circle"></i> Log Service Completion
+        </button>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#0f766e,#0d9488);" onclick="openChemicalsCatalogModal()">
+          <i class="fas fa-flask"></i> Manage Chemicals
+        </button>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#0369a1,#0284c7);" onclick="openManualCardModal()">
+          <i class="fas fa-credit-card"></i> Add Card on File
+        </button>
+      </div>
+    </div>
+    <div id="historyContent">
+      <div class="empty-state"><i class="fas fa-history"></i><h3>No service history</h3><p>Search for a customer email to view their service history.</p></div>
+    </div>
+  </div>
+
+  <!-- Customer Spending Section -->
+  <div class="section" id="spendingSection">
+    <div class="section-header">
+      <h2><i class="fas fa-wallet" style="color:#dc2626;"></i> Customer Spending <span class="badge" id="spendingBadge" style="background:#fee2e2;color:#991b1b;">$0.00</span></h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="spendingEmail" placeholder="Search by email…" oninput="loadCustomerSpending()">
+        </div>
+        <button class="btn-primary" style="background:linear-gradient(135deg,#dc2626,#ef4444);" onclick="openReceiptUploadModal()">
+          <i class="fas fa-receipt"></i> Upload Receipt
+        </button>
+      </div>
+    </div>
+    <div id="spendingContent">
+      <div class="empty-state"><i class="fas fa-wallet"></i><h3>No spending data</h3><p>Search for a customer email to view their spending.</p></div>
+    </div>
+  </div>
+
+</div><!-- end .container -->
+
+<!-- Contract Builder Modal -->
+<div class="modal-overlay" id="contractBuilderModal" onclick="closeContractBuilder(event)">
+  <div class="modal" style="max-width:680px;">
+    <h3 id="contractBuilderTitle"><i class="fas fa-file-contract" style="color:#7c3aed;margin-right:8px;"></i>New Weekly Service Contract</h3>
+    <div id="contractBuilderError" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;border-left:4px solid #dc2626;"></div>
+    <input type="hidden" id="editingContractId">
+
+    <!-- Customer Info -->
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;margin-bottom:10px;">Customer Information</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer Name *</label>
+        <input type="text" id="cbName" placeholder="John Smith">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="cbEmail" placeholder="john@email.com">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="cbPhone" placeholder="(502) 555-1234">
+      </div>
+      <div class="form-group">
+        <label>Contract Title</label>
+        <input type="text" id="cbTitle" placeholder="Weekly Pool Service Agreement">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Service Address</label>
+      <input type="text" id="cbAddress" placeholder="123 Main St, Louisville KY 40201">
+    </div>
+
+    <!-- Service Details -->
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;margin:16px 0 10px;">Service Details</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Frequency *</label>
+        <select id="cbFrequency" onchange="cbUpdateMonthly()">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Biweekly (every 2 weeks)</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Service Day</label>
+        <select id="cbServiceDay">
+          <option value="">— Select day —</option>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+          <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Arrival Window</label>
+        <input type="text" id="cbTimeWindow" placeholder="e.g. 8:00 AM – 12:00 PM">
+      </div>
+      <div class="form-group">
+        <label>Service Start Date</label>
+        <input type="date" id="cbStartDate">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Price Per Visit ($) *</label>
+        <input type="number" id="cbPrice" value="160" step="5" min="0" oninput="cbUpdateMonthly()">
+      </div>
+      <div class="form-group">
+        <label>Extra Cost Per Visit ($)</label>
+        <input type="number" id="cbExtraCost" value="0" step="0.01" min="0" oninput="cbUpdateMonthly()" placeholder="Trip fee, travel surcharge, etc.">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end;">
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px 14px;font-size:13px;color:#065f46;font-weight:600;" id="cbMonthlyPreview">
+          Est. Monthly: $640.00 (4 visits)
+        </div>
+      </div>
+    </div>
+
+    <!-- Special Notes -->
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;margin:16px 0 10px;">Customization</div>
+    <div class="form-group">
+      <label>Special Notes / Additional Services <span style="font-weight:400;color:#9ca3af;">(appears in contract body)</span></label>
+      <textarea id="cbSpecialNotes" placeholder="e.g. Customer has a dog — close the gate after each visit. Weekly algaecide treatment included."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Custom Terms <span style="font-weight:400;color:#9ca3af;">(leave blank to use standard terms)</span></label>
+      <textarea id="cbCustomTerms" style="min-height:120px;" placeholder="Leave blank to use standard A Quality Pool Company terms and conditions…"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeContractBuilder()">Cancel</button>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#64748b,#475569);" id="cbSaveDraftBtn" onclick="submitContract('draft')">
+        <i class="fas fa-save"></i> Save as Draft
+      </button>
+      <button class="btn-primary btn-success" id="cbSaveSendBtn" onclick="submitContract('send')">
+        <i class="fas fa-paper-plane"></i> Save &amp; Send
+      </button>
+    </div>
+    <div id="cbAutopayBadge" style="margin-top:10px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;font-size:12px;color:#1e3a8a;font-weight:600;">
+      Autopay Uses: $160.00 per visit (Base $160.00)
+    </div>
+  </div>
+</div>
+
+<!-- Service History Modal -->
+<div class="modal-overlay" id="serviceHistoryModal" onclick="closeServiceHistoryModal(event)">
+  <div class="modal" style="max-width:680px;padding:30px;" onclick="event.stopPropagation()">
+    <h3><i class="fas fa-history" style="color:#059669;margin-right:8px;"></i>Log Service Completion</h3>
+    <div id="historyModalError" style="display:none;background:#fee2e2;color:#b91c1c;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px;"></div>
+    
+    <div class="form-group">
+      <label>Customer Email</label>
+      <input type="email" id="shCustomerEmail" placeholder="customer@example.com" required style="margin-bottom:4px;">
+      <small style="color:#64748b;">Select which customer this service is for</small>
+    </div>
+
+    <div class="form-group">
+      <label>Service Type</label>
+      <select id="shServiceType" style="padding:10px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;">
+        <option value="Regular">Regular Weekly Service</option>
+        <option value="OneOff">One-Off Item (Chemicals, Supplies, etc.)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="shDescription" placeholder="e.g., Weekly maintenance, Chlorine tablets, Acid treatment…" required>
+      <small style="color:#64748b;">What service/item was provided?</small>
+    </div>
+
+    <div class="form-group">
+      <label>Amount ($)</label>
+      <input type="number" id="shAmount" placeholder="0.00" min="0" step="0.01" value="0">
+      <small style="color:#64748b;">Leave blank if no charge (included in contract)</small>
+    </div>
+
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea id="shNotes" placeholder="Any additional notes…" style="border:1px solid #cbd5e1;border-radius:8px;padding:10px;font-family:inherit;resize:vertical;min-height:80px;"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Performed By</label>
+      <input type="text" id="shPerformedBy" placeholder="Technician name" required>
+    </div>
+
+    <div class="form-group">
+      <label>Service Date</label>
+      <input type="date" id="shDate" required>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid #e2e8f0;">
+      <button class="btn-secondary" onclick="closeServiceHistoryModal()" style="flex:1;">Cancel</button>
+      <button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#059669,#10b981);" onclick="submitServiceHistory()">
+        <i class="fas fa-check"></i> Log Service
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Chemicals Catalog Modal -->
+<div class="modal-overlay" id="chemicalsCatalogModal" onclick="closeChemicalsCatalogModal(event)">
+  <div class="modal" style="max-width:900px;padding:26px;" onclick="event.stopPropagation()">
+    <h3><i class="fas fa-flask" style="color:#0d9488;margin-right:8px;"></i>Chemicals Catalog</h3>
+    <div id="chemicalsCatalogError" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;border-left:4px solid #dc2626;"></div>
+    <div style="display:grid;grid-template-columns:1.1fr 1fr 120px 120px 96px;gap:8px;align-items:end;margin-bottom:12px;">
+      <div class="form-group" style="margin:0;">
+        <label style="margin-bottom:6px;">Display Name</label>
+        <input type="text" id="chemNewDisplayName" placeholder="e.g., Liquid Chlorine">
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label style="margin-bottom:6px;">Key</label>
+        <input type="text" id="chemNewKey" placeholder="e.g., chlorineLiquid">
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label style="margin-bottom:6px;">Unit</label>
+        <input type="text" id="chemNewUnit" placeholder="gal">
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label style="margin-bottom:6px;">Unit Price</label>
+        <input type="number" id="chemNewUnitPrice" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <button class="btn-primary" onclick="saveChemicalCatalogItem()" style="height:40px;">
+        <i class="fas fa-plus"></i> Save
+      </button>
+    </div>
+
+    <div id="chemicalsCatalogTableWrap" style="max-height:420px;overflow:auto;border:1px solid #e2e8f0;border-radius:8px;">
+      <div class="loading"><i class="fas fa-spinner"></i> Loading chemicals...</div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
+      <button class="btn-secondary" onclick="closeChemicalsCatalogModal()">Close</button>
+      <button class="btn-primary" style="background:linear-gradient(135deg,#0f766e,#0d9488);" onclick="loadChemicalsCatalog()">
+        <i class="fas fa-rotate-right"></i> Refresh
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Manual Card On File Modal -->
+<div class="modal-overlay" id="manualCardModal" onclick="closeManualCardModal(event)">
+  <div class="modal" style="max-width:650px;padding:26px;" onclick="event.stopPropagation()">
+    <h3><i class="fas fa-credit-card" style="color:#0284c7;margin-right:8px;"></i>Manual Card on File</h3>
+    <div id="manualCardError" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;border-left:4px solid #dc2626;"></div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;font-size:12px;color:#1e3a8a;margin-bottom:14px;">
+      This creates/uses a Stripe customer, then opens a secure Stripe page to add a card. No card numbers are stored in this app.
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer Name *</label>
+        <input type="text" id="manualCardCustomerName" placeholder="Customer full name">
+      </div>
+      <div class="form-group">
+        <label>Customer Email *</label>
+        <input type="email" id="manualCardCustomerEmail" placeholder="customer@email.com">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer Phone</label>
+        <input type="tel" id="manualCardCustomerPhone" placeholder="(502) 555-1234">
+      </div>
+      <div class="form-group">
+        <label>Source</label>
+        <input type="text" id="manualCardSourceHint" value="Weekly Service" readonly style="background:#f8fafc;">
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
+      <button class="btn-secondary" onclick="closeManualCardModal()">Cancel</button>
+      <button class="btn-primary" id="manualCardSubmitBtn" style="background:linear-gradient(135deg,#0369a1,#0284c7);" onclick="createManualCardOnFileLinkUI()">
+        <i class="fas fa-arrow-up-right-from-square"></i> Open Stripe Card Setup
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Upload Modal -->
+<div class="modal-overlay" id="receiptUploadModal" onclick="closeReceiptUploadModal(event)">
+  <div class="modal" style="max-width:680px;padding:30px;" onclick="event.stopPropagation()">
+    <h3><i class="fas fa-receipt" style="color:#dc2626;margin-right:8px;"></i>Upload Receipt</h3>
+    <div id="receiptModalError" style="display:none;background:#fee2e2;color:#991b1b;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px;"></div>
+    
+    <div class="form-group">
+      <label>Customer Email</label>
+      <input type="email" id="rcCustomerEmail" placeholder="customer@example.com" required>
+      <small style="color:#64748b;">Which customer is this receipt for?</small>
+    </div>
+
+    <div class="form-group">
+      <label>Receipt Image <span style="color:#dc2626;">*</span></label>
+      <div style="border:2px dashed #cbd5e1;border-radius:8px;padding:20px;text-align:center;cursor:pointer;background:#f8fafc;transition:background 0.2s;" id="receiptDropZone" onclick="document.getElementById('rcImageFile').click()">
+        <div style="margin-bottom:10px;"><i class="fas fa-image" style="font-size:32px;color:#94a3b8;"></i></div>
+        <div style="font-weight:600;color:#1e293b;">Click to upload or drag & drop</div>
+        <div style="font-size:12px;color:#64748b;margin-top:4px;">JPG, PNG or PDF (max 10MB)</div>
+      </div>
+      <input type="file" id="rcImageFile" accept="image/jpeg,image/png,application/pdf" style="display:none;" onchange="handleReceiptImageSelect()">
+      <div id="rcImagePreview" style="margin-top:12px;display:none;text-align:center;">
+        <div style="font-size:13px;color:#10b981;font-weight:600;"><i class="fas fa-check-circle"></i> Image selected</div>
+        <div id="rcImageName" style="font-size:12px;color:#64748b;margin-top:4px;"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="rcDescription" placeholder="e.g., Chemical supplies, Equipment repair…" required>
+      <small style="color:#64748b;">What did the receipt cover?</small>
+    </div>
+
+    <div class="form-group">
+      <label>Amount ($) - OCR will auto-extract if image has prices</label>
+      <input type="number" id="rcAmount" placeholder="0.00" min="0" step="0.01" value="0">
+      <small style="color:#64748b;">Leave as 0 to use OCR extraction, or enter to override</small>
+    </div>
+
+    <div class="form-group">
+      <label>Receipt Date</label>
+      <input type="date" id="rcDate" required>
+    </div>
+
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea id="rcNotes" placeholder="Any additional notes…" style="border:1px solid #cbd5e1;border-radius:8px;padding:10px;font-family:inherit;resize:vertical;min-height:60px;"></textarea>
+    </div>
+
+    <div id="ocrResultsPreview" style="display:none;background:#f0fdf4;border-left:4px solid #10b981;padding:12px;border-radius:4px;margin-bottom:16px;">
+      <strong style="color:#15803d;">OCR Results:</strong>
+      <div id="ocrResultsText" style="font-size:13px;color:#166534;margin-top:8px;font-family:monospace;"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid #e2e8f0;">
+      <button class="btn-secondary" onclick="closeReceiptUploadModal()" style="flex:1;">Cancel</button>
+      <button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#dc2626,#ef4444);" onclick="submitReceipt()">
+        <i class="fas fa-upload"></i> Upload Receipt
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Appointment Scheduling Modal -->
+<div class="modal-overlay" id="schedulingModal" onclick="closeSchedulingModal(event)">
+  <div class="modal" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+    <h3><i class="fas fa-calendar-alt" style="color:#0284c7;margin-right:8px;"></i>Schedule Appointments - <span id="schedCustomerName"></span></h3>
+    <input type="hidden" id="schedCustomerId">
+    <input type="hidden" id="schedFrequency">
+    <div id="schedError" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;border-left:4px solid #dc2626;"></div>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+      <!-- Left: Calendar -->
+      <div>
+        <label style="font-weight:600;color:#0f172a;display:block;margin-bottom:10px;">
+          <i class="fas fa-calendar"></i> Select 6-month period
+        </label>
+        <div id="schedCalendar" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;min-height:300px;"></div>
+      </div>
+      
+      <!-- Right: Blocked Dates & Notes -->
+      <div>
+        <label style="font-weight:600;color:#0f172a;display:block;margin-bottom:10px;">
+          <i class="fas fa-ban"></i> Block Unavailable Dates
+        </label>
+        <div style="background:#fff3cd;border:1px solid #ffe69c;border-radius:8px;padding:10px;font-size:12px;margin-bottom:12px;color:#856404;">
+          <strong>Vacation, Holidays, Time Off:</strong> Click dates in calendar to mark as unavailable. These will be skipped in appointment scheduling.
+        </div>
+        <div id="schedBlockedDates" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;min-height:200px;max-height:250px;overflow-y:auto;font-size:13px;">
+          <p style="color:#9ca3af;text-align:center;">No blocked dates yet</p>
+        </div>
+        <button class="btn-secondary" style="width:100%;margin-top:10px;font-size:12px;" onclick="clearAllBlockedDates()">Clear All Blocked Dates</button>
+      </div>
+    </div>
+
+    <div style="background:#f0f9ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#1e40af;">
+      <strong>How it works:</strong> Appointments will be scheduled for your selected frequency (weekly/biweekly/monthly), automatically skipping blocked dates. All dates will be saved to the weekly service sheet.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSchedulingModal()">Skip Scheduling</button>
+      <button class="btn-primary btn-success" onclick="saveAppointmentSchedule()">
+        <i class="fas fa-check-circle"></i> Save Schedule
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div class="modal-overlay" id="addModal" onclick="closeAddModal(event)">
+
+  <div class="modal">
+    <h3><i class="fas fa-user-plus" style="color:#0284c7;margin-right:8px;"></i>Add Weekly Service Customer</h3>
+    <div id="addFormError" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;border-left:4px solid #dc2626;"></div>
+    
+    <!-- Search Existing Customers -->
+    <div class="form-group" style="margin-bottom:20px;">
+      <label style="font-weight:600;color:#0f172a;">Search Existing Customer</label>
+      <div style="position:relative;">
+        <input type="text" id="customerSearch" placeholder="Type name or email..." style="width:100%;padding:10px 12px;border:2px solid #e5e7eb;border-radius:8px;font-size:14px;transition:all 0.2s;">
+        <div id="searchResults" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;max-height:300px;overflow-y:auto;z-index:1000;display:none;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        </div>
+      </div>
+      <p style="font-size:12px;color:#64748b;margin-top:6px;">Or fill in details below to create a new customer</p>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;">
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="addName" placeholder="John Smith">
+      </div>
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" id="addEmail" placeholder="john@email.com">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="addPhone" placeholder="(502) 555-1234">
+      </div>
+      <div class="form-group">
+        <label>Preferred Day</label>
+        <select id="addPrefDay">
+          <option value="">— Any day —</option>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+          <option>Thursday</option><option>Friday</option><option>Saturday</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Service Address</label>
+      <input type="text" id="addAddress" placeholder="123 Main St, City TN 37716">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Frequency</label>
+        <select id="addFrequency" onchange="updatePriceDefault()">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Biweekly (every 2 weeks)</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Price per Visit ($)</label>
+        <input type="number" id="addPrice" value="160" step="5" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Assigned Technician</label>
+      <input type="text" id="addAssigned" placeholder="Leave blank for unassigned">
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+      <input type="checkbox" id="addNotify" checked style="width:auto;accent-color:#0284c7;">
+      <label for="addNotify" style="margin:0;cursor:pointer;">Send welcome email to customer</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+      <button class="btn-primary" id="addSubmitBtn" onclick="submitAddCustomer()">
+        <i class="fas fa-user-plus"></i> Enroll Customer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Approve Weekly Service Modal -->
+<div class="modal-overlay" id="approveModal" onclick="closeApproveModal(event)">
+  <div class="modal">
+    <h3><i class="fas fa-calendar-check" style="color:#059669;margin-right:8px;"></i>Approve Weekly Service</h3>
+    <input type="hidden" id="approveAppointmentId">
+    <div id="approveFormError" style="display:none;background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;border-left:4px solid #dc2626;"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Service Date *</label>
+        <input type="date" id="approveFirstServiceDate" required>
+      </div>
+      <div class="form-group">
+        <label>First Service Time</label>
+        <input type="time" id="approveFirstServiceTime" value="09:00">
+      </div>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+      <input type="checkbox" id="approveIncludeOpening" style="width:auto;accent-color:#0284c7;">
+      <label for="approveIncludeOpening" style="margin:0;cursor:pointer;">Customer needs a full opening (extra service)</label>
+    </div>
+    <div class="form-group" id="approveOpeningOptions" style="display:none;padding:12px;border:1px solid #dbeafe;border-radius:8px;background:#f0f9ff;">
+      <label style="margin-bottom:8px;">Full opening scheduling</label>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:500;">
+          <input type="radio" name="approveOpeningWhen" id="approveOpeningSameVisit" value="same" checked style="width:auto;accent-color:#0284c7;">
+          Same visit as first weekly service
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-weight:500;">
+          <input type="radio" name="approveOpeningWhen" id="approveOpeningLaterVisit" value="later" style="width:auto;accent-color:#0284c7;">
+          Schedule for later date
+        </label>
+      </div>
+      <div id="approveOpeningLaterFields" style="display:none;" class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Opening Date *</label>
+          <input type="date" id="approveOpeningDate">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>Opening Time</label>
+          <input type="time" id="approveOpeningTime" value="09:00">
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeApproveModal()">Cancel</button>
+      <button class="btn-primary btn-success" id="approveSubmitBtn" onclick="submitApproveWeeklyService()">
+        <i class="fas fa-check"></i> Approve & Schedule
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LOG SERVICE COMPLETION MODAL - Complete Workflow -->
+<div class="modal-overlay" id="logServiceCompletionModal" onclick="closeLogServiceModal(event)" style="z-index:1001;display:none;">
+  <div class="modal" style="width:95%;max-width:1000px;max-height:95vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3><i class="fas fa-check-double" style="color:#059669;margin-right:8px;"></i>Log Service Completion</h3>
+      <button style="background:none;border:none;font-size:24px;cursor:pointer;color:#9ca3af;" onclick="closeLogServiceModal()">✕</button>
+    </div>
+    
+    <div id="logServiceError" style="display:none;background:#fee2e2;color:#991b1b;padding:12px;border-radius:8px;margin-bottom:16px;border-left:4px solid #dc2626;font-size:13px;"></div>
+    
+    <!-- APPOINTMENT SELECTION -->
+    <div id="lsc-appointmentSelector" style="background:#f0f9ff;padding:16px;border-radius:8px;margin-bottom:20px;border-left:4px solid #0284c7;">
+      <div style="font-weight:600;margin-bottom:12px;color:#0f172a;">Select Customer</div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <input type="text" id="lsc-customerSearch" placeholder="Search by name or email..." style="flex:1;padding:8px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;" oninput="searchLSCCustomers();">
+        <button class="btn-primary btn-sm" onclick="loadLSCAppointments()" style="background:#0284c7;">Load Today</button>
+      </div>
+      <div id="lsc-searchResults" style="display:none;background:white;border:1px solid #cbd5e1;border-radius:6px;margin-bottom:12px;max-height:200px;overflow-y:auto;"></div>
+      <div id="lsc-appointmentsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;max-height:250px;overflow-y:auto;">
+        <div style="color:#9ca3af;font-size:13px;padding:20px;text-align:center;grid-column:1/-1;">Loading appointments...</div>
+      </div>
+    </div>
+    
+    <!-- SERVICE FORM (Hidden until appointment selected) -->
+    <div id="lsc-serviceForm" style="display:none;">
+    
+    <!-- CUSTOMER INFO -->
+    <div style="background:#f9fafb;padding:16px;border-radius:8px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+        <div>
+          <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Customer</div>
+          <div style="font-weight:700;color:#0f172a;" id="lsc-customerName">—</div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Email</div>
+          <div style="font-weight:700;color:#0f172a;word-break:break-all;" id="lsc-customerEmail">—</div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Phone</div>
+          <div style="font-weight:700;color:#0f172a;" id="lsc-customerPhone">—</div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Pool Type</div>
+          <div style="font-weight:700;color:#0f172a;" id="lsc-poolType">—</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e5e7eb;">
+        <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Address</div>
+        <div style="font-weight:700;color:#0f172a;" id="lsc-customerAddress">—</div>
+      </div>
+    </div>
+    
+    <!-- TABS -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;">
+      <button class="tab-btn lsc-tab-btn" data-tab="checklist" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid #059669;color:#059669;font-weight:700;" onclick="switchLSCTab('checklist')" id="lsc-tab-checklist-btn">✓ Checklist</button>
+      <button class="tab-btn lsc-tab-btn" data-tab="chemicals" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchLSCTab('chemicals')" id="lsc-tab-chemicals-btn">🧪 Chemicals</button>
+      <button class="tab-btn lsc-tab-btn" data-tab="photos" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchLSCTab('photos')" id="lsc-tab-photos-btn">📸 Photos</button>
+      <button class="tab-btn lsc-tab-btn" data-tab="notes" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchLSCTab('notes')" id="lsc-tab-notes-btn">📓 Notes</button>
+      <button class="tab-btn lsc-tab-btn" data-tab="time" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchLSCTab('time')" id="lsc-tab-time-btn">⏱️ Time</button>
+    </div>
+    
+    <!-- CHECKLIST TAB -->
+    <div id="lsc-checklist" class="lsc-tab-content" style="display:block;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="pH Balance (7.2-7.6)" style="width:16px;height:16px;"> pH Balance (7.2-7.6)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Chlorine (1-3 ppm)" style="width:16px;height:16px;"> Chlorine (1-3 ppm)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Alkalinity (80-120)" style="width:16px;height:16px;"> Alkalinity (80-120)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Calcium (200-400)" style="width:16px;height:16px;"> Calcium (200-400)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Brush walls" style="width:16px;height:16px;"> Brush walls</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Skim surface" style="width:16px;height:16px;"> Skim surface</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Vacuum pool" style="width:16px;height:16px;"> Vacuum pool</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Check filter" style="width:16px;height:16px;"> Check filter</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Check pump" style="width:16px;height:16px;"> Check pump</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Clean basket" style="width:16px;height:16px;"> Clean basket</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Add chemicals" style="width:16px;height:16px;"> Add chemicals</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;background:#f9fafb;"><input type="checkbox" value="Top off water" style="width:16px;height:16px;"> Top off water</label>
+      </div>
+    </div>
+
+    <!-- CHEMICALS TAB -->
+    <div id="lsc-chemicals" class="lsc-tab-content" style="display:none;margin-bottom:20px;">
+      <div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:12px;margin-bottom:14px;">
+        <div style="font-size:13px;color:#0e7490;font-weight:700;margin-bottom:4px;">Record full chemical test + dosage details</div>
+        <div style="font-size:12px;color:#155e75;">This creates a complete service record and makes chemical usage visible in Service History.</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:14px;">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Free Chlorine (ppm)</label>
+          <input type="number" id="lsc-chem-fc" step="0.1" min="0" placeholder="0.0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Total Chlorine (ppm)</label>
+          <input type="number" id="lsc-chem-tc" step="0.1" min="0" placeholder="0.0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">pH</label>
+          <input type="number" id="lsc-chem-ph" step="0.1" min="0" placeholder="7.4" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Alkalinity (ppm)</label>
+          <input type="number" id="lsc-chem-alk" step="1" min="0" placeholder="100" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Calcium Hardness (ppm)</label>
+          <input type="number" id="lsc-chem-cal" step="1" min="0" placeholder="250" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">CYA / Stabilizer (ppm)</label>
+          <input type="number" id="lsc-chem-cya" step="1" min="0" placeholder="40" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Salt (ppm)</label>
+          <input type="number" id="lsc-chem-salt" step="1" min="0" placeholder="3200" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Water Temp (deg F)</label>
+          <input type="number" id="lsc-chem-temp" step="1" placeholder="82" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+      </div>
+
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+        <div style="font-size:13px;font-weight:700;color:#334155;margin-bottom:10px;">Chemicals Added</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Liquid Chlorine (gal)</label>
+            <input type="number" id="lsc-dose-liquidChlorine" step="0.1" min="0" placeholder="0.0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Muriatic Acid (qt)</label>
+            <input type="number" id="lsc-dose-acid" step="0.1" min="0" placeholder="0.0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Alkalinity Up (lb)</label>
+            <input type="number" id="lsc-dose-alkUp" step="0.1" min="0" placeholder="0.0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Calcium Hardness Up (lb)</label>
+            <input type="number" id="lsc-dose-calUp" step="0.1" min="0" placeholder="0.0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Stabilizer (lb)</label>
+            <input type="number" id="lsc-dose-stabilizer" step="0.1" min="0" placeholder="0.0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Salt Added (lb)</label>
+            <input type="number" id="lsc-dose-saltAdded" step="1" min="0" placeholder="0" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+          <div style="grid-column:1/-1;">
+            <label style="display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;">Other Chemicals / Notes</label>
+            <textarea id="lsc-dose-other" placeholder="Shock, phosphate remover, algaecide, enzymes, etc." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:70px;font-size:13px;"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PHOTOS TAB (REQUIRED) -->
+    <div id="lsc-photos" class="lsc-tab-content" style="display:none;margin-bottom:20px;">
+      <div style="background:#fff3cd;color:#856404;padding:12px;border-radius:6px;margin-bottom:16px;border-left:4px solid #ffc107;font-size:13px;">
+        ⚠️ <strong>Photos Required:</strong> Minimum 1 pool photo. If salt system: pool photo + salt panel photo required.
+      </div>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#0f172a;">Pool Photo *</label>
+        <div class="lsc-upload-area" id="lsc-uploadPoolArea" style="border:2px dashed #cbd5e1;border-radius:8px;padding:32px;text-align:center;cursor:pointer;background:#f9fafb;margin-bottom:12px;transition:all 0.2s;" ondrop="handleLSCPoolPhotoUpload(event.dataTransfer.files);event.preventDefault();" ondragover="event.preventDefault();this.style.borderColor='#059669';this.style.background='#f0fdf4';" ondragleave="this.style.borderColor='#cbd5e1';this.style.background='#f9fafb';">
+          <div style="font-size:28px;margin-bottom:8px;">📸</div>
+          <div style="font-weight:600;color:#0f172a;">Click or drag pool photo</div>
+          <input type="file" id="lsc-fileInputPool" accept="image/*" style="display:none;" onchange="handleLSCPoolPhotoUpload(this.files);">
+        </div>
+        <div id="lsc-poolPhotos" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+      </div>
+      
+      <div id="lsc-saltPanelSection" style="display:none;margin-bottom:16px;">
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#dc2626;">⚠️ Salt Panel Photo * (Required for salt systems)</label>
+        <div class="lsc-upload-area" id="lsc-uploadSaltArea" style="border:2px dashed #cbd5e1;border-radius:8px;padding:32px;text-align:center;cursor:pointer;background:#f9fafb;margin-bottom:12px;transition:all 0.2s;" ondrop="handleLSCSaltPhotoUpload(event.dataTransfer.files);event.preventDefault();" ondragover="event.preventDefault();this.style.borderColor='#dc2626';this.style.background='#fef2f2';" ondragleave="this.style.borderColor='#cbd5e1';this.style.background='#f9fafb';">
+          <div style="font-size:28px;margin-bottom:8px;">📷</div>
+          <div style="font-weight:600;color:#0f172a;">Click or drag salt panel photo</div>
+          <input type="file" id="lsc-fileInputSalt" accept="image/*" style="display:none;" onchange="handleLSCSaltPhotoUpload(this.files);">
+        </div>
+        <div id="lsc-saltPhotos" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+      </div>
+    </div>
+    
+    <!-- NOTES TAB -->
+    <div id="lsc-notes" class="lsc-tab-content" style="display:none;margin-bottom:20px;">
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Pool Condition</label>
+        <textarea id="lsc-poolCondition" placeholder="Water clarity, algae, pH..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Work Performed</label>
+        <textarea id="lsc-workPerformed" placeholder="Routine maintenance, brushed walls, vacuumed..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Issues Found</label>
+        <textarea id="lsc-issuesFound" placeholder="Any problems or maintenance needs..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Recommendations</label>
+        <textarea id="lsc-recommendations" placeholder="Suggested services or upgrades..." style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+    </div>
+    
+    <!-- TIME TAB -->
+    <div id="lsc-time" class="lsc-tab-content" style="display:none;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group">
+          <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Start Time *</label>
+          <input type="time" id="lsc-startTime" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+        <div class="form-group">
+          <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">End Time *</label>
+          <input type="time" id="lsc-endTime" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:#f0f9ff;border-radius:6px;color:#0369a1;font-size:13px;">
+        💡 Times are required to log service
+      </div>
+    </div>
+    
+    <!-- ACTION BUTTONS -->
+    <div style="display:flex;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
+      <button class="btn-secondary" onclick="closeLogServiceModal()" style="flex:1;">Cancel</button>
+      <button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#059669,#10b981);" onclick="submitLogServiceCompletion()">
+        <i class="fas fa-check"></i> Complete Service
+      </button>
+    </div>
+    </div><!-- End lsc-serviceForm -->
+  </div>
+</div>
+
+<!-- Service Report Modal -->
+<div class="modal-overlay" id="serviceReportModal" onclick="closeServiceReportModal(event)" style="z-index:1000;display:none;">
+  <div class="modal" style="width:95%;max-width:900px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <h3><i class="fas fa-clipboard-check" style="color:#0284c7;margin-right:8px;"></i>Service Report</h3>
+      <button style="background:none;border:none;font-size:24px;cursor:pointer;color:#9ca3af;" onclick="closeServiceReportModal()">✕</button>
+    </div>
+    
+    <div id="serviceReportError" style="display:none;background:#fee2e2;color:#991b1b;padding:12px;border-radius:8px;margin-bottom:16px;border-left:4px solid #dc2626;font-size:13px;"></div>
+    
+    <!-- Tabs for service report -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid #e5e7eb;flex-wrap:wrap;">
+      <button class="tab-btn" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchServiceReportTab('basic')" id="tab-basic-btn">📝 Basic</button>
+      <button class="tab-btn" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchServiceReportTab('checklist')" id="tab-checklist-btn">✓ Checklist</button>
+      <button class="tab-btn" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchServiceReportTab('notes')" id="tab-notes-btn">📓 Notes</button>
+      <button class="tab-btn" style="background:none;border:none;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;color:#6b7280;font-weight:600;" onclick="switchServiceReportTab('photos')" id="tab-photos-btn">📸 Photos</button>
+    </div>
+    
+    <!-- BASIC TAB -->
+    <div id="sr-basic" class="sr-tab-content" style="display:block;">
+      <div style="background:#f9fafb;padding:16px;border-radius:8px;margin-bottom:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Customer</div>
+            <div style="font-weight:700;color:#0f172a;" id="sr-customerName">—</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Email</div>
+            <div style="font-weight:700;color:#0f172a;" id="sr-customerEmail">—</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Phone</div>
+            <div style="font-weight:700;color:#0f172a;" id="sr-customerPhone">—</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Service Type</div>
+            <div style="font-weight:700;color:#0f172a;">Weekly Service</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;margin-bottom:4px;">Address</div>
+          <div style="font-weight:700;color:#0f172a;" id="sr-address">—</div>
+        </div>
+      </div>
+      
+      <div style="margin-bottom:16px;">
+        <h4 style="margin-bottom:12px;font-weight:600;color:#0f172a;">Service Time Log</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Start Time</label>
+            <input type="time" id="sr-startTime" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+          <div class="form-group">
+            <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">End Time</label>
+            <input type="time" id="sr-endTime" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CHECKLIST TAB -->
+    <div id="sr-checklist" class="sr-tab-content" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_ph" style="width:16px;height:16px;"> pH Balance (7.2-7.6)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_chlorine" style="width:16px;height:16px;"> Chlorine Level (1-3 ppm)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_alkalinity" style="width:16px;height:16px;"> Alkalinity (80-120 ppm)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_calcium" style="width:16px;height:16px;"> Calcium Hardness (200-400 ppm)</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_brush" style="width:16px;height:16px;"> Brush walls and floor</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_skim" style="width:16px;height:16px;"> Skim surface</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_vacuum" style="width:16px;height:16px;"> Vacuum pool</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_filter" style="width:16px;height:16px;"> Check filter pressure</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_pump" style="width:16px;height:16px;"> Check pump operation</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_basket" style="width:16px;height:16px;"> Clean skimmer basket</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_chemicals" style="width:16px;height:16px;"> Add chemicals</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;"><input type="checkbox" id="check_water" style="width:16px;height:16px;"> Top off water level</label>
+      </div>
+    </div>
+    
+    <!-- NOTES TAB -->
+    <div id="sr-notes" class="sr-tab-content" style="display:none;">
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Pool Condition</label>
+        <textarea id="sr-poolCondition" placeholder="Describe the current pool condition…" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Work Performed</label>
+        <textarea id="sr-workPerformed" placeholder="Describe what work was completed…" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Issues Found</label>
+        <textarea id="sr-issuesFound" placeholder="Note any problems or maintenance issues…" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+      <div class="form-group">
+        <label style="font-weight:600;color:#1f2937;margin-bottom:6px;display:block;font-size:13px;">Recommendations</label>
+        <textarea id="sr-recommendations" placeholder="Recommend any additional services…" style="width:100%;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-family:inherit;min-height:80px;font-size:13px;"></textarea>
+      </div>
+    </div>
+    
+    <!-- PHOTOS TAB -->
+    <div id="sr-photos" class="sr-tab-content" style="display:none;">
+      <div id="sr-uploadArea" style="border:2px dashed #cbd5e1;border-radius:8px;padding:32px;text-align:center;cursor:pointer;background:#f9fafb;margin-bottom:16px;">
+        <div style="font-size:32px;margin-bottom:8px;">📸</div>
+        <div style="font-weight:600;color:#0f172a;margin-bottom:4px;">Drag & drop photos here</div>
+        <div style="font-size:13px;color:#6b7280;">or click to select from your device</div>
+        <input type="file" id="sr-fileInput" multiple accept="image/*" style="display:none;">
+      </div>
+      <div id="sr-photoPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;"></div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div style="display:flex;gap:10px;margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
+      <button class="btn-secondary" onclick="closeServiceReportModal()" style="flex:1;">Cancel</button>
+      <button class="btn-primary" style="flex:1;background:linear-gradient(135deg,#0369a1,#0284c7);" onclick="submitServiceReport()">
+        <i class="fas fa-check"></i> Complete & Send
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<div class="global-loading-overlay" id="globalLoadingOverlay">
+  <div class="global-loading-card">
+    <i class="fas fa-spinner"></i>
+    <div class="global-loading-text" id="globalLoadingText">Working…</div>
+  </div>
+</div>
+
+<script>
+  // ── LOGGING SYSTEM ──
+  let DEBUG_LOGS = [];
+  const MAX_LOGS = 500;
+  
+  function addLog(message, type = 'info', details = '') {
+    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const logEntry = {
+      timestamp,
+      type,
+      message,
+      details,
+      fullText: `[${timestamp}] ${type.toUpperCase()}: ${message}${details ? ' — ' + details : ''}`
+    };
+    DEBUG_LOGS.push(logEntry);
+    if (DEBUG_LOGS.length > MAX_LOGS) DEBUG_LOGS.shift();
+    updateDebugDisplay();
+    console.log(logEntry.fullText);
+  }
+  
+  function updateDebugDisplay() {
+    const container = document.getElementById('debugLogsContainer');
+    if (!container) return;
+    let html = '';
+    DEBUG_LOGS.forEach(log => {
+      const colors = { 'info': '#3b82f6', 'success': '#10b981', 'error': '#ef4444', 'warning': '#f59e0b', 'contract': '#7c3aed' };
+      const color = colors[log.type] || '#6b7280';
+      html += `<div style="color:${color};margin-bottom:6px;border-left:3px solid ${color};padding:4px 0 4px 8px;"><span style="color:#94a3b8;">${log.timestamp}</span> <strong>${log.type.toUpperCase()}</strong> ${log.message}${log.details ? ` <span style="color:#6b7280;font-size:10px;">${log.details}</span>` : ''}</div>`;
+    });
+    container.innerHTML = html || '<div style="color:#9ca3af;text-align:center;padding:20px;"><i class="fas fa-inbox"></i> No logs yet</div>';
+    container.scrollTop = container.scrollHeight;
+  }
+  
+  function toggleDebugPanel() { const panel = document.getElementById('debugPanel'); if (panel) panel.style.display = panel.style.display === 'none' ? 'flex' : 'none'; }
+  
+  function clearDebugLogs() { if (confirm('Clear all debug logs?')) { DEBUG_LOGS = []; updateDebugDisplay(); } }
+  
+  function downloadDebugLogs() { const text = DEBUG_LOGS.map(log => log.fullText).join('\n'); const blob = new Blob([text], { type: 'text/plain' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `weekly-service-logs-${new Date().toISOString().split('T')[0]}.txt`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+  
+  // ── CONFIG — Direct Google Apps Script integration ──
+  const USER_EMAIL = new URLSearchParams(window.location.search).get('email') || '';
+  let CURRENT_COMPANY_ID = 'CMP-AQUALITYPOOL';
+  /** Base URL for Service Report web app (from getSchedulingContext / getWeeklyServiceDashboard). */
+  let SERVICE_REPORT_BASE = '';
+  const INVOICE_ESTIMATE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZcMYdXanrOJRd-l5aKeL_qvZoJv7PWGlBp_1gVbgo5FAiC1U7-EMdoBQEqNP6QHmvjw/exec';
+
+  // Direct google.script.run helpers
+  function apiGet(action, params = {}) {
+    return new Promise((resolve, reject) => {
+      const allParams = { ...params };
+      if (USER_EMAIL) allParams.email = USER_EMAIL;
+      
+      // For functions that expect direct parameters
+      if (action === 'getWeeklyServiceDashboard') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getWeeklyServiceDashboard(USER_EMAIL);
+      } else if (action === 'getSchedulingContext') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getSchedulingContext(USER_EMAIL);
+      } else if (action === 'listWeeklyServiceContracts') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).listWeeklyServiceContracts(allParams.companyId, allParams.customerEmail || null);
+      } else if (action === 'getWeeklyServiceContract') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getWeeklyServiceContract(allParams.contractId);
+      } else if (action === 'getServiceHistory') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getServiceHistory(allParams.customerEmail);
+      } else if (action === 'getCustomerSpending') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getCustomerSpending(allParams.customerEmail, allParams.companyId || CURRENT_COMPANY_ID);
+      } else if (action === 'getCustomerReceipts') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getCustomerReceipts(allParams.customerEmail, allParams.companyId || CURRENT_COMPANY_ID);
+      } else if (action === 'searchCustomersByCompanyId') {
+        // Use google.script.run directly - it's a backend function
+        console.log('🔍 Calling searchCustomersByCompanyId via google.script.run');
+        google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(reject)
+          .searchCustomersByCompanyId(allParams.companyId || 'CMP-AQUALITYPOOL', allParams.q || '');
+      } else {
+        reject(new Error('Unknown GET action: ' + action));
+      }
+    });
+  }
+
+  function apiPost(action, params = {}) {
+    return new Promise((resolve, reject) => {
+      const allParams = { ...params };
+      if (USER_EMAIL) allParams.email = USER_EMAIL;
+      
+      // For functions that expect parameter objects
+      if (action === 'approveWeeklyServiceRequest') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).approveWeeklyServiceRequest(allParams.appointmentId, allParams);
+      } else if (action === 'rejectWeeklyServiceRequest') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).rejectWeeklyServiceRequest(allParams.appointmentId);
+      } else if (action === 'manuallyAddWeeklyService') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).manuallyAddWeeklyService(allParams);
+      } else if (action === 'createWeeklyServiceContract') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).createWeeklyServiceContract(allParams);
+      } else if (action === 'updateWeeklyServiceContract') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).updateWeeklyServiceContract(allParams.contractId, allParams);
+      } else if (action === 'sendWeeklyServiceContract') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).sendWeeklyServiceContract(allParams.contractId);
+      } else if (action === 'deleteWeeklyServiceContract') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).deleteWeeklyServiceContract(allParams.contractId);
+      } else if (action === 'logServiceCompletion') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).logServiceCompletion(allParams);
+      } else if (action === 'uploadCustomerReceipt') {
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).uploadCustomerReceipt(allParams);
+      } else {
+        reject(new Error('Unknown POST action: ' + action));
+      }
+    });
+  }
+
+  function apiCall(functionName, ...args) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)[functionName](...args);
+    });
+  }
+
+  async function weeklyAddPmTask(apptId, customerName, customerEmail) {
+    const title = window.prompt('Task title (saved to Dashboard → Project tasks)', 'Follow-up: ' + (customerName || 'Customer') + ' — weekly request');
+    if (!title || !title.trim()) return;
+    const form = new URLSearchParams();
+    form.set('action', 'addPmTask');
+    form.set('companyId', CURRENT_COMPANY_ID);
+    form.set('title', title.trim());
+    form.set('customerName', customerName || '');
+    form.set('customerEmail', customerEmail || '');
+    form.set('linkType', 'WeeklyService');
+    form.set('linkId', apptId || '');
+    form.set('priority', 'Normal');
+    try {
+      const res = await fetch(INVOICE_ESTIMATE_SCRIPT_URL, { method: 'POST', body: form });
+      const data = await res.json();
+      if (data.success) showToast('Task added — see main Dashboard', 'success');
+      else showToast(data.error || 'Could not add task', 'error');
+    } catch (e) {
+      showToast(e.message || 'Request failed', 'error');
+    }
+  }
+
+  let allActive = [];
+  let pendingById = {};
+
+  async function loadDashboard() {
+    addLog('Loading dashboard...', 'info', 'Refreshing all data');
+    const icon = document.getElementById('refreshIcon');
+    if (icon) icon.classList.add('fa-spin');
+    
+    try {
+      addLog('Getting scheduling context', 'info', '');
+      const ctx = await apiGet('getSchedulingContext');
+      if (ctx && ctx.success && ctx.companyId) {
+        CURRENT_COMPANY_ID = ctx.companyId;
+        addLog('✅ Company ID loaded', 'success', 'ID=' + ctx.companyId);
+      }
+      if (ctx && ctx.serviceReportWebAppUrl) {
+        SERVICE_REPORT_BASE = String(ctx.serviceReportWebAppUrl).replace(/\/$/, '');
+        addLog('✅ Service report URL configured', 'info', '');
+      }
+
+      addLog('Fetching dashboard data...', 'info', '');
+      const data = await apiGet('getWeeklyServiceDashboard');
+      if (icon) icon.classList.remove('fa-spin');
+      
+      if (!data || !data.success) {
+        const errorMsg = data && data.error ? data.error : 'Unknown error';
+        addLog('❌ Dashboard load failed', 'error', errorMsg);
+        showToast('Failed to load dashboard: ' + errorMsg, 'error');
+        
+        document.getElementById('pendingContent').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i><h3>Dashboard Load Failed</h3><p>' + errorMsg + '</p><button class="btn-primary btn-sm" onclick="loadDashboard()">Retry</button></div>';
+        document.getElementById('activeContent').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i><h3>Dashboard Load Failed</h3><p>' + errorMsg + '</p><button class="btn-primary btn-sm" onclick="loadDashboard()">Retry</button></div>';
+        return;
+      }
+      
+      addLog('✅ Dashboard loaded', 'success', 'Pending=' + (data.pending?.length || 0) + ', Active=' + (data.active?.length || 0));
+
+      if (data.serviceReportWebAppUrl) {
+        SERVICE_REPORT_BASE = String(data.serviceReportWebAppUrl).replace(/\/$/, '');
+      }
+
+      renderStats(data.stats);
+      renderPending(data.pending || []);
+      allActive = data.active || [];
+      renderActive(allActive);
+      loadContracts();
+      
+      addLog('Dashboard refresh complete', 'success', 'All sections rendered');
+      showToast('Dashboard loaded successfully!', 'success');
+    } catch (err) {
+      if (icon) icon.classList.remove('fa-spin');
+      const errorMsg = err.message || String(err);
+      addLog('❌ Dashboard error', 'error', errorMsg);
+      showToast('Error loading dashboard: ' + errorMsg, 'error');
+      
+      document.getElementById('pendingContent').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle" style="color:#ef4444;"></i><h3>Connection Error</h3><p>Failed to connect to Google Apps Script.</p><p style="font-size:12px;color:#64748b;">' + errorMsg + '</p><button class="btn-primary btn-sm" onclick="loadDashboard()">Retry</button></div>';
+      document.getElementById('activeContent').innerHTML = document.getElementById('pendingContent').innerHTML;
+    }
+  }
+
+  function renderStats(s) {
+    document.getElementById('statWeekly').textContent   = s.weekly || 0;
+    document.getElementById('statBiweekly').textContent = s.biweekly || 0;
+    document.getElementById('statPending').textContent  = s.pendingCount || 0;
+    document.getElementById('statRevenue').textContent  = '$' + Math.round(s.monthlyRevenue || 0).toLocaleString();
+  }
+
+  function renderPending(rows) {
+    pendingById = {};
+    rows.forEach(r => { pendingById[r.id] = r; });
+    document.getElementById('pendingBadge').textContent = rows.length;
+    const el = document.getElementById('pendingContent');
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty-state"><i class="fas fa-check-double"></i><h3>No pending requests</h3><p>All caught up!</p></div>';
+      return;
+    }
+    el.innerHTML = '<div class="table-wrap"><table>'
+      + '<thead><tr><th>Customer</th><th>Address</th><th>Preferred Day</th><th>Frequency</th><th>Price/Visit</th><th>Requested</th><th>Actions</th></tr></thead>'
+      + '<tbody>'
+      + rows.map(r => `
+        <tr>
+          <td><div class="td-name">${esc(r.customerName)}</div><div class="td-sub">${esc(r.customerEmail)}</div></td>
+          <td>${esc(r.address || '—')}</td>
+          <td>${r.preferredDay ? '<span class="badge-pill pill-weekly">' + esc(r.preferredDay) + '</span>' : '—'}</td>
+          <td>${freqBadge(r)}</td>
+          <td>$${(r.estimatedCost || 0).toFixed(2)}</td>
+          <td><span style="font-size:12px;color:#9ca3af;">${fmtDate(r.createdAt)}</span></td>
+          <td>
+            <div class="actions">
+              <button class="btn-primary btn-success btn-sm" onclick="openApproveModal('${esc(r.id)}')"><i class="fas fa-check"></i> Approve</button>
+              <button class="btn-primary btn-danger btn-sm" onclick="reject('${esc(r.id)}')"><i class="fas fa-times"></i> Reject</button>
+              <button type="button" class="btn-primary btn-sm" style="background:#0d9488;border-color:#0d9488;" onclick="weeklyAddPmTask('${esc(r.id)}','${esc(r.customerName)}','${esc(r.customerEmail)}')" title="Add to PM Tasks (dashboard)"><i class="fas fa-list-check"></i> Task</button>
+              ${serviceReportLinkHtml(r)}
+            </div>
+          </td>
+        </tr>`).join('')
+      + '</tbody></table></div>';
+  }
+
+  function renderActive(rows) {
+    document.getElementById('activeBadge').textContent = rows.length;
+    const el = document.getElementById('activeContent');
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty-state"><i class="fas fa-swimming-pool"></i><h3>No active customers yet</h3><p>Add your first weekly service customer above.</p></div>';
+      return;
+    }
+    
+    // Sort by preferred service day for easy day-planning
+    const dayOrder = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 7 };
+    const sortedRows = [...rows].sort((a, b) => {
+      const dayA = dayOrder[a.preferredDay] || 99;
+      const dayB = dayOrder[b.preferredDay] || 99;
+      return dayA - dayB;
+    });
+    
+    el.innerHTML = '<div class="table-wrap"><table>'
+      + '<thead><tr><th>Customer</th><th>Address</th><th>Phone</th><th>Preferred Day</th><th>Frequency</th><th>Price/Visit</th><th>Est. Monthly</th><th>Enrolled</th><th>Actions</th></tr></thead>'
+      + '<tbody>'
+      + sortedRows.map(r => {
+          const visits = r.recurring === 'biweekly' ? 2 : (r.recurring === 'monthly' ? 1 : 4);
+          const monthly = (r.estimatedCost || 0) * visits;
+          return `<tr>
+            <td><div class="td-name">${esc(r.customerName)}</div><div class="td-sub">${esc(r.customerEmail)}</div></td>
+            <td>${esc(r.address || '—')}</td>
+            <td>${esc(r.customerPhone || '—')}</td>
+            <td>${r.preferredDay ? '<span class="badge-pill pill-weekly">' + esc(r.preferredDay) + '</span>' : '—'}</td>
+            <td>${freqBadge(r)}</td>
+            <td>$${(r.estimatedCost || 0).toFixed(2)}</td>
+            <td style="font-weight:700;color:#059669;">$${monthly.toFixed(2)}</td>
+            <td><span style="font-size:12px;color:#9ca3af;">${fmtDate(r.createdAt)}</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn-primary btn-sm" style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);" onclick='openContractBuilder(${JSON.stringify({ customerName: r.customerName || "", customerEmail: r.customerEmail || "", customerPhone: r.customerPhone || "", customerAddress: r.address || "", frequency: r.recurring || "weekly", pricePerVisit: r.estimatedCost || 160, serviceDay: r.preferredDay || "" })})'>
+                  <i class="fas fa-file-contract"></i> Contract
+                </button>
+                <button class="btn-primary btn-sm" style="background:linear-gradient(135deg,#0369a1,#0284c7);" onclick="openServiceReportModal('${esc(r.id)}','${esc(r.customerName)}','${esc(r.customerEmail)}','${esc(r.address || "")}','${esc(r.customerPhone || "")}')">
+                  <i class="fas fa-clipboard-check"></i> Report
+                </button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')
+      + '</tbody></table></div>';
+  }
+
+  
+  function filterActive() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    if (!q) { renderActive(allActive); return; }
+    renderActive(allActive.filter(r =>
+      (r.customerName + r.address + r.customerEmail + r.customerPhone).toLowerCase().includes(q)
+    ));
+  }
+
+  function formatDateInput(dateObj) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + d;
+  }
+
+  function getDateInputValueFromDay(dayName) {
+    const dayMap = {
+      sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+      thursday: 4, friday: 5, saturday: 6
+    };
+    const target = dayMap[String(dayName || '').toLowerCase()];
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    if (target == null) {
+      return formatDateInput(now);
+    }
+    const candidate = new Date(now);
+    const diff = (target - candidate.getDay() + 7) % 7;
+    candidate.setDate(candidate.getDate() + diff);
+    return formatDateInput(candidate);
+  }
+
+  function openApproveModal(id) {
+    const req = pendingById[id] || {};
+    document.getElementById('approveAppointmentId').value = id;
+    document.getElementById('approveFormError').style.display = 'none';
+    document.getElementById('approveFirstServiceDate').value = getDateInputValueFromDay(req.preferredDay || '');
+    document.getElementById('approveFirstServiceDate').min = formatDateInput(new Date());
+    document.getElementById('approveFirstServiceTime').value = '09:00';
+    document.getElementById('approveIncludeOpening').checked = false;
+    document.getElementById('approveOpeningOptions').style.display = 'none';
+    document.getElementById('approveOpeningSameVisit').checked = true;
+    document.getElementById('approveOpeningLaterVisit').checked = false;
+    document.getElementById('approveOpeningLaterFields').style.display = 'none';
+    document.getElementById('approveOpeningDate').value = '';
+    document.getElementById('approveOpeningDate').min = formatDateInput(new Date());
+    document.getElementById('approveOpeningTime').value = '09:00';
+    document.getElementById('approveModal').classList.add('open');
+  }
+
+  function closeApproveModal(e) {
+    if (!e || e.target === document.getElementById('approveModal')) {
+      document.getElementById('approveModal').classList.remove('open');
+      document.getElementById('approveFormError').style.display = 'none';
+    }
+  }
+
+  function submitApproveWeeklyService() {
+    const id = document.getElementById('approveAppointmentId').value;
+    const firstDate = document.getElementById('approveFirstServiceDate').value;
+    const firstTime = document.getElementById('approveFirstServiceTime').value || '09:00';
+    const needsOpening = document.getElementById('approveIncludeOpening').checked;
+    const openingSameVisit = document.getElementById('approveOpeningSameVisit').checked;
+    const openingDate = document.getElementById('approveOpeningDate').value;
+    const openingTime = document.getElementById('approveOpeningTime').value || '09:00';
+    if (!id || !firstDate) {
+      const err = document.getElementById('approveFormError');
+      err.textContent = 'First service date is required.';
+      err.style.display = 'block';
+      return;
+    }
+    if (needsOpening && !openingSameVisit && !openingDate) {
+      const err = document.getElementById('approveFormError');
+      err.textContent = 'Opening date is required when scheduling full opening later.';
+      err.style.display = 'block';
+      return;
+    }
+    const btn = document.getElementById('approveSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving…';
+
+    apiPost('approveWeeklyServiceRequest', {
+      appointmentId:    id,
+      firstServiceDate: firstDate,
+      firstServiceTime: firstTime,
+      needsFullOpening: needsOpening,
+      openingSameVisit: openingSameVisit,
+      openingDate:      openingDate,
+      openingTime:      openingTime
+    }).then(res => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> Approve & Schedule';
+      if (res.success) {
+        closeApproveModal();
+        let msg = res.calendarAdded
+          ? 'Weekly service approved and added to calendar.'
+          : 'Weekly service approved, but calendar event could not be created.';
+        if (res.openingCreated) {
+          msg += ' Full opening scheduled' + (res.openingSameVisit ? ' on same visit.' : ' on separate date.');
+        }
+        showToast(msg, res.calendarAdded ? 'success' : 'error');
+        loadDashboard();
+      } else {
+        const errEl = document.getElementById('approveFormError');
+        errEl.textContent = res.error || 'Approval failed.';
+        errEl.style.display = 'block';
+      }
+    }).catch(e => {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> Approve & Schedule';
+      const errEl = document.getElementById('approveFormError');
+      errEl.textContent = 'Error: ' + e.message;
+      errEl.style.display = 'block';
+    });
+  }
+
+  document.getElementById('approveIncludeOpening').addEventListener('change', function() {
+    document.getElementById('approveOpeningOptions').style.display = this.checked ? 'block' : 'none';
+  });
+  document.getElementById('approveOpeningSameVisit').addEventListener('change', function() {
+    if (this.checked) document.getElementById('approveOpeningLaterFields').style.display = 'none';
+  });
+  document.getElementById('approveOpeningLaterVisit').addEventListener('change', function() {
+    if (this.checked) document.getElementById('approveOpeningLaterFields').style.display = 'grid';
+  });
+
+  function reject(id) {
+    if (!confirm('Reject this weekly service request?')) return;
+    apiPost('rejectWeeklyServiceRequest', { appointmentId: id })
+      .then(res => {
+        if (res.success) { showToast('Request rejected.', 'success'); loadDashboard(); }
+        else showToast('Error: ' + (res.error || 'Unknown error'), 'error');
+      })
+      .catch(e => showToast('Error: ' + e.message, 'error'));
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SERVICE REPORT MODAL FUNCTIONS
+  // ─────────────────────────────────────────────────────────────
+  
+  let currentServiceReportData = {};
+  const srUploadedPhotos = [];
+  
+  function openServiceReportModal(apptId, customerName, customerEmail, address, phone) {
+    currentServiceReportData = { apptId, customerName, customerEmail, address, phone };
+    document.getElementById('sr-customerName').textContent = customerName || '—';
+    document.getElementById('sr-customerEmail').textContent = customerEmail || '—';
+    document.getElementById('sr-customerPhone').textContent = phone || '—';
+    document.getElementById('sr-address').textContent = address || '—';
+    document.getElementById('serviceReportError').style.display = 'none';
+    srUploadedPhotos.length = 0;
+    document.getElementById('sr-photoPreview').innerHTML = '';
+    document.getElementById('sr-startTime').value = '';
+    document.getElementById('sr-endTime').value = '';
+    document.getElementById('sr-poolCondition').value = '';
+    document.getElementById('sr-workPerformed').value = '';
+    document.getElementById('sr-issuesFound').value = '';
+    document.getElementById('sr-recommendations').value = '';
+    document.querySelectorAll('.sr-tab-content').forEach(el => el.style.display = 'none');
+    document.getElementById('sr-basic').style.display = 'block';
+    document.querySelectorAll('.tab-btn').forEach(el => el.style.borderBottomColor = 'transparent');
+    document.getElementById('tab-basic-btn').style.borderBottomColor = '#0284c7';
+    document.querySelectorAll('#serviceReportModal .tab-btn').forEach(el => el.style.color = '#6b7280');
+    document.getElementById('tab-basic-btn').style.color = '#0284c7';
+    document.getElementById('serviceReportModal').classList.add('open');
+  }
+  
+  function closeServiceReportModal(e) {
+    if (!e || e.target === document.getElementById('serviceReportModal')) {
+      document.getElementById('serviceReportModal').classList.remove('open');
+      currentServiceReportData = {};
+    }
+  }
+  
+  function switchServiceReportTab(tabName) {
+    document.querySelectorAll('.sr-tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('#serviceReportModal .tab-btn').forEach(el => el.style.borderBottomColor = 'transparent');
+    document.querySelectorAll('#serviceReportModal .tab-btn').forEach(el => el.style.color = '#6b7280');
+    document.getElementById('sr-' + tabName).style.display = 'block';
+    document.getElementById('tab-' + tabName + '-btn').style.borderBottomColor = '#0284c7';
+    document.getElementById('tab-' + tabName + '-btn').style.color = '#0284c7';
+  }
+  
+  // Upload area for photos
+  document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('sr-uploadArea');
+    const fileInput = document.getElementById('sr-fileInput');
+    if (uploadArea) {
+      uploadArea.addEventListener('click', () => fileInput && fileInput.click());
+      uploadArea.addEventListener('dragover', e => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#0284c7';
+        uploadArea.style.background = '#f0f9ff';
+      });
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = '#cbd5e1';
+        uploadArea.style.background = '#f9fafb';
+      });
+      uploadArea.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#cbd5e1';
+        uploadArea.style.background = '#f9fafb';
+        handleServiceReportFiles(e.dataTransfer.files);
+      });
+    }
+    if (fileInput) {
+      fileInput.addEventListener('change', e => handleServiceReportFiles(e.target.files));
+    }
+  });
+  
+  function handleServiceReportFiles(files) {
+    for (let file of files) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        srUploadedPhotos.push({ name: file.name, data: e.target.result });
+        updateServiceReportPhotoPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  
+  function updateServiceReportPhotoPreview() {
+    const preview = document.getElementById('sr-photoPreview');
+    preview.innerHTML = srUploadedPhotos.map((photo, idx) => 
+      '<div style="position:relative;border-radius:8px;overflow:hidden;background:#f0f4f8;">' +
+        '<img src="' + photo.data + '" style="width:100%;height:100px;object-fit:cover;">' +
+        '<button onclick="removeServiceReportPhoto(' + idx + ')" style="position:absolute;top:4px;right:4px;background:#dc2626;color:white;border:none;border-radius:4px;width:24px;height:24px;cursor:pointer;font-weight:bold;padding:0;">✕</button>' +
+      '</div>'
+    ).join('');
+  }
+  
+  function removeServiceReportPhoto(idx) {
+    srUploadedPhotos.splice(idx, 1);
+    updateServiceReportPhotoPreview();
+  }
+  
+  function submitServiceReport() {
+    const apptId = currentServiceReportData.apptId;
+    const customerEmail = currentServiceReportData.customerEmail;
+    const startTime = document.getElementById('sr-startTime').value;
+    const endTime = document.getElementById('sr-endTime').value;
+    
+    if (!startTime || !endTime) {
+      showServiceReportError('Please enter start and end times.');
+      return;
+    }
+    
+    // Get checklist items
+    const checklist = {};
+    document.querySelectorAll('#sr-checklist input[type="checkbox"]').forEach(cb => {
+      checklist[cb.id] = cb.checked;
+    });
+    
+    const reportData = {
+      appointmentId: apptId,
+      customerEmail: customerEmail,
+      startTime: startTime,
+      endTime: endTime,
+      poolCondition: document.getElementById('sr-poolCondition').value,
+      workPerformed: document.getElementById('sr-workPerformed').value,
+      issuesFound: document.getElementById('sr-issuesFound').value,
+      recommendations: document.getElementById('sr-recommendations').value,
+      checklist: checklist,
+      photos: srUploadedPhotos
+    };
+    
+    // Submit via google.script.run - link to a backend function
+    showToast('⏳ Saving service report…', 'info');
+    google.script.run
+      .withSuccessHandler(function(result) {
+        if (result.success) {
+          showToast('✅ Service report saved and sent to customer!', 'success');
+          setTimeout(() => {
+            closeServiceReportModal();
+            loadDashboard();
+          }, 1500);
+        } else {
+          showServiceReportError(result.error || 'Failed to save service report');
+        }
+      })
+      .withFailureHandler(function(error) {
+        showServiceReportError('Error: ' + error);
+      })
+      .completeServiceReport(reportData);
+  }
+  
+  function showServiceReportError(msg) {
+    const errEl = document.getElementById('serviceReportError');
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+  }
+
+  // ==================== LOG SERVICE COMPLETION FUNCTIONS ====================
+  
+  let lscState = {
+    selectedAppointmentId: null,
+    selectedCustomerId: null,
+    customerData: null,
+    poolPhotos: [],
+    saltPanelPhotos: [],
+    isSaltSystem: false,
+    chemicalReadings: {},
+    chemicalDosages: {}
+  };
+
+  function openLogServiceModal(appointmentId) {
+    lscState = {
+      selectedAppointmentId: appointmentId || null,
+      selectedCustomerId: null,
+      customerData: null,
+      poolPhotos: [],
+      saltPanelPhotos: [],
+      isSaltSystem: false
+    };
+    
+    const modal = document.getElementById('logServiceCompletionModal');
+    if (modal) {
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Load today's appointments
+    loadLSCAppointments();
+    
+    // Clear form - safely handle null elements
+    const checklistEl = document.getElementById('lsc-checklist');
+    if (checklistEl) checklistEl.innerHTML = '';
+    
+    const notesEl = document.getElementById('lsc-notes');
+    if (notesEl) notesEl.innerHTML = '';
+    
+    const recsEl = document.getElementById('lsc-recommendations');
+    if (recsEl) recsEl.value = '';
+    
+    const errEl = document.getElementById('logServiceError');
+    if (errEl) errEl.style.display = 'none';
+  }
+
+  function closeLogServiceModal(e) {
+    if (e && e.target.id !== 'logServiceCompletionModal') return;
+    document.getElementById('logServiceCompletionModal').style.display = 'none';
+    document.body.style.overflow = '';
+    lscState = {
+      selectedAppointmentId: null,
+      selectedCustomerId: null,
+      customerData: null,
+      poolPhotos: [],
+      saltPanelPhotos: [],
+      isSaltSystem: false,
+      chemicalReadings: {},
+      chemicalDosages: {}
+    };
+
+    resetLSCChemicalFields();
+  }
+
+  function switchLSCTab(tabName) {
+    document.querySelectorAll('.lsc-tab-content').forEach(el => {
+      el.style.display = 'none';
+    });
+
+    document.querySelectorAll('.lsc-tab-btn').forEach(btn => {
+      btn.style.borderBottom = '2px solid transparent';
+      btn.style.color = '#6b7280';
+      btn.style.fontWeight = '600';
+      btn.classList.remove('active');
+    });
+
+    const tabContent = document.getElementById('lsc-' + tabName);
+    if (tabContent) {
+      tabContent.style.display = 'block';
+      const btn = document.querySelector('[data-tab="' + tabName + '"]');
+      if (btn) {
+        btn.classList.add('active');
+        btn.style.borderBottom = '2px solid #059669';
+        btn.style.color = '#059669';
+        btn.style.fontWeight = '700';
+      }
+    }
+  }
+
+  function resetLSCChemicalFields() {
+    const ids = [
+      'lsc-chem-fc', 'lsc-chem-tc', 'lsc-chem-ph', 'lsc-chem-alk',
+      'lsc-chem-cal', 'lsc-chem-cya', 'lsc-chem-salt', 'lsc-chem-temp',
+      'lsc-dose-liquidChlorine', 'lsc-dose-acid', 'lsc-dose-alkUp',
+      'lsc-dose-calUp', 'lsc-dose-stabilizer', 'lsc-dose-saltAdded',
+      'lsc-dose-other'
+    ];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }
+
+  function collectLSCChemicalData() {
+    const toNumOrBlank = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return '';
+      const raw = String(el.value || '').trim();
+      if (!raw) return '';
+      const n = parseFloat(raw);
+      return Number.isFinite(n) ? n : '';
+    };
+    const toText = (id) => {
+      const el = document.getElementById(id);
+      return el ? String(el.value || '').trim() : '';
+    };
+
+    const readings = {
+      freeChlorine: toNumOrBlank('lsc-chem-fc'),
+      totalChlorine: toNumOrBlank('lsc-chem-tc'),
+      pH: toNumOrBlank('lsc-chem-ph'),
+      alkalinity: toNumOrBlank('lsc-chem-alk'),
+      calciumHardness: toNumOrBlank('lsc-chem-cal'),
+      cya: toNumOrBlank('lsc-chem-cya'),
+      salt: toNumOrBlank('lsc-chem-salt'),
+      waterTempF: toNumOrBlank('lsc-chem-temp')
+    };
+
+    const dosages = {
+      liquidChlorineGal: toNumOrBlank('lsc-dose-liquidChlorine'),
+      muriaticAcidQt: toNumOrBlank('lsc-dose-acid'),
+      alkalinityUpLb: toNumOrBlank('lsc-dose-alkUp'),
+      calciumUpLb: toNumOrBlank('lsc-dose-calUp'),
+      stabilizerLb: toNumOrBlank('lsc-dose-stabilizer'),
+      saltAddedLb: toNumOrBlank('lsc-dose-saltAdded'),
+      otherChemicals: toText('lsc-dose-other')
+    };
+
+    return { readings, dosages };
+  }
+
+  function loadLSCAppointments() {
+    const appointmentsList = document.getElementById('lsc-appointmentsList');
+    if (!appointmentsList) return;
+    
+    appointmentsList.innerHTML = '<div style="padding:16px;color:#64748b;font-size:13px;"><i class="fas fa-spinner" style="animation:spin 1s linear infinite;margin-right:6px;"></i>Loading appointments...</div>';
+    
+    google.script.run
+      .withSuccessHandler(function(result) {
+        if (!result || !result.appointments || result.appointments.length === 0) {
+          appointmentsList.innerHTML = '<div style="padding:16px;color:#e74c3c;font-size:13px;">No incomplete appointments found</div>';
+          return;
+        }
+        
+        let html = '<div style="display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;">';
+        result.appointments.forEach(appt => {
+          const time = appt.time || 'TBD';
+          const poolType = appt.poolType || 'Standard';
+          const date = appt.date || '';
+          const status = appt.status || 'Scheduled';
+          
+          html += `<div onclick="selectLSCAppointment('${appt.id}', '${esc(appt.customerName)}', '${esc(appt.customerEmail)}', '${esc(appt.address)}', '${esc(appt.customerPhone)}', '${appt.poolType}', '${appt.chemicalType}')" 
+                        style="padding:12px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;transition:all 0.2s;background:#f8fafc;"
+                        onmouseover="this.style.background='#eef2f7';this.style.borderColor='#cbd5e1';"
+                        onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0';">
+                    <div style="font-weight:500;color:#1e293b;">${esc(appt.customerName)}</div>
+                    <div style="font-size:12px;color:#64748b;">📍 ${esc(appt.address)} | 📅 ${date} | 🕐 ${time} | 💧 ${poolType}</div>
+                    <div style="font-size:11px;color:#94a3b8;">${status}</div>
+                  </div>`;
+        });
+        html += '</div>';
+        appointmentsList.innerHTML = html;
+      })
+      .withFailureHandler(function(error) {
+        appointmentsList.innerHTML = '<div style="padding:16px;color:#e74c3c;font-size:13px;">Error loading appointments: ' + error + '</div>';
+      })
+      .getTodaysAppointments();
+  }
+
+  function selectLSCAppointment(apptId, customerName, email, address, phone, poolType, chemicalType) {
+    lscState.selectedAppointmentId = apptId;
+    lscState.customerData = {
+      name: customerName,
+      email: email,
+      address: address,
+      phone: phone,
+      poolType: poolType,
+      chemicalType: chemicalType
+    };
+    lscState.isSaltSystem = chemicalType && chemicalType.toLowerCase().includes('salt');
+    
+    // Update display - safely handle null elements
+    const nameEl = document.getElementById('lsc-customerName');
+    if (nameEl) nameEl.textContent = customerName;
+    
+    const emailEl = document.getElementById('lsc-customerEmail');
+    if (emailEl) emailEl.textContent = email;
+    
+    const phoneEl = document.getElementById('lsc-customerPhone');
+    if (phoneEl) phoneEl.textContent = phone;
+    
+    const addressEl = document.getElementById('lsc-customerAddress');
+    if (addressEl) addressEl.textContent = address;
+    
+    const poolTypeEl = document.getElementById('lsc-poolType');
+    if (poolTypeEl) poolTypeEl.textContent = poolType + (lscState.isSaltSystem ? ' (SALT SYSTEM)' : '');
+    
+    // Show/hide salt panel photo requirement
+    const saltSection = document.getElementById('lsc-saltPanelSection');
+    if (saltSection) {
+      saltSection.style.display = lscState.isSaltSystem ? 'block' : 'none';
+    }
+    
+    // Auto-fill recommendations
+    fillLSCRecommendations(poolType, chemicalType);
+    
+    // Hide appointment selector, show service form - safely
+    const selectorEl = document.getElementById('lsc-appointmentSelector');
+    if (selectorEl) selectorEl.style.display = 'none';
+    
+    const formEl = document.getElementById('lsc-serviceForm');
+    if (formEl) formEl.style.display = 'block';
+    
+    // Load checklist
+    loadLSCChecklist(poolType);
+  }
+
+  function searchLSCCustomers() {
+    const searchInput = document.getElementById('lsc-customerSearch');
+    if (!searchInput) return;
+    
+    const query = searchInput.value.trim();
+    
+    if (!query || query.length < 2) {
+      const resultsDiv = document.getElementById('lsc-searchResults');
+      if (resultsDiv) resultsDiv.style.display = 'none';
+      return;
+    }
+    
+    const resultsDiv = document.getElementById('lsc-searchResults');
+    if (!resultsDiv) return;
+    
+    resultsDiv.innerHTML = '<div style="padding:8px;color:#64748b;font-size:12px;"><i class="fas fa-spinner" style="animation:spin 1s linear infinite;margin-right:4px;"></i>Searching...</div>';
+    resultsDiv.style.display = 'block';
+    
+    google.script.run
+      .withSuccessHandler(function(result) {
+        if (!result || !result.customers || result.customers.length === 0) {
+          resultsDiv.innerHTML = '<div style="padding:8px;color:#64748b;font-size:12px;">No customers found</div>';
+          return;
+        }
+        
+        let html = '<div style="max-height:200px;overflow-y:auto;">';
+        result.customers.forEach(customer => {
+          const poolType = customer.poolType || 'Standard';
+          const chemicalType = customer.chemicalType || 'Standard Chlorine';
+          html += `<div onclick="selectLSCAppointment('', '${esc(customer.name)}', '${esc(customer.email)}', '${esc(customer.address)}', '${esc(customer.phone)}', '${poolType}', '${chemicalType}')" 
+                        style="padding:10px;border-bottom:1px solid #e2e8f0;cursor:pointer;font-size:13px;"
+                        onmouseover="this.style.background='#f0f9ff';"
+                        onmouseout="this.style.background='';">
+                    <div style="font-weight:500;color:#1e293b;">${esc(customer.name)}</div>
+                    <div style="font-size:11px;color:#64748b;">${esc(customer.email)}</div>
+                  </div>`;
+        });
+        html += '</div>';
+        resultsDiv.innerHTML = html;
+      })
+      .withFailureHandler(function(error) {
+        resultsDiv.innerHTML = '<div style="padding:8px;color:#e74c3c;font-size:12px;">Error searching customers</div>';
+      })
+      .searchCustomersForServiceCompletion(query);
+  }
+
+  function loadLSCChecklist(poolType) {
+    const checklistDiv = document.getElementById('lsc-checklist');
+    const items = [
+      'Visual pool inspection completed',
+      'Water clarity checked',
+      'pH level tested',
+      'Chlorine level tested',
+      'Alkalinity tested',
+      'Filter condition assessed',
+      'Pump operation checked',
+      'Skimmer and drains clear',
+      'Equipment cleaned',
+      'Chemicals added (if needed)',
+      'System parameters logged',
+      'Customer notified of recommendations'
+    ];
+    
+    if (lscState.isSaltSystem) {
+      items.push('Salt cell inspected');
+      items.push('Salt level checked');
+    }
+    
+    let html = '<div style="display:flex;flex-direction:column;gap:10px;padding:16px;">';
+    items.forEach((item, idx) => {
+      html += `<label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;">
+                <input type="checkbox" id="lsc-check-${idx}" value="${item}" style="width:18px;height:18px;cursor:pointer;">
+                <span>${item}</span>
+              </label>`;
+    });
+    html += '</div>';
+    checklistDiv.innerHTML = html;
+  }
+
+  function fillLSCRecommendations(poolType, chemicalType) {
+    let recommendations = '';
+    
+    if (chemicalType && chemicalType.toLowerCase().includes('salt')) {
+      recommendations = '• Inspect salt cell for buildup or damage\n' +
+                       '• Check chlorine generator flow rate\n' +
+                       '• Consider new salt cell if flow issues detected\n' +
+                       '• Verify salt level is within optimal range\n' +
+                       '• Monitor salt cell warranty status';
+    } else {
+      recommendations = '• Monitor chlorine levels closely\n' +
+                       '• Check filter pressure and cleanliness\n' +
+                       '• Verify pump operation and priming\n' +
+                       '• Assess water color and clarity\n' +
+                       '• Schedule filter cleaning as needed';
+    }
+    
+    const recEl = document.getElementById('lsc-recommendations');
+    if (recEl) recEl.value = recommendations;
+  }
+
+  function handleLSCPoolPhotoUpload(files) {
+    handleLSCPhotoUpload(files, 'pool');
+  }
+
+  function handleLSCSaltPhotoUpload(files) {
+    handleLSCPhotoUpload(files, 'salt');
+  }
+
+  function handleLSCPhotoUpload(files, type) {
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const photoArray = type === 'salt' ? lscState.saltPanelPhotos : lscState.poolPhotos;
+      photoArray.push({
+        name: file.name,
+        data: e.target.result,
+        type: type
+      });
+      
+      // Update preview
+      updateLSCPhotoPreview(type);
+    };
+    
+    reader.readAsDataURL(file);
+  }
+
+  function updateLSCPhotoPreview(type) {
+    const containerId = type === 'salt' ? 'lsc-saltPhotos' : 'lsc-poolPhotos';
+    const photoArray = type === 'salt' ? lscState.saltPanelPhotos : lscState.poolPhotos;
+    
+    const container = document.getElementById(containerId);
+    let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;">';
+    
+    photoArray.forEach((photo, idx) => {
+      html += `<div style="position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid #cbd5e1;">
+                <img src="${photo.data}" style="width:100%;height:100%;object-fit:cover;">
+                <button onclick="removeLSCPhoto(${idx}, '${type}')" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#e74c3c;color:white;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">×</button>
+              </div>`;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function removeLSCPhoto(index, type) {
+    if (type === 'salt') {
+      lscState.saltPanelPhotos.splice(index, 1);
+    } else {
+      lscState.poolPhotos.splice(index, 1);
+    }
+    updateLSCPhotoPreview(type);
+  }
+
+  function submitLogServiceCompletion() {
+    // Validate appointment/customer selected
+    if (!lscState.customerData) {
+      showLSCError('Please select an appointment or customer');
+      return;
+    }
+    
+    // Validate pool photos
+    if (lscState.poolPhotos.length === 0) {
+      showLSCError('Pool photo is required');
+      return;
+    }
+    
+    // Validate salt panel photo if salt system
+    if (lscState.isSaltSystem && lscState.saltPanelPhotos.length === 0) {
+      showLSCError('Salt panel photo is required for salt systems');
+      return;
+    }
+    
+    // Collect checklist items
+    const checkedItems = [];
+    document.querySelectorAll('#lsc-checklist input[type="checkbox"]:checked').forEach(cb => {
+      checkedItems.push(cb.value);
+    });
+    
+    if (checkedItems.length === 0) {
+      showLSCError('Please complete at least one checklist item');
+      return;
+    }
+    
+    // Collect form data with null checks
+    const startTimeEl = document.getElementById('lsc-startTime');
+    const endTimeEl = document.getElementById('lsc-endTime');
+    const poolConditionEl = document.getElementById('lsc-poolCondition');
+    const workPerformedEl = document.getElementById('lsc-workPerformed');
+    const issuesFoundEl = document.getElementById('lsc-issuesFound');
+    const recommendationsEl = document.getElementById('lsc-recommendations');
+    
+    if (!startTimeEl || !endTimeEl || !poolConditionEl) {
+      showLSCError('Form not fully loaded. Please try again.');
+      return;
+    }
+    
+    const startTime = startTimeEl.value;
+    const endTime = endTimeEl.value;
+    const poolCondition = poolConditionEl.value;
+    const workPerformed = workPerformedEl ? workPerformedEl.value : '';
+    const issuesFound = issuesFoundEl ? issuesFoundEl.value : '';
+    const recommendations = recommendationsEl ? recommendationsEl.value : '';
+    
+    if (!startTime || !endTime) {
+      showLSCError('Please enter start and end times');
+      return;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('#logServiceCompletionModal button.btn-primary');
+    if (!submitBtn) {
+      showLSCError('Submit button not found. Please refresh and try again.');
+      return;
+    }
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '✓ Saving...';
+    submitBtn.disabled = true;
+
+    const chemicalData = collectLSCChemicalData();
+    
+    // Prepare data for backend
+    const reportData = {
+      appointmentId: lscState.selectedAppointmentId || '',
+      customerName: lscState.customerData.name,
+      customerEmail: lscState.customerData.email,
+      customerPhone: lscState.customerData.phone,
+      address: lscState.customerData.address,
+      poolType: lscState.customerData.poolType,
+      chemicalType: lscState.customerData.chemicalType,
+      startTime: startTime,
+      endTime: endTime,
+      poolCondition: poolCondition,
+      workPerformed: workPerformed,
+      issuesFound: issuesFound,
+      recommendations: recommendations,
+      checklist: checkedItems,
+      poolPhotos: lscState.poolPhotos,
+      saltPanelPhotos: lscState.saltPanelPhotos,
+      chemicalReadings: chemicalData.readings,
+      chemicalDosages: chemicalData.dosages,
+      timestamp: new Date().toISOString()
+    };
+    
+    google.script.run
+      .withSuccessHandler(function(result) {
+        if (result && result.success) {
+          // Show success message
+          alert('Service report saved successfully!');
+          closeLogServiceModal();
+          // Refresh appointments list
+          location.reload();
+        } else {
+          showLSCError(result && result.error ? result.error : 'Failed to save report');
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      })
+      .withFailureHandler(function(error) {
+        showLSCError('Error: ' + error);
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      })
+      .logServiceCompletion(reportData);
+  }
+
+  function showLSCError(msg) {
+    const errEl = document.getElementById('logServiceError');
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+    setTimeout(() => {
+      errEl.style.display = 'none';
+    }, 5000);
+  }
+
+  // Customer Search for Add Modal
+  let allCustomers = [];
+  let searchTimeout;
+  
+  function openAddModal() {
+    document.getElementById('addModal').classList.add('open');
+    document.getElementById('customerSearch').value = '';
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('customerSearch').focus();
+  }
+  
+  function searchCustomers(query) {
+    const resultsDiv = document.getElementById('searchResults');
+    query = query.trim();
+    
+    if (!query || query.length < 2) {
+      resultsDiv.style.display = 'none';
+      return;
+    }
+    
+    console.log('🔍 Searching for: ' + query);
+    resultsDiv.innerHTML = '<div style="padding:12px 16px;color:#64748b;font-size:13px;"><i class="fas fa-spinner" style="animation:spin 1s linear infinite;margin-right:6px;"></i>Searching...</div>';
+    resultsDiv.style.display = 'block';
+    
+    // Call API directly with search query
+    apiGet('searchCustomersByCompanyId', { companyId: 'CMP-AQUALITYPOOL', q: query })
+      .then(function(result) {
+        if (!result || !result.success) {
+          resultsDiv.innerHTML = '<div style="padding:12px 16px;color:#64748b;font-size:13px;">No customers found</div>';
+          return;
+        }
+        
+        const suggestions = result.suggestions || [];
+        console.log('✅ Found ' + suggestions.length + ' customers');
+        
+        if (suggestions.length === 0) {
+          resultsDiv.innerHTML = '<div style="padding:12px 16px;color:#64748b;font-size:13px;">No customers found</div>';
+          resultsDiv.style.display = 'block';
+          return;
+        }
+        
+        let html = '';
+        suggestions.forEach(c => {
+          const highlight = (text) => {
+            if (!text) return '';
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<strong style="color:#0284c7;background:#dbeafe;">$1</strong>');
+          };
+          
+          html += `<div style="padding:10px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;gap:10px;" 
+                       onmouseover="this.style.background='#f8fafc'" 
+                       onmouseout="this.style.background=''" 
+                       onclick="selectCustomer('${c.email || ''}', '${(c.name || '').replace(/'/g, "\\'")}', '${(c.phone || '').replace(/'/g, "\\'")}', '${(c.address || '').replace(/'/g, "\\'")}')">
+            <i class="fas fa-user" style="color:#0284c7;font-size:14px;"></i>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:500;color:#1a1a1a;">${highlight(c.name)}</div>
+              <div style="font-size:12px;color:#64748b;">${highlight(c.email)}</div>
+              ${c.phone ? `<div style="font-size:12px;color:#94a3b8;">${c.phone}</div>` : ''}
+            </div>
+          </div>`;
+        });
+        
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+      })
+      .catch(function(err) {
+        console.error('❌ Search error:', err);
+        resultsDiv.innerHTML = '<div style="padding:12px 16px;color:#d32f2f;font-size:13px;">Error searching customers</div>';
+        resultsDiv.style.display = 'block';
+      });
+  }
+  
+  function selectCustomer(email, name, phone, address) {
+    document.getElementById('addEmail').value = email;
+    document.getElementById('addName').value = name;
+    document.getElementById('addPhone').value = phone;
+    document.getElementById('addAddress').value = address;
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('customerSearch').value = '';
+    console.log('✅ Selected customer: ' + name);
+  }
+  
+  // Attach search listener
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('customerSearch');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          searchCustomers(e.target.value);
+        }, 300);
+      });
+      
+      // Close results on blur
+      searchInput.addEventListener('blur', function() {
+        setTimeout(() => {
+          document.getElementById('searchResults').style.display = 'none';
+        }, 200);
+      });
+      
+      // Open results on focus if has content
+      searchInput.addEventListener('focus', function() {
+        if (this.value.trim().length >= 2) {
+          searchCustomers(this.value);
+        }
+      });
+    }
+  });
+
+  // Add Modal
+  function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+  function closeAddModal(e) {
+    if (!e || e.target === document.getElementById('addModal')) {
+      document.getElementById('addModal').classList.remove('open');
+      document.getElementById('addFormError').style.display = 'none';
+    }
+  }
+  function updatePriceDefault() {
+    const freq = document.getElementById('addFrequency').value;
+    if (freq === 'biweekly') {
+      document.getElementById('addPrice').value = 200;
+    } else if (freq === 'monthly') {
+      document.getElementById('addPrice').value = 250;
+    } else {
+      document.getElementById('addPrice').value = 160;
+    }
+  }
+  function submitAddCustomer() {
+    const name  = document.getElementById('addName').value.trim();
+    const email = document.getElementById('addEmail').value.trim();
+    if (!name || !email) {
+      showFormError('Name and email are required.');
+      return;
+    }
+    const btn = document.getElementById('addSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling…';
+    const data = {
+      customerName:   name,
+      customerEmail:  email,
+      phone:          document.getElementById('addPhone').value.trim(),
+      address:        document.getElementById('addAddress').value.trim(),
+      frequency:      document.getElementById('addFrequency').value,
+      preferredDay:   document.getElementById('addPrefDay').value,
+      price:          parseFloat(document.getElementById('addPrice').value) || 160,
+      assignedTo:     document.getElementById('addAssigned').value.trim(),
+      notifyCustomer: document.getElementById('addNotify').checked
+    };
+    apiPost('manuallyAddWeeklyService', data)
+      .then(res => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Enroll Customer';
+        if (res.success) {
+          closeAddModal();
+          showToast(res.message || 'Customer enrolled!', 'success');
+          ['addName','addEmail','addPhone','addAddress','addAssigned'].forEach(id => document.getElementById(id).value = '');
+          document.getElementById('addPrefDay').value = '';
+          document.getElementById('addFrequency').value = 'weekly';
+          document.getElementById('addPrice').value = 160;
+          document.getElementById('addNotify').checked = true;
+          
+          // Open scheduling modal to set up appointment dates and blocked periods
+          openSchedulingModal(name, data.frequency, res.appointmentId);
+          loadDashboard();
+        } else {
+          showFormError(res.error || 'Enrollment failed.');
+        }
+      })
+      .catch(e => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Enroll Customer';
+        showFormError('Error: ' + e.message);
+      });
+  }
+  function showFormError(msg) {
+    const el = document.getElementById('addFormError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // APPOINTMENT SCHEDULING FUNCTIONS
+  // ═══════════════════════════════════════════════════════════════════════
+  let schedState = {
+    customerId: '',
+    customerName: '',
+    frequency: 'weekly',
+    blockedDates: [] // Array of dates blocked for vacation/holidays
+  };
+
+  function openSchedulingModal(customerName, frequency, customerId) {
+    schedState.customerId = customerId;
+    schedState.customerName = customerName;
+    schedState.frequency = frequency || 'weekly';
+    schedState.blockedDates = [];
+    
+    document.getElementById('schedCustomerName').textContent = customerName;
+    document.getElementById('schedCustomerId').value = customerId;
+    document.getElementById('schedFrequency').value = frequency;
+    document.getElementById('schedError').style.display = 'none';
+    
+    renderSchedulingCalendar();
+    renderBlockedDates();
+    
+    const modal = document.getElementById('schedulingModal');
+    if (modal) modal.classList.add('open');
+  }
+
+  function closeSchedulingModal(e) {
+    if (e && e.target !== document.getElementById('schedulingModal')) return;
+    const modal = document.getElementById('schedulingModal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  function renderSchedulingCalendar() {
+    const calDiv = document.getElementById('schedCalendar');
+    const today = new Date();
+    const months = [];
+    
+    // Create 6 months of calendars
+    let html = '<div style="display:grid;grid-template-columns:1fr;gap:10px;">';
+    
+    for (let m = 0; m < 6; m++) {
+      const date = new Date(today.getFullYear(), today.getMonth() + m, 1);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const monthName = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      
+      html += `<div style="border:1px solid #d1d5db;border-radius:6px;padding:8px;background:white;">
+                 <div style="font-weight:600;text-align:center;margin-bottom:8px;font-size:13px;color:#1f2937;">${monthName}</div>
+                 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;font-size:11px;">`;
+      
+      // Day headers
+      ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(day => {
+        html += `<div style="text-align:center;font-weight:600;color:#6b7280;padding:4px 0;">${day}</div>`;
+      });
+      
+      // Days
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      for (let i = 0; i < firstDay; i++) {
+        html += '<div></div>';
+      }
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isBlocked = schedState.blockedDates.includes(dateStr);
+        const isToday = new Date().toISOString().split('T')[0] === dateStr;
+        
+        html += `<div onclick="toggleBlockedDate('${dateStr}')" 
+                      style="padding:4px;text-align:center;border-radius:3px;cursor:pointer;
+                              background:${isBlocked ? '#fecaca' : isToday ? '#dbeafe' : '#f9fafb'};
+                              color:${isBlocked ? '#991b1b' : '#1f2937'};
+                              border:1px solid ${isBlocked ? '#dc2626' : '#e5e7eb'};
+                              font-weight:${isToday ? '600' : '400'};"
+                      title="${isBlocked ? 'Blocked - Click to unblock' : 'Click to block'}">
+                  ${day}
+                </div>`;
+      }
+      
+      html += '</div></div>';
+    }
+    html += '</div>';
+    calDiv.innerHTML = html;
+  }
+
+  function toggleBlockedDate(dateStr) {
+    const idx = schedState.blockedDates.indexOf(dateStr);
+    if (idx >= 0) {
+      schedState.blockedDates.splice(idx, 1);
+    } else {
+      schedState.blockedDates.push(dateStr);
+    }
+    schedState.blockedDates.sort();
+    renderSchedulingCalendar();
+    renderBlockedDates();
+  }
+
+  function renderBlockedDates() {
+    const div = document.getElementById('schedBlockedDates');
+    if (schedState.blockedDates.length === 0) {
+      div.innerHTML = '<p style="color:#9ca3af;text-align:center;">No blocked dates yet</p>';
+      return;
+    }
+    
+    let html = '<div style="display:flex;flex-direction:column;gap:6px;">';
+    schedState.blockedDates.forEach(dateStr => {
+      const date = new Date(dateStr + 'T12:00:00');
+      const label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#fee2e2;border-radius:4px;">
+                 <span style="font-size:12px;color:#991b1b;">${label}</span>
+                 <button onclick="removeBlockedDate('${dateStr}')" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:14px;">✕</button>
+               </div>`;
+    });
+    html += '</div>';
+    div.innerHTML = html;
+  }
+
+  function removeBlockedDate(dateStr) {
+    schedState.blockedDates = schedState.blockedDates.filter(d => d !== dateStr);
+    renderSchedulingCalendar();
+    renderBlockedDates();
+  }
+
+  function clearAllBlockedDates() {
+    if (confirm('Clear all blocked dates?')) {
+      schedState.blockedDates = [];
+      renderSchedulingCalendar();
+      renderBlockedDates();
+    }
+  }
+
+  function saveAppointmentSchedule() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
+    
+    apiPost('saveAppointmentSchedule', {
+      customerId: schedState.customerId,
+      customerName: schedState.customerName,
+      frequency: schedState.frequency,
+      blockedDates: schedState.blockedDates
+    })
+      .then(res => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Save Schedule';
+        
+        if (res.success) {
+          closeSchedulingModal();
+          showToast('Appointment schedule saved! ' + (res.appointmentsCreated || 0) + ' appointments scheduled.', 'success');
+        } else {
+          document.getElementById('schedError').textContent = res.error || 'Failed to save schedule';
+          document.getElementById('schedError').style.display = 'block';
+        }
+      })
+      .catch(e => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Save Schedule';
+        document.getElementById('schedError').textContent = 'Error: ' + e.message;
+        document.getElementById('schedError').style.display = 'block';
+      });
+  }
+
+  // Toast
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (type || '');
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  let globalLoadingStartedAt = 0;
+  function setGlobalLoading(isLoading, message) {
+    const overlay = document.getElementById('globalLoadingOverlay');
+    const textEl = document.getElementById('globalLoadingText');
+    if (!overlay) return;
+    if (textEl && message) textEl.textContent = message;
+    if (isLoading) {
+      globalLoadingStartedAt = Date.now();
+      overlay.style.display = 'flex';
+      document.body.style.cursor = 'progress';
+      return;
+    }
+    overlay.style.display = 'none';
+    document.body.style.cursor = '';
+  }
+
+  function clearGlobalLoadingWithMinDelay(minMs = 700) {
+    const elapsed = Date.now() - (globalLoadingStartedAt || 0);
+    if (elapsed >= minMs) {
+      setGlobalLoading(false);
+      return;
+    }
+    setTimeout(() => setGlobalLoading(false), minMs - elapsed);
+  }
+
+  function setDisplayByView_(viewName) {
+    const stats = document.getElementById('statsGrid');
+    const pending = document.getElementById('pendingSection');
+    const active = document.getElementById('activeSection');
+    const contracts = document.getElementById('contractsSection');
+    const history = document.getElementById('historySection');
+    const spending = document.getElementById('spendingSection');
+
+    // Default dashboard: show everything.
+    const showAll = viewName === 'dashboard';
+    if (stats) stats.style.display = showAll || viewName === 'active' || viewName === 'pending' ? 'grid' : 'none';
+    if (pending) pending.style.display = showAll || viewName === 'pending' ? 'block' : 'none';
+    if (active) active.style.display = showAll || viewName === 'active' ? 'block' : 'none';
+    if (contracts) contracts.style.display = showAll || viewName === 'contracts' ? 'block' : 'none';
+    if (history) history.style.display = showAll ? 'block' : 'none';
+    if (spending) spending.style.display = showAll ? 'block' : 'none';
+  }
+
+  function showView(viewName) {
+    const name = String(viewName || 'dashboard').toLowerCase();
+    document.querySelectorAll('.sidebar-item').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = Array.from(document.querySelectorAll('.sidebar-item')).find(btn => {
+      const onclickVal = String(btn.getAttribute('onclick') || '');
+      return onclickVal.indexOf("showView('" + name + "')") !== -1;
+    });
+    if (activeBtn) activeBtn.classList.add('active');
+    setDisplayByView_(name);
+  }
+
+  // Helpers
+  function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function serviceReportUrl(apptId) {
+    var base = String(SERVICE_REPORT_BASE || '').replace(/\/$/, '');
+    if (!base || !apptId) return '';
+    var sep = base.indexOf('?') === -1 ? '?' : '&';
+    return base + sep + 'appointmentId=' + encodeURIComponent(String(apptId));
+  }
+
+  /** Safe HTML fragment: Report link + optional Linked badge (uses appointment id for deep link). */
+  function serviceReportLinkHtml(r) {
+    var url = serviceReportUrl(r && r.id);
+    if (!url) return '';
+    var linked = (r && r.linkedServiceReportId)
+      ? '<span class="badge-pill" style="background:#dcfce7;color:#166534;font-size:10px;margin-left:6px;" title="Saved service report ID on file">Linked</span>'
+      : '';
+    return '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer" class="btn-primary btn-sm" style="background:linear-gradient(135deg,#0369a1,#0284c7);text-decoration:none;" title="Open service report for this appointment"><i class="fas fa-clipboard-check"></i> Report</a>' + linked;
+  }
+
+  function freqBadge(r) {
+    if (r.recurring === 'monthly') return '<span class="badge-pill pill-monthly">Monthly</span>';
+    if (r.recurring === 'biweekly') return '<span class="badge-pill pill-biweekly">Biweekly</span>';
+    return '<span class="badge-pill pill-weekly">Weekly</span>';
+  }
+  function fmtDate(s) {
+    if (!s) return '—';
+    try { return new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }); }
+    catch(e) { return s; }
+  }
+
+  // Contracts
+  let allContracts = [];
+  function contractStatusBadge(status) {
+    const s = String(status || 'Draft');
+    if (s === 'Signed') return '<span class="badge-pill pill-signed">Signed</span>';
+    if (s === 'Sent') return '<span class="badge-pill pill-sent">Sent</span>';
+    if (s === 'Cancelled') return '<span class="badge-pill pill-cancelled">Cancelled</span>';
+    return '<span class="badge-pill pill-draft">Draft</span>';
+  }
+
+  async function loadContracts() {
+    try {
+      addLog('Loading contracts list', 'info', 'Company ID=' + CURRENT_COMPANY_ID);
+      const res = await apiGet('listWeeklyServiceContracts', { companyId: CURRENT_COMPANY_ID });
+      if (!res || !res.success) throw new Error((res && res.error) || 'Failed to load contracts');
+      allContracts = res.contracts || [];
+      addLog('✅ Contracts loaded', 'success', 'Total=' + allContracts.length);
+      renderContracts(allContracts);
+    } catch (e) {
+      addLog('❌ Contract list error', 'error', e.message);
+      document.getElementById('contractsContent').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>Could not load contracts</h3><p>' + esc(e.message) + '</p></div>';
+    }
+  }
+
+  function renderContracts(rows) {
+    document.getElementById('contractsBadge').textContent = rows.length;
+    const el = document.getElementById('contractsContent');
+    if (!rows.length) {
+      el.innerHTML = '<div class="empty-state"><i class="fas fa-file-contract"></i><h3>No contracts yet</h3><p>Create a weekly, biweekly, or monthly service contract to get started.</p></div>';
+      return;
+    }
+    el.innerHTML = '<div class="table-wrap"><table>'
+      + '<thead><tr><th>Customer</th><th>Frequency</th><th>Service Day</th><th>Price/Visit</th><th>Status</th><th>Created</th><th>Signed</th><th>Actions</th></tr></thead>'
+      + '<tbody>'
+      + rows.map(r => {
+        const freq = r.frequency === 'monthly'
+          ? '<span class="badge-pill pill-monthly">Monthly</span>'
+          : (r.frequency === 'biweekly'
+            ? '<span class="badge-pill pill-biweekly">Biweekly</span>'
+            : '<span class="badge-pill pill-weekly">Weekly</span>');
+        const basePerVisit = parseFloat(r.pricePerVisit || 0);
+        const extraPerVisit = parseFloat(r.extraCostPerVisit || 0);
+        const perVisitTotal = parseFloat(r.perVisitTotal || (basePerVisit + extraPerVisit));
+        const autopayBadge = '<span style="display:inline-flex;align-items:center;gap:6px;margin-left:6px;padding:4px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:999px;font-size:11px;font-weight:600;color:#1e3a8a;" title="This is the amount used for Stripe autopay subscriptions">'
+          + '<i class="fas fa-link"></i> Autopay $' + perVisitTotal.toFixed(2)
+          + (extraPerVisit > 0 ? ' (Base $' + basePerVisit.toFixed(2) + ' + Extra $' + extraPerVisit.toFixed(2) + ')' : '')
+          + '</span>';
+        const pdfBtn = r.pdfUrl ? '<a class="btn-primary btn-sm" style="text-decoration:none;" target="_blank" href="' + esc(r.pdfUrl) + '"><i class="fas fa-file-pdf"></i> PDF</a>' : '';
+        const canEdit = String(r.status || '') !== 'Signed';
+        return '<tr>'
+          + '<td><div class="td-name">' + esc(r.customerName) + '</div><div class="td-sub">' + esc(r.customerEmail) + '</div></td>'
+          + '<td>' + freq + '</td>'
+          + '<td>' + (r.serviceDay ? '<span class="badge-pill pill-weekly">' + esc(r.serviceDay) + '</span>' : '—') + '</td>'
+          + '<td>$' + perVisitTotal.toFixed(2)
+            + (extraPerVisit > 0 ? '<div class="td-sub">Incl. $' + extraPerVisit.toFixed(2) + ' extra fee</div>' : '')
+            + '</td>'
+          + '<td>' + contractStatusBadge(r.status) + '</td>'
+          + '<td><span style="font-size:12px;color:#9ca3af;">' + fmtDate(r.dateCreated) + '</span></td>'
+          + '<td><span style="font-size:12px;color:#9ca3af;">' + fmtDate(r.dateSigned) + '</span></td>'
+          + '<td><div class="actions" data-contract-actions="' + esc(r.contractId) + '">'
+            + (canEdit ? '<button class="btn-primary btn-sm" style="background:linear-gradient(135deg,#7c3aed,#8b5cf6);" onclick="openContractBuilderById(\'' + esc(r.contractId) + '\')"><i class="fas fa-edit"></i> Edit</button>' : '')
+            + (canEdit ? '<button class="btn-primary btn-success btn-sm send-contract-btn" data-contract-id="' + esc(r.contractId) + '" onclick="setGlobalLoading(true, \'Sending contract to customer…\'); sendContract(\'' + esc(r.contractId) + '\')"><i class="fas fa-paper-plane"></i> Send</button>' : '')
+            + (canEdit ? autopayBadge : '')
+            + pdfBtn
+            + (canEdit ? '<button class="btn-primary btn-danger btn-sm" onclick="deleteContract(\'' + esc(r.contractId) + '\')"><i class="fas fa-trash"></i></button>' : '')
+          + '</div></td>'
+          + '</tr>';
+      }).join('')
+      + '</tbody></table></div>';
+  }
+
+  function filterContracts() {
+    const q = String(document.getElementById('contractSearchInput').value || '').toLowerCase();
+    if (!q) return renderContracts(allContracts);
+    renderContracts(allContracts.filter(r => (String(r.customerName || '') + ' ' + String(r.customerEmail || '') + ' ' + String(r.serviceDay || '')).toLowerCase().includes(q)));
+  }
+
+  function cbUpdateMonthly() {
+    const price = parseFloat(document.getElementById('cbPrice').value || 0) || 0;
+    const extraCost = parseFloat(document.getElementById('cbExtraCost').value || 0) || 0;
+    const freq = document.getElementById('cbFrequency').value;
+    let visits = 4;
+    if (freq === 'biweekly') {
+      visits = 2;
+    } else if (freq === 'monthly') {
+      visits = 1;
+    }
+    const perVisitTotal = price + extraCost;
+    document.getElementById('cbMonthlyPreview').textContent = 'Est. Monthly: $' + (perVisitTotal * visits).toFixed(2) + ' (' + visits + ' visit' + (visits !== 1 ? 's' : '') + ') • Per Visit Total: $' + perVisitTotal.toFixed(2);
+    const badgeEl = document.getElementById('cbAutopayBadge');
+    if (badgeEl) {
+      badgeEl.textContent = 'Autopay Uses: $' + perVisitTotal.toFixed(2) + ' per visit (Base $' + price.toFixed(2) + (extraCost > 0 ? ' + Extra $' + extraCost.toFixed(2) : '') + ')';
+    }
+  }
+
+  function openContractBuilder(prefill) {
+    const p = prefill || {};
+    document.getElementById('contractBuilderError').style.display = 'none';
+    document.getElementById('editingContractId').value = p.contractId || '';
+    document.getElementById('cbName').value = p.customerName || '';
+    document.getElementById('cbEmail').value = p.customerEmail || '';
+    document.getElementById('cbPhone').value = p.customerPhone || '';
+    document.getElementById('cbAddress').value = p.customerAddress || '';
+    document.getElementById('cbTitle').value = p.contractTitle || 'Weekly Pool Service Agreement';
+    document.getElementById('cbFrequency').value = p.frequency || 'weekly';
+    document.getElementById('cbServiceDay').value = p.serviceDay || '';
+    document.getElementById('cbTimeWindow').value = p.serviceTimeWindow || '';
+    document.getElementById('cbPrice').value = p.pricePerVisit || 160;
+    document.getElementById('cbExtraCost').value = p.extraCostPerVisit || 0;
+    document.getElementById('cbStartDate').value = p.startDate || '';
+    document.getElementById('cbSpecialNotes').value = p.specialNotes || '';
+    document.getElementById('cbCustomTerms').value = p.customTerms || '';
+    cbUpdateMonthly();
+    document.getElementById('contractBuilderModal').classList.add('open');
+  }
+
+  function closeContractBuilder(e) {
+    if (!e || e.target === document.getElementById('contractBuilderModal')) {
+      document.getElementById('contractBuilderModal').classList.remove('open');
+    }
+  }
+
+  async function openContractBuilderById(contractId) {
+    const found = allContracts.find(c => String(c.contractId) === String(contractId));
+    if (found) {
+      openContractBuilder(found);
+      return;
+    }
+    const res = await apiGet('getWeeklyServiceContract', { contractId: contractId });
+    if (res && res.success && res.data) openContractBuilder(res.data);
+  }
+
+  function showContractError(msg) {
+    const el = document.getElementById('contractBuilderError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function setContractSendLoading(contractId, isLoading) {
+    const id = String(contractId || '').trim();
+    if (!id) return;
+    document.querySelectorAll('.send-contract-btn[data-contract-id="' + id + '"]').forEach(btn => {
+      btn.disabled = !!isLoading;
+      btn.style.opacity = isLoading ? '0.7' : '1';
+      btn.innerHTML = isLoading
+        ? '<i class="fas fa-spinner fa-spin"></i> Sending...'
+        : '<i class="fas fa-paper-plane"></i> Send';
+    });
+  }
+
+  function setBuilderSendLoading(isLoading) {
+    const btn = document.getElementById('cbSaveSendBtn');
+    if (!btn) return;
+    btn.disabled = !!isLoading;
+    btn.style.opacity = isLoading ? '0.7' : '1';
+    btn.innerHTML = isLoading
+      ? '<i class="fas fa-spinner fa-spin"></i> Sending...'
+      : '<i class="fas fa-paper-plane"></i> Save &amp; Send';
+  }
+
+  async function submitContract(mode) {
+    // Show loading IMMEDIATELY for send mode
+    if (mode === 'send') {
+      setBuilderSendLoading(true);
+      setGlobalLoading(true, 'Saving and sending contract…');
+      // Force browser to repaint UI before any async operations
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
+    
+    const contractId = String(document.getElementById('editingContractId').value || '').trim();
+    const payload = {
+      companyId: CURRENT_COMPANY_ID,
+      customerName: document.getElementById('cbName').value.trim(),
+      customerEmail: document.getElementById('cbEmail').value.trim(),
+      customerPhone: document.getElementById('cbPhone').value.trim(),
+      customerAddress: document.getElementById('cbAddress').value.trim(),
+      contractTitle: document.getElementById('cbTitle').value.trim(),
+      frequency: document.getElementById('cbFrequency').value,
+      serviceDay: document.getElementById('cbServiceDay').value,
+      serviceTimeWindow: document.getElementById('cbTimeWindow').value.trim(),
+      pricePerVisit: parseFloat(document.getElementById('cbPrice').value || 0),
+      extraCostPerVisit: parseFloat(document.getElementById('cbExtraCost').value || 0),
+      startDate: document.getElementById('cbStartDate').value,
+      specialNotes: document.getElementById('cbSpecialNotes').value.trim(),
+      customTerms: document.getElementById('cbCustomTerms').value.trim()
+    };
+
+    if (!payload.customerName || !payload.customerEmail) return showContractError('Customer name and email are required.');
+    if (!payload.pricePerVisit || payload.pricePerVisit <= 0) return showContractError('Price per visit must be greater than 0.');
+    if (payload.extraCostPerVisit < 0) return showContractError('Extra cost per visit cannot be negative.');
+
+    try {
+      addLog('Saving contract...', 'contract', 'Customer: ' + payload.customerName);
+      let res;
+      if (contractId) {
+        addLog('Updating existing contract', 'info', 'ID: ' + contractId);
+        res = await apiPost('updateWeeklyServiceContract', Object.assign({ contractId: contractId }, payload));
+      } else {
+        addLog('Creating new contract', 'info', 'Customer: ' + payload.customerName);
+        res = await apiPost('createWeeklyServiceContract', payload);
+      }
+      if (!res || !res.success) return showContractError((res && res.error) || 'Could not save contract.');
+      addLog('✅ Contract saved', 'success', 'ID: ' + (res.contractId || contractId));
+      const savedId = res.contractId || contractId;
+      if (mode === 'send') {
+        addLog('Starting contract send...', 'contract', 'ID: ' + savedId + ', Email: ' + payload.customerEmail);
+        setContractSendLoading(savedId, true);
+        setGlobalLoading(true, 'Sending contract to customer…');
+        showToast('Sending contract...', 'info');
+        const sendRes = await apiPost('sendWeeklyServiceContract', { contractId: savedId });
+        if (!sendRes || !sendRes.success) {
+          addLog('❌ Contract send failed', 'error', sendRes && sendRes.error);
+          return showContractError((sendRes && sendRes.error) || 'Could not send contract.');
+        }
+        if (sendRes.telegramSent === false) {
+          addLog('⚠️ Telegram notification failed', 'warning', sendRes.telegramError);
+          showToast('Contract sent to customer, but Telegram notification failed: ' + (sendRes.telegramError || 'Unknown Telegram error'), 'error');
+        } else {
+          addLog('✅ Contract sent + Telegram', 'success', 'Customer notified + Draft text created');
+          showToast((sendRes.telegramMessage || 'Weekly service agreement setup complete. Agreement sent + Telegram draft created.'), 'success');
+        }
+      } else {
+        addLog('Contract saved (draft)', 'success', 'Not sent yet');
+        showToast('Contract saved.', 'success');
+      }
+      closeContractBuilder();
+      loadContracts();
+    } catch (e) {
+      addLog('❌ Contract error', 'error', e.message);
+      showContractError(e.message || 'Request failed');
+    } finally {
+      setBuilderSendLoading(false);
+      clearGlobalLoadingWithMinDelay();
+      const id = String(document.getElementById('editingContractId').value || '').trim();
+      if (id) setContractSendLoading(id, false);
+    }
+  }
+
+  async function sendContract(contractId) {
+    addLog('Sending contract...', 'contract', 'ID: ' + contractId);
+    try {
+      setContractSendLoading(contractId, true);
+      setGlobalLoading(true, 'Sending contract to customer…');
+      showToast('Sending contract...', 'info');
+      addLog('Calling backend sendWeeklyServiceContract', 'info', 'contractId=' + contractId);
+      const res = await apiPost('sendWeeklyServiceContract', { contractId: contractId });
+      addLog('Backend response received', 'info', 'success=' + (res && res.success));
+      if (res && res.success) {
+        addLog('Contract sent successfully', 'success', 'Customer notified');
+        if (res.telegramSent === false) {
+          addLog('⚠️ Telegram notification failed', 'warning', res.telegramError);
+          showToast('Contract sent, but Telegram notification failed: ' + (res.telegramError || 'Unknown Telegram error'), 'error');
+        } else {
+          addLog('✅ Telegram message sent with draft text', 'success', 'Draft URL generated');
+          showToast((res.telegramMessage || 'Weekly service agreement setup complete. Agreement sent + Telegram draft created.'), 'success');
+        }
+        await loadContracts();
+      } else {
+        addLog('❌ Contract send failed', 'error', res && res.error);
+        showToast((res && res.error) || 'Send failed.', 'error');
+      }
+    } catch (e) {
+      addLog('❌ Contract send error', 'error', e.message);
+      showToast('Error: ' + e.message, 'error');
+      console.error('sendContract error:', e);
+    } finally {
+      setContractSendLoading(contractId, false);
+      clearGlobalLoadingWithMinDelay();
+    }
+  }
+
+  async function deleteContract(contractId) {
+    if (!confirm('Delete this contract?')) return;
+    const res = await apiPost('deleteWeeklyServiceContract', { contractId: contractId });
+    if (res && res.success) {
+      showToast('Contract deleted.', 'success');
+      loadContracts();
+    } else {
+      showToast((res && res.error) || 'Delete failed.', 'error');
+    }
+  }
+
+  // ========== SERVICE HISTORY FUNCTIONS ==========
+  
+  async function loadServiceHistoryForEmail() {
+    const email = document.getElementById('historyCustomerEmail').value.trim();
+    if (!email) {
+      document.getElementById('historyContent').innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><h3>No service history</h3><p>Search for a customer email to view their service history.</p></div>';
+      document.getElementById('historyBadge').textContent = '0';
+      return;
+    }
+
+    try {
+      const res = await apiGet('getServiceHistory', { customerEmail: email });
+      if (res && res.success) {
+        renderServiceHistory(res.history || []);
+        document.getElementById('historyBadge').textContent = (res.history || []).length;
+      } else {
+        document.getElementById('historyContent').innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>No history found</h3><p>This customer has no service records yet.</p></div>';
+        document.getElementById('historyBadge').textContent = '0';
+      }
+    } catch (err) {
+      showToast('Error loading history: ' + err, 'error');
+    }
+  }
+
+  function renderServiceHistory(history) {
+    if (!history || history.length === 0) {
+      document.getElementById('historyContent').innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>No history found</h3><p>This customer has no service records yet.</p></div>';
+      return;
+    }
+
+    let html = '<div class="table-wrap"><table>';
+    html += '<thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Amount</th><th>Performed By</th><th>Notes</th><th>Chemicals</th></tr></thead>';
+    html += '<tbody>';
+
+    let totalAmount = 0;
+    history.forEach(sh => {
+      const amount = parseFloat(sh.amount || 0);
+      totalAmount += amount;
+      const isOneOff = sh.serviceType.includes('One-Off');
+      const badge = isOneOff ? '<span style="background:#fef08a;color:#92400e;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">One-Off</span>' : '<span style="background:#d1fae5;color:#065f46;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:600;">Regular</span>';
+      const readings = sh.chemicalReadings || {};
+      const dosages = sh.chemicalDosages || {};
+      const readingParts = [];
+      if (readings.freeChlorine !== '' && readings.freeChlorine != null) readingParts.push('FC ' + readings.freeChlorine);
+      if (readings.totalChlorine !== '' && readings.totalChlorine != null) readingParts.push('TC ' + readings.totalChlorine);
+      if (readings.pH !== '' && readings.pH != null) readingParts.push('pH ' + readings.pH);
+      if (readings.alkalinity !== '' && readings.alkalinity != null) readingParts.push('Alk ' + readings.alkalinity);
+      if (readings.calciumHardness !== '' && readings.calciumHardness != null) readingParts.push('Cal ' + readings.calciumHardness);
+      if (readings.cya !== '' && readings.cya != null) readingParts.push('CYA ' + readings.cya);
+      if (readings.salt !== '' && readings.salt != null) readingParts.push('Salt ' + readings.salt);
+
+      const doseParts = [];
+      if (dosages.liquidChlorineGal) doseParts.push('LC ' + dosages.liquidChlorineGal + ' gal');
+      if (dosages.muriaticAcidQt) doseParts.push('Acid ' + dosages.muriaticAcidQt + ' qt');
+      if (dosages.alkalinityUpLb) doseParts.push('Alk+ ' + dosages.alkalinityUpLb + ' lb');
+      if (dosages.calciumUpLb) doseParts.push('Cal+ ' + dosages.calciumUpLb + ' lb');
+      if (dosages.stabilizerLb) doseParts.push('Stab ' + dosages.stabilizerLb + ' lb');
+      if (dosages.saltAddedLb) doseParts.push('Salt+ ' + dosages.saltAddedLb + ' lb');
+      const otherDose = dosages.otherChemicals ? esc(dosages.otherChemicals) : '';
+
+      let chemHtml = '<span style="color:#9ca3af;font-size:12px;">—</span>';
+      if (readingParts.length || doseParts.length || otherDose) {
+        chemHtml = '';
+        if (readingParts.length) {
+          chemHtml += '<div style="font-size:12px;color:#0f766e;margin-bottom:4px;"><strong>Readings:</strong> ' + esc(readingParts.join(', ')) + '</div>';
+        }
+        if (doseParts.length) {
+          chemHtml += '<div style="font-size:12px;color:#7c2d12;margin-bottom:4px;"><strong>Added:</strong> ' + esc(doseParts.join(', ')) + '</div>';
+        }
+        if (otherDose) {
+          chemHtml += '<div style="font-size:12px;color:#6b7280;"><strong>Other:</strong> ' + otherDose + '</div>';
+        }
+      }
+      html += `<tr>
+        <td>${sh.date || ''}</td>
+        <td>${badge}</td>
+        <td>${sh.description || ''}</td>
+        <td>${amount > 0 ? '$' + amount.toFixed(2) : '-'}</td>
+        <td>${sh.performedBy || ''}</td>
+        <td style="color:#64748b;font-size:13px;">${sh.notes || ''}</td>
+        <td>${chemHtml}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    
+    if (totalAmount > 0) {
+      html += `<div style="margin-top:16px;padding:12px;background:#f8fafc;border-left:4px solid #10b981;border-radius:4px;">
+        <strong>Total One-Off Charges:</strong> $${totalAmount.toFixed(2)}
+      </div>`;
+    }
+
+    document.getElementById('historyContent').innerHTML = html;
+  }
+
+  function openServiceHistoryModal() {
+    // Set today's date as default
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('shDate').value = today;
+    document.getElementById('shCustomerEmail').value = '';
+    document.getElementById('shServiceType').value = 'Regular';
+    document.getElementById('shDescription').value = '';
+    document.getElementById('shAmount').value = '0';
+    document.getElementById('shNotes').value = '';
+    document.getElementById('shPerformedBy').value = '';
+    document.getElementById('historyModalError').style.display = 'none';
+    
+    document.getElementById('serviceHistoryModal').style.display = 'flex';
+  }
+
+  function closeServiceHistoryModal(event) {
+    if (event && event.target.id !== 'serviceHistoryModal') return;
+    document.getElementById('serviceHistoryModal').style.display = 'none';
+  }
+
+  function showServiceHistoryError(msg) {
+    const el = document.getElementById('historyModalError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  async function submitServiceHistory() {
+    const email = document.getElementById('shCustomerEmail').value.trim().toLowerCase();
+    const serviceType = document.getElementById('shServiceType').value;
+    const description = document.getElementById('shDescription').value.trim();
+    const amount = parseFloat(document.getElementById('shAmount').value || 0);
+    const notes = document.getElementById('shNotes').value.trim();
+    const performedBy = document.getElementById('shPerformedBy').value.trim();
+    const date = document.getElementById('shDate').value;
+
+    if (!email) {
+      showServiceHistoryError('Customer email is required');
+      return;
+    }
+    if (!description) {
+      showServiceHistoryError('Description is required');
+      return;
+    }
+    if (amount < 0) {
+      showServiceHistoryError('Amount must be >= 0');
+      return;
+    }
+    if (!performedBy) {
+      showServiceHistoryError('Performed by is required');
+      return;
+    }
+    if (!date) {
+      showServiceHistoryError('Date is required');
+      return;
+    }
+
+    try {
+      const res = await apiPost('logServiceCompletion', {
+        customerEmail: email,
+        serviceType: serviceType,
+        description: description,
+        amount: amount,
+        notes: notes,
+        performedBy: performedBy,
+        date: date
+      });
+
+      if (res && res.success) {
+        showToast('Service logged successfully!', 'success');
+        document.getElementById('historyCustomerEmail').value = email;
+        loadServiceHistoryForEmail();
+        closeServiceHistoryModal();
+      } else {
+        showServiceHistoryError(res.error || 'Error logging service');
+      }
+    } catch (err) {
+      showServiceHistoryError('Error: ' + err);
+    }
+  }
+
+  // ========== CHEMICALS CATALOG & MANUAL CARD-ON-FILE ==========
+  let chemicalsCatalogRows = [];
+
+  function showChemicalsCatalogError(msg) {
+    const el = document.getElementById('chemicalsCatalogError');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function hideChemicalsCatalogError() {
+    const el = document.getElementById('chemicalsCatalogError');
+    if (el) el.style.display = 'none';
+  }
+
+  function openChemicalsCatalogModal() {
+    hideChemicalsCatalogError();
+    document.getElementById('chemNewDisplayName').value = '';
+    document.getElementById('chemNewKey').value = '';
+    document.getElementById('chemNewUnit').value = '';
+    document.getElementById('chemNewUnitPrice').value = '';
+    document.getElementById('chemicalsCatalogModal').style.display = 'flex';
+    loadChemicalsCatalog();
+  }
+
+  function closeChemicalsCatalogModal(event) {
+    if (event && event.target.id !== 'chemicalsCatalogModal') return;
+    document.getElementById('chemicalsCatalogModal').style.display = 'none';
+  }
+
+  async function loadChemicalsCatalog() {
+    const wrap = document.getElementById('chemicalsCatalogTableWrap');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading chemicals...</div>';
+    hideChemicalsCatalogError();
+
+    try {
+      const result = await apiPost('getChemicalsCatalog', { companyId: CURRENT_COMPANY_ID });
+      if (!result || !result.success) {
+        showChemicalsCatalogError((result && result.error) || 'Failed to load chemicals catalog.');
+        wrap.innerHTML = '<div class="empty-state"><i class="fas fa-flask"></i><h3>No catalog data</h3><p>Could not load chemicals.</p></div>';
+        return;
+      }
+      chemicalsCatalogRows = Array.isArray(result.items) ? result.items : [];
+      renderChemicalsCatalogTable();
+    } catch (err) {
+      showChemicalsCatalogError('Error loading chemicals catalog: ' + err);
+      wrap.innerHTML = '<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h3>Error</h3><p>Unable to load chemicals catalog.</p></div>';
+    }
+  }
+
+  function renderChemicalsCatalogTable() {
+    const wrap = document.getElementById('chemicalsCatalogTableWrap');
+    if (!wrap) return;
+    if (!chemicalsCatalogRows || chemicalsCatalogRows.length === 0) {
+      wrap.innerHTML = '<div class="empty-state"><i class="fas fa-flask"></i><h3>No chemicals yet</h3><p>Add chemicals above to build your price catalog.</p></div>';
+      return;
+    }
+
+    let html = '<div class="table-wrap"><table>';
+    html += '<thead><tr><th>Display Name</th><th>Key</th><th>Unit</th><th>Unit Price</th><th>Status</th></tr></thead><tbody>';
+    chemicalsCatalogRows.forEach((row) => {
+      const active = row.active !== false;
+      html += `<tr>
+        <td>${esc(row.displayName || '')}</td>
+        <td style="font-family:monospace;font-size:12px;color:#475569;">${esc(row.chemicalKey || '')}</td>
+        <td>${esc(row.unit || '')}</td>
+        <td>$${parseFloat(row.unitPrice || 0).toFixed(2)}</td>
+        <td>${active
+          ? '<span style="background:#d1fae5;color:#065f46;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700;">Active</span>'
+          : '<span style="background:#e5e7eb;color:#475569;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700;">Inactive</span>'
+        }</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+  }
+
+  async function saveChemicalCatalogItem() {
+    const displayName = document.getElementById('chemNewDisplayName').value.trim();
+    const chemicalKey = document.getElementById('chemNewKey').value.trim();
+    const unit = document.getElementById('chemNewUnit').value.trim() || 'unit';
+    const unitPrice = parseFloat(document.getElementById('chemNewUnitPrice').value || 0);
+
+    if (!displayName) return showChemicalsCatalogError('Display name is required.');
+    if (!chemicalKey) return showChemicalsCatalogError('Key is required.');
+    if (isNaN(unitPrice) || unitPrice < 0) return showChemicalsCatalogError('Unit price must be 0 or greater.');
+
+    hideChemicalsCatalogError();
+    try {
+      const result = await apiPost('upsertChemicalCatalog', {
+        companyId: CURRENT_COMPANY_ID,
+        displayName: displayName,
+        chemicalKey: chemicalKey,
+        unit: unit,
+        unitPrice: unitPrice,
+        active: true
+      });
+      if (result && result.success) {
+        showToast('Chemical saved to catalog', 'success');
+        document.getElementById('chemNewDisplayName').value = '';
+        document.getElementById('chemNewKey').value = '';
+        document.getElementById('chemNewUnit').value = '';
+        document.getElementById('chemNewUnitPrice').value = '';
+        loadChemicalsCatalog();
+      } else {
+        showChemicalsCatalogError((result && result.error) || 'Failed to save chemical.');
+      }
+    } catch (err) {
+      showChemicalsCatalogError('Error saving chemical: ' + err);
+    }
+  }
+
+  function showManualCardError(msg) {
+    const el = document.getElementById('manualCardError');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function hideManualCardError() {
+    const el = document.getElementById('manualCardError');
+    if (el) el.style.display = 'none';
+  }
+
+  function openManualCardModal() {
+    hideManualCardError();
+    const email = (document.getElementById('historyCustomerEmail') && document.getElementById('historyCustomerEmail').value.trim()) || '';
+    document.getElementById('manualCardCustomerEmail').value = email;
+    document.getElementById('manualCardCustomerName').value = '';
+    document.getElementById('manualCardCustomerPhone').value = '';
+    document.getElementById('manualCardModal').style.display = 'flex';
+  }
+
+  function closeManualCardModal(event) {
+    if (event && event.target.id !== 'manualCardModal') return;
+    document.getElementById('manualCardModal').style.display = 'none';
+  }
+
+  async function createManualCardOnFileLinkUI() {
+    const name = document.getElementById('manualCardCustomerName').value.trim();
+    const email = document.getElementById('manualCardCustomerEmail').value.trim().toLowerCase();
+    const phone = document.getElementById('manualCardCustomerPhone').value.trim();
+    const btn = document.getElementById('manualCardSubmitBtn');
+
+    if (!name) return showManualCardError('Customer name is required.');
+    if (!email || email.indexOf('@') === -1) return showManualCardError('Valid customer email is required.');
+
+    hideManualCardError();
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner" style="animation:spin 1s linear infinite;"></i> Creating Stripe setup...';
+
+    try {
+      const successUrl = window.location.origin + window.location.pathname + '?cardSetup=success&email=' + encodeURIComponent(email);
+      const cancelUrl = window.location.origin + window.location.pathname + '?cardSetup=cancel';
+      const result = await apiPost('createManualCardOnFileLink', {
+        companyId: CURRENT_COMPANY_ID,
+        customerName: name,
+        customerEmail: email,
+        customerPhone: phone,
+        successUrl: successUrl,
+        cancelUrl: cancelUrl
+      });
+      if (result && result.success && result.url) {
+        showToast('Opening Stripe card setup...', 'success');
+        window.open(result.url, '_blank');
+      } else {
+        showManualCardError((result && result.error) || 'Failed to create Stripe setup link.');
+      }
+    } catch (err) {
+      showManualCardError('Error creating Stripe setup link: ' + err);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = original;
+    }
+  }
+
+  // ========== RECEIPT & SPENDING FUNCTIONS ==========
+  
+  let receiptImageBase64 = null;
+  let receiptImageMimeType = 'image/jpeg';
+
+  function openReceiptUploadModal() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('rcCustomerEmail').value = '';
+    document.getElementById('rcDescription').value = '';
+    document.getElementById('rcAmount').value = '0';
+    document.getElementById('rcDate').value = today;
+    document.getElementById('rcNotes').value = '';
+    document.getElementById('receiptModalError').style.display = 'none';
+    document.getElementById('rcImagePreview').style.display = 'none';
+    document.getElementById('ocrResultsPreview').style.display = 'none';
+    receiptImageBase64 = null;
+    
+    document.getElementById('receiptUploadModal').style.display = 'flex';
+  }
+
+  function closeReceiptUploadModal(event) {
+    if (event && event.target.id !== 'receiptUploadModal') return;
+    document.getElementById('receiptUploadModal').style.display = 'none';
+    receiptImageBase64 = null;
+  }
+
+  function handleReceiptImageSelect() {
+    const file = document.getElementById('rcImageFile').files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      showReceiptError('File is too large (max 10MB)');
+      return;
+    }
+
+    receiptImageMimeType = file.type || 'image/jpeg';
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      receiptImageBase64 = e.target.result;
+      document.getElementById('rcImageName').textContent = file.name;
+      document.getElementById('rcImagePreview').style.display = 'block';
+      document.getElementById('receiptModalError').style.display = 'none';
+    };
+    
+    reader.readAsDataURL(file);
+  }
+
+  function showReceiptError(msg) {
+    const el = document.getElementById('receiptModalError');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  async function submitReceipt() {
+    const email = document.getElementById('rcCustomerEmail').value.trim().toLowerCase();
+    const description = document.getElementById('rcDescription').value.trim();
+    const amount = parseFloat(document.getElementById('rcAmount').value || 0);
+    const date = document.getElementById('rcDate').value;
+    const notes = document.getElementById('rcNotes').value.trim();
+
+    if (!email) {
+      showReceiptError('Customer email is required');
+      return;
+    }
+    if (!description) {
+      showReceiptError('Description is required');
+      return;
+    }
+    if (!date) {
+      showReceiptError('Date is required');
+      return;
+    }
+    if (!receiptImageBase64) {
+      showReceiptError('Receipt image is required');
+      return;
+    }
+
+    try {
+      // Show processing message
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-spinner" style="animation:spin 1s linear infinite;"></i> Processing OCR…';
+      btn.disabled = true;
+
+      const res = await apiPost('uploadCustomerReceipt', {
+        customerEmail: email,
+        description: description,
+        amount: amount,
+        date: date,
+        base64Image: receiptImageBase64,
+        mimeType: receiptImageMimeType,
+        notes: notes
+      });
+
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+
+      if (res && res.success) {
+        showToast(`Receipt uploaded! OCR: $${res.ocrAmount.toFixed(2)}, Used: $${res.finalAmount.toFixed(2)}`, 'success');
+        document.getElementById('spendingEmail').value = email;
+        loadCustomerSpending();
+        closeReceiptUploadModal();
+      } else {
+        showReceiptError(res.error || 'Error uploading receipt');
+      }
+    } catch (err) {
+      showReceiptError('Error: ' + err);
+    }
+  }
+
+  async function loadCustomerSpending() {
+    const email = document.getElementById('spendingEmail').value.trim().toLowerCase();
+    if (!email) {
+      document.getElementById('spendingContent').innerHTML = '<div class="empty-state"><i class="fas fa-wallet"></i><h3>No spending data</h3><p>Search for a customer email to view their spending.</p></div>';
+      document.getElementById('spendingBadge').textContent = '$0.00';
+      return;
+    }
+
+    try {
+      const [spendingRes, receiptsRes] = await Promise.all([
+        apiGet('getCustomerSpending', { customerEmail: email }),
+        apiGet('getCustomerReceipts', { customerEmail: email })
+      ]);
+
+      if (spendingRes && spendingRes.success) {
+        const spending = spendingRes.spending || {};
+        const total = spending.combinedTotal || 0;
+        document.getElementById('spendingBadge').textContent = '$' + total.toFixed(2);
+        renderSpendingDetails(spending, receiptsRes && receiptsRes.success ? receiptsRes.receipts : []);
+      } else {
+        document.getElementById('spendingContent').innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>No spending found</h3><p>This customer has no payment or receipt records.</p></div>';
+        document.getElementById('spendingBadge').textContent = '$0.00';
+      }
+    } catch (err) {
+      showToast('Error loading spending: ' + err, 'error');
+    }
+  }
+
+  function renderSpendingDetails(spending, receipts) {
+    const sp = spending;
+    let html = '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px;">';
+    
+    // Summary cards
+    html += `
+      <div style="background:#fee2e2;border-left:4px solid #dc2626;padding:16px;border-radius:6px;">
+        <div style="font-size:12px;color:#991b1b;font-weight:600;">Receipts Uploaded</div>
+        <div style="font-size:28px;font-weight:800;color:#991b1b;margin-top:4px;">$${sp.receiptTotal.toFixed(2)}</div>
+      </div>
+      <div style="background:#d1fae5;border-left:4px solid #059669;padding:16px;border-radius:6px;">
+        <div style="font-size:12px;color:#065f46;font-weight:600;">Service Charges</div>
+        <div style="font-size:28px;font-weight:800;color:#065f46;margin-top:4px;">$${sp.serviceTotal.toFixed(2)}</div>
+      </div>
+      <div style="background:#dbeafe;border-left:4px solid #0284c7;padding:16px;border-radius:6px;">
+        <div style="font-size:12px;color:#0c4a6e;font-weight:600;">Payments Recorded</div>
+        <div style="font-size:28px;font-weight:800;color:#0c4a6e;margin-top:4px;">$${sp.paymentTotal.toFixed(2)}</div>
+      </div>
+      <div style="background:#fef3c7;border-left:4px solid #d97706;padding:16px;border-radius:6px;">
+        <div style="font-size:12px;color:#92400e;font-weight:600;">Total Spending</div>
+        <div style="font-size:28px;font-weight:800;color:#92400e;margin-top:4px;">$${sp.combinedTotal.toFixed(2)}</div>
+      </div>
+    </div>`;
+
+    // Receipts table
+    if (receipts && receipts.length > 0) {
+      html += '<h4 style="margin-top:24px;margin-bottom:12px;color:#1e293b;font-weight:600;">Uploaded Receipts</h4>';
+      html += '<div class="table-wrap"><table>';
+      html += '<thead><tr><th>Date</th><th>Description</th><th>OCR</th><th>Used</th><th>Notes</th></tr></thead>';
+      html += '<tbody>';
+      
+      receipts.forEach(r => {
+        const ocrBadge = r.ocrAmount > 0 ? `<span style="background:#d1fae5;color:#065f46;padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;">OCR</span>` : '';
+        const manualBadge = r.manualAmount > 0 ? `<span style="background:#ede9fe;color:#4c1d95;padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;margin-left:4px;">Manual</span>` : '';
+        
+        html += `<tr>
+          <td>${r.date}</td>
+          <td>${r.description}</td>
+          <td>${r.ocrAmount > 0 ? '$' + r.ocrAmount.toFixed(2) : '-'} ${ocrBadge}</td>
+          <td style="font-weight:600;">$${r.amountUsed.toFixed(2)} ${manualBadge}</td>
+          <td style="font-size:12px;color:#64748b;">${r.notes || ''}</td>
+        </tr>`;
+      });
+      
+      html += '</tbody></table></div>';
+    }
+
+    document.getElementById('spendingContent').innerHTML = html;
+  }
+
+  // Add CSS keyframe for spinner
+  const style = document.createElement('style');
+  style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+  document.head.appendChild(style);
+
+  // Initialize when Google Apps Script is ready
+  function initializeApp() {
+    if (typeof google === 'undefined' || !google.script || !google.script.run) {
+      console.log('⏳ Waiting for google.script to be ready...');
+      
+      // Show initializing state
+      document.getElementById('pendingContent').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Initializing Google Apps Script...</div>';
+      document.getElementById('activeContent').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Initializing Google Apps Script...</div>';
+      
+      // Reset stats to loading state
+      document.getElementById('statWeekly').innerHTML = '<i class="fas fa-spinner" style="font-size:16px;animation:spin 1s linear infinite;"></i>';
+      document.getElementById('statBiweekly').innerHTML = '<i class="fas fa-spinner" style="font-size:16px;animation:spin 1s linear infinite;"></i>';
+      document.getElementById('statPending').innerHTML = '<i class="fas fa-spinner" style="font-size:16px;animation:spin 1s linear infinite;"></i>';
+      document.getElementById('statRevenue').innerHTML = '<i class="fas fa-spinner" style="font-size:16px;animation:spin 1s linear infinite;"></i>';
+      
+      setTimeout(initializeApp, 100);
+      return;
+    }
+    
+    // Check if we're in an iframe (from SchedulingUI)
+    const isInIframe = window !== window.top;
+    if (isInIframe) {
+      console.log('📱 Running inside iframe (from SchedulingUI)');
+    }
+    
+    console.log('✅ google.script.run ready, loading dashboard...');
+    
+    // Update loading message
+    document.getElementById('pendingContent').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading weekly service data...</div>';
+    document.getElementById('activeContent').innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading weekly service data...</div>';
+    
+    // Initialize upload areas for Log Service Completion
+    const poolUploadArea = document.getElementById('lsc-uploadPoolArea');
+    if (poolUploadArea) {
+      poolUploadArea.addEventListener('click', () => {
+        document.getElementById('lsc-fileInputPool').click();
+      });
+    }
+    
+    const saltUploadArea = document.getElementById('lsc-uploadSaltArea');
+    if (saltUploadArea) {
+      saltUploadArea.addEventListener('click', () => {
+        document.getElementById('lsc-fileInputSalt').click();
+      });
+    }
+    
+    loadDashboard();
+  }
+
+  // Start initialization when DOM is loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+  } else {
+    initializeApp();
+  }
+</script>
+</div><!-- /.main-area -->
+</body>
+</html>

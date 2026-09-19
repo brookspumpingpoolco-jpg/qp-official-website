@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      padding: 40px 20px;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    .invoice-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .invoice-header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .company-info h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .company-info p {
+      font-size: 14px;
+      opacity: 0.95;
+      margin: 4px 0;
+    }
+
+    .invoice-meta {
+      text-align: right;
+    }
+
+    .invoice-meta h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .invoice-meta p {
+      font-size: 14px;
+      opacity: 0.95;
+      margin: 4px 0;
+    }
+
+    .invoice-body {
+      padding: 40px;
+    }
+
+    .billing-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .billing-box h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .billing-box p {
+      font-size: 15px;
+      color: #1a1a1a;
+      margin: 6px 0;
+      line-height: 1.8;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    .items-table thead {
+      background: #f9fafb;
+    }
+
+    .items-table th {
+      padding: 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .items-table td {
+      padding: 16px;
+      font-size: 15px;
+      color: #1a1a1a;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .items-table tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    .items-table .text-right {
+      text-align: right;
+    }
+
+    .items-table .text-center {
+      text-align: center;
+    }
+
+    .total-section {
+      margin-top: 30px;
+      margin-left: auto;
+      width: 300px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      font-size: 15px;
+      color: #374151;
+    }
+
+    .total-row.subtotal {
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .total-row.tax {
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .total-row.grand-total {
+      margin-top: 12px;
+      padding-top: 20px;
+      border-top: 2px solid #0369a1;
+      font-size: 20px;
+      font-weight: 700;
+      color: #0369a1;
+    }
+
+    .invoice-footer {
+      background: #f9fafb;
+      padding: 30px 40px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .payment-info {
+      margin-bottom: 30px;
+    }
+
+    .payment-info h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+
+    .payment-info p {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 6px 0;
+    }
+
+    .payment-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);
+    }
+
+    .payment-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(3, 105, 161, 0.4);
+    }
+
+    .invoice-notes {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .invoice-notes h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .invoice-notes p {
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.8;
+    }
+
+    .logo {
+      max-width: 120px;
+      height: auto;
+      margin-bottom: 16px;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .invoice-container {
+        box-shadow: none;
+        border-radius: 0;
+      }
+
+      .payment-button {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .billing-section {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .invoice-header {
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .invoice-meta {
+        text-align: left;
+      }
+
+      .items-table {
+        font-size: 13px;
+      }
+
+      .items-table th,
+      .items-table td {
+        padding: 10px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <!-- Header -->
+    <div class="invoice-header">
+      <div class="company-info">
+        <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6931dca5c5fb5c5fc0860f2c_test.png" alt="A Quality Pool Company" class="logo">
+        <h1>A Quality Pool Company</h1>
+        <p>Professional Pool Services</p>
+        <p>samr@aqualitypoolcompanyusa.com</p>
+        <p>(502) 706-9172</p>
+      </div>
+      <div class="invoice-meta">
+        <h2>INVOICE</h2>
+        <p><strong>Invoice ID:</strong> <span id="invoiceNumber">-</span></p>
+        <p><strong>Date:</strong> <span id="invoiceDate">-</span></p>
+        <p><strong>Due Date:</strong> <span id="dueDate">-</span></p>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="invoice-body">
+      <!-- Billing Information -->
+      <div class="billing-section">
+        <div class="billing-box">
+          <h3>Bill To</h3>
+          <p id="customerName"><strong>-</strong></p>
+          <p id="customerAddress">-</p>
+          <p id="customerEmail">-</p>
+          <p id="customerPhone">-</p>
+        </div>
+        <div class="billing-box">
+          <h3>Property Location</h3>
+          <? if (data.customerAddress) { ?>
+          <div style="margin-top: 8px;">
+            <img src="https://maps.googleapis.com/maps/api/staticmap?center=<?= encodeURIComponent(data.customerAddress) ?>&zoom=18&size=300x200&maptype=satellite&markers=color:red|<?= encodeURIComponent(data.customerAddress) ?>&key=AIzaSyAbxEM5S4vVw7ZO_w2CZh_21JPwrVG2Z7Q" 
+                 alt="Property Location" 
+                 style="width: 100%; max-width: 300px; height: auto; border-radius: 8px; border: 2px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+          </div>
+          <? } else { ?>
+          <div id="propertyMapContainer" style="margin-top: 8px;">
+            <p style="color: #6b7280; font-size: 13px;">Address not provided</p>
+          </div>
+          <? } ?>
+        </div>
+      </div>
+
+      <!-- Line Items -->
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th style="width: 40%;">Description</th>
+            <th class="text-center" style="width: 15%;">Quantity</th>
+            <th class="text-right" style="width: 20%;">Unit Price</th>
+            <th class="text-right" style="width: 25%;">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="itemsTableBody">
+          <!-- Items will be populated here -->
+        </tbody>
+      </table>
+
+      <!-- Totals -->
+      <div class="total-section">
+        <div class="total-row subtotal">
+          <span>Subtotal:</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+        <div class="total-row tax">
+          <span>Tax:</span>
+          <span id="tax">$0.00</span>
+        </div>
+        <div class="total-row grand-total">
+          <span>Total:</span>
+          <span id="grandTotal">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Payment Information -->
+      <div class="invoice-footer">
+        <div class="payment-info">
+          <h3>Payment Information</h3>
+          <p>Payment is due within 30 days of invoice date.</p>
+          <p>Please make checks payable to <strong>A Quality Pool Company</strong></p>
+          <div style="margin-top: 20px;">
+            <a href="#" id="paymentLink" class="payment-button" style="display: none;">
+              Pay Invoice Online
+            </a>
+          </div>
+        </div>
+
+        <div class="invoice-notes">
+          <h3>Notes</h3>
+          <p id="invoiceNotes">Thank you for your business!</p>
+        </div>
+
+        <? if (data.terms) { ?>
+        <div class="invoice-notes" id="termsSection">
+          <h3>Terms & Conditions</h3>
+          <p id="invoiceTerms" style="white-space: pre-wrap;"><?= data.terms ?></p>
+        </div>
+        <? } ?>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // This template is designed to be populated with data from the server
+    // Example usage:
+    // populateInvoice({
+    //   invoiceNumber: 'INV-2024-001',
+    //   invoiceDate: '2024-01-15',
+    //   dueDate: '2024-02-14',
+    //   customer: {
+    //     name: 'John Doe',
+    //     address: '123 Main St, City, State 12345',
+    //     email: 'john@example.com',
+    //     phone: '(555) 123-4567'
+    //   },
+    //   project: {
+    //     type: 'Pool Build',
+    //     status: 'In Progress',
+    //     notes: 'Standard pool installation'
+    //   },
+    //   items: [
+    //     { description: 'Pool Kit', quantity: 1, unitPrice: 15000, total: 15000 },
+    //     { description: 'Installation Labor', quantity: 1, unitPrice: 5000, total: 5000 }
+    //   ],
+    //   subtotal: 20000,
+    //   tax: 1600,
+    //   grandTotal: 21600,
+    //   notes: 'Payment due within 30 days.',
+    //   paymentLink: 'https://checkout.stripe.com/...'
+    // });
+
+    function populateInvoice(data) {
+      // Invoice metadata
+      document.getElementById('invoiceNumber').textContent = data.id || data.invoiceNumber || '-';
+      document.getElementById('invoiceDate').textContent = formatDate(data.invoiceDate) || '-';
+      document.getElementById('dueDate').textContent = formatDate(data.dueDate) || '-';
+
+      // Customer info
+      if (data.customer) {
+        document.getElementById('customerName').innerHTML = '<strong>' + (data.customer.name || '-') + '</strong>';
+        document.getElementById('customerAddress').textContent = data.customer.address || '-';
+        document.getElementById('customerEmail').textContent = data.customer.email || '-';
+        document.getElementById('customerPhone').textContent = data.customer.phone || '-';
+      }
+
+      // Property Location Map
+      const mapContainer = document.getElementById('propertyMapContainer');
+      if (mapContainer && data.customer && data.customer.address) {
+        const address = encodeURIComponent(data.customer.address);
+        mapContainer.innerHTML = `
+            <img src="https://maps.googleapis.com/maps/api/staticmap?center=${address}&zoom=18&size=300x200&maptype=satellite&markers=color:red|${address}&key=AIzaSyAbxEM5S4vVw7ZO_w2CZh_21JPwrVG2Z7Q"
+               alt="Property Location" 
+               style="width: 100%; max-width: 300px; height: auto; border-radius: 8px; border: 2px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+               onerror="this.parentElement.innerHTML='<p style=\\'color: #6b7280; font-size: 13px;\\'>Map unavailable</p>';" />
+        `;
+      } else if (mapContainer) {
+        mapContainer.innerHTML = '<p style="color: #6b7280; font-size: 13px;">Address not provided</p>';
+      }
+
+      // Line items
+      const itemsBody = document.getElementById('itemsTableBody');
+      itemsBody.innerHTML = '';
+      if (data.items && data.items.length > 0) {
+        data.items.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${escapeHtml(item.description || '-')}</td>
+            <td class="text-center">${item.quantity || 0}</td>
+            <td class="text-right">$${formatCurrency(item.unitPrice || 0)}</td>
+            <td class="text-right"><strong>$${formatCurrency(item.total || 0)}</strong></td>
+          `;
+          itemsBody.appendChild(row);
+        });
+      } else {
+        itemsBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: #6b7280;">No items</td></tr>';
+      }
+
+      // Totals
+      document.getElementById('subtotal').textContent = '$' + formatCurrency(data.subtotal || 0);
+      document.getElementById('tax').textContent = '$' + formatCurrency(data.tax || 0);
+      document.getElementById('grandTotal').textContent = '$' + formatCurrency(data.grandTotal || data.subtotal + data.tax || 0);
+
+      // Notes
+      if (data.notes) {
+        document.getElementById('invoiceNotes').textContent = data.notes;
+      }
+
+      // Terms
+      if (data.terms) {
+        document.getElementById('termsSection').style.display = 'block';
+        document.getElementById('invoiceTerms').textContent = data.terms;
+      }
+
+      // Payment link
+      if (data.paymentLink) {
+        const paymentLinkEl = document.getElementById('paymentLink');
+        paymentLinkEl.href = data.paymentLink;
+        paymentLinkEl.style.display = 'inline-block';
+      }
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function formatCurrency(amount) {
+      return parseFloat(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.toString().replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>
+

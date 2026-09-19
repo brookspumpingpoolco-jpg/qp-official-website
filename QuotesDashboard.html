@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quotes Dashboard - A Quality Pool Company</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .filters-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-group label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 10px 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .filter-group select:focus,
+    .filter-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    .quotes-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .quote-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border-left: 4px solid;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .quote-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .quote-card.status-draft {
+      border-left-color: #6b7280;
+    }
+
+    .quote-card.status-sent {
+      border-left-color: #3b82f6;
+    }
+
+    .quote-card.status-pending {
+      border-left-color: #f59e0b;
+    }
+
+    .quote-card.status-approved {
+      border-left-color: #10b981;
+    }
+
+    .quote-card.status-signed {
+      border-left-color: #059669;
+    }
+
+    .quote-card.status-complete {
+      border-left-color: #8b5cf6;
+    }
+
+    .quote-header {
+      display: flex;
+      justify-content: between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .quote-info {
+      flex: 1;
+    }
+
+    .quote-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .quote-customer {
+      font-size: 16px;
+      color: #3b82f6;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .quote-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .quote-detail {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .quote-detail strong {
+      color: #1a1a1a;
+    }
+
+    .quote-amount {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a1a1a;
+      text-align: right;
+    }
+
+    .quote-status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-draft {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .status-sent {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-signed {
+      background: #dcfce7;
+      color: #14532d;
+    }
+
+    .status-complete {
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+
+    .quote-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #6b7280;
+    }
+
+    .loading i {
+      font-size: 48px;
+      margin-bottom: 16px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 64px;
+      margin-bottom: 24px;
+      color: #d1d5db;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: #374151;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .filters-row {
+        grid-template-columns: 1fr;
+      }
+
+      .quote-details {
+        grid-template-columns: 1fr;
+      }
+
+      .quote-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .quote-amount {
+        text-align: left;
+      }
+    }
+
+    /* Iframe Modal Styles */
+    .iframe-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 10000;
+    }
+
+    .iframe-modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .iframe-container {
+      width: 95%;
+      max-width: 1400px;
+      height: 90vh;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .iframe-header {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .iframe-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .iframe-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .iframe-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .iframe-content {
+      width: 100%;
+      height: calc(90vh - 60px);
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-file-alt"></i> Quotes Dashboard</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="refreshData()">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+        <a href="#" class="btn btn-primary" onclick="createNewQuote()">
+          <i class="fas fa-plus"></i> New Quote
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section" id="statsSection">
+      <div class="stat-card">
+        <div class="stat-number" id="totalQuotes">0</div>
+        <div class="stat-label">Total Quotes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="sentQuotes">0</div>
+        <div class="stat-label">Sent Out</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingQuotes">0</div>
+        <div class="stat-label">Pending Approval</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="approvedQuotes">0</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalValue">$0</div>
+        <div class="stat-label">Total Value</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label>Status Filter</label>
+          <select id="statusFilter" onchange="filterQuotes()">
+            <option value="">All Statuses</option>
+            <option value="Draft">Draft</option>
+            <option value="Sent">Sent</option>
+            <option value="Pending">Pending Approval</option>
+            <option value="Approved">Approved</option>
+            <option value="Approved & Signed">Approved & Signed</option>
+            <option value="Job Complete">Job Complete</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Customer Search</label>
+          <input type="text" id="customerSearch" placeholder="Search by customer name..." onkeyup="filterQuotes()">
+        </div>
+        <div class="filter-group">
+          <label>Date Range</label>
+          <input type="date" id="dateFrom" onchange="filterQuotes()">
+        </div>
+        <div class="filter-group">
+          <label>&nbsp;</label>
+          <input type="date" id="dateTo" onchange="filterQuotes()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading">
+      <i class="fas fa-spinner"></i>
+      <p>Loading quotes...</p>
+    </div>
+
+    <!-- Quotes Grid -->
+    <div id="quotesGrid" class="quotes-grid" style="display: none;">
+      <!-- Quotes will be populated here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <i class="fas fa-file-alt"></i>
+      <h3>No Quotes Found</h3>
+      <p>No quotes match your current filters. Try adjusting your search criteria or create a new quote.</p>
+    </div>
+
+    <!-- Iframe Modal for Editing -->
+    <div id="iframeModal" class="iframe-modal">
+      <div class="iframe-container">
+        <div class="iframe-header">
+          <h3 id="iframeTitle">Edit Quote</h3>
+          <button class="iframe-close" onclick="closeIframeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <iframe id="iframeContent" class="iframe-content" src="about:blank"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwE4FdbrzP6kCU5cZUJQKalXOGqzIkztBM3xvRj7moBOc5vAmnfM0pVwnVAenGXjdzi/exec';
+    const INVOICE_UI_URL = 'https://script.google.com/macros/s/AKfycbwE4FdbrzP6kCU5cZUJQKalXOGqzIkztBM3xvRj7moBOc5vAmnfM0pVwnVAenGXjdzi/exec';
+
+    let allQuotes = [];
+    let filteredQuotes = [];
+
+    // Load quotes on page load
+    window.onload = function() {
+      loadQuotes();
+    };
+
+    async function loadQuotes() {
+      try {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('quotesGrid').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'none';
+
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            action: 'getAllQuotesWithStatus'
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          allQuotes = result.quotes || [];
+          filteredQuotes = [...allQuotes];
+          updateStats();
+          renderQuotes();
+        } else {
+          console.error('Error loading quotes:', result.error);
+          showEmptyState();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showEmptyState();
+      } finally {
+        document.getElementById('loading').style.display = 'none';
+      }
+    }
+
+    function updateStats() {
+      const total = allQuotes.length;
+      const sent = allQuotes.filter(q => q.status === 'Sent').length;
+      const pending = allQuotes.filter(q => q.status === 'Pending').length;
+      const approved = allQuotes.filter(q => q.status === 'Approved' || q.status === 'Approved & Signed').length;
+      const totalValue = allQuotes.reduce((sum, q) => sum + q.total, 0);
+
+      document.getElementById('totalQuotes').textContent = total;
+      document.getElementById('sentQuotes').textContent = sent;
+      document.getElementById('pendingQuotes').textContent = pending;
+      document.getElementById('approvedQuotes').textContent = approved;
+      document.getElementById('totalValue').textContent = '$' + formatCurrency(totalValue);
+    }
+
+    function renderQuotes() {
+      const container = document.getElementById('quotesGrid');
+      
+      if (filteredQuotes.length === 0) {
+        showEmptyState();
+        return;
+      }
+
+      container.style.display = 'grid';
+      container.innerHTML = filteredQuotes.map(quote => `
+        <div class="quote-card status-${getStatusClass(quote.status)}">
+          <div class="quote-header">
+            <div class="quote-info">
+              <div class="quote-id">${quote.id}</div>
+              <div class="quote-customer">${escapeHtml(quote.customerName)}</div>
+              <div class="quote-amount">$${formatCurrency(quote.total)}</div>
+            </div>
+          </div>
+          
+          <div class="quote-details">
+            <div class="quote-detail">
+              <strong>Date:</strong> ${formatDate(quote.date)}
+            </div>
+            <div class="quote-detail">
+              <strong>Customer:</strong> ${escapeHtml(quote.customerEmail)}
+            </div>
+            <div class="quote-detail">
+              <strong>Status:</strong> <span class="quote-status status-${getStatusClass(quote.status)}">${quote.status}</span>
+            </div>
+            ${quote.approvedDate ? `
+            <div class="quote-detail">
+              <strong>Approved:</strong> ${formatDate(quote.approvedDate)}
+            </div>
+            ` : ''}
+          </div>
+
+          <div class="quote-actions">
+            ${quote.shareLink ? `
+            <a href="${quote.shareLink}" target="_blank" class="btn btn-secondary btn-sm">
+              <i class="fas fa-external-link-alt"></i> View
+            </a>
+            ` : ''}
+            <button class="btn btn-secondary btn-sm" onclick="editQuote('${quote.id}')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="updateStatus('${quote.id}', '${quote.status}')">
+              <i class="fas fa-cog"></i> Update Status
+            </button>
+            ${quote.status === 'Approved' ? `
+            <button class="btn btn-success btn-sm" onclick="sendForSignature('${quote.id}', '${quote.customerEmail || ''}')">
+              <i class="fas fa-signature"></i> Send for Signature
+            </button>
+            ` : ''}
+            ${(quote.status === 'Approved' || quote.status === 'Sent') ? `
+            <button class="btn btn-info btn-sm" onclick="inPersonSignature('${quote.id}')">
+              <i class="fas fa-pen"></i> In-Person Sign
+            </button>
+            ` : ''}
+            ${quote.status === 'Approved & Signed' ? `
+            <button class="btn btn-primary btn-sm" onclick="markJobComplete('${quote.id}')">
+              <i class="fas fa-check-circle"></i> Mark Complete
+            </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterQuotes() {
+      const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+      const customerSearch = document.getElementById('customerSearch').value.toLowerCase();
+      const dateFrom = document.getElementById('dateFrom').value;
+      const dateTo = document.getElementById('dateTo').value;
+
+      filteredQuotes = allQuotes.filter(quote => {
+        // Status filter
+        if (statusFilter && !quote.status.toLowerCase().includes(statusFilter)) {
+          return false;
+        }
+
+        // Customer search
+        if (customerSearch && !quote.customerName.toLowerCase().includes(customerSearch) && 
+            !quote.customerEmail.toLowerCase().includes(customerSearch)) {
+          return false;
+        }
+
+        // Date range
+        if (dateFrom) {
+          const quoteDate = new Date(quote.date);
+          const fromDate = new Date(dateFrom);
+          if (quoteDate < fromDate) return false;
+        }
+
+        if (dateTo) {
+          const quoteDate = new Date(quote.date);
+          const toDate = new Date(dateTo);
+          if (quoteDate > toDate) return false;
+        }
+
+        return true;
+      });
+
+      renderQuotes();
+    }
+
+    function getStatusClass(status) {
+      const statusMap = {
+        'Draft': 'draft',
+        'Sent': 'sent', 
+        'Pending': 'pending',
+        'Approved': 'approved',
+        'Approved & Signed': 'signed',
+        'Job Complete': 'complete'
+      };
+      return statusMap[status] || 'draft';
+    }
+
+    async function updateStatus(quoteId, currentStatus) {
+      const statuses = ['Draft', 'Sent', 'Pending', 'Approved', 'Approved & Signed', 'Job Complete'];
+      const newStatus = prompt(`Update status for ${quoteId}:\n\nAvailable statuses:\n${statuses.join('\n')}\n\nCurrent: ${currentStatus}\nEnter new status:`, currentStatus);
+      
+      if (!newStatus || !statuses.includes(newStatus)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            action: 'updateQuoteStatus',
+            id: quoteId,
+            status: newStatus
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('Status updated successfully!');
+          loadQuotes(); // Reload to show changes
+        } else {
+          alert('Error updating status: ' + result.error);
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    function markJobComplete(quoteId) {
+      updateStatus(quoteId, 'Job Complete');
+    }
+
+    function editQuote(quoteId) {
+      openIframeModal(`${INVOICE_UI_URL}?edit=${quoteId}`, `Edit Quote - ${quoteId}`);
+    }
+
+    function createNewQuote() {
+      openIframeModal(INVOICE_UI_URL, 'Create New Quote');
+    }
+
+    function openIframeModal(url, title) {
+      document.getElementById('iframeTitle').textContent = title;
+      document.getElementById('iframeContent').src = url;
+      document.getElementById('iframeModal').classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closeIframeModal() {
+      document.getElementById('iframeModal').classList.remove('active');
+      document.getElementById('iframeContent').src = 'about:blank';
+      document.body.style.overflow = 'auto'; // Restore scrolling
+      
+      // Refresh the dashboard after closing to show any changes
+      setTimeout(() => {
+        loadQuotes();
+      }, 500);
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('iframeModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeIframeModal();
+      }
+    });
+
+    // Handle Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('iframeModal').classList.contains('active')) {
+        closeIframeModal();
+      }
+    });
+
+    function refreshData() {
+      loadQuotes();
+    }
+
+    function showEmptyState() {
+      document.getElementById('quotesGrid').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'block';
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+
+    function formatCurrency(amount) {
+      return parseFloat(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // Signature workflow functions
+    function sendForSignature(quoteId, customerEmail) {
+      if (!customerEmail) {
+        customerEmail = prompt('Enter customer email address:');
+        if (!customerEmail) return;
+      }
+
+      if (confirm(`Send signature request to ${customerEmail}?`)) {
+        showLoading();
+        google.script.run
+          .withSuccessHandler(function(result) {
+            hideLoading();
+            if (result.success) {
+              alert('Signature request sent to customer!');
+              // Update status to Sent
+              updateQuoteStatus(quoteId, 'Sent');
+            } else {
+              alert('Error sending signature request: ' + result.error);
+            }
+          })
+          .withFailureHandler(function(error) {
+            hideLoading();
+            alert('Error sending signature request: ' + error.message);
+          })
+          .requestCustomerSignature(quoteId, customerEmail);
+      }
+    }
+
+    function inPersonSignature(quoteId) {
+      if (confirm('Open in-person signature interface?')) {
+        const signatureUrl = `SignatureCapture.html?id=${quoteId}&mode=inperson`;
+        window.open(signatureUrl, '_blank', 'width=900,height=700');
+      }
+    }
+
+    function updateQuoteStatus(quoteId, newStatus) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            loadQuotes(); // Refresh the dashboard
+          } else {
+            console.error('Error updating status:', result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error updating status:', error.message);
+        })
+        .updateQuoteStatus(quoteId, newStatus);
+    }
+
+    function showLoading() {
+      // Create loading overlay if it doesn't exist
+      if (!document.getElementById('loadingOverlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'loadingOverlay';
+        overlay.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+          color: white;
+          font-size: 18px;
+        `;
+        overlay.innerHTML = '<div>Processing...</div>';
+        document.body.appendChild(overlay);
+      }
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+      const overlay = document.getElementById('loadingOverlay');
+      if (overlay) {
+        overlay.style.display = 'none';
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.toString().replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>

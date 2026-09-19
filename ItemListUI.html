@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .toolbar {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+
+    .filter-select {
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      background: white;
+      cursor: pointer;
+      min-width: 180px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: #0369a1;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0284c7;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .items-table-container {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      overflow-x: auto;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .items-table th {
+      background: #f9fafb;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
+      font-size: 14px;
+      border-bottom: 2px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+    }
+
+    .items-table td {
+      padding: 16px;
+      border-bottom: 1px solid #f3f4f6;
+      font-size: 14px;
+    }
+
+    .items-table tr:hover {
+      background: #f9fafb;
+    }
+
+    .items-table tr.dragging {
+      opacity: 0.5;
+      cursor: move;
+    }
+
+    .items-table tr.drag-over {
+      border-top: 3px solid #0284c7;
+    }
+
+    /* Tab Styles */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-btn:hover {
+      background: #f9fafb;
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: #9ca3af;
+      padding: 0 8px;
+      font-size: 16px;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      touch-action: none;
+      pointer-events: auto;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .drag-handle:hover {
+      color: #0369a1;
+    }
+
+    .items-table tr {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .item-code {
+      font-weight: 600;
+      color: #0369a1;
+      font-family: 'Courier New', monospace;
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: #059669;
+    }
+
+    .item-active {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .item-active.true {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .item-active.false {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .btn-edit {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .btn-edit:hover {
+      background: #bfdbfe;
+    }
+
+    .btn-delete {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .btn-delete:hover {
+      background: #fecaca;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .modal-close:hover {
+      background: #f3f4f6;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #0369a1;
+      box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #6b7280;
+    }
+
+    .loading i {
+      font-size: 32px;
+      margin-bottom: 16px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 64px;
+      margin-bottom: 16px;
+      color: #d1d5db;
+    }
+
+    /* Image icon link */
+    .item-image-icon {
+      display: inline-block;
+      margin-left: 8px;
+      color: #0369a1;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .item-image-icon:hover {
+      color: #0284c7;
+    }
+
+    .item-name-with-image {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .items-table {
+        font-size: 12px;
+      }
+      
+      .items-table th,
+      .items-table td {
+        padding: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-boxes"></i> Item List Manager</h1>
+      <p>Manage Price Book items - Add, edit, and organize your inventory</p>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-container" style="background: white; border-radius: 12px; padding: 0; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);">
+      <div class="tabs" style="display: flex; border-bottom: 2px solid #e5e7eb;">
+        <button class="tab-btn active" onclick="switchTab('items')" data-tab="items" style="flex: 1; padding: 16px 24px; background: none; border: none; border-bottom: 3px solid #0369a1; color: #0369a1; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">
+          <i class="fas fa-boxes"></i> Items
+        </button>
+        <button class="tab-btn" onclick="switchTab('priceComparison')" data-tab="priceComparison" style="flex: 1; padding: 16px 24px; background: none; border: none; border-bottom: 3px solid transparent; color: #6b7280; font-weight: 600; font-size: 15px; cursor: pointer; transition: all 0.2s;">
+          <i class="fas fa-dollar-sign"></i> Price Comparison
+        </button>
+      </div>
+    </div>
+
+    <!-- Items Tab Content -->
+    <div id="itemsTab" class="tab-content active">
+      <div class="toolbar">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search items by name, code, brand, or category..." onkeyup="handleSearch()">
+        </div>
+        <select class="filter-select" id="categoryFilter" onchange="handleCategoryFilter()">
+          <option value="">All Categories</option>
+        </select>
+        <button class="btn btn-primary" onclick="openAddItemModal()">
+          <i class="fas fa-plus"></i> Add New Item
+        </button>
+        <button class="btn btn-secondary" onclick="loadItems()">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+
+      <div class="items-table-container">
+      <div id="loading" class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Loading items...</p>
+      </div>
+
+      <div id="itemsTable" style="display: none;">
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th style="width: 40px;"></th>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Brand</th>
+              <th>Category</th>
+              <th>Unit</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody">
+          </tbody>
+        </table>
+      </div>
+
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <i class="fas fa-inbox"></i>
+        <h3>No items found</h3>
+        <p>Try adjusting your search or add a new item</p>
+      </div>
+    </div>
+    </div>
+
+    <!-- Price Comparison Tab Content -->
+    <div id="priceComparisonTab" class="tab-content" style="display: none;">
+      <!-- Credential Management Section -->
+      <div class="card" style="background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);">
+        <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 20px; font-weight: 700;">
+          <i class="fas fa-key"></i> Website Credentials
+        </h2>
+        <p style="color: #6b7280; margin-bottom: 20px; font-size: 14px;">
+          Configure your login credentials for each price comparison website. Credentials are stored securely.
+        </p>
+        <div id="credentialsTable" style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #374151;">Website</th>
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #374151;">Status</th>
+                <th style="padding: 12px; text-align: left; font-weight: 600; color: #374151;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="credentialsTableBody">
+              <tr>
+                <td colspan="3" style="padding: 20px; text-align: center; color: #6b7280;">Loading credentials...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Price Comparison Section -->
+      <div class="card" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);">
+        <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 20px; font-weight: 700;">
+          <i class="fas fa-search-dollar"></i> Compare Prices
+        </h2>
+        <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 300px;">
+            <input type="text" id="priceCompareSearch" placeholder="Enter product name to compare..." 
+                   style="width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; font-family: inherit;">
+          </div>
+          <button class="btn btn-primary" onclick="runPriceComparison()" id="compareBtn" style="white-space: nowrap;">
+            <i class="fas fa-search"></i> Compare Prices
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="priceCompareLoading" style="display: none; text-align: center; padding: 40px; color: #6b7280;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 12px;"></i>
+          <p>Searching all websites...</p>
+        </div>
+
+        <!-- Results Display -->
+        <div id="priceCompareResults" style="display: none;">
+          <h3 style="margin: 0 0 16px 0; color: #374151; font-size: 18px; font-weight: 600;">
+            Results for: <span id="searchedProductName"></span>
+          </h3>
+          <div id="priceCompareResultsList" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Results will be populated here -->
+          </div>
+          <div id="priceCompareErrors" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <!-- Errors will be shown here -->
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="priceCompareEmpty" style="text-align: center; padding: 60px 20px; color: #9ca3af;">
+          <i class="fas fa-search" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+          <p style="font-size: 16px;">Enter a product name and click "Compare Prices" to see prices from all configured websites.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Item Actions Modal (Edit/Delete/Move) -->
+  <div class="modal" id="itemActionsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="itemActionsTitle">Item Actions</h2>
+        <button class="modal-close" onclick="closeItemActionsModal()">&times;</button>
+      </div>
+      <div style="padding: 20px;">
+        <div id="itemActionsContent">
+          <!-- Content will be populated by openItemActions -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Item Modal -->
+  <div class="modal" id="itemModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Item</h2>
+        <button class="modal-close" onclick="closeItemModal()">&times;</button>
+      </div>
+      <form id="itemForm" onsubmit="saveItem(event)">
+        <input type="hidden" id="itemRowIndex">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itemBrand">Brand</label>
+            <input type="text" id="itemBrand" placeholder="Brand name">
+          </div>
+          <div class="form-group">
+            <label for="itemCode">Item Code</label>
+            <input type="text" id="itemCode" placeholder="Unique code">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="itemName">Item Name *</label>
+          <input type="text" id="itemName" required placeholder="Item name">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="itemCategory">Category</label>
+            <input type="text" id="itemCategory" placeholder="Category" list="categoriesList">
+            <datalist id="categoriesList"></datalist>
+          </div>
+          <div class="form-group">
+            <label for="itemUnit">Unit</label>
+            <select id="itemUnit">
+              <option value="Each">Each</option>
+              <option value="Square Foot">Square Foot</option>
+              <option value="Linear Foot">Linear Foot</option>
+              <option value="Gallon">Gallon</option>
+              <option value="Pound">Pound</option>
+              <option value="Set">Set</option>
+              <option value="Box">Box</option>
+              <option value="Bundle">Bundle</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="itemPrice">Price *</label>
+          <input type="number" id="itemPrice" step="0.01" min="0" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="itemDescription">Description</label>
+          <textarea id="itemDescription" placeholder="Item description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="itemImageUrl">Image URL</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="url" id="itemImageUrl" placeholder="https://example.com/image.jpg" onchange="previewImage(this.value)" onpaste="setTimeout(() => previewImage(this.value), 100)" style="flex: 1;">
+            <button type="button" class="btn btn-secondary" onclick="openGoogleImageSearch()" style="padding: 12px 16px; white-space: nowrap;">
+              <i class="fas fa-search"></i> Search Images
+            </button>
+          </div>
+          <small style="display: block; margin-top: 6px; color: #6b7280; font-size: 13px; line-height: 1.5;">
+            <i class="fas fa-info-circle"></i> <strong>Important:</strong> 
+            <ol style="margin: 8px 0 0 20px; padding: 0;">
+              <li>Click "Search Images" button above to search Google Images for this item</li>
+              <li>In the search results, <strong>right-click directly on the image</strong> (not the page link)</li>
+              <li>Select <strong>"Copy image address"</strong> (NOT "Copy link address")</li>
+              <li>Paste the image URL here. It should end in .jpg, .png, or similar image format</li>
+            </ol>
+            <div style="margin-top: 8px; padding: 8px; background: #fef3c7; border-left: 3px solid #f59e0b; border-radius: 4px;">
+              <strong style="color: #92400e;">⚠️ Don't copy the search page URL!</strong> You must right-click the actual image and copy its address.
+            </div>
+          </small>
+          <div id="imagePreviewContainer" style="margin-top: 12px; display: none;">
+            <div style="padding: 12px; background: #f0f9ff; border: 2px solid #0284c7; border-radius: 8px;">
+              <div style="font-size: 13px; font-weight: 600; color: #0369a1; margin-bottom: 8px;">
+                <i class="fas fa-check-circle"></i> Image Preview:
+              </div>
+              <img id="imagePreview" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 4px; border: 1px solid #e5e7eb;">
+            </div>
+          </div>
+          <div id="invalidImageWarning" style="margin-top: 8px; padding: 8px; background: #fee2e2; border-left: 3px solid #dc2626; border-radius: 4px; display: none;">
+            <strong style="color: #991b1b;">⚠️ Invalid Image URL</strong> - This looks like a search page, not an image. Please right-click the actual image and copy its address.
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" id="itemActive" checked>
+            <span>Active (visible in quotes)</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeItemModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let allItems = [];
+    let currentItems = [];
+
+    // Load items on page load
+    window.onload = function() {
+      loadItems();
+      loadCategories();
+    };
+
+    // Load all items
+    function loadItems() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('itemsTable').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'none';
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('loading').style.display = 'none';
+          
+          if (result.success) {
+            allItems = result.items;
+            currentItems = allItems;
+            displayItems(currentItems);
+          } else {
+            alert('Error loading items: ' + (result.error || 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('loading').style.display = 'none';
+          alert('Failed to load items: ' + error.message);
+        })
+        .getAllItems();
+    }
+
+    // Load categories for filter and autocomplete
+    function loadCategories() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success && result.categories) {
+            const filter = document.getElementById('categoryFilter');
+            const datalist = document.getElementById('categoriesList');
+            
+            // Clear existing options (except "All Categories")
+            while (filter.children.length > 1) {
+              filter.removeChild(filter.lastChild);
+            }
+            datalist.innerHTML = '';
+            
+            result.categories.forEach(cat => {
+              const option = document.createElement('option');
+              option.value = cat;
+              filter.appendChild(option);
+              
+              const datalistOption = document.createElement('option');
+              datalistOption.value = cat;
+              datalist.appendChild(datalistOption);
+            });
+          }
+        })
+        .getCategories();
+    }
+
+    // Display items in table
+    function displayItems(items) {
+      const tbody = document.getElementById('itemsTableBody');
+      tbody.innerHTML = '';
+
+      if (items.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('itemsTable').style.display = 'block';
+
+      items.forEach(item => {
+        const hasImage = item.imageUrl && item.imageUrl.trim() !== '';
+        const imageIconHtml = hasImage ? `
+          <a href="${escapeJsString(item.imageUrl)}" target="_blank" class="item-image-icon" title="Click to view image in new tab">
+            <i class="fas fa-image"></i>
+          </a>
+        ` : '';
+        
+        const row = document.createElement('tr');
+        row.draggable = true;
+        row.dataset.rowIndex = item.rowIndex;
+        row.innerHTML = `
+          <td class="drag-handle" title="Drag to reorder">
+            <i class="fas fa-grip-vertical"></i>
+          </td>
+          <td class="item-code">${escapeHtml(item.code || '-')}</td>
+          <td>
+            <div class="item-name-with-image">
+              <strong>${escapeHtml(item.name)}</strong>
+              ${imageIconHtml}
+            </div>
+          </td>
+          <td>${escapeHtml(item.brand || '-')}</td>
+          <td>${escapeHtml(item.category || 'Other')}</td>
+          <td>${escapeHtml(item.unit || 'Each')}</td>
+          <td class="item-price">$${parseFloat(item.price || 0).toFixed(2)}</td>
+          <td>
+            <span class="item-active ${item.active ? 'true' : 'false'}">
+              ${item.active ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-icon btn-edit" onclick="openItemActions(${item.rowIndex})" title="Edit / Delete">
+                <i class="fas fa-edit"></i>
+              </button>
+            </div>
+          </td>
+        `;
+        
+        // Add drag and drop event listeners
+        setupDragAndDrop(row);
+        
+        tbody.appendChild(row);
+      });
+    }
+
+    // Search functionality
+    function handleSearch() {
+      const term = document.getElementById('searchInput').value.trim();
+      const category = document.getElementById('categoryFilter').value;
+
+      if (!term && !category) {
+        currentItems = allItems;
+        displayItems(currentItems);
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            let filtered = result.items;
+            
+            // Apply category filter if selected
+            if (category) {
+              filtered = filtered.filter(item => item.category === category);
+            }
+            
+            currentItems = filtered;
+            displayItems(currentItems);
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Search error: ' + error.message);
+        })
+        .searchItems(term);
+    }
+
+    // Category filter
+    function handleCategoryFilter() {
+      const category = document.getElementById('categoryFilter').value;
+      
+      if (!category) {
+        currentItems = allItems;
+      } else {
+        currentItems = allItems.filter(item => item.category === category);
+      }
+      
+      displayItems(currentItems);
+    }
+
+    // Open add item modal
+    function openAddItemModal() {
+      document.getElementById('modalTitle').textContent = 'Add New Item';
+      document.getElementById('itemForm').reset();
+      document.getElementById('itemRowIndex').value = '';
+      document.getElementById('itemActive').checked = true;
+      document.getElementById('imagePreviewContainer').style.display = 'none';
+      
+      // Reset button state
+      const submitButton = document.getElementById('itemForm').querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Save Item';
+      }
+      
+      document.getElementById('itemModal').classList.add('active');
+    }
+
+    // Edit item
+    function editItem(rowIndex) {
+      const item = allItems.find(i => i.rowIndex === rowIndex);
+      if (!item) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Item';
+      document.getElementById('itemRowIndex').value = item.rowIndex;
+      document.getElementById('itemBrand').value = item.brand || '';
+      document.getElementById('itemCode').value = item.code || '';
+      document.getElementById('itemName').value = item.name || '';
+      document.getElementById('itemCategory').value = item.category || '';
+      document.getElementById('itemUnit').value = item.unit || 'Each';
+      document.getElementById('itemPrice').value = item.price || 0;
+      document.getElementById('itemDescription').value = item.description || '';
+      const imageUrlInput = document.getElementById('itemImageUrl');
+      imageUrlInput.value = item.imageUrl || '';
+      document.getElementById('itemActive').checked = item.active !== false;
+      
+      // Preview existing image if available
+      if (item.imageUrl && item.imageUrl.trim() !== '') {
+        previewImage(item.imageUrl);
+      } else {
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+      }
+      
+      document.getElementById('itemModal').classList.add('active');
+    }
+    
+    // Preview image when URL is entered
+    function previewImage(imageUrl) {
+      const previewContainer = document.getElementById('imagePreviewContainer');
+      const previewImg = document.getElementById('imagePreview');
+      const warningDiv = document.getElementById('invalidImageWarning');
+      
+      if (!imageUrl || imageUrl.trim() === '') {
+        previewContainer.style.display = 'none';
+        warningDiv.style.display = 'none';
+        return;
+      }
+      
+      // Check if URL looks like a Google Images search URL (not an actual image)
+      const isSearchUrl = imageUrl.includes('google.com/search') || 
+                         imageUrl.includes('google.com/imgres') ||
+                         imageUrl.includes('?q=') ||
+                         (!imageUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?|$)/i) && 
+                          !imageUrl.includes('i.imgur.com') &&
+                          !imageUrl.includes('cdn.') &&
+                          imageUrl.includes('http'));
+      
+      if (isSearchUrl) {
+        warningDiv.style.display = 'block';
+        previewContainer.style.display = 'none';
+        return;
+      }
+      
+      warningDiv.style.display = 'none';
+      
+      // Test if image URL is valid
+      const img = new Image();
+      img.onload = function() {
+        previewImg.src = imageUrl;
+        previewContainer.style.display = 'block';
+      };
+      
+      img.onerror = function() {
+        previewContainer.style.display = 'none';
+        // Check if it might be a search URL
+        if (imageUrl.includes('google.com') || imageUrl.includes('search')) {
+          warningDiv.style.display = 'block';
+        }
+      };
+      
+      img.src = imageUrl;
+    }
+    
+    // Open Google Images search for the current item
+    function openGoogleImageSearch() {
+      const itemName = document.getElementById('itemName').value.trim();
+      const itemBrand = document.getElementById('itemBrand').value.trim();
+      const itemCode = document.getElementById('itemCode').value.trim();
+      
+      // Build search query
+      let searchQuery = '';
+      if (itemCode) {
+        searchQuery = itemCode;
+      } else if (itemBrand && itemName) {
+        searchQuery = itemBrand + ' ' + itemName;
+      } else if (itemName) {
+        searchQuery = itemName;
+      } else {
+        alert('Please enter an item name, code, or brand first');
+        return;
+      }
+      
+      // Add "product image" and common pool equipment sites
+      searchQuery += ' product image site:pentair.com OR site:jandy.com OR site:hayward.com';
+      
+      // Open Google Images search in new tab
+      const searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(searchQuery);
+      window.open(searchUrl, '_blank');
+      
+      // Show reminder
+      setTimeout(() => {
+        alert('Search opened in new tab!\n\nRemember:\n1. Right-click the IMAGE itself (not the page)\n2. Select "Copy image address"\n3. Paste it in the Image URL field above');
+      }, 500);
+    }
+
+    // Close modal
+    function closeItemModal() {
+      document.getElementById('itemModal').classList.remove('active');
+      // Reset button state when closing
+      const submitButton = document.getElementById('itemForm').querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Save Item';
+      }
+    }
+
+    // Save item (add or update)
+    function saveItem(event) {
+      event.preventDefault();
+      console.log('Save item called');
+
+      const rowIndex = document.getElementById('itemRowIndex').value;
+      const isEdit = !!rowIndex;
+
+      const itemData = {
+        brand: document.getElementById('itemBrand').value.trim(),
+        code: document.getElementById('itemCode').value.trim(),
+        name: document.getElementById('itemName').value.trim(),
+        category: document.getElementById('itemCategory').value.trim() || 'Other',
+        unit: document.getElementById('itemUnit').value,
+        price: parseFloat(document.getElementById('itemPrice').value) || 0,
+        description: document.getElementById('itemDescription').value.trim(),
+        imageUrl: document.getElementById('itemImageUrl').value.trim(),
+        active: document.getElementById('itemActive').checked
+      };
+
+      console.log('Item data:', itemData);
+
+      if (!itemData.name) {
+        alert('Item name is required');
+        return;
+      }
+
+      // Disable form during save
+      const submitButton = document.getElementById('itemForm').querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Saving...';
+
+      // Set timeout to prevent infinite "Saving..." state
+      const saveTimeout = setTimeout(function() {
+        console.error('Save operation timed out');
+        onItemError({message: 'Save operation timed out. Please try again.'});
+      }, 30000); // 30 second timeout
+
+      const clearTimeoutAndReset = function() {
+        clearTimeout(saveTimeout);
+        submitButton.disabled = false;
+        submitButton.textContent = 'Save Item';
+      };
+
+      if (isEdit) {
+        console.log('=== CALLING BACKEND updateItem ===');
+        console.log('Row index:', rowIndex);
+        console.log('Item data:', JSON.stringify(itemData, null, 2));
+        google.script.run
+          .withSuccessHandler(function(result) {
+            console.log('=== BACKEND updateItem SUCCESS ===');
+            console.log('Result:', JSON.stringify(result, null, 2));
+            clearTimeout(saveTimeout);
+            onItemSaved(result);
+          })
+          .withFailureHandler(function(error) {
+            console.log('=== BACKEND updateItem FAILURE ===');
+            console.error('Error:', error);
+            clearTimeout(saveTimeout);
+            onItemError(error);
+          })
+          .updateItem(Object.assign({rowIndex: parseInt(rowIndex)}, itemData));
+      } else {
+        console.log('=== CALLING BACKEND addItem ===');
+        console.log('Item data:', JSON.stringify(itemData, null, 2));
+        google.script.run
+          .withSuccessHandler(function(result) {
+            console.log('=== BACKEND addItem SUCCESS ===');
+            console.log('Result:', JSON.stringify(result, null, 2));
+            clearTimeout(saveTimeout);
+            onItemSaved(result);
+          })
+          .withFailureHandler(function(error) {
+            console.log('=== BACKEND addItem FAILURE ===');
+            console.error('Error:', error);
+            clearTimeout(saveTimeout);
+            onItemError(error);
+          })
+          .addItem(itemData);
+        console.log('addItem call dispatched to backend');
+      }
+    }
+
+    function onItemSaved(result) {
+      console.log('=== ONITEMSAVED CALLBACK ===');
+      console.log('Full result object:', JSON.stringify(result, null, 2));
+      console.log('result.success:', result ? result.success : 'result is null/undefined');
+      
+      const submitButton = document.getElementById('itemForm').querySelector('button[type="submit"]');
+      
+      if (result && result.success) {
+        console.log('✅ SUCCESS: Save confirmed, closing modal and reloading');
+        // Only close modal after successful save
+        closeItemModal();
+        loadItems();
+        loadCategories(); // Reload categories in case new category was added
+      } else {
+        console.error('❌ FAILURE: Save was not successful');
+        console.error('Error details:', result ? result.error : 'result is null');
+        alert('Error saving item: ' + (result ? result.error : 'Unknown error'));
+        // Reset button on failure
+        submitButton.disabled = false;
+        submitButton.textContent = 'Save Item';
+      }
+      console.log('=== ONITEMSAVED COMPLETE ===');
+    }
+
+    function onItemError(error) {
+      console.log('=== ONITEMERROR CALLBACK ===');
+      console.error('Error object:', error);
+      console.error('Error message:', error ? error.message : 'error is null');
+      console.error('Error type:', typeof error);
+      console.error('Error stack:', error ? error.stack : 'N/A');
+      
+      alert('Failed to save item: ' + (error.message || error));
+      const submitButton = document.getElementById('itemForm').querySelector('button[type="submit"]');
+      submitButton.disabled = false;
+      submitButton.textContent = 'Save Item';
+      console.log('=== ONITEMERROR COMPLETE ===');
+    }
+
+    // Open item actions modal (Edit/Delete/Move)
+    function openItemActions(rowIndex) {
+      const item = allItems.find(i => i.rowIndex === rowIndex);
+      if (!item) return;
+
+      const modal = document.getElementById('itemActionsModal');
+      const title = document.getElementById('itemActionsTitle');
+      const content = document.getElementById('itemActionsContent');
+      
+      title.textContent = 'Item Actions: ' + escapeHtml(item.name);
+      
+      content.innerHTML = `
+        <div style="margin-bottom: 24px;">
+          <div style="padding: 16px; background: #f9fafb; border-radius: 8px; margin-bottom: 16px;">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #111827;">Item Details:</div>
+            <div style="font-size: 14px; color: #6b7280; line-height: 1.8;">
+              <div><strong>Code:</strong> ${escapeHtml(item.code || '-')}</div>
+              <div><strong>Brand:</strong> ${escapeHtml(item.brand || '-')}</div>
+              <div><strong>Category:</strong> ${escapeHtml(item.category || 'Other')}</div>
+              <div><strong>Price:</strong> $${parseFloat(item.price || 0).toFixed(2)}</div>
+              <div><strong>Current Row:</strong> ${item.rowIndex}</div>
+            </div>
+          </div>
+          
+          <div style="display: grid; gap: 12px;">
+            <button class="btn btn-primary" onclick="editItemFromActions(${item.rowIndex})" style="width: 100%;">
+              <i class="fas fa-edit"></i> Edit Item
+            </button>
+            
+            <div style="padding: 12px; background: #e0f2fe; border-radius: 8px; border-left: 4px solid #0284c7;">
+              <div style="font-size: 13px; color: #0369a1; font-weight: 600; margin-bottom: 4px;">
+                <i class="fas fa-info-circle"></i> To Move Item:
+              </div>
+              <div style="font-size: 12px; color: #0c4a6e; line-height: 1.6;">
+                Drag the <i class="fas fa-grip-vertical"></i> handle on the left side of the row to reorder items. Works on desktop and tablet!
+              </div>
+            </div>
+            
+            <button class="btn btn-delete" onclick="deleteItemConfirm(${item.rowIndex}, '${escapeJsString(item.name)}')" style="width: 100%; background: #fee2e2; color: #991b1b; border: 2px solid #fecaca;">
+              <i class="fas fa-trash"></i> Deactivate Item
+            </button>
+          </div>
+        </div>
+      `;
+      
+      modal.classList.add('active');
+    }
+
+    function closeItemActionsModal() {
+      document.getElementById('itemActionsModal').classList.remove('active');
+    }
+
+    function editItemFromActions(rowIndex) {
+      closeItemActionsModal();
+      editItem(rowIndex);
+    }
+
+
+    // Delete item confirmation
+    function deleteItemConfirm(rowIndex, itemName) {
+      if (confirm(`Are you sure you want to deactivate "${itemName}"? This will hide it from quotes but not delete it from the database.`)) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              closeItemActionsModal();
+              loadItems();
+            } else {
+              alert('Error: ' + (result.error || 'Unknown error'));
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('Failed to delete item: ' + error.message);
+          })
+          .deleteItem(rowIndex);
+      }
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.toString().replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Escape JavaScript string (for use in href attributes)
+    function escapeJsString(str) {
+      if (!str) return '';
+      // For href, we need to encode properly for URLs
+      return encodeURI(str.toString());
+    }
+
+    // Drag and drop functionality
+    let draggedElement = null;
+    let draggedRowIndex = null;
+
+    function setupDragAndDrop(row) {
+      // Mouse drag events
+      row.addEventListener('dragstart', function(e) {
+        draggedElement = this;
+        draggedRowIndex = parseInt(this.dataset.rowIndex);
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.innerHTML);
+      });
+
+      row.addEventListener('dragend', function(e) {
+        this.classList.remove('dragging');
+        // Remove drag-over class from all rows
+        document.querySelectorAll('.items-table tr').forEach(tr => {
+          tr.classList.remove('drag-over');
+        });
+      });
+
+      row.addEventListener('dragover', function(e) {
+        if (e.preventDefault) {
+          e.preventDefault();
+        }
+        e.dataTransfer.dropEffect = 'move';
+        
+        if (this !== draggedElement && this.tagName === 'TR' && this.dataset.rowIndex) {
+          // Highlight drop target
+          document.querySelectorAll('.items-table tr').forEach(tr => {
+            tr.classList.remove('drag-over');
+          });
+          this.classList.add('drag-over');
+        }
+        return false;
+      });
+
+      row.addEventListener('dragleave', function(e) {
+        this.classList.remove('drag-over');
+      });
+
+      row.addEventListener('drop', function(e) {
+        if (e.stopPropagation) {
+          e.stopPropagation();
+        }
+        
+        if (draggedElement && draggedElement !== this && this.dataset.rowIndex) {
+          const targetRowIndex = parseInt(this.dataset.rowIndex);
+          
+          if (draggedRowIndex !== targetRowIndex) {
+            // Move the item
+            moveItemRow(draggedRowIndex, targetRowIndex);
+          }
+        }
+        
+        this.classList.remove('drag-over');
+        return false;
+      });
+
+      // Touch events for mobile/tablet (on drag handle only)
+      const dragHandle = row.querySelector('.drag-handle');
+      
+      if (dragHandle) {
+        let touchStartY = 0;
+        let touchStartRow = null;
+        let isDragging = false;
+        
+        dragHandle.addEventListener('touchstart', function(e) {
+          touchStartY = e.touches[0].clientY;
+          touchStartRow = row;
+          draggedRowIndex = parseInt(row.dataset.rowIndex);
+          row.classList.add('dragging');
+          isDragging = false;
+        }, { passive: true });
+
+        dragHandle.addEventListener('touchmove', function(e) {
+          if (!touchStartRow) return;
+          
+          const touchY = e.touches[0].clientY;
+          const deltaY = Math.abs(touchY - touchStartY);
+          
+          // Only start dragging after a small threshold (10px) to avoid accidental drags
+          if (deltaY > 10) {
+            isDragging = true;
+            e.preventDefault();
+            
+            // Find which row we're over
+            const rows = Array.from(document.querySelectorAll('.items-table tbody tr'));
+            let targetRow = null;
+            
+            for (let i = 0; i < rows.length; i++) {
+              if (rows[i] === touchStartRow) continue;
+              const rect = rows[i].getBoundingClientRect();
+              const centerY = rect.top + rect.height / 2;
+              
+              if (touchY >= rect.top && touchY <= rect.bottom) {
+                targetRow = rows[i];
+                break;
+              }
+            }
+            
+            // Highlight target row
+            rows.forEach(r => {
+              if (r !== touchStartRow) r.classList.remove('drag-over');
+            });
+            if (targetRow) targetRow.classList.add('drag-over');
+          }
+        }, { passive: false });
+
+        dragHandle.addEventListener('touchend', function(e) {
+          if (!touchStartRow || !isDragging) {
+            touchStartRow = null;
+            return;
+          }
+          
+          row.classList.remove('dragging');
+          
+          // Find the target row based on final position
+          const rows = Array.from(document.querySelectorAll('.items-table tbody tr'));
+          const touchY = e.changedTouches[0].clientY;
+          let targetRow = null;
+          
+          for (let i = 0; i < rows.length; i++) {
+            if (rows[i] === touchStartRow) continue;
+            const rect = rows[i].getBoundingClientRect();
+            if (touchY >= rect.top && touchY <= rect.bottom) {
+              targetRow = rows[i];
+              break;
+            }
+          }
+          
+          // Remove highlights
+          rows.forEach(r => r.classList.remove('drag-over'));
+          
+          // Move if we have a valid target
+          if (targetRow && draggedRowIndex) {
+            const targetRowIndex = parseInt(targetRow.dataset.rowIndex);
+            if (draggedRowIndex !== targetRowIndex) {
+              moveItemRow(draggedRowIndex, targetRowIndex);
+            }
+          }
+          
+          touchStartRow = null;
+          touchStartY = 0;
+          isDragging = false;
+        }, { passive: true });
+      }
+    }
+
+    // Move item row (called by drag-drop or touch)
+    function moveItemRow(sourceRowIndex, targetRowIndex) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            loadItems(); // Reload to show new order
+          } else {
+            alert('Error moving item: ' + (result.error || 'Unknown error'));
+            loadItems(); // Reload anyway to reset UI
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Failed to move item: ' + error.message);
+          loadItems(); // Reload to reset UI
+        })
+        .moveItem(sourceRowIndex, targetRowIndex);
+    }
+
+    // Close modal on outside click
+    document.getElementById('itemModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeItemModal();
+      }
+    });
+
+    document.getElementById('itemActionsModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeItemActionsModal();
+      }
+    });
+
+    // Get script URL for API calls
+    // In Google Apps Script, we need to use google.script.url or the web app URL
+    // For doPost calls, we'll use google.script.run with a wrapper function
+    // or construct the proper URL
+    let SCRIPT_URL = '';
+    try {
+      // Try to get the web app URL from google.script
+      if (typeof google !== 'undefined' && google.script && google.script.url) {
+        SCRIPT_URL = google.script.url.getLocation(function(location) {
+          return location.parameter.scriptUrl || window.location.href.split('?')[0];
+        });
+      }
+      // Fallback to current URL
+      if (!SCRIPT_URL) {
+        SCRIPT_URL = window.location.href.split('?')[0];
+      }
+    } catch (e) {
+      SCRIPT_URL = window.location.href.split('?')[0];
+    }
+
+    // ============================================================================
+    // PRICE COMPARISON TOOL - TAB MANAGEMENT
+    // ============================================================================
+
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+      });
+
+      // Remove active class from all tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.borderBottomColor = 'transparent';
+        btn.style.color = '#6b7280';
+      });
+
+      // Show selected tab content
+      const selectedTab = document.getElementById(tabName + 'Tab');
+      if (selectedTab) {
+        selectedTab.style.display = 'block';
+      }
+
+      // Activate selected tab button
+      const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
+      if (selectedBtn) {
+        selectedBtn.classList.add('active');
+        selectedBtn.style.borderBottomColor = '#0369a1';
+        selectedBtn.style.color = '#0369a1';
+      }
+
+      // Load data for price comparison tab
+      if (tabName === 'priceComparison') {
+        loadCredentialsStatus();
+      }
+    }
+
+    // ============================================================================
+    // PRICE COMPARISON TOOL - CREDENTIAL MANAGEMENT
+    // ============================================================================
+
+    async function loadCredentialsStatus() {
+      try {
+        // Use google.script.run for server-side calls in Google Apps Script
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(result) {
+              if (result && result.success) {
+                displayCredentialsTable(result.sites);
+              } else {
+                console.error('Error loading credentials:', result ? result.error : 'Unknown error');
+              }
+            })
+            .withFailureHandler(function(error) {
+              console.error('Error loading credentials status:', error);
+            })
+            .getAllWebsiteCredentialsStatus();
+        } else {
+          // Fallback to fetch if google.script.run is not available
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ action: 'getAllWebsiteCredentialsStatus' })
+          });
+
+          const text = await response.text();
+          let result;
+          try {
+            result = JSON.parse(text);
+          } catch (e) {
+            console.error('Response was not JSON:', text.substring(0, 200));
+            throw new Error('Invalid response from server');
+          }
+
+          if (result.success) {
+            displayCredentialsTable(result.sites);
+          } else {
+            console.error('Error loading credentials:', result.error);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading credentials status:', error);
+      }
+    }
+
+    function displayCredentialsTable(sites) {
+      const tbody = document.getElementById('credentialsTableBody');
+      if (!tbody) return;
+
+      const sitesList = [
+        { key: 'HERITAGE', name: 'Heritage' },
+        { key: 'POOLCORP', name: 'PoolCorp' },
+        { key: 'LESLIES', name: 'Leslie\'s' },
+        { key: 'PINCHAPENNY', name: 'Pinch A Penny' },
+        { key: 'POOLCORPB2B', name: 'Pool Corp B2B' },
+        { key: 'SPAPARTSPLUS', name: 'Spa Parts Plus' },
+        { key: 'BACKYARDPLUS', name: 'Backyard Plus' },
+        { key: 'CARECRAFT', name: 'Care Craft' },
+        { key: 'MASTERSPAS', name: 'MasterSpas' },
+        { key: 'AMAZON', name: 'Amazon' },
+        { key: 'ACTIONSPAPARTS', name: 'Action Spa Parts' },
+        { key: 'HORIZONPART', name: 'Horizon Part' },
+        { key: 'OPTIMUMPOOLTECH', name: 'Optimum PoolTech' },
+        { key: 'EBAY', name: 'eBay' }
+      ];
+
+      tbody.innerHTML = sitesList.map(site => {
+        const status = sites[site.key] || { configured: false };
+        return `
+          <tr style="border-bottom: 1px solid #f3f4f6;">
+            <td style="padding: 12px; font-weight: 600; color: #111827;">${escapeHtml(site.name)}</td>
+            <td style="padding: 12px;">
+              ${status.configured ? 
+                '<span style="color: #059669; font-weight: 600;"><i class="fas fa-check-circle"></i> Configured</span>' : 
+                '<span style="color: #dc2626; font-weight: 600;"><i class="fas fa-times-circle"></i> Not Configured</span>'
+              }
+            </td>
+            <td style="padding: 12px;">
+              <button class="btn btn-primary" onclick="openCredentialModal('${site.key}', '${escapeHtml(site.name)}')" style="padding: 8px 16px; font-size: 14px;">
+                <i class="fas fa-edit"></i> ${status.configured ? 'Edit' : 'Configure'}
+              </button>
+              ${status.configured ? 
+                `<button class="btn btn-secondary" onclick="deleteCredentials('${site.key}', '${escapeHtml(site.name)}')" style="padding: 8px 16px; font-size: 14px; margin-left: 8px;">
+                  <i class="fas fa-trash"></i> Delete
+                </button>` : ''
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openCredentialModal(siteKey, siteName) {
+      document.getElementById('credentialSiteKey').value = siteKey;
+      document.getElementById('credentialSiteName').textContent = siteName;
+      document.getElementById('credentialUsername').value = '';
+      document.getElementById('credentialPassword').value = '';
+      document.getElementById('credentialModal').style.display = 'flex';
+    }
+
+    function closeCredentialModal() {
+      document.getElementById('credentialModal').style.display = 'none';
+    }
+
+    async function saveCredentials() {
+      const siteKey = document.getElementById('credentialSiteKey').value;
+      const username = document.getElementById('credentialUsername').value.trim();
+      const password = document.getElementById('credentialPassword').value;
+
+      if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+      }
+
+      try {
+        // Use google.script.run for server-side calls
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(result) {
+              if (result && result.success) {
+                alert('Credentials saved successfully!');
+                closeCredentialModal();
+                loadCredentialsStatus();
+              } else {
+                alert('Error saving credentials: ' + (result ? result.error : 'Unknown error'));
+              }
+            })
+            .withFailureHandler(function(error) {
+              console.error('Error saving credentials:', error);
+              alert('Error saving credentials: ' + error.toString());
+            })
+            .saveWebsiteCredentials(siteKey, username, password);
+        } else {
+          // Fallback to fetch
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              action: 'saveWebsiteCredentials',
+              siteName: siteKey,
+              username: username,
+              password: password
+            })
+          });
+
+          const text = await response.text();
+          let result;
+          try {
+            result = JSON.parse(text);
+          } catch (e) {
+            throw new Error('Invalid response from server: ' + text.substring(0, 100));
+          }
+
+          if (result.success) {
+            alert('Credentials saved successfully!');
+            closeCredentialModal();
+            loadCredentialsStatus();
+          } else {
+            alert('Error saving credentials: ' + (result.error || 'Unknown error'));
+          }
+        }
+      } catch (error) {
+        console.error('Error saving credentials:', error);
+        alert('Error saving credentials: ' + error.toString());
+      }
+    }
+
+    async function deleteCredentials(siteKey, siteName) {
+      if (!confirm(`Are you sure you want to delete credentials for ${siteName}?`)) {
+        return;
+      }
+
+      try {
+        // Use google.script.run for server-side calls
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(result) {
+              if (result && result.success) {
+                alert('Credentials deleted successfully!');
+                loadCredentialsStatus();
+              } else {
+                alert('Error deleting credentials: ' + (result ? result.error : 'Unknown error'));
+              }
+            })
+            .withFailureHandler(function(error) {
+              console.error('Error deleting credentials:', error);
+              alert('Error deleting credentials: ' + error.toString());
+            })
+            .deleteWebsiteCredentials(siteKey);
+        } else {
+          // Fallback to fetch
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              action: 'deleteWebsiteCredentials',
+              siteName: siteKey
+            })
+          });
+
+          const text = await response.text();
+          let result;
+          try {
+            result = JSON.parse(text);
+          } catch (e) {
+            throw new Error('Invalid response from server: ' + text.substring(0, 100));
+          }
+
+          if (result.success) {
+            alert('Credentials deleted successfully!');
+            loadCredentialsStatus();
+          } else {
+            alert('Error deleting credentials: ' + (result.error || 'Unknown error'));
+          }
+        }
+      } catch (error) {
+        console.error('Error deleting credentials:', error);
+        alert('Error deleting credentials: ' + error.toString());
+      }
+    }
+
+    // ============================================================================
+    // PRICE COMPARISON TOOL - PRICE COMPARISON
+    // ============================================================================
+
+    async function runPriceComparison() {
+      const productName = document.getElementById('priceCompareSearch').value.trim();
+      
+      if (!productName) {
+        alert('Please enter a product name to search');
+        return;
+      }
+
+      // Show loading, hide results
+      document.getElementById('priceCompareLoading').style.display = 'block';
+      document.getElementById('priceCompareResults').style.display = 'none';
+      document.getElementById('priceCompareEmpty').style.display = 'none';
+      document.getElementById('compareBtn').disabled = true;
+
+      try {
+        // Use google.script.run for server-side calls
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function(result) {
+              document.getElementById('priceCompareLoading').style.display = 'none';
+              document.getElementById('compareBtn').disabled = false;
+
+              if (result && result.success) {
+                displayPriceComparisonResults(result);
+              } else {
+                alert('Error comparing prices: ' + (result ? result.error : 'Unknown error'));
+                document.getElementById('priceCompareEmpty').style.display = 'block';
+              }
+            })
+            .withFailureHandler(function(error) {
+              console.error('Error comparing prices:', error);
+              document.getElementById('priceCompareLoading').style.display = 'none';
+              document.getElementById('compareBtn').disabled = false;
+              alert('Error comparing prices: ' + error.toString());
+              document.getElementById('priceCompareEmpty').style.display = 'block';
+            })
+            .comparePrices(productName);
+        } else {
+          // Fallback to fetch
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              action: 'comparePrices',
+              productName: productName
+            })
+          });
+
+          const text = await response.text();
+          let result;
+          try {
+            result = JSON.parse(text);
+          } catch (e) {
+            console.error('Response was not JSON:', text.substring(0, 200));
+            throw new Error('Invalid response from server. Make sure the web app URL is correct.');
+          }
+          
+          document.getElementById('priceCompareLoading').style.display = 'none';
+          document.getElementById('compareBtn').disabled = false;
+
+          if (result.success) {
+            displayPriceComparisonResults(result);
+          } else {
+            alert('Error comparing prices: ' + (result.error || 'Unknown error'));
+            document.getElementById('priceCompareEmpty').style.display = 'block';
+          }
+        }
+      } catch (error) {
+        console.error('Error comparing prices:', error);
+        document.getElementById('priceCompareLoading').style.display = 'none';
+        document.getElementById('compareBtn').disabled = false;
+        alert('Error comparing prices: ' + error.toString());
+        document.getElementById('priceCompareEmpty').style.display = 'block';
+      }
+    }
+
+    function displayPriceComparisonResults(result) {
+      const resultsDiv = document.getElementById('priceCompareResults');
+      const resultsList = document.getElementById('priceCompareResultsList');
+      const errorsDiv = document.getElementById('priceCompareErrors');
+      
+      document.getElementById('searchedProductName').textContent = result.productName;
+      
+      // Display results
+      if (result.results && result.results.length > 0) {
+        resultsList.innerHTML = result.results.map((item, index) => {
+          const isCheapest = index === 0;
+          return `
+            <div style="background: ${isCheapest ? '#f0fdf4' : 'white'}; border: 2px solid ${isCheapest ? '#10b981' : '#e5e7eb'}; border-radius: 8px; padding: 16px; ${isCheapest ? 'box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);' : ''}">
+              <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 12px;">
+                <div style="flex: 1; min-width: 200px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <h4 style="margin: 0; color: #111827; font-size: 16px; font-weight: 700;">${escapeHtml(item.site)}</h4>
+                    ${isCheapest ? '<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">CHEAPEST</span>' : ''}
+                  </div>
+                  <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 14px;">${escapeHtml(item.productName || result.productName)}</p>
+                  ${item.available !== undefined ? 
+                    `<p style="margin: 0; font-size: 13px; color: ${item.available ? '#059669' : '#dc2626'};">
+                      <i class="fas fa-${item.available ? 'check' : 'times'}-circle"></i> ${item.available ? 'In Stock' : 'Out of Stock'}
+                    </p>` : ''
+                  }
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 24px; font-weight: 700; color: ${isCheapest ? '#10b981' : '#111827'}; margin-bottom: 8px;">
+                    $${parseFloat(item.price || 0).toFixed(2)}
+                  </div>
+                  ${item.url ? 
+                    `<a href="${escapeHtml(item.url)}" target="_blank" style="color: #0369a1; text-decoration: none; font-size: 14px;">
+                      <i class="fas fa-external-link-alt"></i> View Product
+                    </a>` : ''
+                  }
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        resultsList.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">No results found</p>';
+      }
+
+      // Display errors
+      if (result.errors && result.errors.length > 0) {
+        errorsDiv.innerHTML = `
+          <h4 style="margin: 0 0 12px 0; color: #dc2626; font-size: 16px; font-weight: 600;">
+            <i class="fas fa-exclamation-triangle"></i> Errors
+          </h4>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${result.errors.map(error => `
+              <div style="background: #fef2f2; border-left: 3px solid #dc2626; padding: 12px; border-radius: 4px;">
+                <strong style="color: #dc2626;">${escapeHtml(error.site)}:</strong> 
+                <span style="color: #991b1b;">${escapeHtml(error.error)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        errorsDiv.innerHTML = '';
+      }
+
+      resultsDiv.style.display = 'block';
+    }
+
+    // Allow Enter key to trigger comparison
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('priceCompareSearch');
+      if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            runPriceComparison();
+          }
+        });
+      }
+    });
+  </script>
+
+  <!-- Credential Modal -->
+  <div class="modal" id="credentialModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: white; border-radius: 12px; padding: 0; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);">
+      <div class="modal-header" style="padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="margin: 0; color: #111827; font-size: 20px; font-weight: 700;">
+          Configure Credentials - <span id="credentialSiteName"></span>
+        </h2>
+        <button class="modal-close" onclick="closeCredentialModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">&times;</button>
+      </div>
+      <div style="padding: 24px;">
+        <input type="hidden" id="credentialSiteKey">
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Username *</label>
+          <input type="text" id="credentialUsername" required 
+                 style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; font-family: inherit;">
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Password *</label>
+          <input type="password" id="credentialPassword" required 
+                 style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; font-family: inherit;">
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button class="btn btn-secondary" onclick="closeCredentialModal()" style="padding: 12px 24px;">Cancel</button>
+          <button class="btn btn-primary" onclick="saveCredentials()" style="padding: 12px 24px;">Save Credentials</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

@@ -1,0 +1,286 @@
+// Add this JavaScript to InvoiceEstimateUI.html after the renderContractsList function
+
+/**
+ * View project with contracts and access logs
+ */
+async function viewProjectWithContracts(projectId) {
+  try {
+    showLoading();
+    
+    // Find project
+    const project = allProjects.find(p => p.projectId === projectId);
+    if (!project) {
+      showError('Project not found');
+      return;
+    }
+    
+    // Load project contracts
+    const contractsResponse = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'getProjectContracts',
+        projectId: projectId
+      })
+    });
+    const contractsResult = await contractsResponse.json();
+    const contracts = contractsResult.success ? contractsResult.contracts : [];
+    
+    // Build contract cards with access logs
+    let contractsHtml = '';
+    if (contracts.length === 0) {
+      contractsHtml = `
+        <div style="text-align: center; padding: 30px; background: #f8fafc; border-radius: 8px; border: 2px dashed #e5e7eb;">
+          <i class="fas fa-file-contract" style="font-size: 48px; color: #cbd5e1; margin-bottom: 12px;"></i>
+          <p style="color: #64748b; margin: 0;">No contracts for this project yet</p>
+          <button class="btn btn-primary" style="margin-top: 16px;" onclick="createContractForProject('${projectId}')">
+            <i class="fas fa-plus"></i> Create Contract
+          </button>
+        </div>
+      `;
+    } else {
+      for (const contract of contracts) {
+        // Load access logs for this contract
+        const logsResponse = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            action: 'getContractAccessLogs',
+            contractId: contract.id
+          })
+        });
+        const logsResult = await logsResponse.json();
+        const logs = logsResult.success ? logsResult.logs : [];
+        
+        const statusColors = {
+          'Draft': '#64748b',
+          'Sent': '#f59e0b',
+          'Signed': '#10b981',
+          'Cancelled': '#ef4444'
+        };
+        const statusColor = statusColors[contract.status] || '#64748b';
+        
+        // Build access logs HTML
+        let logsHtml = '';
+        if (logs.length === 0) {
+          logsHtml = '<div style="padding: 12px; background: #f8fafc; border-radius: 6px; color: #64748b; font-size: 13px; text-align: center;">No access attempts yet</div>';
+        } else {
+          logsHtml = logs.slice(0, 5).map(log => `
+            <div style="padding: 10px; background: #f8fafc; border-radius: 6px; margin-bottom: 8px; font-size: 13px;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
+                <div>
+                  <i class="fas fa-${log.action === 'Signed' ? 'signature' : 'eye'}" style="color: ${log.action === 'Signed' ? '#10b981' : '#0ea5e9'}; margin-right: 6px;"></i>
+                  <strong style="color: #1e293b;">${log.action}</strong>
+                </div>
+                <span style="color: #64748b; font-size: 12px;">${new Date(log.timestamp).toLocaleString()}</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 8px;">
+                <div>
+                  <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Device</div>
+                  <div style="color: #475569;"><i class="fas fa-${log.deviceType === 'Mobile' ? 'mobile-alt' : log.deviceType === 'Tablet' ? 'tablet-alt' : 'desktop'}"></i> ${log.deviceType}</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">Browser</div>
+                  <div style="color: #475569;">${log.browser}</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">IP</div>
+                  <div style="color: #475569; font-family: monospace; font-size: 12px;">${log.ipAddress}</div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+          
+          if (logs.length > 5) {
+            logsHtml += `<div style="text-align: center; padding: 8px; color: #64748b; font-size: 12px;">+ ${logs.length - 5} more access attempts</div>`;
+          }
+        }
+        
+        contractsHtml += `
+          <div class="card" style="padding: 20px; margin-bottom: 16px; border-left: 4px solid ${statusColor};">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 8px 0; color: #1e293b; font-size: 18px;">${escapeHtml(contract.contractTitle || 'Service Agreement')}</h4>
+                <p style="margin: 0 0 4px 0; font-size: 13px; color: #64748b;">${contract.id}</p>
+                <p style="margin: 0; font-size: 13px; color: #64748b;">
+                  Created: ${new Date(contract.dateCreated).toLocaleDateString()}
+                  ${contract.dateSent ? ` • Sent: ${new Date(contract.dateSent).toLocaleDateString()}` : ''}
+                  ${contract.dateSigned ? ` • Signed: ${new Date(contract.dateSigned).toLocaleDateString()}` : ''}
+                </p>
+              </div>
+              <span style="padding: 8px 16px; background: ${statusColor}15; color: ${statusColor}; border-radius: 12px; font-size: 14px; font-weight: 600; white-space: nowrap;">
+                ${contract.status}
+              </span>
+            </div>
+            
+            <div style="font-size: 24px; font-weight: 700; color: #0369a1; margin-bottom: 16px;">
+              $${parseFloat(contract.totalAmount || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}
+            </div>
+            
+            <!-- Access Logs -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                <i class="fas fa-chart-line"></i> Access History (${logs.length} total)
+              </div>
+              ${logsHtml}
+            </div>
+            
+            <!-- Actions -->
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              ${contract.status === 'Draft' ? `
+                <button class="btn btn-primary" style="font-size: 13px; padding: 8px 14px;" onclick="openSignContractModal('${contract.id}')">
+                  <i class="fas fa-signature"></i> Sign
+                </button>
+                <button class="btn btn-success" style="font-size: 13px; padding: 8px 14px;" onclick="sendContract('${contract.id}')">
+                  <i class="fas fa-paper-plane"></i> Send to Customer
+                </button>
+              ` : ''}
+              ${contract.status === 'Sent' ? `
+                <button class="btn btn-warning" style="font-size: 13px; padding: 8px 14px;" onclick="sendContractReminderFunc('${contract.id}')">
+                  <i class="fas fa-bell"></i> Send Reminder
+                </button>
+              ` : ''}
+              ${contract.pdfUrl ? `
+                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="window.open('${contract.pdfUrl}', '_blank')">
+                  <i class="fas fa-file-pdf"></i> View PDF
+                </button>
+              ` : ''}
+              ${contract.signedPdfUrl ? `
+                <button class="btn btn-success" style="font-size: 13px; padding: 8px 14px;" onclick="window.open('${contract.signedPdfUrl}', '_blank')">
+                  <i class="fas fa-file-pdf"></i> Signed PDF
+                </button>
+              ` : ''}
+              <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="viewContract('${contract.id}')">
+                <i class="fas fa-eye"></i> View
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+    
+    // Show modal with contract details
+    const modalHtml = `
+      <div class="modal" id="projectContractsModal" style="display: flex;">
+        <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+          <div class="modal-header">
+            <h2><i class="fas fa-file-contract"></i> Contracts - ${project.projectId}</h2>
+            <button class="modal-close" onclick="closeProjectContractsModal()">&times;</button>
+          </div>
+          <div class="modal-body">
+            <!-- Customer Info -->
+            <div class="card" style="margin-bottom: 20px; background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%); color: white;">
+              <h3 style="margin: 0 0 12px 0; color: white;">${escapeHtml(project.projectData.customerName)}</h3>
+              <p style="margin: 0 0 8px 0; opacity: 0.9;">
+                <i class="fas fa-envelope"></i> ${escapeHtml(project.customerEmail)}
+              </p>
+              <p style="margin: 0; opacity: 0.9;">
+                <i class="fas fa-dollar-sign"></i> Project Value: $${parseFloat(project.totalValue).toLocaleString('en-US', {minimumFractionDigits: 2})}
+              </p>
+            </div>
+            
+            <!-- Contracts Section -->
+            <div style="margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;"><i class="fas fa-file-contract"></i> Contracts (${contracts.length})</h3>
+                <button class="btn btn-primary" onclick="createContractForProject('${projectId}')">
+                  <i class="fas fa-plus"></i> New Contract
+                </button>
+              </div>
+              ${contractsHtml}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('projectContractsModal');
+    if (existingModal) {
+      existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    hideLoading();
+  } catch (error) {
+    console.error('Error viewing project contracts:', error);
+    showError('Error loading project contracts: ' + error.message);
+    hideLoading();
+  }
+}
+
+/**
+ * Close project contracts modal
+ */
+function closeProjectContractsModal() {
+  const modal = document.getElementById('projectContractsModal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+/**
+ * Create contract for specific project
+ */
+function createContractForProject(projectId) {
+  const project = allProjects.find(p => p.projectId === projectId);
+  if (project) {
+    closeProjectContractsModal();
+    switchTab('contracts');
+    setTimeout(() => {
+      openCreateContractModal();
+      // Pre-fill project data
+      setTimeout(() => {
+        if (document.getElementById('contractProjectId')) {
+          document.getElementById('contractProjectId').value = projectId;
+          document.getElementById('contractCustomerName').value = project.projectData.customerName;
+          document.getElementById('contractCustomerEmail').value = project.customerEmail;
+          document.getElementById('contractTotalAmount').value = project.totalValue;
+        }
+      }, 100);
+    }, 300);
+  }
+}
+
+/**
+ * Send contract reminder
+ */
+async function sendContractReminderFunc(contractId) {
+  if (!confirm('Send a reminder email to the customer?')) {
+    return;
+  }
+  
+  try {
+    showLoading();
+    
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        action: 'sendContractReminder',
+        contractId: contractId
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      showSuccess('Reminder sent successfully!');
+    } else {
+      showError('Failed to send reminder: ' + (result.error || 'Unknown error'));
+    }
+  } catch (error) {
+    showError('Error sending reminder: ' + error.message);
+  } finally {
+    hideLoading();
+  }
+}
+
+// Make functions global
+window.viewProjectWithContracts = viewProjectWithContracts;
+window.closeProjectContractsModal = closeProjectContractsModal;
+window.createContractForProject = createContractForProject;
+window.sendContractReminderFunc = sendContractReminderFunc;
+

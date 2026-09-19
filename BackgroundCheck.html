@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background & Credit Check</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,100 Q300,50 600,100 T1200,100 L1200,0 L0,0 Z" fill="rgba(255,255,255,0.1)"/></svg>') repeat-x bottom;
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .company-name {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .company-name h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            color: white;
+        }
+
+        .company-name .subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f97316;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .header-text {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .header-text p {
+            opacity: 0.95;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e3a8a;
+            border: 1px solid #2563eb;
+        }
+
+        .property-info {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #f97316;
+        }
+
+        .property-info h3 {
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .property-info p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            color: #111827;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #ef4444;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Barlow', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: #f97316;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Barlow', sans-serif;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .security-notice {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .security-notice i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/694b0eaf60f0836e2ccbe633_DD67636E-EDDF-4A2F-A3B7-07741BD5615C.PNG" alt="McAfee Properties">
+                    </div>
+                    <div class="company-name">
+                        <h1>McAfee</h1>
+                        <div class="subtitle">Properties</div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-text">
+                <h1><i class="fas fa-shield-alt"></i> Background & Credit Check</h1>
+                <p>Complete this secure form to proceed with your application</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="loadingScreen" class="loading">
+                <div class="spinner"></div>
+                <p>Loading check information...</p>
+            </div>
+
+            <div id="errorScreen" style="display: none;">
+                <div class="alert alert-error">
+                    <strong>Error:</strong> <span id="errorMessage"></span>
+                </div>
+            </div>
+
+            <div id="formScreen" style="display: none;">
+                <div class="security-notice">
+                    <i class="fas fa-lock"></i>
+                    <strong>Secure & Confidential:</strong> All information provided is encrypted and kept strictly confidential.
+                </div>
+
+                <div class="property-info">
+                    <h3 id="propertyName">Loading...</h3>
+                    <p id="tenantInfo">Loading...</p>
+                </div>
+
+                <form id="backgroundCheckForm">
+                    <input type="hidden" id="checkCode" name="checkCode">
+
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h2>Personal Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="ssn">Social Security Number <span class="required">*</span></label>
+                            <input type="text" id="ssn" name="ssn" placeholder="XXX-XX-XXXX" required pattern="[0-9]{3}-[0-9]{2}-[0-9]{4}">
+                            <div class="help-text">Format: XXX-XX-XXXX</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="currentAddress">Current Address <span class="required">*</span></label>
+                            <textarea id="currentAddress" name="currentAddress" placeholder="Street address, City, State, ZIP" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="previousAddress">Previous Address (if less than 2 years at current address)</label>
+                            <textarea id="previousAddress" name="previousAddress" placeholder="Street address, City, State, ZIP"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Employment Information -->
+                    <div class="form-section">
+                        <h2>Employment Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="employer">Current Employer <span class="required">*</span></label>
+                            <input type="text" id="employer" name="employer" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employerPhone">Employer Phone <span class="required">*</span></label>
+                                <input type="tel" id="employerPhone" name="employerPhone" placeholder="(555) 123-4567" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="employmentStartDate">Employment Start Date <span class="required">*</span></label>
+                                <input type="date" id="employmentStartDate" name="employmentStartDate" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="monthlyIncome">Monthly Income <span class="required">*</span></label>
+                            <input type="number" id="monthlyIncome" name="monthlyIncome" placeholder="0.00" step="0.01" min="0" required>
+                            <div class="help-text">Enter your gross monthly income</div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact -->
+                    <div class="form-section">
+                        <h2>Emergency Contact</h2>
+                        
+                        <div class="form-group">
+                            <label for="emergencyContactName">Emergency Contact Name <span class="required">*</span></label>
+                            <input type="text" id="emergencyContactName" name="emergencyContactName" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="emergencyContactPhone">Emergency Contact Phone <span class="required">*</span></label>
+                                <input type="tel" id="emergencyContactPhone" name="emergencyContactPhone" placeholder="(555) 123-4567" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergencyContactRelationship">Relationship <span class="required">*</span></label>
+                                <select id="emergencyContactRelationship" name="emergencyContactRelationship" required>
+                                    <option value="">Select...</option>
+                                    <option value="Spouse">Spouse</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Sibling">Sibling</option>
+                                    <option value="Friend">Friend</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- References -->
+                    <div class="form-section">
+                        <h2>References</h2>
+                        
+                        <div class="form-group">
+                            <label for="references">Personal or Professional References</label>
+                            <textarea id="references" name="references" placeholder="Name, Phone, Relationship (one per line)"></textarea>
+                            <div class="help-text">List 2-3 references with their contact information</div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div class="form-section">
+                        <h2>Additional Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="notes">Additional Notes or Comments</label>
+                            <textarea id="notes" name="notes" placeholder="Any additional information you'd like to provide..."></textarea>
+                        </div>
+                    </div>
+
+                    <div id="submitAlert"></div>
+
+                    <button type="submit" class="btn" id="submitBtn">
+                        <i class="fas fa-check"></i> Submit Background Check
+                    </button>
+                </form>
+            </div>
+
+            <div id="successScreen" style="display: none;">
+                <div class="alert alert-success">
+                    <h3 style="margin-bottom: 10px;"><i class="fas fa-check-circle"></i> Background Check Submitted Successfully!</h3>
+                    <p>Thank you for completing the background and credit check form. Your information has been securely submitted and will be reviewed shortly.</p>
+                    <p style="margin-top: 16px; font-size: 14px;">You will be contacted if any additional information is needed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const RENTAL_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfSwpb2EKeibKH0fyolMgAAfNPz1w18SYjVQqc63DPdWJWIgTLDp2iHI4z_ilp8I8Tsg/exec';
+        
+        let checkCode = null;
+        let checkData = null;
+
+        // Load check code from URL
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            checkCode = urlParams.get('code');
+            
+            if (!checkCode) {
+                showError('No check code provided. Please use the link from your email.');
+                return;
+            }
+            
+            loadCheckInfo();
+        };
+
+        // Load check information
+        async function loadCheckInfo() {
+            try {
+                // Fetch check info by code
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getBackgroundCheckByCode&code=' + encodeURIComponent(checkCode));
+                const result = await response.json();
+                
+                if (!result.success) {
+                    showError(result.message || 'Invalid check code. Please use the link from your email.');
+                    return;
+                }
+                
+                checkData = result.check;
+                
+                // Display property info
+                if (checkData.propertyName) {
+                    document.getElementById('propertyName').textContent = checkData.propertyName;
+                }
+                if (checkData.tenantName) {
+                    document.getElementById('tenantInfo').textContent = 'Tenant: ' + checkData.tenantName + (checkData.tenantEmail ? ' (' + checkData.tenantEmail + ')' : '');
+                }
+                
+                // Set check code
+                document.getElementById('checkCode').value = checkCode;
+                
+                // Check if already completed
+                if (checkData.status === 'Completed') {
+                    showError('This background check has already been completed.');
+                    return;
+                }
+                
+                // Hide loading, show form
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('formScreen').style.display = 'block';
+                
+            } catch (error) {
+                showError('Error loading check information: ' + error.toString());
+                console.error('Load error:', error);
+            }
+        }
+
+        // Form submission
+        document.getElementById('backgroundCheckForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px; margin: 0 auto;"></div> Submitting...';
+            
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            
+            // Add check code
+            data.checkCode = checkCode;
+            
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'submitBackgroundCheck',
+                        ...data
+                    }).toString()
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success screen
+                    document.getElementById('formScreen').style.display = 'none';
+                    document.getElementById('successScreen').style.display = 'block';
+                } else {
+                    showSubmitAlert('Error submitting form: ' + (result.message || 'Unknown error'), 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Background Check';
+                }
+            } catch (error) {
+                showSubmitAlert('Error: ' + error.toString(), 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Submit Background Check';
+                console.error('Submit error:', error);
+            }
+        });
+
+        // Show error
+        function showError(message) {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('errorScreen').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // Show submit alert
+        function showSubmitAlert(message, type) {
+            const alertDiv = document.getElementById('submitAlert');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // Format SSN input
+        document.getElementById('ssn').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 5) + '-' + value.substring(5, 9);
+            } else if (value.length >= 3) {
+                value = value.substring(0, 3) + '-' + value.substring(3);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
+

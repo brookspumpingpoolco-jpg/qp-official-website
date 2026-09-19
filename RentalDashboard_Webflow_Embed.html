@@ -1,0 +1,52 @@
+<!-- Rental Property Management Dashboard - Webflow Embed -->
+<!-- Paste this code into a Webflow Embed element -->
+<!-- Update RENTAL_SCRIPT_URL with your Google Apps Script Web App URL -->
+
+<div id="rental-dashboard-container" style="min-height: 100vh; background: #f3f4f6;">
+    <!-- Dashboard will be loaded here -->
+</div>
+
+<script>
+    // Configuration - Update with your Google Apps Script Web App URL
+    const RENTAL_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfSwpb2EKeibKH0fyolMgAAfNPz1w18SYjVQqc63DPdWJWIgTLDp2iHI4z_ilp8I8Tsg/exec';
+    
+    // Load the dashboard HTML
+    fetch('https://yourdomain.com/RentalDashboard.html')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('rental-dashboard-container').innerHTML = html;
+            // Re-execute scripts in the loaded HTML
+            const scripts = document.getElementById('rental-dashboard-container').querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                Array.from(oldScript.attributes).forEach(attr => {
+                    newScript.setAttribute(attr.name, attr.value);
+                });
+                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+        })
+        .catch(error => {
+            document.getElementById('rental-dashboard-container').innerHTML = 
+                '<div style="padding: 40px; text-align: center; color: #dc2626;">Error loading dashboard. Please check the configuration.</div>';
+        });
+</script>
+
+<!-- Alternative: Inline Dashboard (if you prefer to embed directly) -->
+<!-- Uncomment and use this if you want to embed the full dashboard code directly in Webflow -->
+
+<!--
+<style>
+    /* Copy all CSS from RentalDashboard.html here */
+</style>
+
+<div class="rental-dashboard-wrapper">
+    <!-- Copy the HTML body content from RentalDashboard.html here -->
+</div>
+
+<script>
+    // Copy all JavaScript from RentalDashboard.html here
+    // Make sure to update RENTAL_SCRIPT_URL
+</script>
+-->
+

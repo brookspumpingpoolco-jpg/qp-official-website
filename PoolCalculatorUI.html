@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      opacity: 0.9;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .card h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2 i {
+      color: #0284c7;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-family: 'Barlow', sans-serif;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .result-box {
+      background: #e0f2fe;
+      border: 2px solid #0284c7;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .result-box h3 {
+      color: #0369a1;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .result-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: #0369a1;
+      margin-bottom: 8px;
+    }
+
+    .chemical-item {
+      background: #f9fafb;
+      border-left: 4px solid #0284c7;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+
+    .chemical-item h4 {
+      color: #111827;
+      margin-bottom: 5px;
+    }
+
+    .chemical-item p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .upload-area {
+      border: 3px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    .upload-area img {
+      max-width: 100%;
+      max-height: 300px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .success-message {
+      background: #dcfce7;
+      color: #166534;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-calculator"></i> Pool & Chemical Calculator</h1>
+      <p>Calculate volume, chemical needs, and generate reports</p>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="card">
+      <h2><i class="fas fa-user"></i> Customer Information</h2>
+      
+      <!-- Customer Sheet Loading Indicator -->
+      <div id="squareLoadingIndicator" style="background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); color: white; padding: 16px; border-radius: 12px; margin-bottom: 20px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 12px;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 20px;"></i>
+        <span style="font-weight: 600; font-size: 15px;">Loading customers from your customer sheet...</span>
+      </div>
+
+      <div id="squareLoadedIndicator" style="background: #dcfce7; color: #166534; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; display: none; align-items: center; justify-content: center; gap: 8px;">
+        <i class="fas fa-check-circle" style="font-size: 18px;"></i>
+        <span style="font-weight: 600;"><span id="customerCount">0</span> customers loaded from your customer sheet</span>
+      </div>
+
+      <!-- Customer Selection UI -->
+      <div id="customerSelectUI">
+        <div class="form-group">
+          <label>Select Existing Customer</label>
+          <select id="customerSelect" onchange="loadCustomerDetails()" style="font-size: 15px;">
+            <option value="">-- Loading customers... --</option>
+          </select>
+        </div>
+
+        <div style="text-align: center; margin: 15px 0; color: #9ca3af; font-weight: 600;">OR ENTER NEW CUSTOMER</div>
+
+        <div class="form-group">
+          <label>Customer Name *</label>
+          <input type="text" id="customerName" placeholder="Enter customer name" required>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="customerEmail" placeholder="customer@email.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="customerPhone" placeholder="Enter phone number">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" id="customerAddress" placeholder="Street address">
+        </div>
+      </div>
+
+      <!-- Selected Customer Display -->
+      <div id="selectedCustomerDisplay" style="display: none; background: #dcfce7; border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+          <h3 style="margin: 0; color: #166534; font-size: 18px;">
+            <i class="fas fa-check-circle"></i> Customer Selected
+          </h3>
+          <button onclick="switchCustomer()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;">
+            <i class="fas fa-exchange-alt"></i> Switch Customer
+          </button>
+        </div>
+        <div id="selectedCustomerInfo" style="background: white; padding: 15px; border-radius: 8px;">
+          <!-- Customer info will be inserted here -->
+        </div>
+      </div>
+
+      <div id="addCustomerSection" style="display: none; margin-top: 15px; background: #fffbeb; border: 2px dashed #fbbf24; border-radius: 12px; padding: 20px;">
+        <p style="font-size: 14px; color: #92400e; margin-bottom: 12px; text-align: center; font-weight: 600;">
+          <i class="fas fa-info-circle"></i> New Customer - Save to Customer Sheet
+        </p>
+        <button class="btn btn-secondary" onclick="addCustomerToSquare(event)" style="width: 100%; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; font-weight: 700;">
+          <i class="fas fa-user-plus"></i> Save Customer to Sheet
+        </button>
+        <p style="font-size: 12px; color: #92400e; margin-top: 10px; text-align: center;">
+          Click to save this customer to your customer sheet for future use
+        </p>
+      </div>
+    </div>
+
+    <!-- Pool Dimensions -->
+    <div class="card">
+      <h2><i class="fas fa-swimming-pool"></i> Pool Dimensions</h2>
+      <div class="form-group">
+        <label>Pool Shape *</label>
+        <select id="poolShape" onchange="updateDimensionFields()">
+          <option value="rectangular">Rectangular</option>
+          <option value="circular">Circular/Round</option>
+          <option value="oval">Oval</option>
+          <option value="kidney">Kidney-Shaped</option>
+        </select>
+      </div>
+
+      <div id="dimensionFields">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Length (feet) *</label>
+            <input type="number" id="length" placeholder="0" step="0.1">
+          </div>
+          <div class="form-group">
+            <label>Width (feet) *</label>
+            <input type="number" id="width" placeholder="0" step="0.1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Average Depth (feet) *</label>
+          <input type="number" id="depth" placeholder="0" step="0.1">
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="calculateVolume()">
+        <i class="fas fa-calculator"></i> Calculate Volume
+      </button>
+
+      <div id="volumeResult" style="display:none;" class="result-box">
+        <h3>Pool Volume</h3>
+        <div class="result-value"><span id="gallonsDisplay">0</span> gallons</div>
+        <p><span id="litersDisplay">0</span> liters</p>
+      </div>
+    </div>
+
+    <!-- Water Chemistry -->
+    <div class="card">
+      <h2><i class="fas fa-flask"></i> Current Water Chemistry</h2>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>pH Level</label>
+          <input type="number" id="currentPH" placeholder="7.5" step="0.1" min="0" max="14">
+        </div>
+        <div class="form-group">
+          <label>Free Chlorine (ppm)</label>
+          <input type="number" id="currentChlorine" placeholder="0" step="0.1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Total Alkalinity (ppm)</label>
+        <input type="number" id="currentAlkalinity" placeholder="100" step="1">
+      </div>
+
+      <button class="btn btn-primary" onclick="calculateChemicals()">
+        <i class="fas fa-vial"></i> Calculate Chemical Needs
+      </button>
+
+      <div id="chemicalResults" style="display:none;"></div>
+    </div>
+
+    <!-- Service Actions Performed -->
+    <div class="card">
+      <h2><i class="fas fa-clipboard-check"></i> Service Actions Performed</h2>
+      
+      <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; cursor: pointer;">
+          <input type="checkbox" id="chemicalsAdded" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 16px; font-weight: 600;">Chemicals were added by our team</span>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; cursor: pointer;">
+          <input type="checkbox" id="vacuumingDone" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 16px; font-weight: 600;">Vacuuming performed</span>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; cursor: pointer;">
+          <input type="checkbox" id="backwashDone" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 16px; font-weight: 600;">Backwash performed</span>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; cursor: pointer;">
+          <input type="checkbox" id="pumpBasketCleaned" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 16px; font-weight: 600;">Pump basket cleaned</span>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; cursor: pointer;">
+          <input type="checkbox" id="skimmerBasketCleaned" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 16px; font-weight: 600;">Skimmer basket(s) cleaned</span>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; cursor: pointer;">
+          <input type="checkbox" id="poolBrushed" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 16px; font-weight: 600;">Pool walls and floor brushed</span>
+        </label>
+
+        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+          <input type="checkbox" id="waterLevelChecked" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 16px; font-weight: 600;">Water level checked and adjusted</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>Additional Notes / Observations</label>
+        <textarea id="serviceNotes" rows="4" placeholder="Enter any additional notes, observations, or recommendations for the customer..." style="resize: vertical;"></textarea>
+      </div>
+    </div>
+
+    <!-- Equipment Inspection (Optional) -->
+    <div class="card">
+      <h2><i class="fas fa-tools"></i> Equipment Inspection <span style="font-size: 14px; font-weight: 400; color: #9ca3af;">(Optional)</span></h2>
+      
+      <p style="color: #6b7280; margin-bottom: 20px; font-size: 14px;">Quick rundown of pump, filter, and equipment condition</p>
+      
+      <!-- Pump Status -->
+      <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 15px;">🔧 Pump & Motor</h3>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="pumpRunning" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">Pump running properly</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="pumpLeaking" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Pump leaking</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="motorNoise" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Unusual motor noise</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+          <input type="checkbox" id="motorHot" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Motor running hot</span>
+        </label>
+      </div>
+      
+      <!-- Filter Status -->
+      <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 15px;">🌀 Filter System</h3>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="filterClean" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">Filter clean / good pressure</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="filterDirty" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Filter needs cleaning</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+          <input type="checkbox" id="filterLeaking" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Filter leaking</span>
+        </label>
+      </div>
+      
+      <!-- Pipes & Plumbing -->
+      <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 15px;">🔩 Pipes & Plumbing</h3>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="pipesGood" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">All pipes/connections good</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="pipesLeaking" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Visible pipe leaks</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="wetGround" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Wet ground / grass around equipment</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+          <input type="checkbox" id="valvesStuck" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">⚠️ Valves stuck or broken</span>
+        </label>
+      </div>
+      
+      <!-- Other Equipment -->
+      <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 15px;">⚡ Other Equipment</h3>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="heaterWorking" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">Heater working (if applicable)</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="cleanerWorking" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">Auto cleaner working (if applicable)</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+          <input type="checkbox" id="lightsWorking" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px;">Pool lights working (if applicable)</span>
+        </label>
+      </div>
+      
+      <!-- Equipment Notes -->
+      <div class="form-group">
+        <label>Equipment Notes / Issues Found</label>
+        <textarea id="equipmentNotes" rows="3" placeholder="Describe any equipment issues, repairs needed, or observations..." style="resize: vertical;"></textarea>
+      </div>
+    </div>
+
+    <!-- Pool Photo Upload -->
+    <div class="card">
+      <h2><i class="fas fa-camera"></i> Pool Photo (Optional)</h2>
+      <div class="upload-area" onclick="document.getElementById('photoInput').click()">
+        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #0284c7;"></i>
+        <p style="margin-top: 10px;">Click to upload pool photo</p>
+        <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+        <div id="photoPreview"></div>
+      </div>
+    </div>
+
+    <!-- Generate Report -->
+    <div class="card">
+      <h2><i class="fas fa-file-pdf"></i> Generate Report</h2>
+      <p style="color: #6b7280; margin-bottom: 20px;">Save this report to Google Drive and email to your team</p>
+      
+      <!-- Customer Communication Options -->
+      <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #0369a1; margin-bottom: 15px;">
+          <i class="fas fa-paper-plane"></i> Send to Customer
+        </h3>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="emailCustomer" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px; font-weight: 600;">📧 Email report to customer</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; cursor: not-allowed; opacity: 0.5;">
+          <input type="checkbox" id="textCustomer" style="width: 20px; height: 20px; cursor: not-allowed;" disabled>
+          <span style="font-size: 15px; font-weight: 600;">📱 Send text message with report link <span style="font-size: 12px; color: #9ca3af;">(Coming Soon)</span></span>
+        </label>
+        
+        <p style="font-size: 12px; color: #6b7280; margin-top: 12px; margin-bottom: 0;">
+          ℹ️ Customer email must be entered above
+        </p>
+      </div>
+      
+      <button class="btn btn-primary" onclick="generateReport()">
+        <i class="fas fa-save"></i> Save Report & Send
+      </button>
+
+      <div id="successMessage" class="success-message"></div>
+      <div id="errorMessage" class="error-message"></div>
+
+      <div id="joistReminder" style="display: none; background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 8px; margin-top: 15px;">
+        <p style="margin: 0; color: #92400e;">
+          <strong><i class="fas fa-clipboard-check"></i> Next Step:</strong> Upload this report to the customer's <strong>Joist invoice</strong> for record keeping.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let calculatedData = {
+      gallons: 0,
+      liters: 0,
+      chemicals: {},
+      photoData: null,
+      squareCustomerId: null
+    };
+
+    let squareCustomers = [];
+
+    // Load customer sheet records on page load
+    window.onload = function() {
+      loadSquareCustomers();
+    };
+
+    function loadSquareCustomers() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          // Hide loading indicator
+          document.getElementById('squareLoadingIndicator').style.display = 'none';
+          
+          if (result.success && result.customers) {
+            squareCustomers = result.customers;
+            const select = document.getElementById('customerSelect');
+            
+            // Clear loading option
+            select.innerHTML = '<option value="">-- Select saved customer or enter new --</option>';
+            
+            // Add customers to dropdown
+            result.customers.forEach(customer => {
+              const option = document.createElement('option');
+              option.value = customer.id;
+              option.textContent = customer.name + (customer.phone ? ' - ' + customer.phone : '');
+              select.appendChild(option);
+            });
+            
+            // Show success indicator
+            document.getElementById('customerCount').textContent = result.customers.length;
+            document.getElementById('squareLoadedIndicator').style.display = 'flex';
+          } else {
+            // Show error
+            document.getElementById('squareLoadingIndicator').innerHTML = `
+              <i class="fas fa-exclamation-circle" style="font-size: 20px;"></i>
+              <span style="font-weight: 600; font-size: 15px;">Could not load customers from the customer sheet.</span>
+            `;
+            document.getElementById('squareLoadingIndicator').style.background = '#fee2e2';
+            document.getElementById('squareLoadingIndicator').style.color = '#991b1b';
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('squareLoadingIndicator').innerHTML = `
+            <i class="fas fa-exclamation-circle" style="font-size: 20px;"></i>
+            <span style="font-weight: 600; font-size: 15px;">Error loading customers: ${error}</span>
+          `;
+          document.getElementById('squareLoadingIndicator').style.background = '#fee2e2';
+          document.getElementById('squareLoadingIndicator').style.color = '#991b1b';
+        })
+        .getSquareCustomers();
+    }
+
+    function loadCustomerDetails() {
+      const customerId = document.getElementById('customerSelect').value;
+      
+      if (!customerId) {
+        // Show selection UI, hide selected display
+        document.getElementById('customerSelectUI').style.display = 'block';
+        document.getElementById('selectedCustomerDisplay').style.display = 'none';
+        document.getElementById('addCustomerSection').style.display = 'none';
+        calculatedData.squareCustomerId = null;
+        return;
+      }
+      
+      // Find customer in local array
+      const customer = squareCustomers.find(c => c.id === customerId);
+      
+      if (customer) {
+        // Store customer data
+        calculatedData.squareCustomerId = customerId;
+        calculatedData.customerData = customer;
+        
+        // Update hidden form fields
+        document.getElementById('customerName').value = customer.name;
+        document.getElementById('customerEmail').value = customer.email || '';
+        document.getElementById('customerPhone').value = customer.phone || '';
+        document.getElementById('customerAddress').value = customer.address || '';
+        
+        // Hide selection UI, show selected customer
+        document.getElementById('customerSelectUI').style.display = 'none';
+        document.getElementById('addCustomerSection').style.display = 'none';
+        document.getElementById('selectedCustomerDisplay').style.display = 'block';
+        
+        // Update selected customer display
+        document.getElementById('selectedCustomerInfo').innerHTML = `
+          <div style="margin-bottom: 10px;">
+            <strong style="font-size: 18px; color: #111827;">${customer.name}</strong>
+          </div>
+          ${customer.email ? `<p style="margin: 5px 0; color: #6b7280;"><i class="fas fa-envelope"></i> ${customer.email}</p>` : ''}
+          ${customer.phone ? `<p style="margin: 5px 0; color: #6b7280;"><i class="fas fa-phone"></i> ${customer.phone}</p>` : ''}
+          ${customer.address ? `<p style="margin: 5px 0; color: #6b7280;"><i class="fas fa-map-marker-alt"></i> ${customer.address}</p>` : ''}
+        `;
+      }
+    }
+
+    function switchCustomer() {
+      // Reset dropdown
+      document.getElementById('customerSelect').value = '';
+      
+      // Clear fields
+      document.getElementById('customerName').value = '';
+      document.getElementById('customerEmail').value = '';
+      document.getElementById('customerPhone').value = '';
+      document.getElementById('customerAddress').value = '';
+      
+      // Reset state
+      calculatedData.squareCustomerId = null;
+      calculatedData.customerData = null;
+      
+      // Show selection UI, hide selected display
+      document.getElementById('customerSelectUI').style.display = 'block';
+      document.getElementById('selectedCustomerDisplay').style.display = 'none';
+      document.getElementById('addCustomerSection').style.display = 'none';
+    }
+
+    // Show "Add Customer" button when typing manually
+    document.addEventListener('DOMContentLoaded', function() {
+      const nameInput = document.getElementById('customerName');
+      if (nameInput) {
+        nameInput.addEventListener('input', function() {
+          const value = this.value.trim();
+          const selectValue = document.getElementById('customerSelect').value;
+          
+          // Show add button if name entered but no customer selected
+          if (value && !selectValue) {
+            document.getElementById('addCustomerSection').style.display = 'block';
+          } else {
+            document.getElementById('addCustomerSection').style.display = 'none';
+          }
+        });
+      }
+    });
+
+    function addCustomerToSquare(event) {
+      const name = document.getElementById('customerName').value.trim();
+      const email = document.getElementById('customerEmail').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+      const address = document.getElementById('customerAddress').value.trim();
+      
+      if (!name) {
+        alert('Please enter a customer name first!');
+        return;
+      }
+      
+      // Confirm before creating
+      if (!confirm(`Save "${name}" to the customer sheet?`)) {
+        return;
+      }
+      
+      const customerData = {
+        name: name,
+        email: email,
+        phone: phone,
+        address: address
+      };
+      
+      // Show loading in button
+      const btn = event ? event.target : document.querySelector('#addCustomerSection button');
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving to Sheet...';
+      btn.disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Store customer data
+            calculatedData.squareCustomerId = result.customerId;
+            const newCustomer = {
+              id: result.customerId,
+              name: name,
+              email: email,
+              phone: phone,
+              address: address
+            };
+            calculatedData.customerData = newCustomer;
+            
+            // Add to local array
+            squareCustomers.unshift(newCustomer);
+            
+            // Add to dropdown
+            const select = document.getElementById('customerSelect');
+            const option = document.createElement('option');
+            option.value = newCustomer.id;
+            option.textContent = newCustomer.name + (newCustomer.phone ? ' - ' + newCustomer.phone : '');
+            select.insertBefore(option, select.options[1]);
+            
+            // Auto-select the new customer
+            select.value = newCustomer.id;
+            
+            // Hide add button and selection UI, show selected customer
+            document.getElementById('addCustomerSection').style.display = 'none';
+            document.getElementById('customerSelectUI').style.display = 'none';
+            document.getElementById('selectedCustomerDisplay').style.display = 'block';
+            
+            // Update customer count
+            const countEl = document.getElementById('customerCount');
+            if (countEl) {
+              countEl.textContent = squareCustomers.length;
+            }
+            
+            // Update selected customer display
+            document.getElementById('selectedCustomerInfo').innerHTML = `
+              <div style="margin-bottom: 10px;">
+                <strong style="font-size: 18px; color: #111827;">${newCustomer.name}</strong>
+                <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 10px;">NEW</span>
+              </div>
+              ${newCustomer.email ? `<p style="margin: 5px 0; color: #6b7280;"><i class="fas fa-envelope"></i> ${newCustomer.email}</p>` : ''}
+              ${newCustomer.phone ? `<p style="margin: 5px 0; color: #6b7280;"><i class="fas fa-phone"></i> ${newCustomer.phone}</p>` : ''}
+              ${newCustomer.address ? `<p style="margin: 5px 0; color: #6b7280;"><i class="fas fa-map-marker-alt"></i> ${newCustomer.address}</p>` : ''}
+            `;
+            
+            // Success message
+            alert('✅ Customer saved to sheet and selected!');
+          } else {
+            alert('Error: ' + result.error);
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Save Customer to Sheet';
+            btn.disabled = false;
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+          btn.innerHTML = '<i class="fas fa-user-plus"></i> Save Customer to Sheet';
+          btn.disabled = false;
+        })
+        .createCustomerInSheet(customerData);
+    }
+
+    function updateDimensionFields() {
+      const shape = document.getElementById('poolShape').value;
+      const fieldsDiv = document.getElementById('dimensionFields');
+      
+      if (shape === 'circular') {
+        fieldsDiv.innerHTML = `
+          <div class="form-group">
+            <label>Diameter (feet) *</label>
+            <input type="number" id="diameter" placeholder="0" step="0.1">
+          </div>
+          <div class="form-group">
+            <label>Average Depth (feet) *</label>
+            <input type="number" id="depth" placeholder="0" step="0.1">
+          </div>
+        `;
+      } else {
+        fieldsDiv.innerHTML = `
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Length (feet) *</label>
+              <input type="number" id="length" placeholder="0" step="0.1">
+            </div>
+            <div class="form-group">
+              <label>Width (feet) *</label>
+              <input type="number" id="width" placeholder="0" step="0.1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Average Depth (feet) *</label>
+            <input type="number" id="depth" placeholder="0" step="0.1">
+          </div>
+        `;
+      }
+    }
+
+    function calculateVolume() {
+      const shape = document.getElementById('poolShape').value;
+      const depth = parseFloat(document.getElementById('depth').value);
+      
+      let data = { shape, depth };
+      
+      if (shape === 'circular') {
+        data.diameter = parseFloat(document.getElementById('diameter').value);
+      } else {
+        data.length = parseFloat(document.getElementById('length').value);
+        data.width = parseFloat(document.getElementById('width').value);
+      }
+      
+      google.script.run
+        .withSuccessHandler(displayVolumeResult)
+        .withFailureHandler(showError)
+        .calculatePoolVolume(data);
+    }
+
+    function displayVolumeResult(result) {
+      if (result.success) {
+        calculatedData.gallons = result.gallons;
+        calculatedData.liters = result.liters;
+        
+        document.getElementById('gallonsDisplay').textContent = result.gallons.toLocaleString();
+        document.getElementById('litersDisplay').textContent = result.liters.toLocaleString();
+        document.getElementById('volumeResult').style.display = 'block';
+      } else {
+        showError(result.error);
+      }
+    }
+
+    function calculateChemicals() {
+      if (calculatedData.gallons === 0) {
+        alert('Please calculate pool volume first!');
+        return;
+      }
+      
+      const data = {
+        gallons: calculatedData.gallons,
+        currentPH: parseFloat(document.getElementById('currentPH').value) || 7.5,
+        currentChlorine: parseFloat(document.getElementById('currentChlorine').value) || 0,
+        currentAlkalinity: parseFloat(document.getElementById('currentAlkalinity').value) || 100
+      };
+      
+      google.script.run
+        .withSuccessHandler(displayChemicalResults)
+        .withFailureHandler(showError)
+        .calculateChemicals(data);
+    }
+
+    function displayChemicalResults(result) {
+      if (result.success) {
+        calculatedData.chemicals = result.chemicals;
+        calculatedData.notes = result.notes;
+        
+        let html = '<div class="result-box"><h3>Chemical Recommendations</h3>';
+        
+        for (let chem in result.chemicals) {
+          const c = result.chemicals[chem];
+          html += `
+            <div class="chemical-item">
+              <h4>${c.product}</h4>
+              <p><strong>Amount:</strong> ${c.amount} oz</p>
+              <p><strong>Instructions:</strong> ${c.instruction}</p>
+              ${c.frequency ? `<p><strong>Frequency:</strong> ${c.frequency}</p>` : ''}
+            </div>
+          `;
+        }
+        
+        html += '<h4 style="margin-top: 20px;">Important Notes:</h4><ul>';
+        result.notes.forEach(note => {
+          html += `<li>${note}</li>`;
+        });
+        html += '</ul></div>';
+        
+        document.getElementById('chemicalResults').innerHTML = html;
+        document.getElementById('chemicalResults').style.display = 'block';
+      } else {
+        showError(result.error);
+      }
+    }
+
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          calculatedData.photoData = e.target.result;
+          document.getElementById('photoPreview').innerHTML = `
+            <img src="${e.target.result}" alt="Pool Photo">
+          `;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function generateReport() {
+      const customerName = document.getElementById('customerName').value.trim();
+      
+      if (!customerName) {
+        alert('Please enter customer name!');
+        return;
+      }
+      
+      if (calculatedData.gallons === 0) {
+        alert('Please calculate pool volume first!');
+        return;
+      }
+      
+      // Check if sending to customer
+      const emailCustomer = document.getElementById('emailCustomer').checked;
+      const textCustomer = document.getElementById('textCustomer').checked;
+      const customerEmail = document.getElementById('customerEmail').value || '';
+      const customerPhone = document.getElementById('customerPhone').value || '';
+      
+      // Validate if options are checked but info missing
+      if (emailCustomer && !customerEmail) {
+        alert('Please enter customer email address to send email!');
+        return;
+      }
+      if (textCustomer && !customerPhone) {
+        alert('Please enter customer phone number to send text!');
+        return;
+      }
+      
+      // Gather all data
+      const reportData = {
+        customerName: customerName,
+        customerEmail: customerEmail,
+        customerPhone: customerPhone,
+        customerAddress: document.getElementById('customerAddress').value || '',
+        squareCustomerId: calculatedData.squareCustomerId,
+        poolShape: document.getElementById('poolShape').value,
+        gallons: calculatedData.gallons,
+        liters: calculatedData.liters,
+        dimensions: getDimensionsString(),
+        currentPH: document.getElementById('currentPH').value || '7.5',
+        currentChlorine: document.getElementById('currentChlorine').value || '0',
+        currentAlkalinity: document.getElementById('currentAlkalinity').value || '100',
+        chemicals: calculatedData.chemicals,
+        notes: calculatedData.notes || [],
+        // Service actions performed
+        chemicalsAdded: document.getElementById('chemicalsAdded').checked,
+        vacuumingDone: document.getElementById('vacuumingDone').checked,
+        backwashDone: document.getElementById('backwashDone').checked,
+        pumpBasketCleaned: document.getElementById('pumpBasketCleaned').checked,
+        skimmerBasketCleaned: document.getElementById('skimmerBasketCleaned').checked,
+        poolBrushed: document.getElementById('poolBrushed').checked,
+        waterLevelChecked: document.getElementById('waterLevelChecked').checked,
+        serviceNotes: document.getElementById('serviceNotes').value.trim(),
+        // Equipment inspection (optional)
+        equipment: {
+          pumpRunning: document.getElementById('pumpRunning').checked,
+          pumpLeaking: document.getElementById('pumpLeaking').checked,
+          motorNoise: document.getElementById('motorNoise').checked,
+          motorHot: document.getElementById('motorHot').checked,
+          filterClean: document.getElementById('filterClean').checked,
+          filterDirty: document.getElementById('filterDirty').checked,
+          filterLeaking: document.getElementById('filterLeaking').checked,
+          pipesGood: document.getElementById('pipesGood').checked,
+          pipesLeaking: document.getElementById('pipesLeaking').checked,
+          wetGround: document.getElementById('wetGround').checked,
+          valvesStuck: document.getElementById('valvesStuck').checked,
+          heaterWorking: document.getElementById('heaterWorking').checked,
+          cleanerWorking: document.getElementById('cleanerWorking').checked,
+          lightsWorking: document.getElementById('lightsWorking').checked,
+          notes: document.getElementById('equipmentNotes').value.trim()
+        },
+        // Customer communication options
+        emailCustomer: emailCustomer,
+        textCustomer: textCustomer,
+        // Photo data for email attachment
+        photoData: calculatedData.photoData
+      };
+      
+      // Show loading
+      document.getElementById('successMessage').style.display = 'none';
+      document.getElementById('errorMessage').style.display = 'none';
+      
+      // Save report
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            let successHTML = `
+              <i class="fas fa-check-circle"></i> <strong>Report Saved & Emailed Successfully!</strong><br><br>
+              
+              <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                <strong>📁 Saved to Folder:</strong><br>
+                <a href="${result.folderUrl}" target="_blank" style="color: #0284c7; text-decoration: underline;">
+                  ${result.folderName}
+                </a>
+              </div>
+
+              <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                <strong>📄 View Report:</strong><br>
+                <a href="${result.fileUrl}" target="_blank" style="color: #0284c7; text-decoration: underline;">
+                  ${result.fileName}
+                </a>
+              </div>
+
+              <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                <strong>📧 Emails Sent To:</strong><br>
+                • brookspumpingpoolco@gmail.com (Team)<br>
+                ${reportData.emailCustomer && reportData.customerEmail ? `• ${reportData.customerEmail} (Customer)` : ''}
+              </div>
+            `;
+            
+            // Add customer communication status
+            if (reportData.emailCustomer || reportData.textCustomer) {
+              successHTML += `
+                <div style="background: #dcfce7; border: 2px solid #10b981; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                  <strong style="color: #166534;">✅ Customer Notifications Sent:</strong><br>
+                  ${reportData.emailCustomer ? '<p style="margin: 5px 0; color: #166534;">• Email sent with PDF & photo attachments</p>' : ''}
+                  ${reportData.textCustomer ? '<p style="margin: 5px 0; color: #166534;">• Text message sent with report link</p>' : ''}
+                </div>
+              `;
+            }
+            
+            // Add job creation status
+            if (result.jobCreated && result.jobId) {
+              successHTML += `
+                <div style="background: #dcfce7; border: 2px solid #10b981; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                  <strong style="color: #166534;">✅ Job Created Successfully!</strong><br>
+                  <p style="margin: 5px 0; color: #166534;">
+                    <strong>Job ID:</strong> ${result.jobId}<br>
+                    This service call has been automatically added to your Jobs list in the dashboard.
+                  </p>
+                </div>
+              `;
+            } else if (result.jobCreated === false) {
+              successHTML += `
+                <div style="background: #fef3c7; border: 2px solid #fbbf24; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                  <strong style="color: #92400e;">⚠️ Job Creation Note:</strong><br>
+                  <p style="margin: 5px 0; color: #92400e; font-size: 13px;">
+                    Report saved successfully, but job could not be created automatically. You can create a job manually in the dashboard if needed.
+                  </p>
+                </div>
+              `;
+            }
+            
+            // Add customer-note reminder when a summary note is available
+            if (result.squareNoteText) {
+              successHTML += `
+                <div style="background: #fffbeb; border: 2px solid #fbbf24; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                  <strong style="color: #92400e;">📱 Save to Customer Record:</strong><br>
+                  <p style="font-size: 12px; color: #92400e; margin: 5px 0;">Copy this note if you want to keep a quick summary in the customer record:</p>
+                  <textarea 
+                    readonly 
+                    onclick="this.select(); document.execCommand('copy'); alert('✅ Copied! Now paste it into the customer record');"
+                    style="width: 100%; min-height: 120px; padding: 10px; margin-top: 8px; font-size: 12px; font-family: monospace; border: 1px solid #fbbf24; border-radius: 4px; background: white; cursor: pointer;"
+                  >${result.squareNoteText}</textarea>
+                  <p style="font-size: 11px; color: #92400e; margin-top: 5px;">
+                    👆 Click the text box to copy, then paste into your customer notes if needed
+                  </p>
+                </div>
+              `;
+            }
+            
+            document.getElementById('successMessage').innerHTML = successHTML;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('joistReminder').style.display = 'block';
+          } else {
+            showError(result.error);
+          }
+        })
+        .withFailureHandler(showError)
+        .saveReportToDrive(reportData);
+    }
+
+    function getDimensionsString() {
+      const shape = document.getElementById('poolShape').value;
+      if (shape === 'circular') {
+        const diameter = document.getElementById('diameter').value;
+        const depth = document.getElementById('depth').value;
+        return `Diameter: ${diameter}ft, Depth: ${depth}ft`;
+      } else {
+        const length = document.getElementById('length').value;
+        const width = document.getElementById('width').value;
+        const depth = document.getElementById('depth').value;
+        return `${length}ft × ${width}ft × ${depth}ft deep`;
+      }
+    }
+
+    function showError(error) {
+      document.getElementById('errorMessage').innerHTML = `
+        <i class="fas fa-exclamation-circle"></i> Error: ${error}
+      `;
+      document.getElementById('errorMessage').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
+

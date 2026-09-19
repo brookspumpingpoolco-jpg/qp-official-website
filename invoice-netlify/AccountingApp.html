@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accounting — A Quality Pool Company</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;display:flex;min-height:100vh;}
+
+/* ── Sidebar ── */
+.sidebar{width:240px;background:#0f172a;color:#e2e8f0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;display:flex;flex-direction:column;}
+.sidebar-brand{padding:20px 16px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px;}
+.sidebar-brand span{font-size:15px;font-weight:700;color:#fff;line-height:1.2;}
+.sidebar-company{padding:12px 16px;border-bottom:1px solid #1e293b;}
+.sidebar-company label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;}
+.sidebar-company select{width:100%;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:6px 8px;font-size:12px;cursor:pointer;}
+.nav-section{padding:12px 0;}
+.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#475569;padding:6px 16px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:#94a3b8;font-size:13px;font-weight:500;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:#1e293b;color:#e2e8f0;}
+.nav-item.active{background:#1d4ed8;color:#fff;}
+.nav-item i{width:16px;text-align:center;font-size:14px;}
+
+/* ── Main ── */
+.main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:18px;font-weight:700;color:#0f172a;}
+.topbar-right{display:flex;gap:10px;align-items:center;}
+.page{display:none;padding:24px;}
+.page.active{display:block;}
+
+/* ── Cards ── */
+.card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e2e8f0;position:relative;overflow:hidden;}
+.stat-card .label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:6px;}
+.stat-card .value{font-size:26px;font-weight:800;color:#0f172a;line-height:1;}
+.stat-card .sub{font-size:12px;color:#64748b;margin-top:4px;}
+.stat-card.green .value{color:#16a34a;}
+.stat-card.red .value{color:#dc2626;}
+.stat-card.blue .value{color:#2563eb;}
+.stat-card.amber .value{color:#d97706;}
+.stat-card.purple .value{color:#7c3aed;}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:#2563eb;color:#fff;}
+.btn-primary:hover{background:#1d4ed8;}
+.btn-success{background:#16a34a;color:#fff;}
+.btn-success:hover{background:#15803d;}
+.btn-danger{background:#dc2626;color:#fff;}
+.btn-danger:hover{background:#b91c1c;}
+.btn-secondary{background:#f1f5f9;color:#374151;border:1px solid #e2e8f0;}
+.btn-secondary:hover{background:#e2e8f0;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-amber{background:#d97706;color:#fff;}
+.btn-amber:hover{background:#b45309;}
+
+/* ── Tables ── */
+.table-wrap{overflow-x:auto;border-radius:8px;border:1px solid #e2e8f0;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:#f8fafc;border-bottom:2px solid #e2e8f0;}
+th{padding:11px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#64748b;white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid #f1f5f9;color:#1e293b;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+
+/* ── Badges ── */
+.badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600;}
+.badge-pending{background:#fef3c7;color:#92400e;}
+.badge-ordered{background:#dbeafe;color:#1e40af;}
+.badge-received{background:#d1fae5;color:#065f46;}
+.badge-labor{background:#ede9fe;color:#5b21b6;}
+.badge-parts{background:#fff7ed;color:#9a3412;}
+.badge-income{background:#d1fae5;color:#065f46;}
+.badge-expense{background:#fee2e2;color:#991b1b;}
+
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-header{padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;}
+.modal-header h3{font-size:16px;font-weight:700;margin:0;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;padding:2px 6px;border-radius:4px;}
+.modal-close:hover{background:#f1f5f9;}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid #e2e8f0;display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── Form ── */
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;font-family:inherit;transition:border .15s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* ── Drop zone ── */
+.drop-zone{border:2px dashed #cbd5e1;border-radius:10px;padding:30px 20px;text-align:center;cursor:pointer;background:#f8fafc;transition:all .2s;}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#2563eb;background:#eff6ff;}
+.drop-zone i{font-size:32px;color:#94a3b8;margin-bottom:10px;display:block;}
+.file-preview{display:none;margin-top:12px;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;align-items:center;gap:10px;}
+.file-preview.visible{display:flex;}
+
+/* ── Progress bar ── */
+.progress-bar-wrap{background:#e2e8f0;border-radius:4px;height:6px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#2563eb,#0284c7);transition:width .3s;}
+
+/* ── Section header ── */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.section-header h2{font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px;}
+
+/* ── Filter bar ── */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding:14px;background:#fff;border-radius:10px;border:1px solid #e2e8f0;}
+.filter-bar select,.filter-bar input{padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:12px;background:#fff;}
+
+/* ── Forecast grid ── */
+.forecast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.forecast-month-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;}
+.forecast-month-card h4{font-size:13px;font-weight:700;margin-bottom:10px;color:#374151;}
+
+/* ── Available pay meter ── */
+.pay-meter{background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:14px;padding:28px;color:#fff;margin-bottom:24px;}
+.pay-meter .big-num{font-size:48px;font-weight:900;color:#34d399;line-height:1;}
+.pay-meter .formula{font-size:12px;opacity:.8;margin-top:8px;line-height:1.8;}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:relative;}
+  .main{margin-left:0;}
+  .form-row,.form-row-3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ SIDEBAR ════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <i class="fas fa-chart-line" style="color:#3b82f6;font-size:20px;"></i>
+    <span>Accounting<br><span style="font-size:11px;color:#64748b;font-weight:400;">A Quality Pool Co.</span></span>
+  </div>
+  <div class="sidebar-company">
+    <label>Company</label>
+    <select id="companySelect" onchange="switchCompany(this.value)">
+      <option value="CMP-AQUALITYPOOL">CMP-AQUALITYPOOL</option>
+    </select>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><i class="fas fa-home"></i> Dashboard</button>
+    <button class="nav-item" onclick="showPage('accounts',this)"><i class="fas fa-university"></i> Accounts</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Spending</div>
+    <button class="nav-item" onclick="showPage('purchase-orders',this)"><i class="fas fa-shopping-cart"></i> Purchase Orders</button>
+    <button class="nav-item" onclick="showPage('expenses',this)"><i class="fas fa-receipt"></i> Expenses</button>
+    <button class="nav-item" onclick="showPage('shopping',this)"><i class="fas fa-list-ul"></i> Need to Purchase <span id="shopBadge" style="display:none;background:#f59e0b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px;"></span></button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Bank</div>
+    <button class="nav-item" onclick="showPage('bank',this)"><i class="fas fa-university"></i> Bank Transactions <span id="unreviewedBadge" style="display:none;background:#dc2626;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px;"></span></button>
+    <button class="nav-item" onclick="showPage('recurring',this)"><i class="fas fa-sync-alt"></i> Recurring Expenses</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Payroll & Planning</div>
+    <button class="nav-item" onclick="showPage('owner-pay',this)"><i class="fas fa-wallet"></i> Owner Pay</button>
+    <button class="nav-item" onclick="showPage('forecast',this)"><i class="fas fa-chart-bar"></i> Forecast</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Tasks</div>
+    <button class="nav-item" onclick="showPage('reminders',this)"><i class="fas fa-bell"></i> Reminders <span id="reminderBadge" style="display:none;background:#f59e0b;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px;"></span></button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ MAIN ══════════════════════ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="pageTitle"><i class="fas fa-home"></i> Dashboard</div>
+    <div class="topbar-right">
+      <span id="companyBadge" style="font-size:12px;background:#dbeafe;color:#1e40af;padding:4px 10px;border-radius:10px;font-weight:600;">CMP-AQUALITYPOOL</span>
+      <button class="btn btn-secondary btn-sm" onclick="refreshCurrentPage()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ──────────────────────────────────────────────────────── -->
+  <div class="page active" id="page-dashboard">
+    <div class="stat-grid" id="dashboardStats">
+      <div class="stat-card blue"><div class="label">YTD Revenue</div><div class="value" id="ds-revenue">—</div><div class="sub">Completed payments this year</div></div>
+      <div class="stat-card red"><div class="label">YTD Expenses</div><div class="value" id="ds-expenses">—</div><div class="sub">Recorded expenses this year</div></div>
+      <div class="stat-card amber"><div class="label">Pending POs</div><div class="value" id="ds-pending">—</div><div class="sub">Estimated outgoing (orders)</div></div>
+      <div class="stat-card green"><div class="label">Net Profit</div><div class="value" id="ds-profit">—</div><div class="sub">Revenue minus expenses</div></div>
+      <div class="stat-card purple"><div class="label">Total Balance</div><div class="value" id="ds-balance">—</div><div class="sub">Sum of all accounts</div></div>
+      <div class="stat-card green"><div class="label">YTD Draws</div><div class="value" id="ds-draws">—</div><div class="sub">Owner pay taken this year</div></div>
+    </div>
+
+    <!-- Available to pay yourself -->
+    <div class="pay-meter" style="margin-bottom:24px;">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.8;margin-bottom:8px;">Available to Pay Yourself</div>
+      <div class="big-num" id="ds-available">$0.00</div>
+      <div class="formula">Revenue <span style="opacity:.5;">−</span> Expenses <span style="opacity:.5;">−</span> Pending POs <span style="opacity:.5;">−</span> YTD Draws</div>
+    </div>
+
+    <!-- Account balances quick view -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="section-header" style="margin-bottom:14px;">
+        <h2 style="font-size:16px;"><i class="fas fa-university" style="color:#2563eb;"></i> Account Balances</h2>
+        <button class="btn btn-primary btn-sm" onclick="showPage('accounts',document.querySelector('.nav-item:nth-child(2)'))"><i class="fas fa-arrow-right"></i> Manage</button>
+      </div>
+      <div id="dashboardAccounts" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;"></div>
+    </div>
+
+    <!-- Forecast vs Actual chart -->
+    <div class="card">
+      <h2 style="font-size:16px;margin-bottom:16px;"><i class="fas fa-chart-bar" style="color:#7c3aed;"></i> Forecast vs Actual — <span id="chartYear"></span></h2>
+      <canvas id="forecastChart" height="80"></canvas>
+    </div>
+  </div>
+
+  <!-- ── ACCOUNTS ───────────────────────────────────────────────────────── -->
+  <div class="page" id="page-accounts">
+    <div class="section-header">
+      <h2><i class="fas fa-university"></i> Accounts</h2>
+      <button class="btn btn-primary" onclick="openAccountModal()"><i class="fas fa-plus"></i> Add Account</button>
+    </div>
+    <div id="accountsList"></div>
+  </div>
+
+  <!-- ── PURCHASE ORDERS ────────────────────────────────────────────────── -->
+  <div class="page" id="page-purchase-orders">
+    <div class="section-header">
+      <h2><i class="fas fa-shopping-cart"></i> Purchase Orders</h2>
+      <button class="btn btn-primary" onclick="openPOModal()"><i class="fas fa-plus"></i> New PO</button>
+    </div>
+    <div class="filter-bar">
+      <select id="poStatusFilter" onchange="loadPurchaseOrders()">
+        <option value="">All Statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="Ordered">Ordered</option>
+        <option value="Received">Received</option>
+      </select>
+      <input type="text" id="poSearch" placeholder="Search vendor / description…" oninput="filterPOTable()" style="min-width:200px;">
+    </div>
+    <div class="table-wrap">
+      <table id="poTable">
+        <thead><tr>
+          <th>PO ID</th><th>Vendor</th><th>Description</th><th>Project</th>
+          <th>Est. Amount</th><th>Status</th><th>Reference #</th><th>Receipt</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="poTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── EXPENSES ───────────────────────────────────────────────────────── -->
+  <div class="page" id="page-expenses">
+    <div class="section-header">
+      <h2><i class="fas fa-receipt"></i> Expenses</h2>
+      <button class="btn btn-primary" onclick="openExpenseModal()"><i class="fas fa-plus"></i> Add Expense</button>
+    </div>
+    <div class="filter-bar">
+      <select id="expCatFilter" onchange="loadExpenses()">
+        <option value="">All Categories</option>
+        <option value="Parts &amp; Materials">Parts &amp; Materials</option>
+        <option value="Labor Paid">Labor Paid</option>
+        <option value="Equipment">Equipment</option>
+        <option value="Fuel &amp; Vehicle">Fuel &amp; Vehicle</option>
+        <option value="Subcontractor">Subcontractor</option>
+        <option value="Office &amp; Admin">Office &amp; Admin</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Insurance">Insurance</option>
+        <option value="General">General</option>
+      </select>
+      <input type="text" id="expSearch" placeholder="Search description…" oninput="filterExpTable()" style="min-width:200px;">
+    </div>
+    <!-- Totals bar -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px;" id="expTotals"></div>
+    <div class="table-wrap">
+      <table id="expTable">
+        <thead><tr>
+          <th>Date</th><th>Category</th><th>Description</th><th>Project / Invoice</th>
+          <th>Worker</th><th>Hours</th><th>Amount</th><th>Paid From</th><th>Receipt</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="expTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── OWNER PAY ─────────────────────────────────────────────────────── -->
+  <div class="page" id="page-owner-pay">
+    <div class="section-header">
+      <h2><i class="fas fa-wallet"></i> Owner Pay</h2>
+      <button class="btn btn-success" onclick="openDrawModal()"><i class="fas fa-plus"></i> Record Draw</button>
+    </div>
+    <div class="pay-meter" id="ownerPayMeter">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.8;margin-bottom:8px;">Safe to Pay Yourself <span style="opacity:.6;font-weight:400;">(after planned purchases)</span></div>
+      <div class="big-num" id="op-available">$0.00</div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">
+        <div style="background:rgba(255,255,255,.1);border-radius:8px;padding:10px;">
+          <div style="opacity:.7;font-size:11px;margin-bottom:2px;">Before Planned Purchases</div>
+          <div style="font-weight:700;color:#a7f3d0;" id="op-before-shopping">$0.00</div>
+        </div>
+        <div style="background:rgba(220,38,38,.2);border-radius:8px;padding:10px;">
+          <div style="opacity:.7;font-size:11px;margin-bottom:2px;">Planned Purchases Reserved</div>
+          <div style="font-weight:700;color:#fca5a5;" id="op-shopping-reserved">$0.00</div>
+        </div>
+      </div>
+      <div class="formula" id="op-formula" style="margin-top:10px;">Loading…</div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:14px;font-size:15px;"><i class="fas fa-history"></i> Draw History</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Amount</th><th>Account</th><th>Notes</th><th>Actions</th></tr></thead>
+          <tbody id="drawTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SHOPPING LIST / NEED TO PURCHASE ─────────────────────────────── -->
+  <div class="page" id="page-shopping">
+    <div class="section-header">
+      <h2><i class="fas fa-list-ul"></i> Need to Purchase</h2>
+      <button class="btn btn-primary" onclick="openShoppingModal()"><i class="fas fa-plus"></i> Add Item</button>
+    </div>
+    <!-- Totals bar -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;" id="shopTotals"></div>
+    <!-- Filter -->
+    <div class="filter-bar">
+      <select id="shopStatusFilter" onchange="loadShoppingList()">
+        <option value="">All Items</option>
+        <option value="Planned">Planned</option>
+        <option value="Ordered">Ordered</option>
+        <option value="Purchased">Purchased</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+      <select id="shopPriorityFilter" onchange="loadShoppingList()">
+        <option value="">All Priorities</option>
+        <option value="High">High</option>
+        <option value="Normal">Normal</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Category</th><th>Est. Cost</th><th>Priority</th><th>Status</th><th>Due By</th><th>Project</th><th>Notes</th><th>Actions</th></tr></thead>
+          <tbody id="shopTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FORECAST ───────────────────────────────────────────────────────── -->
+  <div class="page" id="page-forecast">
+
+    <!-- ── Month nav header ─── -->
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+      <button class="btn btn-secondary" onclick="shiftForecastMonth(-1)" style="padding:8px 14px;"><i class="fas fa-chevron-left"></i></button>
+      <h2 id="fcMonthLabel" style="margin:0;font-size:22px;font-weight:800;min-width:160px;text-align:center;"></h2>
+      <button class="btn btn-secondary" onclick="shiftForecastMonth(1)" style="padding:8px 14px;"><i class="fas fa-chevron-right"></i></button>
+      <select id="forecastYear" onchange="onForecastYearChange()" style="padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;margin-left:8px;"></select>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <button class="btn btn-success" onclick="openForecastModal(null,'Income')"><i class="fas fa-plus"></i> + Income</button>
+        <button class="btn btn-danger"  onclick="openForecastModal(null,'Expense')" style="background:#dc2626;"><i class="fas fa-minus"></i> + Expense</button>
+      </div>
+    </div>
+
+    <!-- ── Month summary cards ─── -->
+    <div id="fcSummaryCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;"></div>
+
+    <!-- ── Pending items notice ─── -->
+    <div id="fcPendingNotice" style="display:none;background:#fef3c7;border-left:4px solid #f59e0b;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#92400e;"></div>
+
+    <!-- ── Income table ─── -->
+    <div class="card" style="margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="margin:0;color:#16a34a;"><i class="fas fa-arrow-down" style="margin-right:8px;"></i>Income <span id="fcIncomeTotalLabel" style="font-size:13px;font-weight:400;color:#64748b;margin-left:6px;"></span></h3>
+        <button class="btn btn-success btn-sm" onclick="openForecastModal(null,'Income')"><i class="fas fa-plus"></i> Add Income</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Description</th><th>Source</th><th>Expected Date</th><th>Amount</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead>
+          <tbody id="fcIncomeBody"></tbody>
+        </table>
+      </div>
+      <div id="fcIncomeEmpty" style="display:none;text-align:center;padding:24px;color:#94a3b8;font-size:13px;"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4;"></i>No income lines for this month. Add expected payments, deposits, or project collections.</div>
+    </div>
+
+    <!-- ── Expense table ─── -->
+    <div class="card" style="margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="margin:0;color:#dc2626;"><i class="fas fa-arrow-up" style="margin-right:8px;"></i>Expenses <span id="fcExpenseTotalLabel" style="font-size:13px;font-weight:400;color:#64748b;margin-left:6px;"></span></h3>
+        <button class="btn btn-danger btn-sm" onclick="openForecastModal(null,'Expense')" style="background:#dc2626;"><i class="fas fa-plus"></i> Add Expense</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Description</th><th>Category</th><th>Expected Date</th><th>Amount</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead>
+          <tbody id="fcExpenseBody"></tbody>
+        </table>
+      </div>
+      <div id="fcExpenseEmpty" style="display:none;text-align:center;padding:24px;color:#94a3b8;font-size:13px;"><i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4;"></i>No expense lines for this month.</div>
+    </div>
+
+    <!-- ── Running balance / cash flow ─── -->
+    <div class="card" id="fcCashFlowCard" style="margin-bottom:20px;display:none;">
+      <h3 style="margin-bottom:14px;"><i class="fas fa-stream" style="margin-right:8px;color:#0ea5e9;"></i>Cash Flow Timeline</h3>
+      <div id="fcCashFlowList"></div>
+    </div>
+
+    <!-- ── This week panel ─── -->
+    <div id="weekForecastPanel" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:24px;"></div>
+
+    <!-- ── Year at a glance ─── -->
+    <div class="card">
+      <h3 style="margin-bottom:14px;"><i class="fas fa-chart-bar" style="margin-right:8px;color:#0ea5e9;"></i>Year at a Glance — <span id="fcChartYearLabel"></span></h3>
+      <canvas id="forecastDetailChart" height="70"></canvas>
+    </div>
+
+  </div>
+
+  <!-- ── BANK TRANSACTIONS ─────────────────────────────────────────────────── -->
+  <div class="page" id="page-bank">
+    <div class="section-header">
+      <h2><i class="fas fa-university"></i> Bank Transactions</h2>
+      <button class="btn btn-primary" onclick="openBankImportModal()"><i class="fas fa-upload"></i> Import CSV</button>
+    </div>
+    <!-- Totals bar -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;" id="bankTotals"></div>
+    <div class="filter-bar">
+      <select id="bankStatusFilter" onchange="loadBankTransactions()">
+        <option value="">All Statuses</option>
+        <option value="Unreviewed">Unreviewed</option>
+        <option value="Reviewed">Reviewed</option>
+        <option value="Categorized">Categorized</option>
+      </select>
+      <select id="bankTypeFilter" onchange="loadBankTransactions()">
+        <option value="">All Types</option>
+        <option value="Debit">Debit (Out)</option>
+        <option value="Credit">Credit (In)</option>
+      </select>
+      <input type="date" id="bankStartDate" onchange="loadBankTransactions()">
+      <input type="date" id="bankEndDate" onchange="loadBankTransactions()">
+      <input type="text" id="bankSearch" placeholder="Search description…" oninput="filterBankTable()" style="min-width:180px;">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead>
+        <tbody id="bankTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── RECURRING EXPENSES ────────────────────────────────────────────────── -->
+  <div class="page" id="page-recurring">
+    <div class="section-header">
+      <h2><i class="fas fa-sync-alt"></i> Recurring Expenses</h2>
+      <button class="btn btn-primary" onclick="openRecurringModal()"><i class="fas fa-plus"></i> Add Recurring</button>
+    </div>
+    <p style="color:#64748b;font-size:13px;margin-bottom:16px;">Known monthly expenses. Toggle <b>Auto-Log</b> to have them automatically added as expenses each month on the scheduled day.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Amount</th><th>Due Day</th><th>Category</th><th>Account</th><th>Auto-Log</th><th>Active</th><th>Actions</th></tr></thead>
+        <tbody id="recurringTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── REMINDERS ─────────────────────────────────────────────────────────── -->
+  <div class="page" id="page-reminders">
+    <div class="section-header">
+      <h2><i class="fas fa-bell"></i> Reminders &amp; To-Do</h2>
+      <button class="btn btn-primary" onclick="openReminderModal()"><i class="fas fa-plus"></i> Add Reminder</button>
+    </div>
+    <p style="color:#64748b;font-size:13px;margin-bottom:16px;">Overdue reminders send a daily email to <strong>brookspumpingpoolco@gmail.com</strong> until marked Done.</p>
+    <div id="remindersList"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ MODALS ══════════════════════════════════ -->
+
+<!-- Bank CSV Import Modal -->
+<div class="modal-overlay" id="bankImportModal">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="modal-header"><h3>Import PNC Bank CSV</h3><button class="modal-close" onclick="closeModal('bankImportModal')">&times;</button></div>
+    <div class="modal-body">
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:#1e40af;">
+        <strong>PNC Export Instructions:</strong> In PNC Online Banking → Activity → Export → CSV (Account Activity)
+      </div>
+      <div class="drop-zone" id="csvDropZone"
+           onclick="document.getElementById('csvFileInput').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleCSVDrop(event)">
+        <i class="fas fa-file-csv" style="font-size:36px;color:#94a3b8;display:block;margin-bottom:8px;"></i>
+        <p style="font-weight:600;color:#374151;margin-bottom:4px;">Click or drag CSV file here</p>
+        <p style="font-size:12px;color:#64748b;">PNC accountActivityExport.csv</p>
+      </div>
+      <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="handleCSVFileSelect(event)">
+      <div id="csvPreviewArea" style="display:none;margin-top:16px;">
+        <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:200px;">
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">Import Range</label>
+            <select id="csvImportMode" onchange="updateCSVPreview()" style="width:100%;padding:8px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;">
+              <option value="all">All transactions in file</option>
+              <option value="since">Since last import (<span id="lastImportLabel">checking…</span>)</option>
+              <option value="custom">Custom date range</option>
+            </select>
+          </div>
+          <div id="csvCustomRange" style="display:none;flex:1;min-width:200px;">
+            <label style="font-size:12px;font-weight:600;color:#374151;display:block;margin-bottom:4px;">From Date</label>
+            <input type="date" id="csvFromDate" style="width:100%;padding:8px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;" onchange="updateCSVPreview()">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:18px;">
+            <input type="checkbox" id="csvIncludePending" onchange="updateCSVPreview()">
+            <label for="csvIncludePending" style="font-size:13px;color:#374151;">Include PENDING transactions</label>
+          </div>
+        </div>
+        <div id="csvStats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;"></div>
+        <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px;">Preview (first 20 rows):</div>
+        <div style="max-height:240px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead><tr style="background:#f8fafc;position:sticky;top:0;"><th style="padding:7px;text-align:left;">Date</th><th style="padding:7px;text-align:left;">Description</th><th style="padding:7px;text-align:right;">Amount</th><th style="padding:7px;text-align:left;">Auto-Category</th></tr></thead>
+            <tbody id="csvPreviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="csvImportResult" style="display:none;margin-top:12px;padding:12px;border-radius:8px;font-size:13px;font-weight:600;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('bankImportModal')">Cancel</button>
+      <button class="btn btn-primary" id="csvImportBtn" style="display:none;" onclick="submitCSVImport()"><i class="fas fa-database"></i> Import Transactions</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bank Transaction Edit Modal -->
+<div class="modal-overlay" id="bankTxnModal">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header"><h3>Review Transaction</h3><button class="modal-close" onclick="closeModal('bankTxnModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="bankTxnId">
+      <div style="background:#f8fafc;border-radius:8px;padding:12px;margin-bottom:16px;">
+        <div id="bankTxnDesc" style="font-weight:700;color:#0f172a;font-size:14px;margin-bottom:4px;"></div>
+        <div id="bankTxnDate" style="font-size:12px;color:#64748b;"></div>
+        <div id="bankTxnAmt" style="font-size:22px;font-weight:900;margin-top:6px;"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Category</label>
+          <select id="bankTxnCategory">
+            <option>Parts &amp; Materials</option><option>Labor Paid</option><option>Equipment / Rental</option>
+            <option>Fuel &amp; Vehicle</option><option>Meals &amp; Entertainment</option>
+            <option>Subscriptions</option><option>Credit Card Payment</option>
+            <option>Transfer Out</option><option>Transfer In</option>
+            <option>Income / Deposit</option><option>Cash Withdrawal</option>
+            <option>Personal / General</option><option>Uncategorized</option>
+          </select></div>
+        <div class="form-group"><label>Status</label>
+          <select id="bankTxnStatus"><option value="Unreviewed">Unreviewed</option><option value="Reviewed">Reviewed</option><option value="Categorized">Categorized</option></select></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="bankTxnNotes" rows="2" placeholder="Any notes…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('bankTxnModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBankTxn()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recurring Expense Modal -->
+<div class="modal-overlay" id="recurringModal">
+  <div class="modal-box" style="max-width:480px;">
+    <div class="modal-header"><h3 id="recurModalTitle">Add Recurring Expense</h3><button class="modal-close" onclick="closeModal('recurringModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="recurId">
+      <div class="form-row">
+        <div class="form-group"><label>Name *</label><input id="recurName" placeholder="e.g. Simply Business Insurance"></div>
+        <div class="form-group"><label>Amount ($) *</label><input type="number" id="recurAmount" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Day of Month Due</label><input type="number" id="recurDay" min="1" max="31" placeholder="e.g. 6"></div>
+        <div class="form-group"><label>Category</label>
+          <select id="recurCategory">
+            <option>Parts &amp; Materials</option><option>Subscriptions</option><option>Insurance</option>
+            <option>Fuel &amp; Vehicle</option><option>Equipment / Rental</option>
+            <option>Office &amp; Admin</option><option>Credit Card Payment</option><option>General</option>
+          </select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Paid From Account</label><select id="recurAccount"><option value="">— Select —</option></select></div>
+        <div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="recurAutoLog"> Auto-Log on Due Date
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px;">
+            <input type="checkbox" id="recurActive" checked> Active
+          </label>
+        </div>
+      </div>
+      <div class="form-group"><label>Notes</label><input id="recurNotes" placeholder="Optional"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('recurringModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRecurring()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reminder Modal -->
+<div class="modal-overlay" id="reminderModal">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header"><h3 id="remModalTitle">Add Reminder</h3><button class="modal-close" onclick="closeModal('reminderModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="remId">
+      <div class="form-group"><label>Title *</label><input id="remTitle" placeholder="e.g. Log Menards receipt for Zachary project"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Due Date</label><input type="date" id="remDue"></div>
+        <div class="form-group"><label>Priority</label>
+          <select id="remPriority"><option value="Normal">Normal</option><option value="High">High</option><option value="Low">Low</option></select></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="remNotes" rows="2" placeholder="Details…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('reminderModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReminder()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shopping List Modal -->
+<div class="modal-overlay" id="shoppingModal">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-header"><h3 id="shopModalTitle">Add Need-to-Purchase Item</h3><button class="modal-close" onclick="closeModal('shoppingModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="shopItemId">
+      <div class="form-row">
+        <div class="form-group" style="flex:2;"><label>Item Name *</label><input id="shopName" placeholder="e.g. Pool Pump Motor, PVC Pipe 2in, etc."></div>
+        <div class="form-group"><label>Est. Cost ($) *</label><input type="number" id="shopCost" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Category</label>
+          <select id="shopCategory">
+            <option>General</option><option>Equipment</option><option>Parts</option><option>Chemicals</option>
+            <option>Tools</option><option>Labor Materials</option><option>Other</option>
+          </select></div>
+        <div class="form-group"><label>Priority</label>
+          <select id="shopPriority"><option value="Normal">Normal</option><option value="High">High</option><option value="Low">Low</option></select></div>
+        <div class="form-group"><label>Status</label>
+          <select id="shopStatus"><option>Planned</option><option>Ordered</option><option>Purchased</option><option>Cancelled</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Due By</label><input type="date" id="shopDueBy"></div>
+        <div class="form-group"><label>Linked Project ID</label>
+          <select id="shopProject"><option value="">— None —</option></select></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="shopNotes" rows="2" placeholder="Where to buy, specs, etc."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('shoppingModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveShoppingItem()"><i class="fas fa-save"></i> Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- Account Modal -->
+<div class="modal-overlay" id="accountModal">
+  <div class="modal-box">
+    <div class="modal-header"><h3 id="accountModalTitle">Add Account</h3><button class="modal-close" onclick="closeModal('accountModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="acctId">
+      <div class="form-row">
+        <div class="form-group"><label>Account Name *</label><input id="acctName" placeholder="Business Checking"></div>
+        <div class="form-group"><label>Account Type</label>
+          <select id="acctType"><option>Checking</option><option>Savings</option><option>Credit Card</option><option>Cash</option><option>Line of Credit</option><option>Other</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Current Balance ($)</label><input type="number" id="acctBalance" step="0.01" placeholder="0.00"></div>
+        <div class="form-group"><label>Notes</label><input id="acctNotes" placeholder="Optional"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('accountModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAccount()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Purchase Order Modal -->
+<div class="modal-overlay" id="poModal">
+  <div class="modal-box">
+    <div class="modal-header"><h3 id="poModalTitle">New Purchase Order</h3><button class="modal-close" onclick="closeModal('poModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="poId">
+      <div class="form-row">
+        <div class="form-group"><label>Vendor *</label><input id="poVendor" placeholder="Supplier name"></div>
+        <div class="form-group"><label>Est. Amount ($) *</label><input type="number" id="poAmount" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="form-group"><label>Description *</label><input id="poDesc" placeholder="What are you ordering?"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Link to Project (optional)</label>
+          <select id="poProject"><option value="">— No project —</option></select></div>
+        <div class="form-group"><label>Invoice ID (optional)</label><input id="poInvoice" placeholder="INV-…"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Order Date</label><input type="date" id="poOrderDate"></div>
+        <div class="form-group"><label>Reference # (if known)</label><input id="poRef" placeholder="PO / tracking #"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="poNotes" rows="2" placeholder="Any additional notes…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('poModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePO()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Upload Modal -->
+<div class="modal-overlay" id="receiptModal">
+  <div class="modal-box">
+    <div class="modal-header"><h3>Upload Receipt</h3><button class="modal-close" onclick="closeModal('receiptModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="receiptPoId">
+      <div class="form-row">
+        <div class="form-group"><label>Reference # / PO #</label><input id="receiptRef" placeholder="Order / tracking number"></div>
+        <div class="form-group"><label>Actual Amount ($)</label><input type="number" id="receiptAmount" step="0.01" placeholder="Leave blank to use estimated"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Category</label>
+          <select id="receiptCategory">
+            <option value="Parts &amp; Materials">Parts &amp; Materials</option>
+            <option value="Equipment">Equipment</option>
+            <option value="Subcontractor">Subcontractor</option>
+            <option value="Fuel &amp; Vehicle">Fuel &amp; Vehicle</option>
+            <option value="General">General</option>
+          </select></div>
+        <div class="form-group"><label>Paid From Account</label>
+          <select id="receiptAccount"><option value="">— Select —</option></select></div>
+      </div>
+      <!-- Drop zone -->
+      <div class="drop-zone" id="receiptDropZone"
+           onclick="document.getElementById('receiptFileInput').click()"
+           ondragover="event.preventDefault();this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleReceiptDrop(event)">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <p style="font-weight:600;color:#374151;margin-bottom:4px;">Click or drag &amp; drop receipt</p>
+        <p style="font-size:12px;color:#64748b;">PDF, JPG, PNG — max 10 MB</p>
+      </div>
+      <input type="file" id="receiptFileInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleReceiptFileSelect(event)">
+      <div class="file-preview" id="receiptFilePreview">
+        <i class="fas fa-file-alt" style="color:#2563eb;font-size:20px;flex-shrink:0;"></i>
+        <div style="flex:1;min-width:0;"><div id="receiptFileName" style="font-weight:600;color:#1e40af;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div><div id="receiptFileSize" style="font-size:11px;color:#64748b;"></div></div>
+        <button onclick="clearReceiptFile()" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:16px;">&times;</button>
+      </div>
+      <div id="receiptError" style="display:none;margin-top:12px;padding:10px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:13px;"></div>
+      <div id="receiptProgress" style="display:none;margin-top:12px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><i class="fas fa-spinner fa-spin" style="color:#2563eb;"></i><span style="font-size:13px;">Uploading to Drive…</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="receiptProgressBar" style="width:0%"></div></div>
+      </div>
+      <div class="form-group" style="margin-top:12px;"><label>Notes</label><input id="receiptNotes" placeholder="Optional notes"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('receiptModal')">Cancel</button>
+      <button class="btn btn-success" id="receiptUploadBtn" onclick="submitReceipt()" disabled><i class="fas fa-upload"></i> Upload &amp; Mark Received</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mark Ordered Modal -->
+<div class="modal-overlay" id="markOrderedModal">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-header"><h3>Mark as Ordered</h3><button class="modal-close" onclick="closeModal('markOrderedModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="orderedPoId">
+      <div class="form-group"><label>Reference # / Order #</label><input id="orderedRef" placeholder="Tracking or order number"></div>
+      <div class="form-group"><label>Vendor</label><input id="orderedVendor" readonly style="background:#f8fafc;color:#64748b;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('markOrderedModal')">Cancel</button>
+      <button class="btn btn-amber" onclick="confirmMarkOrdered()"><i class="fas fa-check"></i> Mark Ordered</button>
+    </div>
+  </div>
+</div>
+
+<!-- Expense Modal -->
+<div class="modal-overlay" id="expenseModal">
+  <div class="modal-box">
+    <div class="modal-header"><h3 id="expModalTitle">Add Expense</h3><button class="modal-close" onclick="closeModal('expenseModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="expId">
+      <div class="form-row">
+        <div class="form-group"><label>Category *</label>
+          <select id="expCategory" onchange="toggleLaborFields()">
+            <option value="Parts &amp; Materials">Parts &amp; Materials</option>
+            <option value="Labor Paid">Labor Paid</option>
+            <option value="Equipment">Equipment</option>
+            <option value="Fuel &amp; Vehicle">Fuel &amp; Vehicle</option>
+            <option value="Subcontractor">Subcontractor</option>
+            <option value="Office &amp; Admin">Office &amp; Admin</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Insurance">Insurance</option>
+            <option value="General">General</option>
+          </select></div>
+        <div class="form-group"><label>Date *</label><input type="date" id="expDate"></div>
+      </div>
+      <div class="form-group"><label>Description *</label><input id="expDesc" placeholder="What was this expense for?"></div>
+
+      <!-- Labor fields — shown only for Labor Paid category -->
+      <div id="laborFields" style="display:none;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:14px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#5b21b6;margin-bottom:10px;"><i class="fas fa-hard-hat"></i> Labor Details</div>
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0;"><label>Worker Name *</label><input id="expWorker" placeholder="Employee / sub name"></div>
+          <div class="form-group" style="margin-bottom:0;"><label>Hours Worked</label><input type="number" id="expHours" step="0.5" placeholder="e.g. 8" oninput="calcLaborAmount()"></div>
+        </div>
+        <div class="form-row" style="margin-top:12px;">
+          <div class="form-group" style="margin-bottom:0;"><label>Hourly Rate ($)</label><input type="number" id="expHourlyRate" step="0.01" placeholder="e.g. 25.00" oninput="calcLaborAmount()"></div>
+          <div class="form-group" style="margin-bottom:0;"><label>Calculated Total</label><input id="expLaborCalc" readonly style="background:#f8fafc;font-weight:700;color:#5b21b6;" placeholder="auto-calculated"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Amount ($) *</label><input type="number" id="expAmount" step="0.01" placeholder="0.00"></div>
+        <div class="form-group"><label>Paid From Account</label>
+          <select id="expAccount"><option value="">— Select —</option><option value="Business Checking">Business Checking</option><option value="Savings">Savings</option><option value="Credit Card">Credit Card</option><option value="Cash">Cash</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Link to Project</label><select id="expProject"><option value="">— None —</option></select></div>
+        <div class="form-group"><label>Invoice ID (optional)</label><input id="expInvoice" placeholder="INV-…"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Vendor</label><input id="expVendor" placeholder="Vendor name"></div>
+        <div class="form-group"><label>Receipt URL (optional)</label><input id="expReceiptUrl" placeholder="https://…"></div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="expNotes" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('expenseModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExpense()"><i class="fas fa-save"></i> Save Expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- Owner Draw Modal -->
+<div class="modal-overlay" id="drawModal">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-header"><h3>Record Owner Draw</h3><button class="modal-close" onclick="closeModal('drawModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Date *</label><input type="date" id="drawDate"></div>
+        <div class="form-group"><label>Amount ($) *</label><input type="number" id="drawAmount" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="form-group"><label>Paid From Account</label>
+        <select id="drawAccount"><option value="">— Select —</option></select></div>
+      <div class="form-group"><label>Notes</label><input id="drawNotes" placeholder="Optional"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('drawModal')">Cancel</button>
+      <button class="btn btn-success" onclick="saveDraw()"><i class="fas fa-save"></i> Record Draw</button>
+    </div>
+  </div>
+</div>
+
+<!-- Forecast Modal -->
+<div class="modal-overlay" id="forecastModal">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-header"><h3 id="fcModalTitle">Add Forecast Line</h3><button class="modal-close" onclick="closeModal('forecastModal')">&times;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="fcItemId">
+      <!-- Type toggle -->
+      <div style="display:flex;gap:0;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-bottom:16px;">
+        <button id="fcTypeBtnIncome" type="button" onclick="setFcType('Income')" style="flex:1;padding:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;background:#d1fae5;color:#065f46;border-right:1px solid #e2e8f0;">
+          <i class="fas fa-arrow-down"></i> Income
+        </button>
+        <button id="fcTypeBtnExpense" type="button" onclick="setFcType('Expense')" style="flex:1;padding:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;background:#f1f5f9;color:#64748b;">
+          <i class="fas fa-arrow-up"></i> Expense
+        </button>
+      </div>
+      <input type="hidden" id="fcType" value="Income">
+
+      <div class="form-group"><label>Description *</label><input id="fcDesc" placeholder="e.g. Zachary Isaacs – Balance Payment, Pool Supplies Menards…"></div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Amount ($) *</label><input type="number" id="fcAmount" step="0.01" placeholder="0.00"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="fcStatus">
+            <option value="Confirmed">✅ Confirmed — Happening</option>
+            <option value="Pending">⏳ Pending — Expect within 2 days</option>
+            <option value="Posted">☑ Posted — Already received/paid</option>
+            <option value="Cancelled">✖ Cancelled</option>
+          </select></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Expected Date</label><input type="date" id="fcExpectedDate"></div>
+        <div class="form-group" id="fcCategoryGroup"><label>Category</label>
+          <input id="fcCategory" placeholder="e.g. Pool Installs, Supplies…"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Source Type</label>
+          <select id="fcSourceType" onchange="onFcSourceTypeChange()">
+            <option value="Manual">Manual</option>
+            <option value="Project Payment">Project Payment</option>
+            <option value="Invoice">Invoice</option>
+            <option value="Recurring">Recurring</option>
+            <option value="Deposit">Deposit</option>
+            <option value="Other">Other</option>
+          </select></div>
+        <div class="form-group" id="fcSourceIdGroup">
+          <label id="fcSourceIdLabel">Source / Project ID</label>
+          <!-- Swaps between a select dropdown and plain text depending on source type -->
+          <select id="fcSourceIdSelect" style="display:none;" class="form-control" style="width:100%;">
+            <option value="">— Loading… —</option>
+          </select>
+          <input id="fcSourceId" placeholder="Enter ID (optional)">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Month</label>
+          <select id="fcMonth">
+            <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+            <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+            <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+            <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+          </select></div>
+        <div class="form-group"><label>Year</label><input type="number" id="fcYear" placeholder="2026"></div>
+      </div>
+
+      <div class="form-group"><label>Notes</label><textarea id="fcNotes" rows="2" placeholder="Additional details…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('forecastModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveForecast()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ SCRIPT ═══════════════════════════════ -->
+<script>
+// ── CONFIG — update ACCOUNTING_URL after deploying AccountingScript.gs ──────
+const ACCOUNTING_URL = 'https://script.google.com/macros/s/AKfycbwWBxU5E8EZdj6GnyTBQd_oi3q7424TbLWeGbRXcVe5i3H9HjzQ1iuWGxLXxitXMh_C/exec';
+// InvoiceEstimate backend — used to pull live projects & invoices into dropdowns
+const INVOICE_URL    = 'https://script.google.com/macros/s/AKfycbzq732_zhGRgoA2qzImXdEC9ZeIBiKE1gCLrhjxitrIaqvSBKwr3aYk2wKMFJKl8cWsYw/exec';
+
+let currentCompany  = 'CMP-AQUALITYPOOL';
+let currentPage     = 'dashboard';
+let allProjects     = [];
+let allAccounts     = [];
+let dashboardData   = null;
+let _receiptFile    = null;
+let forecastChart   = null;
+let forecastDetailChart = null;
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ── API helper ───────────────────────────────────────────────────────────────
+// Google Apps Script does not respond to CORS preflight (OPTIONS).
+// All POST requests use application/x-www-form-urlencoded (URLSearchParams)
+// so no preflight is triggered. GAS reads data from e.parameter on the backend.
+async function api(action, params = {}, method = 'GET', body = null) {
+  try {
+    if (method === 'POST') {
+      const formData = new URLSearchParams();
+      formData.set('action', action);
+      formData.set('companyId', currentCompany);
+      Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null) formData.set(k, v); });
+      if (body) {
+        Object.entries(body).forEach(([k, v]) => { if (v !== undefined && v !== null) formData.set(k, v); });
+      }
+      const res  = await fetch(ACCOUNTING_URL, { method: 'POST', body: formData });
+      const data = await res.json();
+      return data;
+    } else {
+      const url = new URL(ACCOUNTING_URL);
+      url.searchParams.set('action', action);
+      url.searchParams.set('companyId', currentCompany);
+      Object.entries(params).forEach(([k, v]) => { if (v !== undefined && v !== null) url.searchParams.set(k, v); });
+      const res  = await fetch(url);
+      const data = await res.json();
+      return data;
+    }
+  } catch (e) {
+    console.error('API error:', e);
+    return { success: false, error: e.message };
+  }
+}
+
+function fmt(n) { return '$' + parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function fmtDate(iso) { if (!iso) return ''; try { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); } catch(_){return iso;} }
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg, type='success') {
+  let t = document.getElementById('_toast');
+  if (!t) { t = document.createElement('div'); t.id='_toast'; document.body.appendChild(t); t.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;font-size:13px;font-weight:600;padding:12px 18px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);transition:opacity .3s;'; }
+  t.style.background = type==='success'?'#16a34a':type==='error'?'#dc2626':'#2563eb';
+  t.style.color = '#fff';
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => t.style.opacity = '0', 3000);
+}
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  currentPage = name;
+  const titles = { dashboard:'Dashboard', accounts:'Accounts', 'purchase-orders':'Purchase Orders', expenses:'Expenses', shopping:'Need to Purchase', 'owner-pay':'Owner Pay', forecast:'Forecast' };
+  document.getElementById('pageTitle').innerHTML = titles[name] || name;
+  loadPage(name);
+}
+
+function loadPage(name) {
+  if (name === 'dashboard')        loadDashboard();
+  if (name === 'accounts')         loadAccounts();
+  if (name === 'purchase-orders')  loadPurchaseOrders();
+  if (name === 'expenses')         loadExpenses();
+  if (name === 'owner-pay')        loadOwnerPay();
+  if (name === 'forecast')         loadForecast();
+  if (name === 'shopping')         loadShoppingList();
+}
+
+function refreshCurrentPage() { loadPage(currentPage); }
+
+function switchCompany(cmpId) {
+  currentCompany = cmpId;
+  document.getElementById('companyBadge').textContent = cmpId;
+  loadPage(currentPage);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  // Set today's date defaults
+  const today = new Date().toISOString().split('T')[0];
+  ['poOrderDate','expDate','drawDate'].forEach(id => { const el = document.getElementById(id); if(el) el.value = today; });
+
+  // Forecast year selector
+  const yr = new Date().getFullYear();
+  const yrSel = document.getElementById('forecastYear');
+  for (let y = yr - 1; y <= yr + 2; y++) {
+    const o = document.createElement('option'); o.value = y; o.textContent = y;
+    if (y === yr) o.selected = true;
+    yrSel.appendChild(o);
+  }
+  document.getElementById('chartYear').textContent = yr;
+  document.getElementById('fcYear').value = yr;
+  fcCurrentMonth = new Date().getMonth() + 1;
+  fcCurrentYear  = yr;
+
+  // Load company IDs
+  const cmpResult = await api('getCompanyIds');
+  if (cmpResult.success && cmpResult.companyIds) {
+    const sel = document.getElementById('companySelect');
+    sel.innerHTML = '';
+    cmpResult.companyIds.forEach(c => {
+      const o = document.createElement('option'); o.value = c; o.textContent = c;
+      if (c === currentCompany) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+
+  loadDashboard();
+  // Pre-load projects in background so dropdowns are ready immediately
+  loadProjectsForSelects();
+});
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const r = await api('getDashboard');
+  if (!r.success) return showToast('Error loading dashboard: ' + r.error, 'error');
+  dashboardData = r;
+
+  document.getElementById('ds-revenue').textContent  = fmt(r.ytdRevenue);
+  document.getElementById('ds-expenses').textContent = fmt(r.ytdExpenses);
+  document.getElementById('ds-pending').textContent  = fmt(r.pendingPOTotal);
+  document.getElementById('ds-profit').textContent   = fmt(r.netProfit);
+  document.getElementById('ds-balance').textContent  = fmt(r.totalBalance);
+  document.getElementById('ds-draws').textContent    = fmt(r.ytdDraws);
+  const trueAvail = r.trueAvailable !== undefined ? r.trueAvailable : r.availableToPay;
+  document.getElementById('ds-available').textContent = fmt(trueAvail);
+  allAccounts = r.accounts || [];
+
+  // Account balance cards
+  const accEl = document.getElementById('dashboardAccounts');
+  if (allAccounts.length === 0) {
+    accEl.innerHTML = '<p style="color:#64748b;font-size:13px;padding:8px;">No accounts added yet. <a href="#" onclick="showPage(\'accounts\',null)" style="color:#2563eb;">Add an account</a></p>';
+  } else {
+    accEl.innerHTML = allAccounts.map(a => `
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;">
+        <div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:4px;">${escHtml(a.accountName)}</div>
+        <div style="font-size:20px;font-weight:800;color:${a.currentBalance>=0?'#16a34a':'#dc2626'};">${fmt(a.currentBalance)}</div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${escHtml(a.accountType)}</div>
+      </div>`).join('');
+  }
+
+  // Forecast vs Actual chart
+  loadDashboardChart();
+}
+
+async function loadDashboardChart() {
+  const yr = new Date().getFullYear();
+  const fcResult = await api('getForecastItems', { year: yr });
+  const forecastByMonth = Array(12).fill(0);
+  (fcResult.items || []).filter(i => i.type === 'Income').forEach(i => { forecastByMonth[i.month - 1] += i.amount; });
+
+  const ctx = document.getElementById('forecastChart').getContext('2d');
+  if (forecastChart) forecastChart.destroy();
+  forecastChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [
+        { label: 'Forecast Income', data: forecastByMonth, backgroundColor: 'rgba(37,99,235,.3)', borderColor: '#2563eb', borderWidth: 1.5 },
+        { label: 'Actual Revenue', data: Array(12).fill(dashboardData ? dashboardData.ytdRevenue / 12 : 0), backgroundColor: 'rgba(22,163,74,.3)', borderColor: '#16a34a', borderWidth: 1.5 }
+      ]
+    },
+    options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '$' + v.toLocaleString() } } } }
+  });
+}
+
+// ── ACCOUNTS ─────────────────────────────────────────────────────────────────
+async function loadAccounts() {
+  const r = await api('getAccounts');
+  allAccounts = r.accounts || [];
+  const el = document.getElementById('accountsList');
+  if (allAccounts.length === 0) {
+    el.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:#64748b;"><i class="fas fa-university" style="font-size:40px;opacity:.3;margin-bottom:12px;"></i><p>No accounts yet. Add your first account to start tracking balances.</p></div>';
+    return;
+  }
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Account Name</th><th>Type</th><th>Balance</th><th>Last Updated</th><th>Notes</th><th>Actions</th></tr></thead><tbody>' +
+    allAccounts.map(a => `<tr>
+      <td style="font-weight:600;">${escHtml(a.accountName)}</td>
+      <td><span class="badge badge-ordered">${escHtml(a.accountType)}</span></td>
+      <td style="font-weight:700;color:${a.currentBalance>=0?'#16a34a':'#dc2626'};">${fmt(a.currentBalance)}</td>
+      <td>${fmtDate(a.lastUpdated)}</td>
+      <td style="color:#64748b;font-size:12px;">${escHtml(a.notes)}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick='openAccountModal(${JSON.stringify(a)})'><i class="fas fa-edit"></i></button></td>
+    </tr>`).join('') + '</tbody></table></div>';
+}
+
+function openAccountModal(acct) {
+  document.getElementById('accountModalTitle').textContent = acct ? 'Edit Account' : 'Add Account';
+  document.getElementById('acctId').value      = acct ? acct.accountId : '';
+  document.getElementById('acctName').value    = acct ? acct.accountName : '';
+  document.getElementById('acctType').value    = acct ? acct.accountType : 'Checking';
+  document.getElementById('acctBalance').value = acct ? acct.currentBalance : '';
+  document.getElementById('acctNotes').value   = acct ? acct.notes : '';
+  openModal('accountModal');
+}
+
+async function saveAccount() {
+  const name = document.getElementById('acctName').value.trim();
+  if (!name) { showToast('Account name is required','error'); return; }
+  const r = await api('upsertAccount', {}, 'POST', {
+    accountId:      document.getElementById('acctId').value || undefined,
+    accountName:    name,
+    accountType:    document.getElementById('acctType').value,
+    currentBalance: document.getElementById('acctBalance').value,
+    notes:          document.getElementById('acctNotes').value
+  });
+  if (r.success) { closeModal('accountModal'); loadAccounts(); showToast('Account saved!'); }
+  else showToast(r.error, 'error');
+}
+
+// ── PURCHASE ORDERS ───────────────────────────────────────────────────────────
+let allPOs = [];
+
+async function loadPurchaseOrders() {
+  const statusFilter = document.getElementById('poStatusFilter').value;
+  const r = await api('getPurchaseOrders', { status: statusFilter });
+  allPOs = r.orders || [];
+  await loadProjectsForSelects();
+  renderPOTable();
+}
+
+function renderPOTable() {
+  const tbody = document.getElementById('poTableBody');
+  const q     = (document.getElementById('poSearch').value || '').toLowerCase();
+  const rows  = allPOs.filter(p => !q || p.vendor.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:#64748b;">No purchase orders found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(p => {
+    const badgeClass = p.status === 'Received' ? 'badge-received' : p.status === 'Ordered' ? 'badge-ordered' : 'badge-pending';
+    const projectLabel = p.projectId ? `<span style="font-size:11px;background:#eff6ff;color:#1e40af;padding:2px 7px;border-radius:6px;">${escHtml(p.projectId)}</span>` : '<span style="color:#94a3b8;font-size:11px;">—</span>';
+    const receiptLink  = p.receiptUrl ? `<a href="${p.receiptUrl}" target="_blank" style="color:#2563eb;font-size:12px;"><i class="fas fa-external-link-alt"></i> View</a>` : '<span style="color:#94a3b8;font-size:11px;">—</span>';
+    const actions = [
+      p.status === 'Pending' ? `<button class="btn btn-amber btn-sm" title="Mark Ordered" onclick='openMarkOrdered(${JSON.stringify(p)})'><i class="fas fa-truck"></i></button>` : '',
+      p.status !== 'Received' ? `<button class="btn btn-success btn-sm" title="Upload Receipt" onclick='openReceiptModal("${p.poId}")'><i class="fas fa-upload"></i></button>` : '',
+      `<button class="btn btn-secondary btn-sm" title="Edit" onclick='openPOModal(${JSON.stringify(p)})'><i class="fas fa-edit"></i></button>`,
+      `<button class="btn btn-danger btn-sm" title="Delete" onclick='deletePO("${p.poId}")'><i class="fas fa-trash"></i></button>`
+    ].filter(Boolean).join(' ');
+    return `<tr>
+      <td style="font-size:11px;font-family:monospace;">${escHtml(p.poId)}</td>
+      <td style="font-weight:600;">${escHtml(p.vendor)}</td>
+      <td>${escHtml(p.description)}</td>
+      <td>${projectLabel}</td>
+      <td style="font-weight:700;">${fmt(p.estAmount)}</td>
+      <td><span class="badge ${badgeClass}">${p.status}</span></td>
+      <td style="font-size:12px;">${escHtml(p.referenceNum) || '—'}</td>
+      <td>${receiptLink}</td>
+      <td><div style="display:flex;gap:4px;">${actions}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterPOTable() { renderPOTable(); }
+
+async function openPOModal(po) {
+  await loadProjectsForSelects();
+  const pSel = document.getElementById('poProject');
+  if (po) {
+    document.getElementById('poModalTitle').textContent = 'Edit Purchase Order';
+    document.getElementById('poId').value       = po.poId;
+    document.getElementById('poVendor').value   = po.vendor;
+    document.getElementById('poAmount').value   = po.estAmount;
+    document.getElementById('poDesc').value     = po.description;
+    document.getElementById('poInvoice').value  = po.invoiceId || '';
+    document.getElementById('poOrderDate').value = po.orderDate ? po.orderDate.substring(0,10) : '';
+    document.getElementById('poRef').value      = po.referenceNum || '';
+    document.getElementById('poNotes').value    = po.notes || '';
+    pSel.value = po.projectId || '';
+  } else {
+    document.getElementById('poModalTitle').textContent = 'New Purchase Order';
+    ['poId','poVendor','poAmount','poDesc','poInvoice','poRef','poNotes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('poOrderDate').value = new Date().toISOString().split('T')[0];
+    pSel.value = '';
+  }
+  openModal('poModal');
+}
+
+async function savePO() {
+  const vendor = document.getElementById('poVendor').value.trim();
+  const desc   = document.getElementById('poDesc').value.trim();
+  const amount = document.getElementById('poAmount').value;
+  if (!vendor || !desc) { showToast('Vendor and description are required','error'); return; }
+  const poId = document.getElementById('poId').value;
+  const body = {
+    vendor, description: desc,
+    estAmount: amount, projectId: document.getElementById('poProject').value,
+    invoiceId: document.getElementById('poInvoice').value,
+    orderDate: document.getElementById('poOrderDate').value,
+    referenceNum: document.getElementById('poRef').value,
+    notes: document.getElementById('poNotes').value
+  };
+  let r;
+  if (poId) { body.poId = poId; r = await api('updatePurchaseOrder', {}, 'POST', body); }
+  else       { r = await api('createPurchaseOrder', {}, 'POST', body); }
+  if (r.success) { closeModal('poModal'); loadPurchaseOrders(); showToast(poId ? 'PO updated!' : 'PO created!'); }
+  else showToast(r.error, 'error');
+}
+
+async function deletePO(poId) {
+  if (!confirm('Delete this purchase order?')) return;
+  const r = await api('deletePurchaseOrder', {}, 'POST', { poId });
+  if (r.success) { loadPurchaseOrders(); showToast('PO deleted'); }
+  else showToast(r.error, 'error');
+}
+
+function openMarkOrdered(po) {
+  document.getElementById('orderedPoId').value    = po.poId;
+  document.getElementById('orderedRef').value     = po.referenceNum || '';
+  document.getElementById('orderedVendor').value  = po.vendor;
+  openModal('markOrderedModal');
+}
+
+async function confirmMarkOrdered() {
+  const poId = document.getElementById('orderedPoId').value;
+  const ref  = document.getElementById('orderedRef').value.trim();
+  const r = await api('updatePurchaseOrder', {}, 'POST', { poId, status: 'Ordered', referenceNum: ref });
+  if (r.success) { closeModal('markOrderedModal'); loadPurchaseOrders(); showToast('Marked as Ordered!'); }
+  else showToast(r.error, 'error');
+}
+
+// ── RECEIPT UPLOAD ────────────────────────────────────────────────────────────
+function openReceiptModal(poId) {
+  _receiptFile = null;
+  document.getElementById('receiptPoId').value = poId;
+  ['receiptRef','receiptNotes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('receiptAmount').value = '';
+  document.getElementById('receiptFileInput').value = '';
+  document.getElementById('receiptFilePreview').classList.remove('visible');
+  document.getElementById('receiptError').style.display = 'none';
+  document.getElementById('receiptProgress').style.display = 'none';
+  document.getElementById('receiptProgressBar').style.width = '0%';
+  document.getElementById('receiptUploadBtn').disabled = true;
+  // Populate account dropdown
+  const sel = document.getElementById('receiptAccount');
+  sel.innerHTML = '<option value="">— Select —</option>' + allAccounts.map(a => `<option value="${escHtml(a.accountName)}">${escHtml(a.accountName)}</option>`).join('');
+  openModal('receiptModal');
+}
+
+function handleReceiptDrop(e) {
+  e.preventDefault();
+  document.getElementById('receiptDropZone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) setReceiptFile(f);
+}
+function handleReceiptFileSelect(e) { const f = e.target.files[0]; if (f) setReceiptFile(f); }
+function setReceiptFile(f) {
+  const err = document.getElementById('receiptError');
+  if (!['application/pdf','image/jpeg','image/jpg','image/png'].includes(f.type)) { err.textContent='PDF, JPG or PNG only'; err.style.display='block'; return; }
+  if (f.size > 10*1024*1024) { err.textContent='File must be under 10 MB'; err.style.display='block'; return; }
+  err.style.display = 'none';
+  _receiptFile = f;
+  document.getElementById('receiptFileName').textContent = f.name;
+  document.getElementById('receiptFileSize').textContent = (f.size/1024).toFixed(1) + ' KB';
+  document.getElementById('receiptFilePreview').classList.add('visible');
+  document.getElementById('receiptUploadBtn').disabled = false;
+}
+function clearReceiptFile() {
+  _receiptFile = null;
+  document.getElementById('receiptFileInput').value = '';
+  document.getElementById('receiptFilePreview').classList.remove('visible');
+  document.getElementById('receiptUploadBtn').disabled = true;
+}
+
+async function submitReceipt() {
+  if (!_receiptFile) return;
+  const poId = document.getElementById('receiptPoId').value;
+  const btn  = document.getElementById('receiptUploadBtn');
+  const errEl = document.getElementById('receiptError');
+  const prog  = document.getElementById('receiptProgress');
+  const bar   = document.getElementById('receiptProgressBar');
+
+  btn.disabled = true; errEl.style.display = 'none'; prog.style.display = 'block';
+  let pct = 0;
+  const ticker = setInterval(() => { pct = Math.min(pct + 6, 85); bar.style.width = pct + '%'; }, 300);
+
+  try {
+    const base64 = await new Promise((res, rej) => {
+      const rd = new FileReader();
+      rd.onload = e => res(e.target.result.split(',')[1]);
+      rd.onerror = rej;
+      rd.readAsDataURL(_receiptFile);
+    });
+    const r = await api('uploadReceipt', {}, 'POST', {
+      poId, fileData: base64, fileName: _receiptFile.name, mimeType: _receiptFile.type,
+      referenceNum: document.getElementById('receiptRef').value,
+      actualAmount: document.getElementById('receiptAmount').value,
+      category:     document.getElementById('receiptCategory').value,
+      paidFromAccount: document.getElementById('receiptAccount').value,
+      notes: document.getElementById('receiptNotes').value
+    });
+    clearInterval(ticker); bar.style.width = '100%';
+    if (r.success) {
+      setTimeout(() => { closeModal('receiptModal'); loadPurchaseOrders(); showToast('Receipt uploaded and expense recorded!'); }, 400);
+    } else {
+      prog.style.display = 'none'; btn.disabled = false;
+      errEl.textContent = r.error || 'Upload failed'; errEl.style.display = 'block';
+    }
+  } catch (e) {
+    clearInterval(ticker); prog.style.display = 'none'; btn.disabled = false;
+    errEl.textContent = 'Error: ' + e.message; errEl.style.display = 'block';
+  }
+}
+
+// ── EXPENSES ─────────────────────────────────────────────────────────────────
+let allExpenses = [];
+
+async function loadExpenses() {
+  const cat = document.getElementById('expCatFilter').value;
+  const r   = await api('getExpenses', { category: cat });
+  allExpenses = r.expenses || [];
+  await loadProjectsForSelects();
+  renderExpTable();
+  // Update totals bar
+  const totals = { total: 0, labor: 0, parts: 0, other: 0 };
+  allExpenses.forEach(e => {
+    totals.total += e.amount;
+    if (e.category === 'Labor Paid') totals.labor += e.amount;
+    else if (e.category === 'Parts & Materials') totals.parts += e.amount;
+    else totals.other += e.amount;
+  });
+  document.getElementById('expTotals').innerHTML = [
+    ['Total',fmt(totals.total),'#0f172a','#f8fafc'],
+    ['Labor Paid',fmt(totals.labor),'#5b21b6','#f5f3ff'],
+    ['Parts & Materials',fmt(totals.parts),'#9a3412','#fff7ed'],
+    ['Other',fmt(totals.other),'#374151','#f8fafc']
+  ].map(([l,v,c,bg]) => `<div style="background:${bg};border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:11px;color:${c};font-weight:700;text-transform:uppercase;margin-bottom:4px;">${l}</div><div style="font-size:18px;font-weight:800;color:${c};">${v}</div></div>`).join('');
+}
+
+function renderExpTable() {
+  const tbody = document.getElementById('expTableBody');
+  const q     = (document.getElementById('expSearch').value || '').toLowerCase();
+  const rows  = allExpenses.filter(e => !q || e.description.toLowerCase().includes(q) || (e.category||'').toLowerCase().includes(q));
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#64748b;">No expenses found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(e => {
+    const catBadge = e.category === 'Labor Paid' ? 'badge-labor' : e.category === 'Parts & Materials' ? 'badge-parts' : 'badge-ordered';
+    const linkLabel = e.projectId ? `<span style="font-size:11px;background:#eff6ff;color:#1e40af;padding:2px 7px;border-radius:6px;">${escHtml(e.projectId.substring(0,14))}</span>` : (e.invoiceId ? `<span style="font-size:11px;background:#f0fdf4;color:#166534;padding:2px 7px;border-radius:6px;">${escHtml(e.invoiceId.substring(0,14))}</span>` : '—');
+    const receiptLink = (e.receiptData && e.receiptData.receiptUrl) ? `<a href="${e.receiptData.receiptUrl}" target="_blank" style="color:#2563eb;font-size:12px;"><i class="fas fa-external-link-alt"></i></a>` : '—';
+    return `<tr>
+      <td>${fmtDate(e.date)}</td>
+      <td><span class="badge ${catBadge}">${escHtml(e.category)}</span></td>
+      <td>${escHtml(e.description)}</td>
+      <td>${linkLabel}</td>
+      <td style="font-size:12px;color:#64748b;">${escHtml(e.workerName)||'—'}</td>
+      <td style="font-size:12px;">${e.hours != null ? e.hours + 'h' : '—'}</td>
+      <td style="font-weight:700;">${fmt(e.amount)}</td>
+      <td style="font-size:12px;color:#64748b;">${escHtml(e.paidFromAccount)||'—'}</td>
+      <td>${receiptLink}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-sm" onclick='openExpenseModal(${JSON.stringify(e)})'><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick='deleteExpense("${e.expenseId}")'><i class="fas fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterExpTable() { renderExpTable(); }
+
+function toggleLaborFields() {
+  const cat = document.getElementById('expCategory').value;
+  document.getElementById('laborFields').style.display = cat === 'Labor Paid' ? 'block' : 'none';
+}
+
+function calcLaborAmount() {
+  const h = parseFloat(document.getElementById('expHours').value || 0);
+  const r = parseFloat(document.getElementById('expHourlyRate').value || 0);
+  if (h && r) {
+    const total = h * r;
+    document.getElementById('expLaborCalc').value = fmt(total);
+    document.getElementById('expAmount').value = total.toFixed(2);
+  }
+}
+
+async function openExpenseModal(exp) {
+  await loadProjectsForSelects();
+  document.getElementById('expModalTitle').textContent = exp ? 'Edit Expense' : 'Add Expense';
+  if (exp) {
+    document.getElementById('expId').value          = exp.expenseId;
+    document.getElementById('expCategory').value    = exp.category;
+    document.getElementById('expDate').value        = exp.date ? exp.date.substring(0,10) : '';
+    document.getElementById('expDesc').value        = exp.description;
+    document.getElementById('expAmount').value      = exp.amount;
+    document.getElementById('expAccount').value     = exp.paidFromAccount || '';
+    document.getElementById('expProject').value     = exp.projectId || '';
+    document.getElementById('expInvoice').value     = exp.invoiceId || '';
+    document.getElementById('expWorker').value      = exp.workerName || '';
+    document.getElementById('expHours').value       = exp.hours != null ? exp.hours : '';
+    document.getElementById('expHourlyRate').value  = exp.hourlyRate != null ? exp.hourlyRate : '';
+    document.getElementById('expVendor').value      = (exp.receiptData && exp.receiptData.vendor) || '';
+    document.getElementById('expReceiptUrl').value  = (exp.receiptData && exp.receiptData.receiptUrl) || '';
+    document.getElementById('expNotes').value       = (exp.receiptData && exp.receiptData.notes) || '';
+  } else {
+    document.getElementById('expId').value = '';
+    ['expDesc','expAmount','expWorker','expHours','expHourlyRate','expVendor','expReceiptUrl','expNotes','expInvoice'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('expDate').value     = new Date().toISOString().split('T')[0];
+    document.getElementById('expCategory').value = 'Parts & Materials';
+    document.getElementById('expProject').value  = '';
+  }
+  toggleLaborFields();
+  // Populate account dropdown with known accounts
+  const accSel = document.getElementById('expAccount');
+  const existing = allAccounts.map(a => `<option value="${escHtml(a.accountName)}">${escHtml(a.accountName)}</option>`).join('');
+  accSel.innerHTML = '<option value="">— Select —</option><option value="Business Checking">Business Checking</option><option value="Savings">Savings</option><option value="Credit Card">Credit Card</option><option value="Cash">Cash</option>' + existing;
+  openModal('expenseModal');
+}
+
+async function saveExpense() {
+  const desc = document.getElementById('expDesc').value.trim();
+  const cat  = document.getElementById('expCategory').value;
+  if (!desc || !cat) { showToast('Description and category are required','error'); return; }
+  const expId = document.getElementById('expId').value;
+  const body = {
+    category: cat, date: document.getElementById('expDate').value,
+    description: desc, amount: document.getElementById('expAmount').value,
+    paidFromAccount: document.getElementById('expAccount').value,
+    projectId: document.getElementById('expProject').value,
+    invoiceId: document.getElementById('expInvoice').value,
+    workerName: document.getElementById('expWorker').value,
+    hours: document.getElementById('expHours').value,
+    hourlyRate: document.getElementById('expHourlyRate').value,
+    vendor: document.getElementById('expVendor').value,
+    receiptUrl: document.getElementById('expReceiptUrl').value,
+    notes: document.getElementById('expNotes').value
+  };
+  let r;
+  if (expId) { body.expenseId = expId; r = await api('updateExpense', {}, 'POST', body); }
+  else        { r = await api('addExpense', {}, 'POST', body); }
+  if (r.success) { closeModal('expenseModal'); loadExpenses(); showToast('Expense saved!'); }
+  else showToast(r.error, 'error');
+}
+
+async function deleteExpense(expId) {
+  if (!confirm('Delete this expense?')) return;
+  const r = await api('deleteExpense', {}, 'POST', { expenseId: expId });
+  if (r.success) { loadExpenses(); showToast('Expense deleted'); }
+  else showToast(r.error, 'error');
+}
+
+// ── OWNER PAY ─────────────────────────────────────────────────────────────────
+let allDraws = [];
+
+async function loadOwnerPay() {
+  const [dash, drawResult] = await Promise.all([api('getDashboard'), api('getOwnerDraws')]);
+  allDraws = drawResult.draws || [];
+
+  if (dash.success) {
+    const trueAv = dash.trueAvailable !== undefined ? dash.trueAvailable : dash.availableToPay;
+    document.getElementById('op-available').textContent = fmt(trueAv);
+    document.getElementById('op-before-shopping').textContent = fmt(dash.availableToPay);
+    document.getElementById('op-shopping-reserved').textContent = fmt(dash.shoppingTotal || 0);
+    document.getElementById('op-formula').innerHTML =
+      `Revenue <b>${fmt(dash.ytdRevenue)}</b> &minus; Expenses <b>${fmt(dash.ytdExpenses)}</b> &minus; Pending POs <b>${fmt(dash.pendingPOTotal)}</b> &minus; YTD Draws <b>${fmt(dash.ytdDraws)}</b> &minus; Planned Purchases <b>${fmt(dash.shoppingTotal||0)}</b>`;
+    dashboardData = dash;
+  }
+
+  const tbody = document.getElementById('drawTableBody');
+  if (allDraws.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#64748b;">No draws recorded yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allDraws.map(d => `<tr>
+    <td>${fmtDate(d.date)}</td>
+    <td style="font-weight:700;color:#dc2626;">${fmt(d.amount)}</td>
+    <td>${escHtml(d.accountPaidFrom)||'—'}</td>
+    <td style="font-size:12px;color:#64748b;">${escHtml(d.notes)}</td>
+    <td><button class="btn btn-danger btn-sm" onclick='deleteDraw("${d.drawId}")'><i class="fas fa-trash"></i></button></td>
+  </tr>`).join('');
+}
+
+function openDrawModal() {
+  document.getElementById('drawDate').value   = new Date().toISOString().split('T')[0];
+  document.getElementById('drawAmount').value = '';
+  document.getElementById('drawNotes').value  = '';
+  const sel = document.getElementById('drawAccount');
+  sel.innerHTML = '<option value="">— Select —</option>' + allAccounts.map(a => `<option value="${escHtml(a.accountName)}">${escHtml(a.accountName)}</option>`).join('');
+  openModal('drawModal');
+}
+
+async function saveDraw() {
+  const amt = parseFloat(document.getElementById('drawAmount').value);
+  if (!amt || amt <= 0) { showToast('Enter a valid draw amount','error'); return; }
+  const r = await api('addOwnerDraw', {}, 'POST', {
+    date: document.getElementById('drawDate').value,
+    amount: amt,
+    accountPaidFrom: document.getElementById('drawAccount').value,
+    notes: document.getElementById('drawNotes').value
+  });
+  if (r.success) { closeModal('drawModal'); loadOwnerPay(); showToast('Draw recorded!'); }
+  else showToast(r.error, 'error');
+}
+
+async function deleteDraw(drawId) {
+  if (!confirm('Delete this draw record?')) return;
+  const r = await api('deleteOwnerDraw', {}, 'POST', { drawId });
+  if (r.success) { loadOwnerPay(); showToast('Draw deleted'); }
+  else showToast(r.error, 'error');
+}
+
+// ── FORECAST ─────────────────────────────────────────────────────────────────
+let allForecast = [];
+
+// ── Forecast state ────────────────────────────────────────────────────────────
+let fcCurrentMonth = new Date().getMonth() + 1;
+let fcCurrentYear  = new Date().getFullYear();
+
+function shiftForecastMonth(delta) {
+  fcCurrentMonth += delta;
+  if (fcCurrentMonth > 12) { fcCurrentMonth = 1;  fcCurrentYear++; }
+  if (fcCurrentMonth < 1)  { fcCurrentMonth = 12; fcCurrentYear--; }
+  // Keep year selector in sync
+  const sel = document.getElementById('forecastYear');
+  if (sel) sel.value = fcCurrentYear;
+  renderForecastMonth();
+}
+
+function onForecastYearChange() {
+  const yr = parseInt(document.getElementById('forecastYear').value);
+  if (!isNaN(yr)) fcCurrentYear = yr;
+  renderForecastMonth();
+  renderForecastChart();
+}
+
+async function loadForecast() {
+  const yr = fcCurrentYear || new Date().getFullYear();
+  // Ensure year selector reflects current year
+  const sel = document.getElementById('forecastYear');
+  if (sel && sel.value != yr) sel.value = yr;
+
+  const [r, wk] = await Promise.all([
+    api('getForecastItems', { year: yr }),
+    api('getWeekForecast')
+  ]);
+  allForecast = r.items || [];
+  renderForecastMonth();
+  renderForecastChart();
+  renderWeekForecastPanel(wk);
+}
+
+function renderWeekForecastPanel(wk) {
+  const panel = document.getElementById('weekForecastPanel');
+  if (!panel) return;
+  if (!wk || !wk.success) {
+    panel.innerHTML = '';
+    return;
+  }
+  const startStr = wk.weekStart ? new Date(wk.weekStart + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+  const endStr   = wk.weekEnd   ? new Date(wk.weekEnd   + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+  const netColor = wk.netWeek >= 0 ? '#16a34a' : '#dc2626';
+  const cards = [
+    { label:'This Week', sub: `${startStr} – ${endStr}`, val: null, icon:'fas fa-calendar-week', color:'#0ea5e9', big: true },
+    { label:'Pending Income', sub:'Credits not yet cleared (≤2 days)', val: wk.pendingIncome, icon:'fas fa-arrow-down', color:'#16a34a' },
+    { label:'Recurring Due', sub:'Bills due this week', val: wk.recurringDueThisWeek, icon:'fas fa-sync-alt', color:'#f59e0b', neg: true },
+    { label:'Planned Purchases', sub:'Shopping items due this week', val: wk.shoppingDueThisWeek, icon:'fas fa-list-ul', color:'#8b5cf6', neg: true },
+    { label:'Pending POs', sub:'Purchase orders due this week', val: wk.posDueThisWeek, icon:'fas fa-shopping-cart', color:'#ef4444', neg: true },
+    { label:'Net This Week', sub:'Income − Going Out', val: wk.netWeek, icon:'fas fa-balance-scale', color: netColor }
+  ];
+  panel.innerHTML = cards.map(c => {
+    if (c.big) return `<div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:12px;padding:18px;color:#fff;display:flex;flex-direction:column;justify-content:center;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:4px;"><i class="${c.icon}" style="margin-right:4px;color:${c.color};"></i> ${c.label}</div>
+      <div style="font-size:16px;font-weight:800;color:#e2e8f0;">${c.sub}</div>
+    </div>`;
+    const valTxt = c.val !== null && c.val !== undefined ? (c.neg ? `−${fmt(Math.abs(c.val))}` : fmt(c.val)) : '—';
+    const valColor = c.neg ? '#fca5a5' : (c.val < 0 ? '#fca5a5' : '#a7f3d0');
+    return `<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;">
+      <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;"><i class="${c.icon}" style="margin-right:4px;color:${c.color};"></i> ${c.label}</div>
+      <div style="font-size:22px;font-weight:900;color:${c.neg?'#dc2626':c.color};">${valTxt}</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${c.sub}</div>
+    </div>`;
+  }).join('');
+
+  // Breakdown rows if any items
+  const breakdownItems = [...(wk.recurItems||[]).map(x=>({...x,type:'Recurring'})), ...(wk.shopItems||[]).map(x=>({...x,type:'Purchase'}))];
+  if (breakdownItems.length > 0) {
+    const detail = document.createElement('div');
+    detail.style.cssText = 'grid-column:1/-1;background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;';
+    detail.innerHTML = `<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#0f172a;"><i class="fas fa-receipt" style="margin-right:6px;color:#f59e0b;"></i> This Week's Items</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${breakdownItems.map(x=>`<span style="background:${x.type==='Recurring'?'#fef3c7':'#ede9fe'};color:${x.type==='Recurring'?'#92400e':'#5b21b6'};font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;">${escHtml(x.name)} — ${fmt(x.amount)}</span>`).join('')}
+      </div>`;
+    panel.appendChild(detail);
+  }
+}
+
+// ── Status helpers ────────────────────────────────────────────────────────────
+const FC_STATUS_CONFIG = {
+  Confirmed: { label:'Confirmed',  bg:'#d1fae5', color:'#065f46', icon:'fas fa-check-circle' },
+  Pending:   { label:'Pending',    bg:'#fef3c7', color:'#92400e', icon:'fas fa-clock' },
+  Posted:    { label:'Posted',     bg:'#dbeafe', color:'#1e40af', icon:'fas fa-check-double' },
+  Cancelled: { label:'Cancelled',  bg:'#f1f5f9', color:'#64748b', icon:'fas fa-times-circle' }
+};
+const FC_SOURCE_ICONS = {
+  'Project Payment': 'fas fa-swimming-pool',
+  'Invoice':         'fas fa-file-invoice',
+  'Recurring':       'fas fa-sync-alt',
+  'Deposit':         'fas fa-piggy-bank',
+  'Manual':          'fas fa-pencil-alt',
+  'Other':           'fas fa-tag'
+};
+
+function fcStatusBadge(status) {
+  const cfg = FC_STATUS_CONFIG[status] || FC_STATUS_CONFIG.Confirmed;
+  return `<span style="background:${cfg.bg};color:${cfg.color};padding:3px 9px;border-radius:5px;font-size:11px;font-weight:700;white-space:nowrap;"><i class="${cfg.icon}" style="margin-right:3px;"></i>${cfg.label}</span>`;
+}
+
+function renderForecastMonth() {
+  const m  = fcCurrentMonth;
+  const yr = fcCurrentYear;
+
+  // Label
+  document.getElementById('fcMonthLabel').textContent = MONTHS[m - 1] + ' ' + yr;
+  document.getElementById('fcChartYearLabel').textContent = yr;
+
+  const monthItems = allForecast.filter(i => i.month === m && i.year === yr);
+  const income  = monthItems.filter(i => i.type === 'Income');
+  const expense = monthItems.filter(i => i.type === 'Expense');
+
+  // Active = Confirmed + Pending + Posted (not Cancelled)
+  const activeIncome  = income.filter(i => i.status !== 'Cancelled');
+  const activeExpense = expense.filter(i => i.status !== 'Cancelled');
+  const totalIn  = activeIncome.reduce((s, i)  => s + i.amount, 0);
+  const totalOut = activeExpense.reduce((s, i) => s + i.amount, 0);
+  const net      = totalIn - totalOut;
+
+  // Pull current account balance for ending-balance estimate
+  const currentBalance = (dashboardData?.accounts || []).reduce((s, a) => s + a.currentBalance, 0);
+  const estEnding      = currentBalance + net;
+
+  // Summary cards
+  const summaryEl = document.getElementById('fcSummaryCards');
+  summaryEl.innerHTML = [
+    { label:'Projected Income',   val: totalIn,        color:'#16a34a', bg:'#f0fdf4', icon:'fas fa-arrow-down' },
+    { label:'Projected Expenses', val: totalOut,       color:'#dc2626', bg:'#fff1f2', icon:'fas fa-arrow-up' },
+    { label:'Net This Month',     val: net,            color: net>=0 ? '#16a34a':'#dc2626', bg: net>=0?'#f0fdf4':'#fff1f2', icon:'fas fa-balance-scale' },
+    { label:'Est. Ending Balance',val: estEnding,      color:'#0369a1', bg:'#eff6ff', icon:'fas fa-university', sub:`Starting: ${fmt(currentBalance)}` }
+  ].map(c => `<div style="background:${c.bg};border-radius:12px;padding:16px 18px;">
+    <div style="font-size:11px;font-weight:700;color:${c.color};text-transform:uppercase;margin-bottom:4px;"><i class="${c.icon}" style="margin-right:4px;"></i>${c.label}</div>
+    <div style="font-size:26px;font-weight:900;color:${c.color};">${fmt(c.val)}</div>
+    ${c.sub ? `<div style="font-size:11px;color:#64748b;margin-top:2px;">${c.sub}</div>` : ''}
+  </div>`).join('');
+
+  // Pending notice
+  const pendingItems = monthItems.filter(i => i.status === 'Pending');
+  const pendingEl = document.getElementById('fcPendingNotice');
+  if (pendingItems.length > 0) {
+    const pendingTotal = pendingItems.reduce((s,i) => s + (i.type==='Income'?i.amount:-i.amount), 0);
+    pendingEl.style.display = 'block';
+    pendingEl.innerHTML = `<i class="fas fa-clock" style="margin-right:6px;"></i><strong>${pendingItems.length} pending item${pendingItems.length>1?'s':''}</strong> totaling <strong>${fmt(Math.abs(pendingTotal))}</strong> — these will auto-post to <strong>Posted</strong> within 2 days of creation.`;
+  } else {
+    pendingEl.style.display = 'none';
+  }
+
+  // Income table
+  const incomeBody  = document.getElementById('fcIncomeBody');
+  const incomeEmpty = document.getElementById('fcIncomeEmpty');
+  const incTotalLbl = document.getElementById('fcIncomeTotalLabel');
+  if (incTotalLbl) incTotalLbl.textContent = activeIncome.length > 0 ? `— ${fmt(totalIn)} across ${activeIncome.length} line${activeIncome.length>1?'s':''}` : '';
+  if (income.length === 0) {
+    incomeBody.innerHTML = '';
+    incomeEmpty.style.display = 'block';
+  } else {
+    incomeEmpty.style.display = 'none';
+    incomeBody.innerHTML = income
+      .sort((a,b) => (a.expectedDate||'').localeCompare(b.expectedDate||''))
+      .map(i => fcTableRow(i)).join('');
+  }
+
+  // Expense table
+  const expenseBody  = document.getElementById('fcExpenseBody');
+  const expenseEmpty = document.getElementById('fcExpenseEmpty');
+  const expTotalLbl  = document.getElementById('fcExpenseTotalLabel');
+  if (expTotalLbl) expTotalLbl.textContent = activeExpense.length > 0 ? `— ${fmt(totalOut)} across ${activeExpense.length} line${activeExpense.length>1?'s':''}` : '';
+  if (expense.length === 0) {
+    expenseBody.innerHTML = '';
+    expenseEmpty.style.display = 'block';
+  } else {
+    expenseEmpty.style.display = 'none';
+    expenseBody.innerHTML = expense
+      .sort((a,b) => (a.expectedDate||'').localeCompare(b.expectedDate||''))
+      .map(i => fcTableRow(i)).join('');
+  }
+
+  // Cash flow timeline (if any items have expected dates)
+  renderForecastCashFlow(monthItems, currentBalance);
+}
+
+function fcTableRow(i) {
+  const srcIcon = FC_SOURCE_ICONS[i.sourceType] || 'fas fa-tag';
+  const dateStr = i.expectedDate ? new Date(i.expectedDate + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+  const amtColor = i.type === 'Income' ? '#16a34a' : '#dc2626';
+  const cancelled = i.status === 'Cancelled';
+  return `<tr style="${cancelled?'opacity:.5;':''}">
+    <td style="font-weight:600;max-width:180px;">${escHtml(i.description)}${i.sourceId?`<div style="font-size:11px;color:#94a3b8;margin-top:2px;"><i class="${srcIcon}" style="margin-right:3px;"></i>${escHtml(i.sourceId)}</div>`:''}    </td>
+    <td style="font-size:12px;"><span style="background:#f1f5f9;padding:2px 8px;border-radius:4px;"><i class="${srcIcon}" style="margin-right:3px;color:#64748b;"></i>${escHtml(i.sourceType||'Manual')}</span></td>
+    <td style="font-size:12px;white-space:nowrap;">${dateStr}</td>
+    <td style="font-weight:800;color:${amtColor};white-space:nowrap;">${i.type==='Income'?'+':'-'}${fmt(i.amount)}</td>
+    <td>${fcStatusBadge(i.status||'Confirmed')}</td>
+    <td style="font-size:11px;color:#64748b;max-width:130px;">${escHtml(i.notes)}</td>
+    <td>
+      <div style="display:flex;gap:3px;">
+        ${i.status==='Pending' ? `<button class="btn btn-success btn-sm" title="Mark Posted" onclick='markFcPosted(${JSON.stringify(i)})'><i class="fas fa-check"></i></button>` : ''}
+        ${i.status!=='Cancelled' && i.status!=='Posted' ? `<button class="btn btn-secondary btn-sm" title="Cancel" onclick='markFcCancelled(${JSON.stringify(i)})'><i class="fas fa-times"></i></button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick='openForecastModal(${JSON.stringify(i)})'><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick='deleteFcItem("${i.itemId}")'><i class="fas fa-trash"></i></button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+function renderForecastCashFlow(items, startBalance) {
+  const card    = document.getElementById('fcCashFlowCard');
+  const listEl  = document.getElementById('fcCashFlowList');
+  // Only show if items have expected dates
+  const dated   = items.filter(i => i.expectedDate && i.status !== 'Cancelled').sort((a,b) => a.expectedDate.localeCompare(b.expectedDate));
+  if (dated.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  let running = startBalance;
+  const rows = dated.map(i => {
+    const delta = i.type === 'Income' ? i.amount : -i.amount;
+    running += delta;
+    const color  = delta > 0 ? '#16a34a' : '#dc2626';
+    const dateStr = new Date(i.expectedDate + 'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+      <div style="width:90px;font-size:12px;color:#64748b;font-weight:600;flex-shrink:0;">${dateStr}</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;font-size:13px;">${escHtml(i.description)}</div>
+        <div style="font-size:11px;color:#94a3b8;">${i.sourceType||'Manual'}${i.sourceId?' · '+i.sourceId:''}</div>
+      </div>
+      <div style="font-weight:700;color:${color};font-size:14px;white-space:nowrap;">${delta>0?'+':''}${fmt(delta)}</div>
+      <div style="font-weight:900;font-size:14px;color:${running>=0?'#0369a1':'#dc2626'};white-space:nowrap;min-width:80px;text-align:right;">${fmt(running)}</div>
+      ${fcStatusBadge(i.status||'Confirmed')}
+    </div>`;
+  });
+
+  listEl.innerHTML = `
+    <div style="display:flex;font-size:11px;font-weight:700;color:#64748b;padding:6px 0 8px;border-bottom:2px solid #e2e8f0;margin-bottom:4px;">
+      <div style="width:90px;">DATE</div><div style="flex:1;">DESCRIPTION</div>
+      <div style="width:90px;text-align:right;">CHANGE</div>
+      <div style="width:90px;text-align:right;">BALANCE</div>
+      <div style="width:80px;text-align:right;">STATUS</div>
+    </div>
+    <div style="padding:4px 0;font-size:12px;color:#64748b;border-bottom:1px solid #f1f5f9;display:flex;gap:12px;">
+      <div style="width:90px;"></div><div style="flex:1;color:#64748b;">Starting balance</div>
+      <div style="width:90px;"></div>
+      <div style="font-weight:900;color:#0369a1;width:80px;text-align:right;">${fmt(startBalance)}</div>
+    </div>
+    ${rows.join('')}
+    <div style="display:flex;justify-content:flex-end;padding:10px 0 0;font-size:13px;font-weight:700;color:#0369a1;">
+      Est. end of month: <span style="margin-left:8px;font-size:16px;">${fmt(running)}</span>
+    </div>`;
+}
+
+function renderForecastChart() {
+  const yr      = fcCurrentYear;
+  document.getElementById('fcChartYearLabel').textContent = yr;
+  // All items for this year (all months)
+  const yearItems = allForecast.filter(i => i.year === yr && i.status !== 'Cancelled');
+  const incomes   = Array(12).fill(0);
+  const expenses  = Array(12).fill(0);
+  yearItems.forEach(i => {
+    if (i.type === 'Income')  incomes[i.month-1]  += i.amount;
+    else                      expenses[i.month-1] += i.amount;
+  });
+  const nets = incomes.map((v,idx) => v - expenses[idx]);
+  const ctx  = document.getElementById('forecastDetailChart').getContext('2d');
+  if (forecastDetailChart) forecastDetailChart.destroy();
+  forecastDetailChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [
+        { label: 'Projected Income',   data: incomes,   backgroundColor: 'rgba(22,163,74,.45)',  borderColor:'#16a34a', borderWidth:1.5 },
+        { label: 'Projected Expenses', data: expenses,  backgroundColor: 'rgba(220,38,38,.35)', borderColor:'#dc2626', borderWidth:1.5 },
+        { label: 'Net',                data: nets,      type:'line', borderColor:'#0369a1', backgroundColor:'rgba(3,105,161,.1)', pointBackgroundColor:'#0369a1', tension:.35, fill:true }
+      ]
+    },
+    options: {
+      plugins: { legend: { position:'bottom' }, tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': $' + ctx.raw.toLocaleString() } } },
+      scales: { y: { beginAtZero:true, ticks: { callback: v => '$' + v.toLocaleString() } } },
+      onClick: (evt, els) => {
+        if (els.length) {
+          const idx = els[0].index;
+          fcCurrentMonth = idx + 1;
+          renderForecastMonth();
+        }
+      }
+    }
+  });
+  // Highlight current month on chart (add annotation-like overlay via afterDraw)
+}
+
+function setFcType(type) {
+  document.getElementById('fcType').value = type;
+  const btnIn  = document.getElementById('fcTypeBtnIncome');
+  const btnEx  = document.getElementById('fcTypeBtnExpense');
+  if (type === 'Income') {
+    btnIn.style.cssText  = 'flex:1;padding:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;background:#d1fae5;color:#065f46;border-right:1px solid #e2e8f0;';
+    btnEx.style.cssText  = 'flex:1;padding:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;background:#f1f5f9;color:#64748b;';
+  } else {
+    btnIn.style.cssText  = 'flex:1;padding:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;background:#f1f5f9;color:#64748b;border-right:1px solid #e2e8f0;';
+    btnEx.style.cssText  = 'flex:1;padding:10px;font-weight:700;font-size:13px;border:none;cursor:pointer;background:#fff1f2;color:#9f1239;';
+  }
+}
+
+function openForecastModal(item, defaultType) {
+  // Pre-load projects silently so dropdown is ready when user picks Project Payment
+  loadProjectsForSelects();
+  const type = item ? item.type : (defaultType || 'Income');
+  document.getElementById('fcModalTitle').textContent = item ? 'Edit Forecast Line' : (type === 'Income' ? 'Add Income Line' : 'Add Expense Line');
+  document.getElementById('fcItemId').value      = item?.itemId       || '';
+  document.getElementById('fcDesc').value        = item?.description  || '';
+  document.getElementById('fcAmount').value      = item?.amount       || '';
+  document.getElementById('fcStatus').value      = item?.status       || 'Confirmed';
+  document.getElementById('fcCategory').value    = item?.category     || '';
+  document.getElementById('fcSourceType').value  = item?.sourceType   || 'Manual';
+  // Store sourceId in the text input so onFcSourceTypeChange can pick it up
+  document.getElementById('fcSourceId').value    = item?.sourceId     || '';
+  // Trigger the swap so the correct control (dropdown vs text) is shown
+  onFcSourceTypeChange();
+  document.getElementById('fcExpectedDate').value= item?.expectedDate || '';
+  document.getElementById('fcMonth').value       = item?.month        || fcCurrentMonth;
+  document.getElementById('fcYear').value        = item?.year         || fcCurrentYear;
+  document.getElementById('fcNotes').value       = item?.notes        || '';
+  setFcType(type);
+  openModal('forecastModal');
+}
+
+async function saveForecast() {
+  const desc = document.getElementById('fcDesc').value.trim();
+  const amt  = document.getElementById('fcAmount').value;
+  if (!desc || !amt) { showToast('Description and amount are required','error'); return; }
+  const r = await api('upsertForecastItem', {}, 'POST', {
+    itemId:       document.getElementById('fcItemId').value || undefined,
+    type:         document.getElementById('fcType').value,
+    category:     document.getElementById('fcCategory').value,
+    month:        document.getElementById('fcMonth').value,
+    year:         document.getElementById('fcYear').value,
+    description:  desc,
+    amount:       amt,
+    status:       document.getElementById('fcStatus').value,
+    expectedDate: document.getElementById('fcExpectedDate').value,
+    sourceType:   document.getElementById('fcSourceType').value,
+    sourceId:     (document.getElementById('fcSourceIdSelect').style.display !== 'none'
+                    ? document.getElementById('fcSourceIdSelect').value
+                    : document.getElementById('fcSourceId').value),
+    notes:        document.getElementById('fcNotes').value
+  });
+  if (r.success) {
+    closeModal('forecastModal');
+    // Reload items for the year then re-render this month
+    const yr = fcCurrentYear;
+    const res = await api('getForecastItems', { year: yr });
+    allForecast = res.items || [];
+    renderForecastMonth();
+    renderForecastChart();
+    showToast('Saved!');
+  } else showToast(r.error || 'Error saving', 'error');
+}
+
+async function deleteFcItem(itemId) {
+  if (!confirm('Delete this forecast line?')) return;
+  const r = await api('deleteForecastItem', {}, 'POST', { itemId });
+  if (r.success) {
+    allForecast = allForecast.filter(i => i.itemId !== itemId);
+    renderForecastMonth();
+    renderForecastChart();
+    showToast('Deleted');
+  } else showToast(r.error, 'error');
+}
+
+async function markFcPosted(item) {
+  const r = await api('upsertForecastItem', {}, 'POST', { ...item, status: 'Posted' });
+  if (r.success) {
+    const idx = allForecast.findIndex(i => i.itemId === item.itemId);
+    if (idx >= 0) allForecast[idx].status = 'Posted';
+    renderForecastMonth();
+    showToast('Marked as Posted!');
+  } else showToast(r.error, 'error');
+}
+
+async function markFcCancelled(item) {
+  if (!confirm('Cancel this line?')) return;
+  const r = await api('upsertForecastItem', {}, 'POST', { ...item, status: 'Cancelled' });
+  if (r.success) {
+    const idx = allForecast.findIndex(i => i.itemId === item.itemId);
+    if (idx >= 0) allForecast[idx].status = 'Cancelled';
+    renderForecastMonth();
+    showToast('Cancelled');
+  } else showToast(r.error, 'error');
+}
+
+// ── SHARED HELPERS ────────────────────────────────────────────────────────────
+let _projectsLoaded  = false;
+let _invoicesLoaded  = false;
+let allInvoices      = [];
+
+async function loadProjectsForSelects() {
+  if (_projectsLoaded) return;
+  try {
+    const r = await fetch(INVOICE_URL + '?action=getAllProjects');
+    const d = await r.json();
+    allProjects    = (d.projects || []).filter(p => p.projectId);
+    _projectsLoaded = true;
+    const opts = allProjects.map(p =>
+      `<option value="${p.projectId}">${escHtml(p.projectId)}${p.customerName ? ' — ' + escHtml(p.customerName) : ''}</option>`
+    ).join('');
+    // Populate project selects everywhere
+    ['poProject','expProject','shopProject','fcSourceIdSelect'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      const isSource = id === 'fcSourceIdSelect';
+      sel.innerHTML = `<option value="">${isSource ? '— Select Project —' : '— None —'}</option>` + opts;
+    });
+  } catch (_) {}
+}
+
+async function loadInvoicesForSelects() {
+  if (_invoicesLoaded) return;
+  try {
+    const r = await fetch(INVOICE_URL + '?action=getEstimates');
+    const d = await r.json();
+    allInvoices    = (d.estimates || []).filter(e => e.estimateId);
+    _invoicesLoaded = true;
+  } catch (_) {}
+}
+
+/** Called when Source Type changes in the Forecast modal */
+async function onFcSourceTypeChange() {
+  const type    = document.getElementById('fcSourceType').value;
+  const selEl   = document.getElementById('fcSourceIdSelect');
+  const inputEl = document.getElementById('fcSourceId');
+  const label   = document.getElementById('fcSourceIdLabel');
+
+  if (type === 'Project Payment') {
+    label.textContent = 'Project';
+    inputEl.style.display = 'none';
+    selEl.style.display   = 'block';
+    selEl.innerHTML = '<option value="">— Loading projects… —</option>';
+    await loadProjectsForSelects();
+    // after load the select is already populated — ensure correct value is preserved
+    const cur = inputEl.value;
+    if (cur) {
+      // try to select the current value
+      const opt = selEl.querySelector(`option[value="${cur}"]`);
+      if (opt) opt.selected = true;
+    }
+  } else if (type === 'Invoice') {
+    label.textContent = 'Invoice / Estimate';
+    inputEl.style.display = 'none';
+    selEl.style.display   = 'block';
+    selEl.innerHTML = '<option value="">— Loading invoices… —</option>';
+    await loadInvoicesForSelects();
+    const opts = allInvoices.map(e =>
+      `<option value="${e.estimateId}">${escHtml(e.estimateId)}${e.customerName ? ' — ' + escHtml(e.customerName) : ''}</option>`
+    ).join('');
+    selEl.innerHTML = '<option value="">— Select Invoice —</option>' + opts;
+    const cur = inputEl.value;
+    if (cur) { const o = selEl.querySelector(`option[value="${cur}"]`); if(o) o.selected = true; }
+  } else {
+    label.textContent = 'Source ID (optional)';
+    selEl.style.display   = 'none';
+    inputEl.style.display = 'block';
+  }
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close modals on backdrop click
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+    _receiptFile = null;
+  }
+});
+// Keyboard ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+// ── Update showPage to include new pages ─────────────────────────────────────
+const _origLoadPage = loadPage;
+loadPage = function(name) {
+  if (name === 'bank')      { loadBankTransactions(); return; }
+  if (name === 'recurring') { loadRecurring(); return; }
+  if (name === 'reminders') { loadReminders(); return; }
+  if (name === 'shopping')  { loadShoppingList(); return; }
+  _origLoadPage(name);
+};
+
+// ── BANK TRANSACTIONS ─────────────────────────────────────────────────────────
+let allBankTxns = [];
+let _csvParsed  = [];
+let _lastImportDate = null;
+
+// Auto-categorize on the frontend (mirrors backend logic)
+function frontendCategorize(desc) {
+  const d = desc.toUpperCase();
+  if (/LOWE'?S|MENARDS|HOME DEPOT|ACE H[DW]|TRUE VALUE|HARBOR FREIGHT|O'?REILLY|AUTOZONE|NAPA|FASTENAL|84-LUMBER|LUMBER|POOL|MEDALLION SWIM/.test(d)) return 'Parts & Materials';
+  if (/SHELL|EXXON|BP[X*]|SPEEDWAY|MARATHON|CASEY'?S|WEIGELS|SUNOCO|WAWA|CIRCLE K|GIT N GO|FUEL|GAS\b|PETRO|BUC-EE|GOODSTOP|SMARTSERV|SADDLE BROOK/.test(d)) return 'Fuel & Vehicle';
+  if (/MCDONALD|BURGER KING|CRACKER BARREL|STARBUCKS|DUNKIN|FIVE GUYS|COOK OUT|HARDEES|BOJANGLES|KRYSTAL|KPOT|FOOD CITY|TST\*|SQ \*/.test(d)) return 'Meals & Entertainment';
+  if (/WALMART|WAL-MART|DOLLAR GENERAL|DOLLAR TREE|ALDI|MEIJER|KROGER|PUBLIX/.test(d)) return 'Personal / General';
+  if (/ONLINE TRANSFER TO/.test(d)) return 'Transfer Out';
+  if (/ONLINE TRANSFER FROM/.test(d)) return 'Transfer In';
+  if (/DEPOSIT|MOBILE DEPOSIT|TELLER DEPOSIT/.test(d)) return 'Income / Deposit';
+  if (/ATM WITHDRAWAL|WITHDRAWAL/.test(d)) return 'Cash Withdrawal';
+  if (/AMEX EPAYMENT|EPAYMENT|ACH PMT/.test(d)) return 'Credit Card Payment';
+  if (/WEBFLOW|SIMPLY BUSINESS|RECURRING DEBIT/.test(d)) return 'Subscriptions';
+  if (/EBAY|AMAZON/.test(d)) return 'Parts & Materials';
+  if (/CHECK/.test(d)) return 'Check Payment';
+  if (/ROGERS GROUP|BOBCAT|RENTAL PRO|EMSCO|TRUE BLUE POOLS/.test(d)) return 'Equipment / Rental';
+  return 'Uncategorized';
+}
+
+function parsePNCAmount(s) {
+  const sign = String(s || '').trim().startsWith('-') ? -1 : 1;
+  return sign * (parseFloat(String(s || '').replace(/[^0-9.]/g, '')) || 0);
+}
+
+function parsePNCDate(s) {
+  s = String(s || '').trim();
+  if (s.toUpperCase().startsWith('PENDING')) {
+    const m = s.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+    return m ? m[3] + '-' + m[1] + '-' + m[2] : null;
+  }
+  return s; // already YYYY-MM-DD
+}
+
+function parseCSVText(text) {
+  const rows = [];
+  const lines = text.split('\n').slice(1); // skip header
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    // CSV parse: handle quoted fields
+    const fields = [];
+    let cur = ''; let inQ = false;
+    for (let i = 0; i < trimmed.length; i++) {
+      const ch = trimmed[i];
+      if (ch === '"') { inQ = !inQ; continue; }
+      if (ch === ',' && !inQ) { fields.push(cur); cur = ''; continue; }
+      cur += ch;
+    }
+    fields.push(cur);
+    if (fields.length < 3) continue;
+    rows.push({ date: fields[0], desc: fields[1], amount: fields[2], balance: fields[3] || '' });
+  }
+  return rows;
+}
+
+function handleCSVDrop(e) {
+  e.preventDefault();
+  document.getElementById('csvDropZone').classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f) processCSVFile(f);
+}
+function handleCSVFileSelect(e) { const f = e.target.files[0]; if (f) processCSVFile(f); }
+
+async function processCSVFile(f) {
+  const text = await f.text();
+  _csvParsed = parseCSVText(text);
+  // Get last import date from backend
+  const lr = await api('getLastImportDate');
+  _lastImportDate = lr.lastDate || null;
+  const lastLabel = document.getElementById('lastImportLabel');
+  if (lastLabel) lastLabel.textContent = _lastImportDate ? _lastImportDate : 'no previous import';
+  document.getElementById('csvPreviewArea').style.display = 'block';
+  document.getElementById('csvImportBtn').style.display = 'inline-flex';
+  document.getElementById('csvImportResult').style.display = 'none';
+  updateCSVPreview();
+}
+
+function getFilteredCSVRows() {
+  const mode    = document.getElementById('csvImportMode').value;
+  const pending = document.getElementById('csvIncludePending').checked;
+  let   rows    = _csvParsed.filter(r => {
+    const isPending = String(r.date || '').toUpperCase().includes('PENDING');
+    return pending || !isPending;
+  });
+  if (mode === 'since' && _lastImportDate) {
+    const cutoff = new Date(_lastImportDate);
+    rows = rows.filter(r => {
+      const d = parsePNCDate(r.date);
+      return d && new Date(d) > cutoff;
+    });
+  } else if (mode === 'custom') {
+    const from = document.getElementById('csvFromDate').value;
+    if (from) {
+      const cutoff = new Date(from);
+      rows = rows.filter(r => {
+        const d = parsePNCDate(r.date);
+        return d && new Date(d) >= cutoff;
+      });
+    }
+  }
+  return rows;
+}
+
+function updateCSVPreview() {
+  const mode = document.getElementById('csvImportMode').value;
+  document.getElementById('csvCustomRange').style.display = mode === 'custom' ? 'block' : 'none';
+
+  const rows    = getFilteredCSVRows();
+  const credits = rows.filter(r => !String(r.amount||'').trim().startsWith('-'));
+  const debits  = rows.filter(r =>  String(r.amount||'').trim().startsWith('-'));
+  const totalIn  = credits.reduce((s,r) => s + Math.abs(parsePNCAmount(r.amount)), 0);
+  const totalOut = debits.reduce((s,r)  => s + Math.abs(parsePNCAmount(r.amount)), 0);
+
+  document.getElementById('csvStats').innerHTML = [
+    ['Total Rows', rows.length, '#0f172a','#f8fafc'],
+    ['Money In', '$' + totalIn.toFixed(2), '#16a34a','#f0fdf4'],
+    ['Money Out', '$' + totalOut.toFixed(2), '#dc2626','#fff1f2']
+  ].map(([l,v,c,bg]) => `<div style="background:${bg};border:1px solid #e2e8f0;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:11px;color:${c};font-weight:700;text-transform:uppercase;">${l}</div><div style="font-size:16px;font-weight:800;color:${c};">${v}</div></div>`).join('');
+
+  const preview = rows.slice(0, 20);
+  document.getElementById('csvPreviewBody').innerHTML = preview.map(r => {
+    const amt    = parsePNCAmount(r.amount);
+    const cat    = frontendCategorize(r.desc);
+    const color  = amt >= 0 ? '#16a34a' : '#dc2626';
+    return `<tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:6px;">${parsePNCDate(r.date)||r.date}</td>
+      <td style="padding:6px;font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(r.desc)}">${escHtml(r.desc.substring(0,45))}</td>
+      <td style="padding:6px;text-align:right;font-weight:700;color:${color};">$${Math.abs(amt).toFixed(2)}</td>
+      <td style="padding:6px;font-size:11px;color:#64748b;">${cat}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function submitCSVImport() {
+  const rows = getFilteredCSVRows();
+  if (rows.length === 0) { showToast('No rows to import', 'error'); return; }
+  const btn = document.getElementById('csvImportBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing…';
+
+  const mode    = document.getElementById('csvImportMode').value;
+  let   startDate = '';
+  if (mode === 'since' && _lastImportDate) startDate = _lastImportDate;
+  if (mode === 'custom') startDate = document.getElementById('csvFromDate').value;
+
+  const r = await api('importBankTransactions', {}, 'POST', {
+    rowsJson:       JSON.stringify(rows),
+    includePending: document.getElementById('csvIncludePending').checked ? 'true' : 'false',
+    startDate:      startDate
+  });
+  btn.disabled = false; btn.innerHTML = '<i class="fas fa-database"></i> Import Transactions';
+
+  const el = document.getElementById('csvImportResult');
+  if (r.success) {
+    el.style.cssText = 'display:block;padding:12px;border-radius:8px;background:#d1fae5;color:#065f46;font-size:13px;font-weight:600;';
+    el.innerHTML = `✅ Imported <strong>${r.imported}</strong> transactions &nbsp;|&nbsp; ${r.dupes} duplicates skipped &nbsp;|&nbsp; ${r.skipped} filtered out`;
+    showToast('Import complete!');
+    setTimeout(() => { closeModal('bankImportModal'); loadBankTransactions(); updateBadges(); }, 1500);
+  } else {
+    el.style.cssText = 'display:block;padding:12px;border-radius:8px;background:#fee2e2;color:#991b1b;font-size:13px;font-weight:600;';
+    el.textContent = 'Error: ' + r.error;
+  }
+}
+
+function openBankImportModal() {
+  _csvParsed = [];
+  document.getElementById('csvPreviewArea').style.display = 'none';
+  document.getElementById('csvImportBtn').style.display = 'none';
+  document.getElementById('csvImportResult').style.display = 'none';
+  document.getElementById('csvFileInput').value = '';
+  openModal('bankImportModal');
+}
+
+async function loadBankTransactions() {
+  const status = document.getElementById('bankStatusFilter').value;
+  const type   = document.getElementById('bankTypeFilter').value;
+  const start  = document.getElementById('bankStartDate').value;
+  const end    = document.getElementById('bankEndDate').value;
+  const r      = await api('getBankTransactions', { status, startDate: start, endDate: end });
+  allBankTxns  = (r.transactions || []).filter(t => !type || t.type === type);
+  renderBankTable();
+  updateBankTotals();
+  updateBadges();
+}
+
+function updateBankTotals() {
+  const unreviewed = allBankTxns.filter(t => t.status === 'Unreviewed').length;
+  const totalIn    = allBankTxns.filter(t => t.type === 'Credit').reduce((s,t) => s + t.amount, 0);
+  const totalOut   = allBankTxns.filter(t => t.type === 'Debit').reduce((s,t) => s + Math.abs(t.amount), 0);
+  document.getElementById('bankTotals').innerHTML = [
+    ['Total In',   fmt(totalIn),      '#16a34a','#f0fdf4'],
+    ['Total Out',  fmt(totalOut),     '#dc2626','#fff1f2'],
+    ['Net',        fmt(totalIn-totalOut), totalIn-totalOut>=0?'#16a34a':'#dc2626','#f8fafc'],
+    ['Unreviewed', unreviewed,        unreviewed>0?'#dc2626':'#16a34a','#f8fafc']
+  ].map(([l,v,c,bg]) => `<div style="background:${bg};border:1px solid #e2e8f0;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:11px;color:${c};font-weight:700;text-transform:uppercase;">${l}</div><div style="font-size:18px;font-weight:800;color:${c};">${v}</div></div>`).join('');
+}
+
+function renderBankTable() {
+  const tbody = document.getElementById('bankTableBody');
+  const q     = (document.getElementById('bankSearch').value || '').toLowerCase();
+  const rows  = allBankTxns.filter(t => !q || t.description.toLowerCase().includes(q) || (t.category||'').toLowerCase().includes(q));
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#64748b;">No transactions found. Import a CSV to get started.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(t => {
+    const color  = t.amount >= 0 ? '#16a34a' : '#dc2626';
+    const stBg   = t.status === 'Unreviewed' ? '#fef3c7' : t.status === 'Reviewed' ? '#dbeafe' : '#d1fae5';
+    const stTxt  = t.status === 'Unreviewed' ? '#92400e' : t.status === 'Reviewed' ? '#1e40af' : '#065f46';
+    return `<tr style="border-bottom:1px solid #f1f5f9;${t.status==='Unreviewed'?'background:#fffbeb;':''}">
+      <td style="padding:9px 12px;font-size:12px;">${t.date}</td>
+      <td style="padding:9px 12px;font-size:12px;max-width:280px;" title="${escHtml(t.description)}">${escHtml(t.description.substring(0,55))}${t.description.length>55?'…':''}</td>
+      <td style="padding:9px 12px;font-weight:700;color:${color};">${t.amount>=0?'+':''}${fmt(Math.abs(t.amount))}</td>
+      <td style="padding:9px 12px;font-size:12px;color:#374151;">${escHtml(t.category||'')}</td>
+      <td style="padding:9px 12px;"><span style="padding:3px 8px;border-radius:8px;font-size:11px;font-weight:700;background:${stBg};color:${stTxt};">${t.status}</span></td>
+      <td style="padding:9px 12px;font-size:12px;color:#64748b;">${escHtml(t.notes||'').substring(0,30)}</td>
+      <td style="padding:9px 12px;"><div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-sm" onclick='openBankTxnModal(${JSON.stringify(t)})'><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick='deleteBankTxn("${t.txnId}")'><i class="fas fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterBankTable() { renderBankTable(); }
+
+function openBankTxnModal(t) {
+  document.getElementById('bankTxnId').value   = t.txnId;
+  document.getElementById('bankTxnDesc').textContent   = t.description;
+  document.getElementById('bankTxnDate').textContent   = t.date;
+  document.getElementById('bankTxnAmt').textContent    = (t.amount>=0?'+':'')+fmt(Math.abs(t.amount));
+  document.getElementById('bankTxnAmt').style.color    = t.amount>=0?'#16a34a':'#dc2626';
+  document.getElementById('bankTxnCategory').value     = t.category || 'Uncategorized';
+  document.getElementById('bankTxnStatus').value       = t.status || 'Unreviewed';
+  document.getElementById('bankTxnNotes').value        = t.notes || '';
+  openModal('bankTxnModal');
+}
+
+async function saveBankTxn() {
+  const r = await api('updateBankTransaction', {}, 'POST', {
+    txnId:    document.getElementById('bankTxnId').value,
+    category: document.getElementById('bankTxnCategory').value,
+    status:   document.getElementById('bankTxnStatus').value,
+    notes:    document.getElementById('bankTxnNotes').value
+  });
+  if (r.success) { closeModal('bankTxnModal'); loadBankTransactions(); showToast('Saved!'); }
+  else showToast(r.error, 'error');
+}
+
+async function deleteBankTxn(txnId) {
+  if (!confirm('Delete this transaction?')) return;
+  const r = await api('deleteBankTransaction', {}, 'POST', { txnId });
+  if (r.success) { loadBankTransactions(); showToast('Deleted'); }
+  else showToast(r.error, 'error');
+}
+
+// ── RECURRING EXPENSES ────────────────────────────────────────────────────────
+let allRecurring = [];
+
+async function loadRecurring() {
+  const r = await api('getRecurringExpenses');
+  allRecurring = r.recurring || [];
+  renderRecurringTable();
+}
+
+function renderRecurringTable() {
+  const tbody = document.getElementById('recurringTableBody');
+  if (allRecurring.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#64748b;">No recurring expenses set up yet.</td></tr>';
+    return;
+  }
+  const monthlyTotal = allRecurring.filter(r=>r.active).reduce((s,r)=>s+r.amount,0);
+  tbody.innerHTML = allRecurring.map(r => `<tr style="border-bottom:1px solid #f1f5f9;">
+    <td style="padding:10px 12px;font-weight:600;">${escHtml(r.name)}</td>
+    <td style="padding:10px 12px;font-weight:700;color:#dc2626;">${fmt(r.amount)}</td>
+    <td style="padding:10px 12px;text-align:center;">
+      <span style="background:#eff6ff;color:#1e40af;border-radius:8px;padding:3px 8px;font-size:12px;font-weight:700;">${r.dayOfMonth}</span>
+    </td>
+    <td style="padding:10px 12px;font-size:12px;">${escHtml(r.category)}</td>
+    <td style="padding:10px 12px;font-size:12px;color:#64748b;">${escHtml(r.account)||'—'}</td>
+    <td style="padding:10px 12px;text-align:center;">${r.autoLog?'<span style="color:#16a34a;font-weight:700;">✓ Auto</span>':'<span style="color:#94a3b8;">Manual</span>'}</td>
+    <td style="padding:10px 12px;text-align:center;">${r.active?'<span style="color:#16a34a;font-weight:700;">Active</span>':'<span style="color:#94a3b8;">Paused</span>'}</td>
+    <td style="padding:10px 12px;"><div style="display:flex;gap:4px;">
+      <button class="btn btn-secondary btn-sm" onclick='openRecurringModal(${JSON.stringify(r)})'><i class="fas fa-edit"></i></button>
+      <button class="btn btn-danger btn-sm" onclick='deleteRecurring("${r.recurId}")'><i class="fas fa-trash"></i></button>
+    </div></td>
+  </tr>`).join('') +
+  `<tr style="background:#f8fafc;"><td colspan="1" style="padding:10px 12px;font-weight:700;color:#374151;">Monthly Total</td><td style="padding:10px 12px;font-weight:800;color:#dc2626;">${fmt(monthlyTotal)}</td><td colspan="6"></td></tr>`;
+}
+
+function openRecurringModal(rec) {
+  document.getElementById('recurModalTitle').textContent = rec ? 'Edit Recurring Expense' : 'Add Recurring Expense';
+  document.getElementById('recurId').value       = rec ? rec.recurId : '';
+  document.getElementById('recurName').value     = rec ? rec.name : '';
+  document.getElementById('recurAmount').value   = rec ? rec.amount : '';
+  document.getElementById('recurDay').value      = rec ? rec.dayOfMonth : '';
+  document.getElementById('recurCategory').value = rec ? rec.category : 'General';
+  document.getElementById('recurNotes').value    = rec ? rec.notes : '';
+  document.getElementById('recurAutoLog').checked = rec ? rec.autoLog : false;
+  document.getElementById('recurActive').checked  = rec ? rec.active : true;
+  const sel = document.getElementById('recurAccount');
+  sel.innerHTML = '<option value="">— Select —</option>' + allAccounts.map(a=>`<option value="${escHtml(a.accountName)}">${escHtml(a.accountName)}</option>`).join('');
+  if (rec) sel.value = rec.account || '';
+  openModal('recurringModal');
+}
+
+async function saveRecurring() {
+  const name = document.getElementById('recurName').value.trim();
+  const amt  = document.getElementById('recurAmount').value;
+  if (!name || !amt) { showToast('Name and amount required', 'error'); return; }
+  const r = await api('upsertRecurringExpense', {}, 'POST', {
+    recurId:    document.getElementById('recurId').value || undefined,
+    name, amount: amt,
+    dayOfMonth: document.getElementById('recurDay').value,
+    category:   document.getElementById('recurCategory').value,
+    account:    document.getElementById('recurAccount').value,
+    autoLog:    document.getElementById('recurAutoLog').checked ? 'true' : 'false',
+    active:     document.getElementById('recurActive').checked  ? 'true' : 'false',
+    notes:      document.getElementById('recurNotes').value
+  });
+  if (r.success) { closeModal('recurringModal'); loadRecurring(); showToast('Saved!'); }
+  else showToast(r.error, 'error');
+}
+
+async function deleteRecurring(recurId) {
+  if (!confirm('Delete this recurring expense?')) return;
+  const r = await api('deleteRecurringExpense', {}, 'POST', { recurId });
+  if (r.success) { loadRecurring(); showToast('Deleted'); }
+  else showToast(r.error, 'error');
+}
+
+// ── REMINDERS ─────────────────────────────────────────────────────────────────
+let allReminders = [];
+
+async function loadReminders() {
+  const r = await api('getReminders');
+  allReminders = r.reminders || [];
+  renderRemindersList();
+  updateBadges();
+}
+
+function renderRemindersList() {
+  const el    = document.getElementById('remindersList');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const pending = allReminders.filter(r => r.status !== 'Done');
+  const done    = allReminders.filter(r => r.status === 'Done');
+
+  if (allReminders.length === 0) {
+    el.innerHTML = '<div class="card" style="text-align:center;padding:40px;color:#64748b;"><i class="fas fa-check-circle" style="font-size:40px;opacity:.3;margin-bottom:12px;"></i><p>No reminders. You\'re all caught up!</p></div>';
+    return;
+  }
+
+  const priorityColor = p => p === 'High' ? '#dc2626' : p === 'Low' ? '#64748b' : '#d97706';
+
+  const renderCard = r => {
+    const due      = r.dueDate ? new Date(r.dueDate) : null;
+    const overdue  = due && due < today && r.status !== 'Done';
+    const dueTxt   = due ? due.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'No due date';
+    return `<div style="background:#fff;border:2px solid ${overdue?'#fca5a5':r.status==='Done'?'#d1fae5':'#e2e8f0'};border-radius:10px;padding:16px;display:flex;gap:14px;align-items:flex-start;margin-bottom:10px;">
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:14px;color:${r.status==='Done'?'#94a3b8':'#0f172a'};${r.status==='Done'?'text-decoration:line-through;':''}">
+          ${overdue?'<span style="color:#dc2626;margin-right:6px;">⚠</span>':''}${escHtml(r.title)}
+        </div>
+        <div style="font-size:12px;color:#64748b;margin-top:4px;display:flex;gap:12px;flex-wrap:wrap;">
+          <span><i class="fas fa-calendar" style="margin-right:3px;"></i>${dueTxt}${overdue?' <strong style="color:#dc2626;">(OVERDUE)</strong>':''}</span>
+          <span style="color:${priorityColor(r.priority)};font-weight:600;">${r.priority}</span>
+          ${r.notes ? `<span style="color:#64748b;">${escHtml(r.notes)}</span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        ${r.status !== 'Done' ? `<button class="btn btn-success btn-sm" onclick='markReminderDone("${r.reminderId}")'><i class="fas fa-check"></i> Done</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick='openReminderModal(${JSON.stringify(r)})'><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick='deleteReminderItem("${r.reminderId}")'><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`;
+  };
+
+  el.innerHTML =
+    (pending.length ? `<h3 style="font-size:14px;font-weight:700;color:#374151;margin-bottom:10px;"><i class="fas fa-clock" style="color:#f59e0b;"></i> Pending (${pending.length})</h3>${pending.sort((a,b)=>new Date(a.dueDate||'9999')-new Date(b.dueDate||'9999')).map(renderCard).join('')}` : '') +
+    (done.length ? `<h3 style="font-size:14px;font-weight:700;color:#94a3b8;margin:16px 0 10px;"><i class="fas fa-check-circle" style="color:#16a34a;"></i> Done (${done.length})</h3>${done.map(renderCard).join('')}` : '');
+}
+
+function openReminderModal(rem) {
+  document.getElementById('remModalTitle').textContent = rem ? 'Edit Reminder' : 'Add Reminder';
+  document.getElementById('remId').value    = rem ? rem.reminderId : '';
+  document.getElementById('remTitle').value = rem ? rem.title : '';
+  document.getElementById('remDue').value   = rem ? rem.dueDate : '';
+  document.getElementById('remPriority').value = rem ? rem.priority : 'Normal';
+  document.getElementById('remNotes').value = rem ? rem.notes : '';
+  openModal('reminderModal');
+}
+
+async function saveReminder() {
+  const title = document.getElementById('remTitle').value.trim();
+  if (!title) { showToast('Title is required', 'error'); return; }
+  const remId = document.getElementById('remId').value;
+  const body  = {
+    title, dueDate: document.getElementById('remDue').value,
+    priority: document.getElementById('remPriority').value,
+    notes: document.getElementById('remNotes').value
+  };
+  let r;
+  if (remId) { body.reminderId = remId; r = await api('updateReminder', {}, 'POST', body); }
+  else        { r = await api('addReminder', {}, 'POST', body); }
+  if (r.success) { closeModal('reminderModal'); loadReminders(); showToast('Reminder saved!'); }
+  else showToast(r.error, 'error');
+}
+
+async function markReminderDone(reminderId) {
+  const r = await api('updateReminder', {}, 'POST', { reminderId, status: 'Done' });
+  if (r.success) { loadReminders(); showToast('Marked done!'); }
+  else showToast(r.error, 'error');
+}
+
+async function deleteReminderItem(reminderId) {
+  if (!confirm('Delete this reminder?')) return;
+  const r = await api('deleteReminder', {}, 'POST', { reminderId });
+  if (r.success) { loadReminders(); showToast('Deleted'); }
+  else showToast(r.error, 'error');
+}
+
+// ============================================================================
+// SHOPPING LIST — Need to Purchase
+// ============================================================================
+let allShoppingItems = [];
+
+async function loadShoppingList() {
+  const r = await api('getShoppingList');
+  allShoppingItems = r.items || [];
+  renderShoppingTotals(r.total || 0);
+  renderShoppingTable();
+}
+
+function renderShoppingTotals(total) {
+  const el = document.getElementById('shopTotals');
+  if (!el) return;
+  const active   = allShoppingItems.filter(i => i.status !== 'Purchased' && i.status !== 'Cancelled');
+  const high     = active.filter(i => i.priority === 'High').reduce((s,i) => s + i.estCost, 0);
+  const planned  = active.filter(i => i.status === 'Planned').length;
+  const ordered  = active.filter(i => i.status === 'Ordered').length;
+  el.innerHTML = [
+    { label:'Total Reserved', val: fmt(total), color:'#dc2626', sub:'Deducted from owner draw' },
+    { label:'High Priority', val: fmt(high), color:'#f59e0b', sub: active.filter(i=>i.priority==='High').length + ' items' },
+    { label:'Planned', val: planned, color:'#8b5cf6', sub:'Not yet ordered' },
+    { label:'Ordered', val: ordered, color:'#0ea5e9', sub:'Waiting on delivery' }
+  ].map(s => `<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px;">
+    <div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:4px;">${s.label}</div>
+    <div style="font-size:22px;font-weight:900;color:${s.color};">${s.val}</div>
+    <div style="font-size:11px;color:#94a3b8;">${s.sub}</div>
+  </div>`).join('');
+}
+
+function renderShoppingTable() {
+  const tbody   = document.getElementById('shopTableBody');
+  if (!tbody) return;
+  const stF     = document.getElementById('shopStatusFilter')?.value || '';
+  const priF    = document.getElementById('shopPriorityFilter')?.value || '';
+  const filtered = allShoppingItems.filter(i => {
+    if (stF && i.status !== stF) return false;
+    if (priF && i.priority !== priF) return false;
+    return true;
+  });
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#64748b;">No items found. Add your first need-to-purchase item!</td></tr>';
+    return;
+  }
+  const priorityColor = { High:'#dc2626', Normal:'#d97706', Low:'#64748b' };
+  const statusBg      = { Planned:'#ede9fe', Ordered:'#dbeafe', Purchased:'#d1fae5', Cancelled:'#f1f5f9' };
+  const statusColor   = { Planned:'#5b21b6', Ordered:'#1e40af', Purchased:'#065f46', Cancelled:'#64748b' };
+  tbody.innerHTML = filtered.map(i => `<tr>
+    <td style="font-weight:700;">${escHtml(i.name)}</td>
+    <td style="font-size:12px;color:#64748b;">${escHtml(i.category)}</td>
+    <td style="font-weight:700;color:#dc2626;">${fmt(i.estCost)}</td>
+    <td><span style="color:${priorityColor[i.priority]||'#374151'};font-weight:700;font-size:12px;">${i.priority}</span></td>
+    <td><span style="background:${statusBg[i.status]||'#f1f5f9'};color:${statusColor[i.status]||'#374151'};padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700;">${i.status}</span></td>
+    <td style="font-size:12px;">${i.dueBy ? new Date(i.dueBy+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—'}</td>
+    <td style="font-size:12px;color:#64748b;">${escHtml(i.projectId)||'—'}</td>
+    <td style="font-size:11px;color:#64748b;max-width:140px;">${escHtml(i.notes)}</td>
+    <td>
+      <div style="display:flex;gap:4px;">
+        ${i.status === 'Planned' ? `<button class="btn btn-secondary btn-sm" title="Mark Ordered" onclick='markShopOrdered("${i.itemId}")'><i class="fas fa-shopping-cart"></i></button>` : ''}
+        ${i.status === 'Ordered' ? `<button class="btn btn-success btn-sm" title="Mark Purchased" onclick='markShopPurchased("${i.itemId}")'><i class="fas fa-check"></i></button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick='openShoppingModal(${JSON.stringify(i)})'><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm" onclick='deleteShopItem("${i.itemId}")'><i class="fas fa-trash"></i></button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+async function openShoppingModal(item = null) {
+  await loadProjectsForSelects();
+  document.getElementById('shopModalTitle').textContent = item ? 'Edit Item' : 'Add Need-to-Purchase Item';
+  document.getElementById('shopItemId').value   = item?.itemId   || '';
+  document.getElementById('shopName').value     = item?.name     || '';
+  document.getElementById('shopCost').value     = item?.estCost  || '';
+  document.getElementById('shopCategory').value = item?.category || 'General';
+  document.getElementById('shopPriority').value = item?.priority || 'Normal';
+  document.getElementById('shopStatus').value   = item?.status   || 'Planned';
+  document.getElementById('shopProject').value  = item?.projectId|| '';
+  document.getElementById('shopDueBy').value    = item?.dueBy    || '';
+  document.getElementById('shopNotes').value    = item?.notes    || '';
+  openModal('shoppingModal');
+}
+
+async function saveShoppingItem() {
+  const r = await api('upsertShoppingItem', {}, 'POST', {
+    itemId:    document.getElementById('shopItemId').value,
+    name:      document.getElementById('shopName').value,
+    estCost:   document.getElementById('shopCost').value,
+    category:  document.getElementById('shopCategory').value,
+    priority:  document.getElementById('shopPriority').value,
+    status:    document.getElementById('shopStatus').value,
+    projectId: document.getElementById('shopProject').value,
+    dueBy:     document.getElementById('shopDueBy').value,
+    notes:     document.getElementById('shopNotes').value
+  });
+  if (r.success) { closeModal('shoppingModal'); loadShoppingList(); showToast('Item saved!'); }
+  else showToast(r.error || 'Error saving item', 'error');
+}
+
+async function markShopOrdered(itemId) {
+  const r = await api('markShoppingItemOrdered', {}, 'POST', { itemId });
+  if (r.success) { loadShoppingList(); showToast('Marked as Ordered'); }
+  else showToast(r.error, 'error');
+}
+
+async function markShopPurchased(itemId) {
+  const item = allShoppingItems.find(i => i.itemId === itemId);
+  if (!item) return;
+  const r = await api('upsertShoppingItem', {}, 'POST', { ...item, status: 'Purchased' });
+  if (r.success) { loadShoppingList(); showToast('Marked as Purchased!'); }
+  else showToast(r.error, 'error');
+}
+
+async function deleteShopItem(itemId) {
+  if (!confirm('Remove this item from the list?')) return;
+  const r = await api('deleteShoppingItem', {}, 'POST', { itemId });
+  if (r.success) { loadShoppingList(); showToast('Removed'); }
+  else showToast(r.error, 'error');
+}
+
+// ── SIDEBAR BADGES ─────────────────────────────────────────────────────────────
+async function updateBadges() {
+  // Unreviewed bank transactions badge
+  const br = await api('getBankTransactions', { status: 'Unreviewed' });
+  const unreviewedCount = (br.transactions || []).length;
+  const ub = document.getElementById('unreviewedBadge');
+  if (ub) { ub.textContent = unreviewedCount; ub.style.display = unreviewedCount > 0 ? 'inline-block' : 'none'; }
+
+  // Overdue reminders badge
+  const rr = await api('getReminders');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const overdueCount = (rr.reminders || []).filter(r => r.status !== 'Done' && r.dueDate && new Date(r.dueDate) < today).length;
+  const rb = document.getElementById('reminderBadge');
+  if (rb) { rb.textContent = overdueCount; rb.style.display = overdueCount > 0 ? 'inline-block' : 'none'; }
+
+  // Shopping list badge (high priority planned items)
+  const sr = await api('getShoppingList');
+  const highPriCount = (sr.items || []).filter(i => i.priority === 'High' && i.status !== 'Purchased' && i.status !== 'Cancelled').length;
+  const sb = document.getElementById('shopBadge');
+  if (sb) { sb.textContent = highPriCount; sb.style.display = highPriCount > 0 ? 'inline-block' : 'none'; }
+}
+
+// Call updateBadges on initial load (after loadDashboard)
+const _origLoadDashboard = loadDashboard;
+loadDashboard = async function() {
+  await _origLoadDashboard();
+  updateBadges();
+};
+</script>
+</body>
+</html>

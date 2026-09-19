@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Customer Management | AQuality Pool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-dark: #0f0c29;
+      --secondary-dark: #1a1a2e;
+      --accent-purple: #8b5cf6;
+      --accent-cyan: #06b6d4;
+      --accent-pink: #ec4899;
+      --text-primary: #ffffff;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --border-color: rgba(139, 92, 246, 0.2);
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --card-bg: rgba(15, 23, 42, 0.8);
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 20px rgba(139, 92, 246, 0.15);
+      --shadow-lg: 0 10px 40px rgba(139, 92, 246, 0.2);
+      --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #1a1a2e 25%, #16213e 50%, #0f0c29 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+
+    .top-nav::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+      opacity: 0.5;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: white;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-icon::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .brand-text h1 {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan), var(--accent-pink));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientText 3s ease infinite;
+      letter-spacing: -0.5px;
+    }
+
+    @keyframes gradientText {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .brand-text p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .customer-count-badge {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(139, 92, 246, 0.2);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      color: white;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4), 0 0 20px rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--secondary-dark);
+      border-color: var(--accent-blue);
+    }
+
+    .btn-import {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-import:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-blue);
+    }
+
+    /* Search & Filters */
+    .controls-bar {
+      padding: 24px 32px;
+      background: rgba(26, 35, 50, 0.4);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-container {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 50px;
+      font-size: 15px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2), var(--shadow-md);
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent-purple);
+      font-size: 16px;
+      filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5));
+      transition: all 0.3s ease;
+    }
+
+    .search-container:focus-within .search-icon {
+      color: var(--accent-cyan);
+      filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.7));
+    }
+
+    /* Main Content */
+    .main-container {
+      padding: 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .customer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Customer Card */
+    .customer-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px) saturate(180%);
+      -webkit-backdrop-filter: blur(10px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 28px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      animation: cardEntrance 0.5s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .customer-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan), var(--accent-pink));
+      background-size: 200% 100%;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    @keyframes cardEntrance {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .customer-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+      transform-origin: left;
+    }
+
+    .customer-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: var(--accent-purple);
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .customer-card:hover::before {
+      transform: scaleX(1);
+      animation: gradientMove 2s ease infinite;
+    }
+
+    @keyframes gradientMove {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    .customer-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .customer-id {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: inline-block;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);
+    }
+
+    .card-menu {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text-secondary);
+    }
+
+    .card-menu:hover {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      color: white;
+      border-color: var(--accent-purple);
+      transform: rotate(90deg);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .info-row:hover {
+      color: var(--accent-blue);
+    }
+
+    .info-row i {
+      width: 18px;
+      font-size: 14px;
+      color: var(--accent-purple);
+      filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5));
+    }
+
+    .info-row a {
+      color: inherit;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .info-row a:hover {
+      color: var(--accent-blue);
+    }
+
+    .pool-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 12px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .company-badge {
+      display: inline-block;
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--accent-purple);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 15, 28, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      width: 90%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+      animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan), var(--accent-pink));
+      background-size: 200% 100%;
+      animation: gradientMove 3s ease infinite;
+    }
+
+    @keyframes modalSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(100px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-header {
+      padding: 28px 32px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: shine 3s infinite;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 32px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Form Sections */
+    .form-section {
+      margin-bottom: 32px;
+    }
+
+    .form-section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--accent-blue);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-section-title i {
+      font-size: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.15);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* Loading */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      animation: pulse 1.5s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(139, 92, 246, 0.2);
+      border-top-color: var(--accent-purple);
+      border-right-color: var(--accent-cyan);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .empty-state-icon {
+      font-size: 80px;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 24px;
+      opacity: 0.5;
+      filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.3));
+    }
+
+    .empty-state h2 {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: linear-gradient(135deg, var(--card-bg), var(--secondary-dark));
+      border: 1px solid var(--border-color);
+      color: white;
+      padding: 20px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      z-index: 3000;
+      box-shadow: var(--shadow-lg);
+      animation: toastSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 400px;
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .toast.success {
+      border-color: var(--success);
+    }
+
+    .toast.success::before {
+      content: '\f058';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      color: var(--success);
+      font-size: 20px;
+    }
+
+    .toast.error {
+      border-color: var(--danger);
+    }
+
+    .toast.error::before {
+      content: '\f06a';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      color: var(--danger);
+      font-size: 20px;
+    }
+
+    /* Context Menu */
+    .context-menu {
+      display: none;
+      position: fixed;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      min-width: 180px;
+      z-index: 2000;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      animation: contextMenuPop 0.2s ease;
+    }
+
+    @keyframes contextMenuPop {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .context-menu.show {
+      display: block;
+    }
+
+    .context-menu-item {
+      padding: 14px 18px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .context-menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .context-menu-item:hover {
+      background: rgba(0, 180, 216, 0.1);
+      color: var(--accent-blue);
+    }
+
+    .context-menu-item.danger:hover {
+      background: rgba(255, 71, 87, 0.1);
+      color: var(--danger);
+    }
+
+    .context-menu-item i {
+      width: 18px;
+    }
+
+    /* CSV Import */
+    .import-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      background: rgba(0, 180, 216, 0.03);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .import-zone:hover, .import-zone.drag-over {
+      border-color: var(--accent-blue);
+      background: rgba(0, 180, 216, 0.08);
+    }
+
+    .import-zone i {
+      font-size: 48px;
+      color: var(--accent-blue);
+      margin-bottom: 16px;
+    }
+
+    .import-zone h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .import-zone p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .modal-footer {
+      padding: 24px 32px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .top-nav {
+        padding: 16px 20px;
+      }
+
+      .controls-bar {
+        padding: 16px 20px;
+      }
+
+      .main-container {
+        padding: 20px;
+      }
+
+      .customer-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+      }
+
+      .toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        max-width: none;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--primary-dark);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Navigation -->
+  <div class="top-nav">
+    <div class="nav-brand">
+      <div class="brand-icon">
+        <i class="fas fa-water"></i>
+      </div>
+      <div class="brand-text">
+        <h1>Customer Management</h1>
+        <p id="companyName">Loading...</p>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <div class="customer-count-badge">
+        <i class="fas fa-users"></i>
+        <span id="customerCount">0</span> Customers
+      </div>
+      <button class="btn btn-import" onclick="openImportModal()">
+        <i class="fas fa-file-import"></i>
+        Import
+      </button>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="fas fa-plus"></i>
+        Add Customer
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="controls-bar">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        class="search-input" 
+        id="searchInput"
+        placeholder="Search by name, email, phone, address..."
+        autocomplete="off"
+      >
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <div id="customerGrid" class="customer-grid">
+      <div class="loading-container">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Customer Modal -->
+  <div class="modal" id="customerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Customer</h2>
+        <button class="modal-close" onclick="closeModal('customerModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="customerForm">
+          <!-- Basic Info -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="fas fa-user"></i>
+              Basic Information
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Name *</label>
+                <input type="text" class="form-input" id="customerName" required placeholder="John Smith">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-input" id="customerEmail" placeholder="john@example.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input type="tel" class="form-input" id="customerPhone" placeholder="(555) 123-4567">
+              </div>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="fas fa-map-marker-alt"></i>
+              Service Address
+            </div>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label class="form-label">Street Address</label>
+                <input type="text" class="form-input" id="customerAddress" placeholder="123 Main St">
+              </div>
+              <div class="form-group">
+                <label class="form-label">City</label>
+                <input type="text" class="form-input" id="customerCity" placeholder="Louisville">
+              </div>
+              <div class="form-group">
+                <label class="form-label">State</label>
+                <input type="text" class="form-input" id="customerState" placeholder="KY" maxlength="2">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Zip Code</label>
+                <input type="text" class="form-input" id="customerZip" placeholder="40202" maxlength="10">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pool Specific Info -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="fas fa-swimming-pool"></i>
+              Pool Information
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Gate Code</label>
+                <input type="text" class="form-input" id="gateCode" placeholder="#1234">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pool Type</label>
+                <select class="form-select" id="poolType">
+                  <option value="">Select Type</option>
+                  <option value="inground">In-Ground</option>
+                  <option value="above-ground">Above Ground</option>
+                  <option value="infinity">Infinity</option>
+                  <option value="lap">Lap Pool</option>
+                  <option value="saltwater">Saltwater</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pool Size (Gallons)</label>
+                <input type="number" class="form-input" id="poolSize" placeholder="20000">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Heater Type</label>
+                <select class="form-select" id="heaterType">
+                  <option value="">Select Type</option>
+                  <option value="gas">Gas</option>
+                  <option value="electric">Electric</option>
+                  <option value="heat-pump">Heat Pump</option>
+                  <option value="solar">Solar</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label">Equipment List</label>
+                <input type="text" class="form-input" id="equipment" placeholder="Hayward pump, Pentair filter, Polaris cleaner...">
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label">Access Instructions</label>
+                <textarea class="form-textarea" id="accessInstructions" placeholder="Gate on left side, key under mat, beware of dog..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service Preferences -->
+          <div class="form-section">
+            <div class="form-section-title">
+              <i class="fas fa-calendar-check"></i>
+              Service Preferences
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Preferred Day</label>
+                <select class="form-select" id="preferredDay">
+                  <option value="">Select Day</option>
+                  <option value="monday">Monday</option>
+                  <option value="tuesday">Tuesday</option>
+                  <option value="wednesday">Wednesday</option>
+                  <option value="thursday">Thursday</option>
+                  <option value="friday">Friday</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Service Frequency</label>
+                <select class="form-select" id="serviceFrequency">
+                  <option value="">Select Frequency</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="bi-weekly">Bi-Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="on-demand">On Demand</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" id="customerNotes" placeholder="Additional notes, special requests, billing info..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <input type="hidden" id="editRowIndex" value="">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('customerModal')">
+          <i class="fas fa-times"></i>
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" form="customerForm">
+          <i class="fas fa-save"></i>
+          Save Customer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div class="modal" id="importModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Import Customers</h2>
+        <button class="modal-close" onclick="closeModal('importModal')">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-file-csv"></i>
+            CSV Import
+          </div>
+          <div class="import-zone" id="importZone" onclick="document.getElementById('csvFile').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h3>Drag & Drop CSV File</h3>
+            <p>or click to browse</p>
+          </div>
+          <input type="file" id="csvFile" accept=".csv" style="display: none;">
+          
+          <div style="margin-top: 24px; padding: 20px; background: rgba(0, 180, 216, 0.05); border: 1px solid var(--accent-blue); border-radius: 10px;">
+            <h4 style="color: var(--accent-blue); margin-bottom: 12px; font-size: 14px; font-weight: 700;">
+              <i class="fas fa-info-circle"></i> CSV Format Instructions
+            </h4>
+            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6;">
+              Your CSV should have the following columns:<br>
+              <code style="background: var(--card-bg); padding: 2px 6px; border-radius: 4px; color: var(--accent-blue);">
+                Name, Email, Phone, Address, City, State, Zip, Notes, GateCode, PoolType, PoolSize, HeaterType, Equipment, AccessInstructions, PreferredDay, ServiceFrequency
+              </code>
+            </p>
+          </div>
+        </div>
+
+        <div class="form-section" style="margin-top: 32px;">
+          <div class="form-section-title">
+            <i class="fab fa-quickbooks" style="color: #2CA01C;"></i>
+            QuickBooks Integration
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;">
+            Import customers directly from your QuickBooks account. Click below to sign in and authorize access.
+          </p>
+          <button class="btn btn-secondary" onclick="connectQuickBooks()" style="width: 100%; justify-content: center; background: #2CA01C; color: white; border-color: #2CA01C;">
+            <i class="fab fa-quickbooks"></i>
+            Connect to QuickBooks
+          </button>
+          <p style="color: var(--text-secondary); margin-top: 12px; font-size: 12px; text-align: center;">
+            <i class="fas fa-lock"></i> Secure OAuth 2.0 Authentication
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-menu-item" onclick="editCustomerFromMenu()">
+      <i class="fas fa-edit"></i>
+      Edit Customer
+    </div>
+    <div class="context-menu-item danger" onclick="deleteCustomerFromMenu()">
+      <i class="fas fa-trash"></i>
+      Delete Customer
+    </div>
+  </div>
+
+  <!-- Inject server-side data (from CustomerInfo.gs) -->
+  <script>
+    // Server-side template variables (set by CustomerInfo.gs)
+    const SERVER_USER_EMAIL = '<?= userEmail ?>';
+    const SERVER_COMPANY_NAME = '<?= companyName ?>';
+    const SERVER_COMPANY_ID = '<?= companyId ?>';
+    const SERVER_IS_ADMIN = '<?= isAdmin ?>' === 'true';
+  </script>
+  
+  <script>
+    // Configuration
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxH0Wyd5XaWRlNVR-oxvi7_SeGOZ8SGylthvdUvkyccXeBKeFn8uTqkPBdFnostDcx7Hw/exec';
+    
+    // Get email and company info from SERVER-SIDE (set when page loads)
+    let userEmail = SERVER_USER_EMAIL || '';
+    const serverCompanyName = SERVER_COMPANY_NAME || 'Customer Management';
+    const serverIsAdmin = SERVER_IS_ADMIN || false;
+    
+    // Clean up email
+    if (userEmail) {
+      userEmail = userEmail.trim();
+    }
+    
+    // If no email from server, try URL parameter as fallback
+    if (!userEmail) {
+      const urlParams = new URLSearchParams(window.location.search);
+      userEmail = urlParams.get('email') || '';
+      if (userEmail) {
+        try {
+          userEmail = decodeURIComponent(userEmail).trim();
+        } catch (e) {
+          userEmail = userEmail.trim();
+        }
+      }
+    }
+    
+    console.log('Customer Info UI - Server data loaded:', {
+      email: userEmail,
+      companyName: serverCompanyName,
+      isAdmin: serverIsAdmin,
+      url: window.location.href
+    });
+    
+    // Set company name immediately from server data
+    if (serverCompanyName && serverCompanyName !== 'Customer Management') {
+      const companyNameEl = document.getElementById('companyName');
+      if (companyNameEl) {
+        companyNameEl.textContent = serverCompanyName;
+      }
+    }
+    
+    // Store admin status
+    window.isAdmin = serverIsAdmin;
+    
+    let allCustomers = [];
+    let currentCustomer = null;
+
+    // Load company info and customers on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCompanyInfo();
+      loadCustomers();
+    });
+
+    // Search functionality with debounce
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const query = e.target.value.toLowerCase();
+        const filtered = allCustomers.filter(customer => 
+          customer.name.toLowerCase().includes(query) ||
+          customer.email.toLowerCase().includes(query) ||
+          customer.phone.toLowerCase().includes(query) ||
+          customer.address.toLowerCase().includes(query) ||
+          customer.city.toLowerCase().includes(query)
+        );
+        renderCustomers(filtered);
+      }, 300);
+    });
+
+    // Load company info (already loaded server-side, but refresh if needed)
+    async function loadCompanyInfo() {
+      try {
+        // Company name is already set from server-side data
+        // Only refresh if we have email and want to update
+        if (userEmail) {
+          const response = await fetch(`${SCRIPT_URL}?action=getCompanyInfo&email=${encodeURIComponent(userEmail)}`);
+          const result = await response.json();
+          
+          if (result.success && result.companyName) {
+            document.getElementById('companyName').textContent = result.companyName;
+            window.isAdmin = result.isAdmin || false;
+          }
+        } else {
+          // Use server-side company name if available
+          if (serverCompanyName && serverCompanyName !== 'Customer Management') {
+            document.getElementById('companyName').textContent = serverCompanyName;
+          } else {
+            document.getElementById('companyName').textContent = 'Customer Management';
+          }
+        }
+      } catch (error) {
+        console.error('Error loading company info:', error);
+        // Fall back to server-side company name
+        if (serverCompanyName && serverCompanyName !== 'Customer Management') {
+          document.getElementById('companyName').textContent = serverCompanyName;
+        } else {
+          document.getElementById('companyName').textContent = 'Customer Management';
+        }
+      }
+    }
+
+    // Load customers
+    async function loadCustomers() {
+      try {
+        if (!userEmail) {
+          console.warn('No email parameter found in URL');
+          showToast('Email parameter is required. If you came from the Dashboard, please close this window and log in again.', 'error');
+          renderEmptyState();
+          return;
+        }
+        
+        const response = await fetch(`${SCRIPT_URL}?action=getCustomers&email=${encodeURIComponent(userEmail)}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          allCustomers = result.customers || [];
+          window.isAdmin = result.isAdmin || false; // Store admin status
+          renderCustomers(allCustomers);
+          updateCustomerCount(allCustomers.length);
+        } else {
+          console.error('Error loading customers:', result.error);
+          showToast(result.error || 'Failed to load customers', 'error');
+          renderEmptyState();
+        }
+      } catch (error) {
+        console.error('Error loading customers:', error);
+        showToast('Failed to load customers: ' + error.message, 'error');
+        renderEmptyState();
+      }
+    }
+
+    // Render customers
+    function renderCustomers(customers) {
+      const grid = document.getElementById('customerGrid');
+      
+      if (customers.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      grid.innerHTML = customers.map((customer, index) => {
+        const poolData = customer.poolData || {};
+        const hasGateCode = poolData.gateCode && poolData.gateCode.trim() !== '';
+        const isAdminView = window.isAdmin && customer.companyName;
+        
+        return `
+          <div class="customer-card" onclick="viewCustomer(${customer.rowIndex})" style="animation-delay: ${index * 0.05}s">
+            <div class="card-header">
+              <div>
+                <div class="customer-name">${escapeHtml(customer.name || 'Unnamed')}</div>
+                <span class="customer-id">${escapeHtml(customer.id)}</span>
+                ${isAdminView ? `<div style="margin-top: 4px;"><span class="company-badge">${escapeHtml(customer.companyName)}</span></div>` : ''}
+              </div>
+              <button class="card-menu" onclick="openContextMenu(event, ${customer.rowIndex})">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+            </div>
+            <div class="card-info">
+              ${customer.email ? `
+                <div class="info-row">
+                  <i class="fas fa-envelope"></i>
+                  <a href="mailto:${escapeHtml(customer.email)}" onclick="event.stopPropagation()">${escapeHtml(customer.email)}</a>
+                </div>
+              ` : ''}
+              ${customer.phone ? `
+                <div class="info-row">
+                  <i class="fas fa-phone"></i>
+                  <a href="tel:${escapeHtml(customer.phone)}" onclick="event.stopPropagation()">${escapeHtml(customer.phone)}</a>
+                </div>
+              ` : ''}
+              ${customer.address ? `
+                <div class="info-row">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>${escapeHtml(customer.address)}${customer.city ? `, ${escapeHtml(customer.city)}` : ''}${customer.state ? `, ${escapeHtml(customer.state)}` : ''}</span>
+                </div>
+              ` : ''}
+              ${poolData.poolType ? `
+                <div class="info-row">
+                  <i class="fas fa-swimming-pool"></i>
+                  <span>${escapeHtml(poolData.poolType)}</span>
+                </div>
+              ` : ''}
+            </div>
+            ${hasGateCode ? `
+              <div class="pool-badge">
+                <i class="fas fa-key"></i>
+                Gate Code: ${escapeHtml(poolData.gateCode)}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render empty state
+    function renderEmptyState() {
+      const grid = document.getElementById('customerGrid');
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h2>No Customers Found</h2>
+          <p>Start by adding your first customer or import from CSV/QuickBooks</p>
+          <div style="display: flex; gap: 12px; justify-content: center;">
+            <button class="btn btn-primary" onclick="openAddModal()">
+              <i class="fas fa-plus"></i>
+              Add Customer
+            </button>
+            <button class="btn btn-import" onclick="openImportModal()">
+              <i class="fas fa-file-import"></i>
+              Import
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Update customer count
+    function updateCustomerCount(count) {
+      document.getElementById('customerCount').textContent = count;
+    }
+
+    // Open add modal
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add Customer';
+      document.getElementById('customerForm').reset();
+      document.getElementById('editRowIndex').value = '';
+      document.getElementById('customerModal').classList.add('show');
+    }
+
+    // View customer
+    function viewCustomer(rowIndex) {
+      editCustomer(rowIndex);
+    }
+
+    // Edit customer
+    function editCustomer(rowIndex) {
+      const customer = allCustomers.find(c => c.rowIndex === rowIndex);
+      if (!customer) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Customer';
+      document.getElementById('customerName').value = customer.name || '';
+      document.getElementById('customerEmail').value = customer.email || '';
+      document.getElementById('customerPhone').value = customer.phone || '';
+      document.getElementById('customerAddress').value = customer.address || '';
+      document.getElementById('customerCity').value = customer.city || '';
+      document.getElementById('customerState').value = customer.state || '';
+      document.getElementById('customerZip').value = customer.zip || '';
+      document.getElementById('customerNotes').value = customer.notes || '';
+      
+      // Pool data
+      const poolData = customer.poolData || {};
+      document.getElementById('gateCode').value = poolData.gateCode || '';
+      document.getElementById('poolType').value = poolData.poolType || '';
+      document.getElementById('poolSize').value = poolData.poolSize || '';
+      document.getElementById('heaterType').value = poolData.heaterType || '';
+      document.getElementById('equipment').value = poolData.equipment || '';
+      document.getElementById('accessInstructions').value = poolData.accessInstructions || '';
+      
+      // Service data
+      const serviceData = customer.serviceData || {};
+      document.getElementById('preferredDay').value = serviceData.preferredDay || '';
+      document.getElementById('serviceFrequency').value = serviceData.serviceFrequency || '';
+      
+      document.getElementById('editRowIndex').value = rowIndex;
+      document.getElementById('customerModal').classList.add('show');
+    }
+
+    // Close modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Form submission
+    document.getElementById('customerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const rowIndex = document.getElementById('editRowIndex').value;
+      const isEdit = rowIndex !== '';
+      
+      // Gather pool data
+      const poolData = JSON.stringify({
+        gateCode: document.getElementById('gateCode').value,
+        poolType: document.getElementById('poolType').value,
+        poolSize: document.getElementById('poolSize').value,
+        heaterType: document.getElementById('heaterType').value,
+        equipment: document.getElementById('equipment').value,
+        accessInstructions: document.getElementById('accessInstructions').value
+      });
+      
+      // Gather service data
+      const serviceData = JSON.stringify({
+        preferredDay: document.getElementById('preferredDay').value,
+        serviceFrequency: document.getElementById('serviceFrequency').value
+      });
+      
+      const formData = new URLSearchParams({
+        action: isEdit ? 'updateCustomer' : 'addCustomer',
+        email: userEmail,
+        name: document.getElementById('customerName').value,
+        customerEmail: document.getElementById('customerEmail').value,
+        phone: document.getElementById('customerPhone').value,
+        address: document.getElementById('customerAddress').value,
+        city: document.getElementById('customerCity').value,
+        state: document.getElementById('customerState').value.toUpperCase(),
+        zip: document.getElementById('customerZip').value,
+        notes: document.getElementById('customerNotes').value,
+        poolData: poolData,
+        serviceData: serviceData,
+        customData: '{}'
+      });
+
+      if (isEdit) {
+        formData.append('rowIndex', rowIndex);
+      }
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast(isEdit ? 'Customer updated successfully' : 'Customer added successfully', 'success');
+          closeModal('customerModal');
+          loadCustomers();
+        } else {
+          showToast(result.error || 'Failed to save customer', 'error');
+        }
+      } catch (error) {
+        console.error('Error saving customer:', error);
+        showToast('Failed to save customer', 'error');
+      }
+    });
+
+    // Context menu
+    function openContextMenu(event, rowIndex) {
+      event.stopPropagation();
+      const menu = document.getElementById('contextMenu');
+      currentCustomer = allCustomers.find(c => c.rowIndex === rowIndex);
+      
+      menu.style.left = event.pageX + 'px';
+      menu.style.top = event.pageY + 'px';
+      menu.classList.add('show');
+      
+      setTimeout(() => {
+        document.addEventListener('click', closeContextMenu);
+      }, 10);
+    }
+
+    function closeContextMenu() {
+      document.getElementById('contextMenu').classList.remove('show');
+      document.removeEventListener('click', closeContextMenu);
+    }
+
+    function editCustomerFromMenu() {
+      if (currentCustomer) {
+        editCustomer(currentCustomer.rowIndex);
+      }
+      closeContextMenu();
+    }
+
+    async function deleteCustomerFromMenu() {
+      if (!currentCustomer) return;
+      
+      if (!confirm(`Delete ${currentCustomer.name}? This cannot be undone.`)) {
+        closeContextMenu();
+        return;
+      }
+
+      try {
+        const formData = new URLSearchParams({
+          action: 'deleteCustomer',
+          email: userEmail,
+          rowIndex: currentCustomer.rowIndex
+        });
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast('Customer deleted successfully', 'success');
+          loadCustomers();
+        } else {
+          showToast(result.error || 'Failed to delete customer', 'error');
+        }
+      } catch (error) {
+        console.error('Error deleting customer:', error);
+        showToast('Failed to delete customer', 'error');
+      }
+      
+      closeContextMenu();
+    }
+
+    // Import modal
+    function openImportModal() {
+      document.getElementById('importModal').classList.add('show');
+    }
+
+    // CSV Import
+    document.getElementById('csvFile').addEventListener('change', handleCSVUpload);
+    
+    const importZone = document.getElementById('importZone');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      importZone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      importZone.addEventListener(eventName, () => {
+        importZone.classList.add('drag-over');
+      }, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      importZone.addEventListener(eventName, () => {
+        importZone.classList.remove('drag-over');
+      }, false);
+    });
+    
+    importZone.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        handleCSVFile(files[0]);
+      }
+    }
+    
+    function handleCSVUpload(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        handleCSVFile(files[0]);
+      }
+    }
+    
+    function handleCSVFile(file) {
+      if (!file.name.endsWith('.csv')) {
+        showToast('Please upload a CSV file', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        parseAndImportCSV(content);
+      };
+      reader.readAsText(file);
+    }
+    
+    async function parseAndImportCSV(content) {
+      try {
+        const lines = content.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        
+        showToast('Importing customers...', 'success');
+        
+        let imported = 0;
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+          const customer = {};
+          
+          headers.forEach((header, index) => {
+            customer[header.toLowerCase()] = values[index] || '';
+          });
+          
+          // Create pool data
+          const poolData = JSON.stringify({
+            gateCode: customer.gatecode || '',
+            poolType: customer.pooltype || '',
+            poolSize: customer.poolsize || '',
+            heaterType: customer.heatertype || '',
+            equipment: customer.equipment || '',
+            accessInstructions: customer.accessinstructions || ''
+          });
+          
+          // Create service data
+          const serviceData = JSON.stringify({
+            preferredDay: customer.preferredday || '',
+            serviceFrequency: customer.servicefrequency || ''
+          });
+          
+          const formData = new URLSearchParams({
+            action: 'addCustomer',
+            email: userEmail,
+            name: customer.name || '',
+            customerEmail: customer.email || '',
+            phone: customer.phone || '',
+            address: customer.address || '',
+            city: customer.city || '',
+            state: customer.state || '',
+            zip: customer.zip || '',
+            notes: customer.notes || '',
+            poolData: poolData,
+            serviceData: serviceData,
+            customData: '{}'
+          });
+          
+          const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+          });
+          
+          const result = await response.json();
+          if (result.success) {
+            imported++;
+          }
+        }
+        
+        showToast(`Successfully imported ${imported} customers`, 'success');
+        closeModal('importModal');
+        loadCustomers();
+        
+      } catch (error) {
+        console.error('CSV import error:', error);
+        showToast('Failed to import CSV', 'error');
+      }
+    }
+
+    // QuickBooks integration
+    function connectQuickBooks() {
+      showToast('QuickBooks integration coming soon! Contact support to set up OAuth.', 'success');
+      // TODO: Implement QuickBooks OAuth flow
+      // This would open OAuth window, get access token, fetch customers
+    }
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const existingToast = document.querySelector('.toast');
+      if (existingToast) {
+        existingToast.remove();
+      }
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.animation = 'toastSlideIn 0.4s reverse';
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Close modals on background click
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+          closeModal(modal.id);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

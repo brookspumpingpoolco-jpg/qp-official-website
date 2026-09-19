@@ -1,0 +1,2476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Marketing App — A Quality Pool Company</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.googleapis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+    ({key: "AIzaSyAbxEM5S4vVw7ZO_w2CZh_21JPwrVG2Z7Q", v: "weekly"});
+  </script>
+  <style>
+    :root {
+      --blue:   #0369a1; --blue-d: #0c4a6e; --blue-l: #e0f2fe;
+      --green:  #059669; --green-l: #d1fae5;
+      --amber:  #d97706; --amber-l: #fef3c7;
+      --red:    #dc2626; --red-l:   #fee2e2;
+      --purple: #7c3aed; --purple-l:#ede9fe;
+      --gray:   #6b7280; --gray-l:  #f3f4f6;
+      --text:   #0f172a; --border: #e5e7eb;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body { height:100%; overflow:hidden; }
+    body {
+      font-family:'Barlow',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:#f0f9ff; color:var(--text); font-size:15px;
+    }
+
+    /* ===== APP SHELL ===== */
+    #app { display:flex; flex-direction:column; height:100vh; }
+
+    /* Top Bar */
+    .topbar {
+      background:linear-gradient(135deg,var(--blue-d) 0%,var(--blue) 100%);
+      color:white; padding:12px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-shrink:0; box-shadow:0 2px 12px rgba(3,105,161,0.35);
+      gap:10px;
+    }
+    .topbar-left { display:flex; align-items:center; gap:10px; min-width:0; }
+    .topbar-logo { height:38px; border-radius:6px; flex-shrink:0; }
+    .topbar-title { font-size:17px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .topbar-sub   { font-size:12px; opacity:0.8; }
+
+    /* Tab Bar */
+    .tabbar {
+      display:flex; background:white;
+      border-bottom:2px solid var(--border);
+      flex-shrink:0; overflow-x:auto;
+    }
+    .tabbar::-webkit-scrollbar { display:none; }
+    .tab-btn {
+      flex:1; min-width:70px; padding:11px 8px;
+      background:none; border:none; cursor:pointer;
+      font-size:11px; font-weight:700; color:var(--gray);
+      text-align:center; transition:all 0.2s;
+      border-bottom:3px solid transparent;
+      display:flex; flex-direction:column; align-items:center; gap:3px;
+    }
+    .tab-btn i { font-size:16px; }
+    .tab-btn.active { color:var(--blue); border-bottom-color:var(--blue); }
+
+    /* Views */
+    .view { display:none; flex:1; overflow-y:auto; }
+    .view.active { display:flex; flex-direction:column; }
+    .view-scroll { flex:1; overflow-y:auto; padding:16px; }
+
+    /* Cards */
+    .card {
+      background:white; border-radius:14px; padding:18px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.07); margin-bottom:14px;
+    }
+    .card-header {
+      display:flex; justify-content:space-between; align-items:flex-start; gap:8px;
+    }
+
+    /* Buttons */
+    .btn {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:10px 16px; border-radius:9px; border:none;
+      font-size:14px; font-weight:700; cursor:pointer;
+      font-family:inherit; transition:all 0.18s; white-space:nowrap;
+    }
+    .btn:active { transform:scale(0.97); }
+    .btn-primary  { background:linear-gradient(135deg,var(--blue) 0%,#0284c7 100%); color:white; }
+    .btn-success  { background:linear-gradient(135deg,var(--green) 0%,#10b981 100%); color:white; }
+    .btn-danger   { background:linear-gradient(135deg,var(--red) 0%,#ef4444 100%); color:white; }
+    .btn-amber    { background:linear-gradient(135deg,var(--amber) 0%,#f59e0b 100%); color:white; }
+    .btn-purple   { background:linear-gradient(135deg,var(--purple) 0%,#8b5cf6 100%); color:white; }
+    .btn-ghost    { background:var(--gray-l); color:#374151; }
+    .btn-sm       { padding:7px 12px; font-size:12px; }
+    .btn-lg       { padding:14px 24px; font-size:16px; }
+    .btn-full     { width:100%; justify-content:center; }
+
+    /* Badges */
+    .badge {
+      display:inline-flex; align-items:center; padding:3px 9px;
+      border-radius:20px; font-size:11px; font-weight:700;
+    }
+    .badge-blue   { background:var(--blue-l);   color:#1e40af; }
+    .badge-green  { background:var(--green-l);  color:#065f46; }
+    .badge-amber  { background:var(--amber-l);  color:#92400e; }
+    .badge-red    { background:var(--red-l);    color:#991b1b; }
+    .badge-purple { background:var(--purple-l); color:#4c1d95; }
+    .badge-gray   { background:#f3f4f6;          color:#374151; }
+
+    /* Progress Bar */
+    .progress-wrap { background:#e5e7eb; border-radius:6px; height:8px; overflow:hidden; }
+    .progress-bar  { height:100%; background:linear-gradient(90deg,var(--blue),#0284c7); border-radius:6px; transition:width 0.4s; }
+
+    /* Form Elements */
+    .form-group { margin-bottom:14px; }
+    .form-group label { display:block; font-size:12px; font-weight:700; color:#374151; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.4px; }
+    .form-control {
+      width:100%; padding:11px 13px;
+      border:2px solid var(--border); border-radius:9px;
+      font-size:15px; font-family:inherit; color:var(--text);
+      transition:border-color 0.2s; background:white;
+    }
+    .form-control:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(3,105,161,0.1); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+    /* Map */
+    #mapCanvas { width:100%; height:100%; border-radius:0; }
+    .map-container { flex:1; min-height:300px; position:relative; }
+
+    /* ===== VIEW 1: CAMPAIGNS ===== */
+    .campaign-card {
+      background:white; border-radius:14px; padding:18px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.07); margin-bottom:14px;
+      cursor:pointer; transition:all 0.2s; border:2px solid transparent;
+    }
+    .campaign-card:hover, .campaign-card:active { border-color:var(--blue); box-shadow:0 4px 16px rgba(3,105,161,0.18); }
+    .campaign-name { font-size:17px; font-weight:800; color:var(--text); margin-bottom:4px; }
+    .campaign-meta { font-size:13px; color:var(--gray); margin-bottom:12px; }
+    .campaign-stats { display:flex; gap:12px; flex-wrap:wrap; }
+    .cstat { text-align:center; }
+    .cstat-num  { font-size:20px; font-weight:800; color:var(--text); }
+    .cstat-lbl  { font-size:11px; color:var(--gray); }
+
+    /* ===== VIEW 2: ROUTE / MAP ===== */
+    .route-layout { display:flex; flex:1; overflow:hidden; }
+    .route-sidebar { width:320px; min-width:280px; background:white; border-right:1px solid var(--border); overflow-y:auto; display:flex; flex-direction:column; }
+    .route-map     { flex:1; }
+
+    /* Property row in sidebar */
+    .prop-row {
+      padding:12px 14px; border-bottom:1px solid #f1f5f9;
+      cursor:pointer; transition:background 0.15s; display:flex; gap:10px; align-items:flex-start;
+    }
+    .prop-row:hover, .prop-row.highlighted { background:#f0f9ff; }
+    .prop-num  { width:26px; height:26px; border-radius:50%; background:var(--blue); color:white; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .prop-name { font-size:14px; font-weight:700; color:var(--text); }
+    .prop-addr { font-size:12px; color:var(--gray); }
+
+    /* Status dot */
+    .status-dot {
+      width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:5px;
+    }
+    .dot-not-visited  { background:#d1d5db; }
+    .dot-visited      { background:var(--blue); }
+    .dot-interested   { background:var(--green); }
+    .dot-not-home     { background:var(--amber); }
+    .dot-no-answer    { background:#9ca3af; }
+
+    /* Field Mode — fullscreen */
+    #fieldMode {
+      display:none; position:fixed; inset:0; z-index:500;
+      background:#f0f9ff; flex-direction:column;
+    }
+    #fieldMode.open { display:flex; }
+
+    .field-topbar {
+      background:linear-gradient(135deg,var(--blue-d) 0%,var(--blue) 100%);
+      color:white; padding:12px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-shrink:0;
+    }
+    .field-counter { font-size:13px; opacity:0.85; }
+    .field-close { background:rgba(255,255,255,0.15); border:none; color:white; width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+
+    /* Current property card */
+    .field-card {
+      background:white; border-radius:16px; margin:14px; padding:22px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.1); flex-shrink:0;
+    }
+    .field-owner   { font-size:22px; font-weight:800; color:var(--text); margin-bottom:4px; }
+    .field-address { font-size:15px; color:var(--gray); margin-bottom:16px; }
+
+    .field-sat-wrap {
+      background:white; border-radius:14px; margin:0 14px 12px; padding:10px;
+      box-shadow:0 2px 12px rgba(0,0,0,0.08); border:1px solid #e5e7eb;
+      flex-shrink:0;
+    }
+    .field-sat-head {
+      display:flex; align-items:center; justify-content:space-between;
+      font-size:13px; font-weight:700; color:var(--text); margin-bottom:8px;
+    }
+    #fieldSatelliteMap {
+      width:100%; height:180px; border-radius:10px; overflow:hidden;
+      background:#e2e8f0;
+    }
+    #fieldSatelliteHint {
+      font-size:11px; color:var(--gray); margin-top:6px;
+    }
+
+    /* Status buttons grid */
+    .status-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+    .status-grid button {
+      padding:14px 10px; border-radius:10px; border:2px solid transparent;
+      font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;
+      display:flex; flex-direction:column; align-items:center; gap:4px;
+      transition:all 0.15s;
+    }
+    .status-grid button i { font-size:22px; }
+    .sbtn-visited    { background:#dbeafe; color:#1e40af; }
+    .sbtn-interested { background:#d1fae5; color:#065f46; }
+    .sbtn-not-home   { background:#fef3c7; color:#92400e; }
+    .sbtn-no-answer  { background:#f3f4f6; color:#374151; }
+    .status-grid button.selected, .status-grid button:active { transform:scale(0.97); }
+    .sbtn-visited.selected    { background:#1e40af; color:white; border-color:#1e40af; }
+    .sbtn-interested.selected { background:#065f46; color:white; border-color:#065f46; }
+    .sbtn-not-home.selected   { background:#92400e; color:white; border-color:#92400e; }
+    .sbtn-no-answer.selected  { background:#374151; color:white; border-color:#374151; }
+
+    /* Expandable sections */
+    .expand-section { border-top:1px solid var(--border); margin:0 14px 0; overflow:hidden; }
+    .expand-header  {
+      padding:12px 0; cursor:pointer;
+      display:flex; align-items:center; justify-content:space-between;
+      font-size:14px; font-weight:700; color:var(--text);
+      user-select:none;
+    }
+    .expand-body { padding-bottom:12px; }
+    .expand-body.closed { display:none; }
+
+    /* Field bottom bar */
+    .field-bottombar {
+      margin-top:auto; background:white; border-top:1px solid var(--border);
+      padding:12px 14px; display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0;
+    }
+
+    /* ===== VIEW 4: MONITOR ===== */
+    .monitor-map { flex:1; min-height:0; }
+    .staff-list  { background:white; border-top:1px solid var(--border); padding:12px 16px; flex-shrink:0; max-height:200px; overflow-y:auto; }
+
+    /* ===== VIEW 5: HISTORY ===== */
+    .history-table { width:100%; border-collapse:collapse; font-size:13px; }
+    .history-table th { padding:9px 12px; text-align:left; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--gray); background:#f8fafc; border-bottom:1px solid var(--border); position:sticky; top:0; }
+    .history-table td { padding:11px 12px; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
+    .history-table tr:hover td { background:#f8fafc; }
+
+    /* ===== VIEW 6: PHONE BANK ===== */
+    .phonebank-grid { display:grid; grid-template-columns:1fr; gap:14px; }
+    .phonebank-list-row {
+      border:1px solid #e2e8f0; border-radius:10px; padding:10px;
+      display:flex; gap:10px; justify-content:space-between; align-items:flex-start;
+      margin-bottom:8px; background:#fff;
+    }
+    .phonebank-list-row .meta { font-size:12px; color:var(--gray); margin-top:2px; }
+    .phonebank-list-row .title { font-size:14px; font-weight:700; color:var(--text); }
+    .phonebank-results .result-card {
+      border:1px solid #dbeafe; background:#f8fbff; border-radius:10px;
+      padding:10px; margin-bottom:8px;
+    }
+    .phonebank-results .result-title { font-size:13px; font-weight:700; color:var(--text); }
+    .phonebank-results .result-sub { font-size:12px; color:var(--gray); margin-top:3px; }
+    .pu-target-row {
+      border:1px solid #e2e8f0; border-radius:10px; padding:10px;
+      display:flex; gap:10px; align-items:flex-start; justify-content:space-between;
+      margin-bottom:8px; background:#fff;
+    }
+    .pu-log-row {
+      border:1px solid #e2e8f0; border-radius:10px; padding:10px; margin-bottom:8px;
+      background:#fff;
+    }
+
+    /* Modal */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:flex-end; justify-content:center; padding:0; }
+    .modal-overlay.open { display:flex; }
+    .modal-sheet { background:white; border-radius:20px 20px 0 0; padding:24px 20px 32px; width:100%; max-width:560px; max-height:92vh; overflow-y:auto; animation:slideUp 0.25s ease; }
+    .modal-sheet.center { border-radius:16px; margin:auto; }
+    @keyframes slideUp { from { transform:translateY(100px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    .modal-drag { width:40px; height:4px; background:#d1d5db; border-radius:2px; margin:0 auto 20px; }
+    .modal-title { font-size:18px; font-weight:800; color:var(--text); margin-bottom:20px; }
+
+    /* Toast */
+    .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#0f172a; color:white; padding:12px 20px; border-radius:12px; font-size:14px; font-weight:500; box-shadow:0 8px 24px rgba(0,0,0,0.3); z-index:9999; opacity:0; transition:all 0.3s ease; min-width:200px; text-align:center; }
+    .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+    .toast.success { border-bottom:3px solid #10b981; }
+    .toast.error   { border-bottom:3px solid #ef4444; }
+
+    /* Loading spinner */
+    .spinner { display:inline-block; animation:spin 0.9s linear infinite; }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+    .empty-state { text-align:center; padding:48px 20px; color:var(--gray); }
+    .empty-state i { font-size:44px; color:#d1d5db; display:block; margin-bottom:12px; }
+    .empty-state h3 { font-size:16px; color:#374151; margin-bottom:6px; }
+    .empty-state p  { font-size:14px; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .route-sidebar { display:none; }
+      .route-layout  { flex-direction:column; }
+    }
+    @media (min-width: 701px) {
+      .field-card { max-width:480px; margin:16px auto; }
+      .field-sat-wrap { max-width:480px; margin:0 auto 12px; }
+      .field-bottombar { max-width:480px; margin:0 auto; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763.jpg" class="topbar-logo" alt="Logo">
+      <div>
+        <div class="topbar-title" id="topbarTitle">Marketing App</div>
+        <div class="topbar-sub" id="topbarSub">A Quality Pool Company</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span id="gpsStatusBadge" style="display:none;" class="badge badge-amber"><i class="fas fa-location-arrow"></i></span>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tabbar" id="tabBar">
+    <button class="tab-btn active" onclick="showView('campaigns')" id="tab-campaigns">
+      <i class="fas fa-map-marked-alt"></i> Campaigns
+    </button>
+    <button class="tab-btn" onclick="showView('route')" id="tab-route">
+      <i class="fas fa-route"></i> Route
+    </button>
+    <button class="tab-btn" onclick="showView('phonebank')" id="tab-phonebank">
+      <i class="fas fa-phone-volume"></i> Phone Bank
+    </button>
+    <button class="tab-btn" onclick="showView('monitor')" id="tab-monitor">
+      <i class="fas fa-satellite"></i> Monitor
+    </button>
+    <button class="tab-btn" onclick="showView('history')" id="tab-history">
+      <i class="fas fa-history"></i> History
+    </button>
+  </div>
+
+  <!-- ===================== VIEW 1: CAMPAIGNS ===================== -->
+  <div class="view active" id="view-campaigns">
+    <div class="view-scroll">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <h2 style="font-size:18px;font-weight:800;">Campaigns</h2>
+        <button class="btn btn-primary btn-sm" onclick="openNewCampaignModal()"><i class="fas fa-plus"></i> New Campaign</button>
+      </div>
+      <div id="campaignsList">
+        <div class="empty-state"><i class="fas fa-spinner spinner"></i><h3>Loading…</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== VIEW 2: ROUTE ===================== -->
+  <div class="view" id="view-route">
+    <div style="padding:10px 14px;background:white;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0;">
+      <span id="routeCampaignName" style="font-size:14px;font-weight:700;color:var(--text);flex:1;min-width:100px;">Select a campaign</span>
+      <button class="btn btn-secondary btn-sm" onclick="openQuickAddProspectModal()" id="quickAddProspectBtn" title="Add to Customers sheet"><i class="fas fa-user-plus"></i> Quick Add</button>
+      <button class="btn btn-primary btn-sm" onclick="openFieldMode()"><i class="fas fa-running"></i> Start Field Mode</button>
+    </div>
+    <div class="route-layout">
+      <div class="route-sidebar" id="routeSidebar">
+        <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:6px;">
+          <input type="text" placeholder="Search…" id="propSearch" class="form-control" style="padding:8px 10px;font-size:13px;" oninput="filterProps()">
+        </div>
+        <div id="propList" style="flex:1;overflow-y:auto;"></div>
+      </div>
+      <div class="route-map">
+        <div id="mapCanvas"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== VIEW 3: MONITOR ===================== -->
+  <div class="view" id="view-phonebank">
+    <div class="view-scroll">
+      <div class="phonebank-grid">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <h2 style="font-size:18px;font-weight:800;">House Reports + Phone Capture</h2>
+            <button class="btn btn-ghost btn-sm" onclick="loadPhoneBankData()"><i class="fas fa-rotate"></i> Refresh</button>
+          </div>
+          <div class="form-row" style="grid-template-columns:2fr 1fr;">
+            <div class="form-group">
+              <label>Campaign</label>
+              <select id="phoneCampaignSelect" class="form-control" onchange="onPhoneCampaignChange()"></select>
+            </div>
+            <div class="form-group">
+              <label>Summary</label>
+              <div id="phoneBankSummary" class="badge badge-blue" style="padding:10px 12px;border-radius:8px;display:block;">0 houses • 0 phones</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <div style="font-size:15px;font-weight:800;">Quick Report Entry</div>
+            <button class="btn btn-ghost btn-sm" onclick="clearPhoneReportForm()"><i class="fas fa-eraser"></i> Clear</button>
+          </div>
+          <input type="hidden" id="pbVisitId">
+          <div class="form-row">
+            <div class="form-group"><label>Owner Name</label><input type="text" id="pbOwner" class="form-control" placeholder="House owner"></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="pbPhone" class="form-control" placeholder="(502) 555-1234"></div>
+          </div>
+          <div class="form-group"><label>Address</label><input type="text" id="pbAddress" class="form-control" placeholder="123 Main St"></div>
+          <div class="form-row">
+            <div class="form-group"><label>City</label><input type="text" id="pbCity" class="form-control"></div>
+            <div class="form-group"><label>State</label><input type="text" id="pbState" class="form-control" maxlength="2" placeholder="KY"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>ZIP</label><input type="text" id="pbZip" class="form-control"></div>
+            <div class="form-group"><label>Status</label>
+              <select id="pbStatus" class="form-control">
+                <option>Not Visited</option>
+                <option>Visited</option>
+                <option>Interested</option>
+                <option>Not Home</option>
+                <option>No Answer</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label>Notes</label><input type="text" id="pbComment" class="form-control" placeholder="House details, gate code, etc."></div>
+          <button class="btn btn-success btn-full" id="pbSaveBtn" onclick="savePhoneReport()"><i class="fas fa-save"></i> Save Report</button>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <div style="font-size:15px;font-weight:800;">Phone List</div>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray);cursor:pointer;"><input type="checkbox" id="pbOnlyPhones" checked onchange="renderPhoneBankList()">Only show with phone</label>
+          </div>
+          <div class="form-group" style="margin-bottom:10px;"><input type="text" id="pbSearch" class="form-control" placeholder="Search owner/address/phone" oninput="renderPhoneBankList()"></div>
+          <div id="phoneBankList"></div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:15px;font-weight:800;margin-bottom:8px;">Bulk Marketing Campaign</div>
+          <p style="font-size:12px;color:var(--gray);margin-bottom:10px;">Select houses in the list, then build one-tap text cards.</p>
+          <div class="form-group">
+            <label>Text Template</label>
+            <textarea id="pbTemplate" class="form-control" rows="4" style="resize:vertical;" placeholder="Use {NAME}, {ADDRESS}, {CITY}, {STATE}, {ZIP}">Hi {NAME}, this is Sam from A Quality Pool Company! We were in your neighborhood and wanted to reach out. We’d love to provide a free pool service quote. Call (502) 706-9172 or visit aqualitypoolcompanyusa.com.</textarea>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <button class="btn btn-primary btn-sm" id="pbBuildBtn" onclick="buildBulkCampaign()"><i class="fas fa-layer-group"></i> Build Campaign</button>
+            <button class="btn btn-ghost btn-sm" onclick="openNextBulkSms()"><i class="fas fa-paper-plane"></i> Open Next Text</button>
+          </div>
+          <div id="bulkSummary" style="font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
+          <div id="bulkResults" class="phonebank-results"></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <div style="font-size:15px;font-weight:800;">Project Updates (PM_Projects + Marketing)</div>
+            <button class="btn btn-ghost btn-sm" onclick="loadProjectUpdateTargets()"><i class="fas fa-rotate"></i> Refresh</button>
+          </div>
+
+          <div class="form-row" style="grid-template-columns:1fr 1fr;">
+            <div class="form-group">
+              <label>Source</label>
+              <select id="puSourceFilter" class="form-control" onchange="loadProjectUpdateTargets()">
+                <option value="active-projects">Active projects + marketing</option>
+                <option value="all-projects">All projects + marketing</option>
+                <option value="marketing-only">Marketing contacts only</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Search</label>
+              <input type="text" id="puSearch" class="form-control" placeholder="Name, phone, project" oninput="renderProjectUpdateTargets()">
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="selectAllProjectUpdateTargets(true)"><i class="fas fa-check-square"></i> Select All</button>
+            <button class="btn btn-ghost btn-sm" onclick="selectAllProjectUpdateTargets(false)"><i class="fas fa-square"></i> Clear</button>
+          </div>
+
+          <div id="puTargetSummary" style="font-size:12px;color:var(--gray);margin-bottom:8px;">Loading contacts…</div>
+          <div id="puTargets" style="max-height:220px;overflow-y:auto;"></div>
+
+          <div class="form-group" style="margin-top:12px;">
+            <label>Update Template</label>
+            <textarea id="puTemplate" class="form-control" rows="4" style="resize:vertical;" placeholder="Use {NAME}, {PROJECT_ID}, {STATUS}, {BALANCE}, {ADDRESS}, {LINK}">Hi {NAME}, quick update from A Quality Pool Company — Project {PROJECT_ID} is currently {STATUS}. Remaining balance: ${BALANCE}. {LINK}</textarea>
+          </div>
+
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray);cursor:pointer;margin-bottom:10px;">
+            <input type="checkbox" id="puSendTelegram" checked>
+            Send each draft to Telegram bot
+          </label>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <button class="btn btn-primary btn-sm" id="puBuildBtn" onclick="buildProjectUpdateBatch()"><i class="fas fa-paper-plane"></i> Build Drafts</button>
+            <button class="btn btn-ghost btn-sm" onclick="openNextProjectUpdateSms()"><i class="fas fa-comment-dots"></i> Open Next Text</button>
+          </div>
+
+          <div id="puBatchSummary" style="font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
+          <div id="puBatchResults" class="phonebank-results"></div>
+
+          <hr style="margin:14px 0;border:none;border-top:1px solid #e5e7eb;">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+            <div style="font-size:14px;font-weight:800;">Response Tracking</div>
+            <button class="btn btn-ghost btn-sm" onclick="loadProjectUpdateLogs()"><i class="fas fa-clock-rotate-left"></i> Refresh Logs</button>
+          </div>
+          <div id="puLogs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== VIEW 3: MONITOR ===================== -->
+  <div class="view" id="view-monitor">
+    <div class="monitor-map">
+      <div id="monitorMapCanvas" style="width:100%;height:100%;"></div>
+    </div>
+    <div class="staff-list" id="staffList">
+      <p style="font-size:13px;color:var(--gray);text-align:center;">Loading staff locations…</p>
+    </div>
+  </div>
+
+  <!-- ===================== VIEW 4: HISTORY ===================== -->
+  <div class="view" id="view-history">
+    <div class="view-scroll">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <h2 style="font-size:18px;font-weight:800;">Campaign History</h2>
+        <select class="form-control" id="historyFilter" onchange="loadHistory()" style="width:auto;padding:8px 12px;font-size:13px;">
+          <option value="">All Campaigns</option>
+        </select>
+      </div>
+      <!-- Commission Summary -->
+      <div class="card" id="commissionCard" style="display:none;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;"><i class="fas fa-dollar-sign" style="color:var(--green);"></i> Commission Summary</div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+          <div><div style="font-size:24px;font-weight:800;" id="totalLeadsCount">0</div><div style="font-size:12px;color:var(--gray);">Total Leads</div></div>
+          <div><div style="font-size:24px;font-weight:800;color:var(--green);" id="totalCommissionAmt">$0</div><div style="font-size:12px;color:var(--gray);">Commission Owed</div></div>
+        </div>
+      </div>
+      <div id="historyContent">
+        <div class="empty-state"><i class="fas fa-spinner spinner"></i><h3>Loading…</h3></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ===================== FIELD MODE (fullscreen overlay) ===================== -->
+<div id="fieldMode">
+  <div class="field-topbar">
+    <div>
+      <div style="font-size:16px;font-weight:800;" id="fieldCampaignName">Field Mode</div>
+      <div class="field-counter" id="fieldCounter">0 of 0</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span id="fieldSyncBadge" class="badge badge-green" style="display:none;">Synced</span>
+      <button class="field-close" onclick="closeFieldMode()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+    <!-- Current Property Card -->
+    <div class="field-card" id="fieldCard">
+      <div class="field-owner" id="fieldOwner">—</div>
+      <div class="field-address" id="fieldAddress">—</div>
+      <!-- Status Buttons -->
+      <div class="status-grid">
+        <button class="sbtn-visited"    onclick="setFieldStatus('Visited')"    id="sb-Visited">    <i class="fas fa-door-open"></i>Visited</button>
+        <button class="sbtn-interested" onclick="setFieldStatus('Interested')" id="sb-Interested"> <i class="fas fa-star"></i>Interested</button>
+        <button class="sbtn-not-home"   onclick="setFieldStatus('Not Home')"   id="sb-Not Home">   <i class="fas fa-home"></i>Not Home</button>
+        <button class="sbtn-no-answer"  onclick="setFieldStatus('No Answer')"  id="sb-No Answer">  <i class="fas fa-phone-slash"></i>No Answer</button>
+      </div>
+    </div>
+
+    <div class="field-sat-wrap">
+      <div class="field-sat-head">
+        <span><i class="fas fa-satellite" style="color:var(--blue);margin-right:6px;"></i>Overhead View</span>
+        <a id="fieldSatelliteOpen" href="#" target="_blank" rel="noopener" style="font-size:11px;text-decoration:none;color:var(--blue);font-weight:700;">Open full map</a>
+      </div>
+      <div id="fieldSatelliteMap"></div>
+      <div id="fieldSatelliteHint">Loading satellite view…</div>
+    </div>
+
+    <!-- Comment Section -->
+    <div class="expand-section">
+      <div class="expand-header" onclick="toggleExpand('commentSection')">
+        <span><i class="fas fa-comment" style="color:var(--blue);margin-right:6px;"></i>Add Note</span>
+        <i class="fas fa-chevron-down" id="commentSectionIcon"></i>
+      </div>
+      <div class="expand-body closed" id="commentSection">
+        <textarea id="fieldComment" class="form-control" rows="3" placeholder="Note about this visit…" style="resize:none;" oninput="touchFieldActivity()"></textarea>
+      </div>
+    </div>
+
+    <!-- Phone Section -->
+    <div class="expand-section">
+      <div class="expand-header" onclick="toggleExpand('phoneSection')">
+        <span><i class="fas fa-phone" style="color:var(--green);margin-right:6px;"></i>Phone Number</span>
+        <i class="fas fa-chevron-down" id="phoneSectionIcon"></i>
+      </div>
+      <div class="expand-body closed" id="phoneSection">
+        <div style="display:flex;gap:8px;">
+          <input type="tel" id="fieldPhone" class="form-control" placeholder="(502) 555-1234" style="flex:1;" inputmode="tel" autocomplete="tel" oninput="handleFieldPhoneInput(this)" onkeydown="fieldPhoneKeydown(event)">
+          <button class="btn btn-success btn-sm" onclick="saveFieldPhone()"><i class="fas fa-save"></i></button>
+          <button class="btn btn-primary btn-sm" onclick="saveFieldPhoneAndNext()" title="Save phone and move to next property"><i class="fas fa-forward"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Street View URL -->
+    <div class="expand-section">
+      <div class="expand-header" onclick="toggleExpand('streetViewSection')">
+        <span><i class="fas fa-street-view" style="color:var(--blue);margin-right:6px;"></i>Street View link</span>
+        <i class="fas fa-chevron-down" id="streetViewSectionIcon"></i>
+      </div>
+      <div class="expand-body closed" id="streetViewSection">
+        <input type="url" id="fieldStreetViewUrl" class="form-control" placeholder="https://www.google.com/maps/@..." oninput="touchFieldActivity()">
+        <p style="font-size:11px;color:var(--gray);margin-top:8px;">Paste a Google Maps / Street View URL for this property. Saved with Save &amp; Next or the save button.</p>
+        <button type="button" class="btn btn-secondary btn-sm btn-full" style="margin-top:8px;" onclick="saveFieldStreetViewUrl()"><i class="fas fa-save"></i> Save link only</button>
+      </div>
+    </div>
+
+    <!-- Schedule Section -->
+    <div class="expand-section" style="margin-bottom:0;">
+      <div class="expand-header" onclick="toggleExpand('scheduleSection')">
+        <span><i class="fas fa-calendar-plus" style="color:var(--purple);margin-right:6px;"></i>Schedule Service</span>
+        <i class="fas fa-chevron-down" id="scheduleSectionIcon"></i>
+      </div>
+      <div class="expand-body closed" id="scheduleSection">
+        <div class="form-group">
+          <label>Customer Email *</label>
+          <input type="email" id="schedEmail" class="form-control" placeholder="customer@email.com">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Service Type</label>
+            <select id="schedType" class="form-control">
+              <option value="Service Call">Service Call</option>
+              <option value="Pool Service">Weekly Service</option>
+              <option value="Opening">Pool Opening</option>
+              <option value="Estimate/Quote">Estimate/Quote</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Preferred Day</label>
+            <select id="schedDay" class="form-control">
+              <option value="">Any</option>
+              <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+              <option>Thursday</option><option>Friday</option><option>Saturday</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-purple btn-sm btn-full" onclick="submitFieldSchedule()"><i class="fas fa-calendar-check"></i> Submit Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="field-bottombar">
+    <button class="btn btn-ghost btn-sm" onclick="fieldPrev()"><i class="fas fa-chevron-left"></i> Prev</button>
+    <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="fieldSaveAndNext()"><i class="fas fa-check"></i> Save & Next</button>
+    <button class="btn btn-amber btn-sm" id="smsBtn" onclick="fieldSendSMS()" style="display:none;"><i class="fas fa-sms"></i> SMS</button>
+    <button class="btn btn-ghost btn-sm" onclick="fieldNext()">Next <i class="fas fa-chevron-right"></i></button>
+  </div>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+
+<!-- New Campaign Modal -->
+<div class="modal-overlay" id="newCampaignModal" onclick="closeModal('newCampaignModal',event)">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-title"><i class="fas fa-map-marked-alt" style="color:var(--blue);margin-right:8px;"></i>New Campaign</div>
+    <div id="newCampError" style="display:none;" class="badge badge-red" style="display:block;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
+    <div class="form-group"><label>Campaign Name *</label><input type="text" id="campName" class="form-control" placeholder="Eagle Bend Rd — March"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date" id="campDate" class="form-control"></div>
+      <div class="form-group"><label>Assigned To</label><input type="text" id="campAssigned" class="form-control" placeholder="Sam"></div>
+    </div>
+    <div class="form-group"><label>Commission per Lead ($)</label><input type="number" id="campCommission" class="form-control" value="25" step="5" min="0"></div>
+    <div class="form-group"><label>Notes</label><input type="text" id="campNotes" class="form-control" placeholder="Optional notes"></div>
+    <button class="btn btn-primary btn-full" id="createCampBtn" onclick="submitNewCampaign()"><i class="fas fa-plus"></i> Create Campaign</button>
+  </div>
+</div>
+
+<!-- Import CSV Modal -->
+<div class="modal-overlay" id="importModal" onclick="closeModal('importModal',event)">
+  <div class="modal-sheet" style="max-height:90vh;overflow-y:auto;">
+    <div class="modal-drag"></div>
+    <div class="modal-title"><i class="fas fa-file-csv" style="color:var(--green);margin-right:8px;"></i>Import properties</div>
+    <div id="importError" style="display:none;background:var(--red-l);color:#991b1b;padding:10px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;"></div>
+    <div class="form-group">
+      <label>Import source</label>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;">
+        <label style="cursor:pointer;display:flex;align-items:center;gap:6px;"><input type="radio" name="importSource" id="importSrcLandGlide" value="landglide" checked onchange="toggleImportSource()"> LandGlide CSV</label>
+        <label style="cursor:pointer;display:flex;align-items:center;gap:6px;"><input type="radio" name="importSource" id="importSrcCustom" value="custom" onchange="toggleImportSource()"> Custom CSV (map columns)</label>
+      </div>
+    </div>
+    <div id="importLandGlidePanel">
+      <div class="form-group">
+        <label>Select LandGlide CSV File</label>
+        <input type="file" id="csvFile" accept=".csv,text/csv" class="form-control" style="padding:8px;">
+      </div>
+      <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" id="filterResidential" checked style="accent-color:var(--blue);width:auto;">
+        <label for="filterResidential" style="margin:0;cursor:pointer;font-size:14px;font-weight:500;">Only import Residential properties</label>
+      </div>
+    </div>
+    <div id="importCustomPanel" style="display:none;">
+      <div class="form-group">
+        <label>Paste CSV or choose file</label>
+        <textarea id="customCsvPaste" class="form-control" rows="4" placeholder="Paste CSV including header row…" style="font-size:12px;font-family:monospace;"></textarea>
+      </div>
+      <div class="form-group">
+        <input type="file" id="customCsvFile" accept=".csv,text/csv" class="form-control" style="padding:8px;">
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm btn-full" style="margin-bottom:12px;" onclick="detectCustomCsvHeaders()"><i class="fas fa-columns"></i> Read header row</button>
+      <div id="customColumnMapWrap" style="display:none;">
+        <p style="font-size:12px;color:var(--gray);margin-bottom:10px;">Map each sheet column to your CSV header. <strong>Address</strong> is required unless you map both <strong>Lat</strong> and <strong>Lng</strong>.</p>
+        <div id="customColumnMapFields"></div>
+      </div>
+    </div>
+    <div id="importPreview" style="display:none;margin-bottom:14px;"></div>
+    <button class="btn btn-success btn-full" id="importBtn" onclick="submitCSVImport()"><i class="fas fa-upload"></i> Import Properties</button>
+  </div>
+</div>
+
+<!-- Quick Add Prospect -->
+<div class="modal-overlay" id="quickAddProspectModal" onclick="closeModal('quickAddProspectModal',event)">
+  <div class="modal-sheet" style="max-height:88vh;overflow-y:auto;">
+    <div class="modal-drag"></div>
+    <div class="modal-title"><i class="fas fa-user-plus" style="color:var(--blue);margin-right:8px;"></i>Quick Add Prospect</div>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:12px;">Adds to your main <strong>Customers</strong> sheet with marketing source note.</p>
+    <div id="quickAddError" style="display:none;background:var(--red-l);color:#991b1b;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;"></div>
+    <div class="form-group"><label>Name *</label><input type="text" id="qaName" class="form-control" placeholder="Full name"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="qaEmail" class="form-control" placeholder="optional"></div>
+    <div class="form-group"><label>Phone</label><input type="tel" id="qaPhone" class="form-control" placeholder="optional"></div>
+    <div class="form-group"><label>Address</label><input type="text" id="qaAddress" class="form-control"></div>
+    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="form-group"><label>City</label><input type="text" id="qaCity" class="form-control"></div>
+      <div class="form-group"><label>State</label><input type="text" id="qaState" class="form-control" maxlength="2" placeholder="KY"></div>
+    </div>
+    <div class="form-group"><label>ZIP</label><input type="text" id="qaZip" class="form-control"></div>
+    <div class="form-group"><label>Notes</label><textarea id="qaNotes" class="form-control" rows="2" placeholder="Optional"></textarea></div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:12px;" id="qaCampaignHint"></div>
+    <button type="button" class="btn btn-success btn-full" id="qaSubmitBtn" onclick="submitQuickAddProspect()"><i class="fas fa-save"></i> Add to Customers</button>
+  </div>
+</div>
+
+<!-- Lead Outcome Modal -->
+<div class="modal-overlay" id="leadModal" onclick="closeModal('leadModal',event)">
+  <div class="modal-sheet center" style="max-width:420px;border-radius:16px;">
+    <div class="modal-title"><i class="fas fa-trophy" style="color:var(--amber);margin-right:8px;"></i>Mark Lead Outcome</div>
+    <input type="hidden" id="leadVisitId">
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <button class="btn btn-success btn-full" onclick="submitLeadOutcome('lead')"><i class="fas fa-user-check"></i> Lead Converted (called us / asked for quote)</button>
+      <button class="btn btn-primary btn-full" onclick="submitLeadOutcome('job')"><i class="fas fa-briefcase"></i> Job Won!</button>
+      <button class="btn btn-ghost btn-full" onclick="submitLeadOutcome('no-result')"><i class="fas fa-times"></i> No Result</button>
+    </div>
+    <div class="form-group">
+      <label>Note (optional)</label>
+      <input type="text" id="leadNote" class="form-control" placeholder="Any additional context…">
+    </div>
+    <button class="btn btn-amber btn-full" onclick="doMarkLeadOutcome()"><i class="fas fa-save"></i> Save Outcome</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// API CONFIG — set this to your deployed MarketingScript.gs web app URL after deploying
+// ============================================================
+const MARKETING_API_URL = (function() {
+  // Allow override via URL param ?api=... for easy testing
+  const p = new URLSearchParams(window.location.search).get('api');
+  return p || 'https://script.google.com/macros/s/AKfycbwjfagMHe6L4vp2ZhmDyNecQvcaUfuLB0O0R6n7NJ2CSvVgC5SZycRTOAqDHafl2aiS5g/exec';
+})();
+
+async function callAPI(action, data, method) {
+  if (!MARKETING_API_URL) {
+    return { success: false, error: 'API URL not configured.' };
+  }
+  method = method || 'POST';
+  try {
+    let url = MARKETING_API_URL;
+    let options = { method: method };
+    if (method === 'GET') {
+      const params = new URLSearchParams({ action: action });
+      if (data) Object.keys(data).forEach(k => { if (data[k] !== undefined && data[k] !== null) params.append(k, data[k]); });
+      url += (url.includes('?') ? '&' : '?') + params.toString();
+    } else {
+      options.headers = { 'Content-Type': 'text/plain' }; // text/plain avoids CORS preflight with GAS
+      options.body = JSON.stringify({ action: action, ...(data || {}) });
+    }
+    const response = await fetch(url, options);
+    const text = await response.text();
+    try { return JSON.parse(text); }
+    catch(e) { return { success: false, error: 'Bad response: ' + text.slice(0, 200) }; }
+  } catch (error) {
+    console.error('callAPI error:', error);
+    return { success: false, error: error.message || 'Network error' };
+  }
+}
+
+// ============================================================
+// STATE
+// ============================================================
+// ============================================================
+let campaigns       = [];
+let currentCampaign = null;
+let currentVisits   = [];
+let fieldIdx        = 0;
+let fieldStatus     = '';
+let fieldSaved      = new Set();
+let map             = null;
+let monitorMap      = null;
+let mapMarkers      = [];
+let monitorMarkers  = [];
+let mapsReady       = false; // kept for legacy checks; async loader sets this
+let gpsWatchId      = null;
+let staffName       = '';
+let staffEmail      = '';
+let selectedLeadOutcome = '';
+let monitorInterval = null;
+let marketingIdleTimer = null;
+const MARKETING_IDLE_MS = 20 * 60 * 1000; // 20 min
+const MARKETING_IMPORT_MAX_BYTES = 5 * 1024 * 1024;
+let marketingIdleNotified = false;
+let customImportCsvText = '';
+let importCsvHeaders = [];
+let quickAddCampaignId = '';
+let phoneBankCampaignId = '';
+let phoneBankVisits = [];
+let bulkCampaignRecipients = [];
+let openedBulkSms = new Set();
+let projectUpdateTargets = [];
+let projectUpdateDrafts = [];
+let openedProjectUpdateSms = new Set();
+let selectedProjectUpdateTargetIds = new Set();
+let projectUpdateLogs = [];
+let pendingVisitPatchQueue = {};
+let isFlushingVisitPatchQueue = false;
+let fieldSatelliteMap = null;
+let fieldSatelliteMarker = null;
+let fieldSatelliteGeocoder = null;
+let fieldSatelliteToken = 0;
+/** Keys must match MarketingScript importMarketingCSV columnMap. */
+const MARKETING_CSV_MAP_FIELDS = [
+  { key: 'OwnerName', label: 'Owner name' },
+  { key: 'Address', label: 'Address' },
+  { key: 'City', label: 'City' },
+  { key: 'State', label: 'State' },
+  { key: 'ZIP', label: 'ZIP' },
+  { key: 'Lat', label: 'Latitude' },
+  { key: 'Lng', label: 'Longitude' },
+  { key: 'StreetViewUrl', label: 'Street View URL' },
+  { key: 'Phone', label: 'Phone' }
+];
+
+/** Match MarketingScript.gs parseCSVLine */
+function parseCSVLineClient(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current);
+  return result;
+}
+function marketingCsvByteLength(text) {
+  return new Blob([String(text || '')]).size;
+}
+function hideImportError() {
+  document.getElementById('importError').style.display = 'none';
+}
+function showImportError(msg) {
+  const el = document.getElementById('importError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function invalidateCustomImportMap() {
+  customImportCsvText = '';
+  importCsvHeaders = [];
+  const wrap = document.getElementById('customColumnMapWrap');
+  const fields = document.getElementById('customColumnMapFields');
+  if (wrap) wrap.style.display = 'none';
+  if (fields) fields.innerHTML = '';
+}
+function toggleImportSource() {
+  const land = document.getElementById('importSrcLandGlide').checked;
+  document.getElementById('importLandGlidePanel').style.display = land ? 'block' : 'none';
+  document.getElementById('importCustomPanel').style.display = land ? 'none' : 'block';
+  hideImportError();
+}
+function detectCustomCsvHeaders() {
+  hideImportError();
+  const paste = (document.getElementById('customCsvPaste').value || '').trim();
+  const fileInput = document.getElementById('customCsvFile');
+  const file = fileInput.files && fileInput.files[0];
+  if (paste) {
+    if (marketingCsvByteLength(paste) > MARKETING_IMPORT_MAX_BYTES) {
+      showImportError('Paste exceeds 5 MB limit.');
+      return;
+    }
+    finishDetectCustomHeaders(paste);
+    return;
+  }
+  if (file) {
+    if (file.size > MARKETING_IMPORT_MAX_BYTES) {
+      showImportError('File exceeds 5 MB limit.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const t = e.target.result || '';
+      if (marketingCsvByteLength(t) > MARKETING_IMPORT_MAX_BYTES) {
+        showImportError('File exceeds 5 MB limit.');
+        return;
+      }
+      finishDetectCustomHeaders(t);
+    };
+    reader.onerror = function() { showImportError('Could not read file.'); };
+    reader.readAsText(file);
+    return;
+  }
+  showImportError('Paste CSV or choose a file, then click Read header row.');
+}
+function finishDetectCustomHeaders(text) {
+  const trimmedAll = text.replace(/^\uFEFF/, '');
+  customImportCsvText = trimmedAll;
+  const lines = trimmedAll.split('\n').filter(function(l) { return l.trim(); });
+  if (!lines.length) {
+    showImportError('CSV is empty.');
+    return;
+  }
+  importCsvHeaders = parseCSVLineClient(lines[0]).map(function(s) {
+    return s.replace(/^"|"$/g, '').trim();
+  });
+  if (!importCsvHeaders.length || !importCsvHeaders.some(function(h) { return h; })) {
+    showImportError('Could not read header row.');
+    return;
+  }
+  renderCustomColumnMap();
+  document.getElementById('customColumnMapWrap').style.display = 'block';
+}
+function renderCustomColumnMap() {
+  const wrap = document.getElementById('customColumnMapFields');
+  let html = '';
+  MARKETING_CSV_MAP_FIELDS.forEach(function(f) {
+    html += '<div class="form-group" style="margin-bottom:8px;"><label style="font-size:12px;">' + esc(f.label) + '</label>';
+    html += '<select class="form-control" id="mapCol_' + f.key + '" style="font-size:13px;"><option value="">— Skip —</option>';
+    importCsvHeaders.forEach(function(h, i) {
+      html += '<option value="' + i + '">' + esc(h) + '</option>';
+    });
+    html += '</select></div>';
+  });
+  wrap.innerHTML = html;
+}
+function buildCustomColumnMap() {
+  const m = {};
+  MARKETING_CSV_MAP_FIELDS.forEach(function(f) {
+    const sel = document.getElementById('mapCol_' + f.key);
+    if (!sel || sel.value === '') return;
+    const i = parseInt(sel.value, 10);
+    if (i >= 0 && importCsvHeaders[i] !== undefined) {
+      m[f.key] = importCsvHeaders[i];
+    }
+  });
+  return m;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function() {
+  // Prompt for staff name (simple auth)
+  const saved = localStorage.getItem('mkt_staff_name');
+  const savedEmail = localStorage.getItem('mkt_staff_email');
+  if (saved && savedEmail) {
+    staffName = saved; staffEmail = savedEmail;
+    document.getElementById('topbarSub').textContent = 'Hi, ' + staffName;
+  } else {
+    const n = prompt('Enter your name:', '');
+    const e = prompt('Enter your email:', '');
+    staffName  = n || 'Unknown';
+    staffEmail = e || 'unknown@pool.com';
+    localStorage.setItem('mkt_staff_name', staffName);
+    localStorage.setItem('mkt_staff_email', staffEmail);
+    document.getElementById('topbarSub').textContent = 'Hi, ' + staffName;
+  }
+  // Set today's date default
+  document.getElementById('campDate').value = new Date().toISOString().slice(0,10);
+  const cp = document.getElementById('customCsvPaste');
+  const cf = document.getElementById('customCsvFile');
+  if (cp) cp.addEventListener('input', invalidateCustomImportMap);
+  if (cf) cf.addEventListener('change', invalidateCustomImportMap);
+  loadCampaigns();
+};
+
+// ============================================================
+// VIEW NAVIGATION
+// ============================================================
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('topbarTitle').textContent = {
+    campaigns: 'Marketing App', route: 'Route View',
+    phonebank: 'Phone Bank', monitor: 'Staff Monitor', history: 'History & Commission'
+  }[name] || 'Marketing';
+  if (name === 'route' && currentCampaign) initMap();
+  if (name === 'phonebank') initPhoneBankView();
+  if (name === 'monitor') { initMonitorMap(); startMonitorPolling(); }
+  else stopMonitorPolling();
+  if (name === 'history') loadHistory();
+}
+
+// ============================================================
+// CAMPAIGNS
+// ============================================================
+function loadCampaigns() {
+  callAPI('getCampaignList', null, 'GET').then(function(res) {
+      campaigns = res.campaigns || [];
+      renderCampaigns();
+      renderHistoryFilter();
+      renderPhoneBankCampaignOptions();
+    }).catch(err => showToast('Error: ' + err.message, 'error'));
+}
+
+function renderCampaigns() {
+  const el = document.getElementById('campaignsList');
+  if (!campaigns.length) {
+    el.innerHTML = '<div class="empty-state"><i class="fas fa-map-marked-alt"></i><h3>No campaigns yet</h3><p>Create your first campaign to get started.</p></div>';
+    return;
+  }
+  el.innerHTML = campaigns.map(c => {
+    const total    = parseInt(c.TotalProperties || 0);
+    const visited  = parseInt(c.VisitedCount   || 0);
+    const pct      = total > 0 ? Math.round(visited/total*100) : 0;
+    const leads    = parseInt(c.LeadsConverted || 0);
+    const jobs     = parseInt(c.JobsWon       || 0);
+    const phones   = parseInt(c.PhoneCount    || 0);
+    const isActive = String(c.Status) === 'Active';
+    return `<div class="campaign-card" onclick="openCampaign(${JSON.stringify(JSON.stringify(c.CampaignID))})">
+      <div class="card-header">
+        <div>
+          <div class="campaign-name">${esc(c.Name)}</div>
+          <div class="campaign-meta"><i class="fas fa-calendar" style="color:var(--blue);"></i> ${esc(c.Date)} &nbsp;|&nbsp; <i class="fas fa-user"></i> ${esc(c.AssignedTo || 'Unassigned')}</div>
+        </div>
+        <span class="badge ${isActive ? 'badge-green' : 'badge-gray'}">${esc(c.Status)}</span>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray);margin-bottom:5px;">
+          <span>Progress</span><span>${visited}/${total} visited (${pct}%)</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      </div>
+      <div class="campaign-stats">
+        <div class="cstat"><div class="cstat-num">${total}</div><div class="cstat-lbl">Properties</div></div>
+        <div class="cstat"><div class="cstat-num">${visited}</div><div class="cstat-lbl">Visited</div></div>
+        <div class="cstat"><div class="cstat-num" style="color:var(--purple);">${phones}</div><div class="cstat-lbl">Phones</div></div>
+        <div class="cstat"><div class="cstat-num" style="color:var(--green);">${parseInt(c.InterestedCount||0)}</div><div class="cstat-lbl">Interested</div></div>
+        <div class="cstat"><div class="cstat-num" style="color:var(--blue);">${leads}</div><div class="cstat-lbl">Leads</div></div>
+        <div class="cstat"><div class="cstat-num" style="color:var(--amber);">${jobs}</div><div class="cstat-lbl">Jobs Won</div></div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-success btn-sm" onclick="event.stopPropagation();openImportModal('${esc(c.CampaignID)}')"><i class="fas fa-file-csv"></i> Import CSV</button>
+        <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openQuickAddProspectModal('${esc(c.CampaignID)}')"><i class="fas fa-user-plus"></i> Prospect</button>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openRouteForCampaign('${esc(c.CampaignID)}')"><i class="fas fa-route"></i> Open Route</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openCampaign(id) {
+  openRouteForCampaign(id);
+}
+
+function openRouteForCampaign(campaignId) {
+  currentCampaign = campaigns.find(c => String(c.CampaignID) === String(campaignId));
+  document.getElementById('routeCampaignName').textContent = currentCampaign ? currentCampaign.Name : '';
+  document.getElementById('fieldCampaignName').textContent = currentCampaign ? currentCampaign.Name : '';
+  showView('route');
+  loadRouteVisits(campaignId);
+}
+
+function loadRouteVisits(campaignId) {
+  document.getElementById('propList').innerHTML = '<div style="padding:20px;text-align:center;"><i class="fas fa-spinner spinner" style="font-size:24px;color:var(--gray);"></i></div>';
+  callAPI('getCampaignDetail', { campaignId: campaignId }, 'GET').then(function(res) {
+      currentVisits = (res.visits || []).sort((a,b) => parseInt(a.RouteOrder||0) - parseInt(b.RouteOrder||0));
+      renderPropList();
+      setTimeout(initMap, 300);
+    }).catch(err => showToast('Error loading visits: ' + err.message, 'error'));
+}
+
+function renderPropList() {
+  const el  = document.getElementById('propList');
+  const q   = (document.getElementById('propSearch').value||'').toLowerCase();
+  const vis = q ? currentVisits.filter(v => (v.OwnerName+v.Address).toLowerCase().includes(q)) : currentVisits;
+  if (!vis.length) {
+    el.innerHTML = '<div class="empty-state"><i class="fas fa-map-pin"></i><h3>No properties</h3><p>Import a CSV to add addresses.</p></div>';
+    return;
+  }
+  el.innerHTML = vis.map((v,i) => {
+    const cls = 'dot-' + (v.VisitStatus||'not-visited').toLowerCase().replace(/ /g,'-');
+    return `<div class="prop-row" onclick="highlightProp('${esc(v.VisitID)}')" id="proprow-${esc(v.VisitID)}">
+      <div class="prop-num">${i+1}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="prop-name">${esc(v.OwnerName || 'Unknown Owner')}</div>
+        <div class="prop-addr">${esc(v.Address)}${v.City ? ', '+esc(v.City) : ''}</div>
+        ${v.Phone ? '<div style="font-size:11px;color:var(--blue);margin-top:2px;"><i class="fas fa-phone"></i> '+esc(v.Phone)+'</div>' : ''}
+      </div>
+      <div class="status-dot ${cls}" style="margin-top:6px;"></div>
+    </div>`;
+  }).join('');
+}
+
+function filterProps() { renderPropList(); }
+
+// ============================================================
+// GOOGLE MAPS — async loader pattern
+// ============================================================
+async function initMap() {
+  const canvas = document.getElementById('mapCanvas');
+  if (!canvas) return;
+  const { Map: GMap } = await google.maps.importLibrary('maps');
+  const { Marker } = await google.maps.importLibrary('marker');
+  mapsReady = true;
+  if (!map) {
+    const center = currentVisits.length && currentVisits[0].Lat
+      ? { lat: parseFloat(currentVisits[0].Lat), lng: parseFloat(currentVisits[0].Lng) }
+      : { lat: 36.1, lng: -84.1 };
+    map = new GMap(canvas, { zoom: 13, center: center, mapTypeId: 'roadmap',
+      styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }] });
+  }
+  mapMarkers.forEach(m => m.setMap(null));
+  mapMarkers = [];
+  const colors = { 'Not Visited': '#9ca3af', 'Visited': '#0284c7', 'Interested': '#059669', 'Not Home': '#d97706', 'No Answer': '#374151' };
+  currentVisits.forEach((v, i) => {
+    if (!v.Lat || !v.Lng) return;
+    const color = colors[v.VisitStatus] || '#9ca3af';
+    const marker = new Marker({
+      position: { lat: parseFloat(v.Lat), lng: parseFloat(v.Lng) },
+      map: map,
+      title: (v.OwnerName || '') + '\n' + (v.Address || ''),
+      label: { text: String(i + 1), color: 'white', fontSize: '11px', fontWeight: 'bold' },
+      icon: { path: google.maps.SymbolPath.CIRCLE, scale: 14, fillColor: color, fillOpacity: 1, strokeColor: 'white', strokeWeight: 2 }
+    });
+    marker.addListener('click', () => highlightProp(v.VisitID));
+    mapMarkers.push(marker);
+  });
+  if (currentVisits.length > 1) {
+    const bounds = new google.maps.LatLngBounds();
+    currentVisits.forEach(v => { if (v.Lat) bounds.extend({ lat: parseFloat(v.Lat), lng: parseFloat(v.Lng) }); });
+    map.fitBounds(bounds);
+  }
+}
+
+function highlightProp(visitId) {
+  document.querySelectorAll('.prop-row').forEach(r => r.classList.remove('highlighted'));
+  const el = document.getElementById('proprow-' + visitId);
+  if (el) { el.classList.add('highlighted'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+// Monitor Map
+async function initMonitorMap() {
+  const canvas = document.getElementById('monitorMapCanvas');
+  if (!canvas || monitorMap) return;
+  const { Map: GMap } = await google.maps.importLibrary('maps');
+  monitorMap = new GMap(canvas, { zoom: 12, center: { lat: 36.1, lng: -84.1 }, mapTypeId: 'roadmap' });
+}
+
+function startMonitorPolling() {
+  loadMonitorLocations();
+  monitorInterval = setInterval(loadMonitorLocations, 30000);
+}
+function stopMonitorPolling() {
+  if (monitorInterval) clearInterval(monitorInterval);
+}
+function loadMonitorLocations() {
+  callAPI('getActiveLocations', { campaignId: '' }, 'GET').then(function(res) {
+      renderMonitorMap(res.locations || []);
+      renderStaffList(res.locations || []);
+    }).catch(() => {});
+}
+async function renderMonitorMap(locs) {
+  if (!monitorMap) return;
+  monitorMarkers.forEach(m => m.setMap(null));
+  monitorMarkers = [];
+  const { Marker } = await google.maps.importLibrary('marker');
+  locs.forEach(loc => {
+    if (!loc.Lat || !loc.Lng) return;
+    const marker = new Marker({
+      position: { lat: parseFloat(loc.Lat), lng: parseFloat(loc.Lng) },
+      map: monitorMap,
+      title: loc.StaffName + '\n' + loc.CampaignID,
+      icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: 7, fillColor: '#0284c7', fillOpacity: 1, strokeColor: 'white', strokeWeight: 2, rotation: 0 }
+    });
+    monitorMarkers.push(marker);
+  });
+}
+function renderStaffList(locs) {
+  const el = document.getElementById('staffList');
+  if (!locs.length) { el.innerHTML = '<p style="font-size:13px;color:var(--gray);text-align:center;">No active staff locations.</p>'; return; }
+  el.innerHTML = locs.map(l => {
+    const ts = l.Timestamp ? new Date(l.Timestamp).toLocaleTimeString() : '—';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9;">
+      <div><div style="font-size:14px;font-weight:700;">${esc(l.StaffName||l.StaffEmail)}</div><div style="font-size:12px;color:var(--gray);">${esc(l.CampaignID)}</div></div>
+      <div style="text-align:right;"><div style="font-size:12px;color:var(--blue);">${ts}</div><div style="font-size:11px;color:var(--gray);">${l.Lat ? parseFloat(l.Lat).toFixed(4)+',' + parseFloat(l.Lng).toFixed(4) : '—'}</div></div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// FIELD MODE
+// ============================================================
+function openFieldMode() {
+  if (!currentCampaign || !currentVisits.length) { showToast('No properties loaded for this campaign.', 'error'); return; }
+  fieldIdx    = 0;
+  fieldSaved  = new Set();
+  marketingIdleNotified = false;
+  pendingVisitPatchQueue = {};
+  isFlushingVisitPatchQueue = false;
+  document.getElementById('fieldMode').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  updateFieldSyncBadge();
+  renderFieldCard();
+  startGPS();
+  scheduleMarketingIdle();
+}
+
+function notifyMarketingSessionEnd_(reason) {
+  if (!currentCampaign) return;
+  callAPI('notifyMarketingSessionEnd', {
+    staffName: staffName,
+    staffEmail: staffEmail,
+    campaignId: currentCampaign.CampaignID,
+    campaignName: currentCampaign.Name || '',
+    reason: reason || 'session_closed'
+  }).catch(function() {});
+}
+
+function clearMarketingIdleTimer() {
+  if (marketingIdleTimer) {
+    clearTimeout(marketingIdleTimer);
+    marketingIdleTimer = null;
+  }
+}
+
+function scheduleMarketingIdle() {
+  clearMarketingIdleTimer();
+  marketingIdleTimer = setTimeout(function() {
+    marketingIdleTimer = null;
+    if (!document.getElementById('fieldMode').classList.contains('open')) return;
+    if (marketingIdleNotified) return;
+    marketingIdleNotified = true;
+    notifyMarketingSessionEnd_('idle');
+    showToast('Session idle notice sent (if Telegram is configured).', 'success');
+  }, MARKETING_IDLE_MS);
+}
+
+function touchFieldActivity() {
+  marketingIdleNotified = false;
+  if (document.getElementById('fieldMode').classList.contains('open')) {
+    scheduleMarketingIdle();
+  }
+}
+
+function updateFieldSyncBadge() {
+  const badge = document.getElementById('fieldSyncBadge');
+  if (!badge) return;
+  const pendingCount = Object.keys(pendingVisitPatchQueue).length;
+  badge.style.display = 'inline-flex';
+  if (pendingCount > 0 || isFlushingVisitPatchQueue) {
+    badge.className = 'badge badge-amber';
+    badge.innerHTML = '<i class="fas fa-cloud-upload-alt"></i>&nbsp;Syncing ' + pendingCount;
+  } else {
+    badge.className = 'badge badge-green';
+    badge.textContent = 'Synced';
+  }
+}
+
+function queueVisitPatch(visitId, patch) {
+  if (!visitId || !patch) return;
+  const id = String(visitId);
+  pendingVisitPatchQueue[id] = Object.assign({}, pendingVisitPatchQueue[id] || {}, patch);
+  updateFieldSyncBadge();
+  flushVisitPatchQueue();
+}
+
+function flushVisitPatchQueue() {
+  if (isFlushingVisitPatchQueue) return;
+  const ids = Object.keys(pendingVisitPatchQueue);
+  if (!ids.length) {
+    updateFieldSyncBadge();
+    return;
+  }
+  const visitId = ids[0];
+  const patch = pendingVisitPatchQueue[visitId];
+  isFlushingVisitPatchQueue = true;
+  updateFieldSyncBadge();
+  callAPI('updateVisit', Object.assign({ visitId: visitId }, patch)).then(function(res) {
+    if (res && res.success) {
+      delete pendingVisitPatchQueue[visitId];
+    }
+  }).catch(function() {
+    // keep queued patch for retry
+  }).finally(function() {
+    isFlushingVisitPatchQueue = false;
+    updateFieldSyncBadge();
+    if (Object.keys(pendingVisitPatchQueue).length) {
+      setTimeout(flushVisitPatchQueue, 350);
+    }
+  });
+}
+
+function closeFieldMode() {
+  clearMarketingIdleTimer();
+  document.getElementById('fieldMode').classList.remove('open');
+  document.body.style.overflow = '';
+  flushVisitPatchQueue();
+  stopGPS();
+  notifyMarketingSessionEnd_('session_closed');
+}
+
+function renderFieldCard() {
+  if (!currentVisits.length) return;
+  const v = currentVisits[fieldIdx];
+  document.getElementById('fieldOwner').textContent   = v.OwnerName || 'Unknown Owner';
+  document.getElementById('fieldAddress').textContent = [v.Address, v.City, v.State].filter(Boolean).join(', ') || '—';
+  document.getElementById('fieldCounter').textContent = (fieldIdx+1) + ' of ' + currentVisits.length;
+  document.getElementById('fieldPhone').value   = v.Phone || '';
+  document.getElementById('fieldComment').value = v.Comment || '';
+  var svEl = document.getElementById('fieldStreetViewUrl');
+  if (svEl) svEl.value = v.StreetViewUrl || v.streetViewUrl || '';
+  fieldStatus = v.VisitStatus || '';
+  updateStatusButtons();
+  document.getElementById('smsBtn').style.display = v.Phone ? 'flex' : 'none';
+  // Collapse expandable sections
+  ['commentSection','phoneSection','streetViewSection','scheduleSection'].forEach(s => {
+    var sec = document.getElementById(s);
+    var ic = document.getElementById(s + 'Icon');
+    if (sec) sec.classList.add('closed');
+    if (ic) ic.style.transform = '';
+  });
+  // Keep phone section open for rapid entry workflow
+  var phoneSec = document.getElementById('phoneSection');
+  var phoneIc = document.getElementById('phoneSectionIcon');
+  if (phoneSec) phoneSec.classList.remove('closed');
+  if (phoneIc) phoneIc.style.transform = 'rotate(180deg)';
+  setTimeout(function() {
+    var phoneEl = document.getElementById('fieldPhone');
+    if (phoneEl) {
+      phoneEl.focus();
+      phoneEl.select();
+    }
+  }, 0);
+  updateFieldSatelliteView(v);
+}
+
+function buildFieldAddress(v) {
+  return [v.Address, v.City, v.State, v.ZIP].filter(Boolean).join(', ').trim();
+}
+
+function buildFieldSatelliteUrl(v) {
+  const lat = parseFloat(v.Lat);
+  const lng = parseFloat(v.Lng);
+  if (!isNaN(lat) && !isNaN(lng)) {
+    return 'https://www.google.com/maps?q=' + lat + ',' + lng + '&z=20&t=k';
+  }
+  const addr = buildFieldAddress(v);
+  return 'https://www.google.com/maps?q=' + encodeURIComponent(addr || (v.OwnerName || 'property')) + '&z=20&t=k';
+}
+
+async function updateFieldSatelliteView(v) {
+  const token = ++fieldSatelliteToken;
+  const mapEl = document.getElementById('fieldSatelliteMap');
+  const hintEl = document.getElementById('fieldSatelliteHint');
+  const openEl = document.getElementById('fieldSatelliteOpen');
+  if (!mapEl || !hintEl || !v) return;
+
+  if (openEl) openEl.href = buildFieldSatelliteUrl(v);
+  hintEl.textContent = 'Loading satellite view…';
+
+  try {
+    if (!window.google || !google.maps || !google.maps.importLibrary) {
+      hintEl.textContent = 'Map unavailable on this device. Tap "Open full map".';
+      return;
+    }
+
+    const { Map: GMap } = await google.maps.importLibrary('maps');
+    if (token !== fieldSatelliteToken) return;
+
+    let center = null;
+    const lat = parseFloat(v.Lat);
+    const lng = parseFloat(v.Lng);
+    if (!isNaN(lat) && !isNaN(lng)) {
+      center = { lat: lat, lng: lng };
+    } else {
+      const addr = buildFieldAddress(v);
+      if (addr) {
+        if (!fieldSatelliteGeocoder) fieldSatelliteGeocoder = new google.maps.Geocoder();
+        center = await new Promise(function(resolve) {
+          fieldSatelliteGeocoder.geocode({ address: addr }, function(results, status) {
+            if (status === 'OK' && results && results[0] && results[0].geometry) {
+              const loc = results[0].geometry.location;
+              resolve({ lat: loc.lat(), lng: loc.lng() });
+            } else {
+              resolve(null);
+            }
+          });
+        });
+      }
+    }
+
+    if (token !== fieldSatelliteToken) return;
+
+    if (!center) {
+      hintEl.textContent = 'No coordinates found. Tap "Open full map".';
+      return;
+    }
+
+    if (!fieldSatelliteMap) {
+      fieldSatelliteMap = new GMap(mapEl, {
+        center: center,
+        zoom: 20,
+        mapTypeId: 'satellite',
+        disableDefaultUI: true,
+        gestureHandling: 'greedy',
+        clickableIcons: false,
+        keyboardShortcuts: false
+      });
+    } else {
+      fieldSatelliteMap.setMapTypeId('satellite');
+      fieldSatelliteMap.setCenter(center);
+      fieldSatelliteMap.setZoom(20);
+    }
+
+    if (!fieldSatelliteMarker) {
+      fieldSatelliteMarker = new google.maps.Marker({ map: fieldSatelliteMap, position: center });
+    } else {
+      fieldSatelliteMarker.setPosition(center);
+      fieldSatelliteMarker.setMap(fieldSatelliteMap);
+    }
+
+    hintEl.textContent = 'Satellite overhead loaded.';
+  } catch (err) {
+    hintEl.textContent = 'Could not load map. Tap "Open full map".';
+  }
+}
+
+function setFieldStatus(s) {
+  fieldStatus = s;
+  updateStatusButtons();
+  touchFieldActivity();
+}
+
+function updateStatusButtons() {
+  ['Visited','Interested','Not Home','No Answer'].forEach(s => {
+    const btn = document.getElementById('sb-' + s);
+    if (btn) btn.classList.toggle('selected', fieldStatus === s);
+  });
+}
+
+function fieldSaveAndNext() {
+  const v = currentVisits[fieldIdx];
+  const phone   = document.getElementById('fieldPhone').value.trim();
+  const comment = document.getElementById('fieldComment').value.trim();
+  const streetViewUrl = (document.getElementById('fieldStreetViewUrl') && document.getElementById('fieldStreetViewUrl').value.trim()) || '';
+  const prevSt = String(v.VisitStatus || '').trim();
+  const prevPh = String(v.Phone || '').trim();
+  const prevCo = String(v.Comment || '').trim();
+  const prevSv = String(v.StreetViewUrl || v.streetViewUrl || '').trim();
+  const curSt = String(fieldStatus || '').trim();
+
+  const payload = { visitId: v.VisitID };
+  if (curSt !== prevSt) payload.status = curSt;
+  if (phone !== prevPh) payload.phone = phone;
+  if (comment !== prevCo) payload.comment = comment;
+  if (streetViewUrl !== prevSv) payload.streetViewUrl = streetViewUrl;
+
+  const hasAny = payload.status !== undefined || payload.phone !== undefined || payload.comment !== undefined || payload.streetViewUrl !== undefined;
+
+  function applyLocal() {
+    currentVisits[fieldIdx] = Object.assign({}, v, {
+      VisitStatus: payload.status !== undefined ? payload.status : v.VisitStatus,
+      Phone: payload.phone !== undefined ? phone : v.Phone,
+      Comment: payload.comment !== undefined ? comment : v.Comment,
+      StreetViewUrl: payload.streetViewUrl !== undefined ? streetViewUrl : (v.StreetViewUrl || v.streetViewUrl || '')
+    });
+    renderPropList();
+  }
+
+  if (hasAny) {
+    applyLocal();
+    queueVisitPatch(v.VisitID, payload);
+  }
+  fieldNext();
+}
+
+function fieldNext() {
+  if (fieldIdx < currentVisits.length - 1) { fieldIdx++; renderFieldCard(); }
+  else showToast('You\'ve reached the end of the route!', 'success');
+}
+function fieldPrev() {
+  if (fieldIdx > 0) { fieldIdx--; renderFieldCard(); }
+}
+
+function formatUSPhoneInput(raw) {
+  const digits = String(raw || '').replace(/\D/g, '').slice(0, 10);
+  if (!digits) return '';
+  if (digits.length <= 3) return '(' + digits;
+  if (digits.length <= 6) return '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+  return '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+}
+
+function handleFieldPhoneInput(inputEl) {
+  if (!inputEl) return;
+  const before = inputEl.value;
+  inputEl.value = formatUSPhoneInput(before);
+  touchFieldActivity();
+}
+
+function fieldPhoneKeydown(evt) {
+  if (!evt) return;
+  if (evt.key === 'Enter') {
+    evt.preventDefault();
+    saveFieldPhoneAndNext();
+  }
+}
+
+function saveFieldPhone() {
+  persistCurrentFieldPhone(false);
+}
+
+function saveFieldPhoneAndNext() {
+  persistCurrentFieldPhone(true);
+}
+
+function persistCurrentFieldPhone(goNext) {
+  const rawPhone = document.getElementById('fieldPhone').value.trim();
+  const phone = formatUSPhoneInput(rawPhone);
+  document.getElementById('fieldPhone').value = phone;
+  if (!phone) {
+    if (goNext) fieldNext();
+    return;
+  }
+  const v = currentVisits[fieldIdx];
+  const streetViewUrl = (document.getElementById('fieldStreetViewUrl') && document.getElementById('fieldStreetViewUrl').value.trim()) || '';
+  const prevSv = String(v.StreetViewUrl || v.streetViewUrl || '').trim();
+  const payload = { visitId: v.VisitID, phone: phone };
+  if (streetViewUrl !== prevSv) payload.streetViewUrl = streetViewUrl;
+  currentVisits[fieldIdx].Phone = phone;
+  if (payload.streetViewUrl !== undefined) currentVisits[fieldIdx].StreetViewUrl = streetViewUrl;
+  document.getElementById('smsBtn').style.display = 'flex';
+  renderPropList();
+  queueVisitPatch(v.VisitID, payload);
+  if (goNext) {
+    fieldNext();
+  } else {
+    showToast('Phone queued to save.', 'success');
+  }
+}
+
+function saveFieldStreetViewUrl() {
+  const v = currentVisits[fieldIdx];
+  if (!v) return;
+  const streetViewUrl = document.getElementById('fieldStreetViewUrl').value.trim();
+  currentVisits[fieldIdx].StreetViewUrl = streetViewUrl;
+  queueVisitPatch(v.VisitID, { streetViewUrl: streetViewUrl });
+  showToast('Street View link queued.', 'success');
+}
+
+function fieldSendSMS() {
+  const v = currentVisits[fieldIdx];
+  if (!v.Phone) { showToast('Enter a phone number first.', 'error'); return; }
+  const smsBtn = document.getElementById('smsBtn');
+  smsBtn.disabled = true;
+  callAPI('sendSMSEmail', { visitId: v.VisitID }).then(res => {
+      smsBtn.disabled = false;
+      if (res.success) showToast('SMS email sent!', 'success');
+      else showToast('Error: ' + res.error, 'error');
+    }).catch(err => { smsBtn.disabled = false; showToast('Error: ' + err.message, 'error'); });
+}
+
+function submitFieldSchedule() {
+  const email = document.getElementById('schedEmail').value.trim();
+  if (!email) { showToast('Email is required to schedule.', 'error'); return; }
+  const v = currentVisits[fieldIdx];
+  const data = {
+    email:       email,
+    serviceType: document.getElementById('schedType').value,
+    preferredDay:document.getElementById('schedDay').value,
+    frequency:   document.getElementById('schedType').value === 'Pool Service' ? 'weekly' : ''
+  };
+  callAPI('scheduleServiceFromVisit', { visitId: v.VisitID, ...data }).then(res => {
+      if (res.success) {
+        showToast('Service request submitted!', 'success');
+        document.getElementById('schedEmail').value = '';
+      } else showToast('Error: ' + res.error, 'error');
+    }).catch(err => showToast('Error: ' + err.message, 'error'));
+}
+
+// Expandable sections
+function toggleExpand(id) {
+  const body = document.getElementById(id);
+  const icon = document.getElementById(id + 'Icon');
+  const isClosed = body.classList.contains('closed');
+  body.classList.toggle('closed', !isClosed);
+  icon.style.transform = isClosed ? 'rotate(180deg)' : '';
+}
+
+// ============================================================
+// GPS TRACKING
+// ============================================================
+function startGPS() {
+  const badge = document.getElementById('gpsStatusBadge');
+  if (!navigator.geolocation) { badge.style.display = 'none'; return; }
+  badge.style.display = 'inline-flex';
+  badge.innerHTML = '<i class="fas fa-location-arrow"></i>';
+  gpsWatchId = navigator.geolocation.watchPosition(
+    function(pos) {
+      badge.className = 'badge badge-green';
+      badge.innerHTML = '<i class="fas fa-location-arrow"></i>';
+      if (currentCampaign) {
+        callAPI('updateLocation', { staffName: staffName, staffEmail: staffEmail, campaignId: currentCampaign.CampaignID, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }).catch(() => {});
+      }
+    },
+    function(err) { badge.className = 'badge badge-red'; badge.innerHTML = '<i class="fas fa-location-arrow"></i>'; },
+    { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 }
+  );
+}
+function stopGPS() {
+  if (gpsWatchId !== null) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null; }
+  document.getElementById('gpsStatusBadge').style.display = 'none';
+}
+
+// ============================================================
+// NEW CAMPAIGN MODAL
+// ============================================================
+function openNewCampaignModal() { document.getElementById('newCampaignModal').classList.add('open'); }
+function submitNewCampaign() {
+  const name = document.getElementById('campName').value.trim();
+  if (!name) { document.getElementById('newCampError').textContent='Name is required'; document.getElementById('newCampError').style.display='block'; return; }
+  const btn = document.getElementById('createCampBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Creating…';
+  callAPI('createCampaign', {
+      name:           document.getElementById('campName').value.trim(),
+      date:           document.getElementById('campDate').value,
+      assignedTo:     document.getElementById('campAssigned').value.trim() || staffName,
+      commissionRate: parseFloat(document.getElementById('campCommission').value) || 25,
+      notes:          document.getElementById('campNotes').value.trim()
+    }).then(res => {
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-plus"></i> Create Campaign';
+      if (res.success) {
+        closeModal('newCampaignModal');
+        showToast('Campaign created!', 'success');
+        loadCampaigns();
+      } else {
+        document.getElementById('newCampError').textContent = res.error || 'Error';
+        document.getElementById('newCampError').style.display = 'block';
+      }
+    }).catch(err => {
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-plus"></i> Create Campaign';
+      document.getElementById('newCampError').textContent = err.message;
+      document.getElementById('newCampError').style.display = 'block';
+    });
+}
+
+// ============================================================
+// CSV IMPORT MODAL
+// ============================================================
+let importCampaignId = '';
+function openImportModal(campaignId) {
+  importCampaignId = campaignId;
+  hideImportError();
+  document.getElementById('importPreview').style.display = 'none';
+  document.getElementById('csvFile').value = '';
+  document.getElementById('customCsvPaste').value = '';
+  document.getElementById('customCsvFile').value = '';
+  invalidateCustomImportMap();
+  document.getElementById('importSrcLandGlide').checked = true;
+  toggleImportSource();
+  document.getElementById('importModal').classList.add('open');
+}
+function submitCSVImport() {
+  hideImportError();
+  const btn = document.getElementById('importBtn');
+  function resetImportBtn() {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-upload"></i> Import Properties';
+  }
+  const useLandGlide = document.getElementById('importSrcLandGlide').checked;
+  if (useLandGlide) {
+    const file = document.getElementById('csvFile').files[0];
+    if (!file) {
+      showImportError('Please select a CSV file.');
+      return;
+    }
+    if (file.size > MARKETING_IMPORT_MAX_BYTES) {
+      showImportError('File exceeds 5 MB limit.');
+      return;
+    }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Importing…';
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const csvText = e.target.result;
+      const filterRes = document.getElementById('filterResidential').checked;
+      callAPI('importLandGlideCSV', { campaignId: importCampaignId, csvText: csvText, filterResidential: filterRes }).then(function(res) {
+        resetImportBtn();
+        if (res.success) {
+          closeModal('importModal');
+          showToast(res.message || res.imported + ' properties imported!', 'success');
+          loadCampaigns();
+          if (currentCampaign && String(currentCampaign.CampaignID) === String(importCampaignId)) loadRouteVisits(importCampaignId);
+        } else {
+          showImportError(res.error || 'Import failed');
+        }
+      }).catch(function(err) {
+        resetImportBtn();
+        showImportError(err.message || 'Import failed');
+      });
+    };
+    reader.readAsText(file);
+    return;
+  }
+  const mapWrap = document.getElementById('customColumnMapWrap');
+  if (!mapWrap || mapWrap.style.display === 'none') {
+    showImportError('Click "Read header row" and map columns before importing.');
+    return;
+  }
+  const pasteVal = (document.getElementById('customCsvPaste').value || '').trim();
+  if (pasteVal && pasteVal !== customImportCsvText.trim()) {
+    showImportError('Paste changed — click Read header row again.');
+    return;
+  }
+  if (!customImportCsvText || !customImportCsvText.trim()) {
+    showImportError('No CSV data. Paste or choose a file and click Read header row.');
+    return;
+  }
+  if (marketingCsvByteLength(customImportCsvText) > MARKETING_IMPORT_MAX_BYTES) {
+    showImportError('CSV exceeds 5 MB limit.');
+    return;
+  }
+  const columnMap = buildCustomColumnMap();
+  const hasAddr = !!columnMap.Address;
+  const hasLatLng = !!(columnMap.Lat && columnMap.Lng);
+  if (!hasAddr && !hasLatLng) {
+    showImportError('Map Address, or both Latitude and Longitude.');
+    return;
+  }
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Importing…';
+  callAPI('importMarketingCSV', {
+    campaignId: importCampaignId,
+    csvText: customImportCsvText,
+    columnMap: columnMap
+  }).then(function(res) {
+    resetImportBtn();
+    if (res.success) {
+      closeModal('importModal');
+      showToast(res.message || (res.imported + ' rows imported.'), 'success');
+      loadCampaigns();
+      if (currentCampaign && String(currentCampaign.CampaignID) === String(importCampaignId)) loadRouteVisits(importCampaignId);
+    } else {
+      showImportError(res.error || 'Import failed');
+    }
+  }).catch(function(err) {
+    resetImportBtn();
+    showImportError(err.message || 'Import failed');
+  });
+}
+
+function openQuickAddProspectModal(campaignId) {
+  quickAddCampaignId = campaignId != null && String(campaignId) !== ''
+    ? String(campaignId)
+    : (currentCampaign ? String(currentCampaign.CampaignID) : '');
+  const hint = document.getElementById('qaCampaignHint');
+  if (quickAddCampaignId && currentCampaign && String(currentCampaign.CampaignID) === quickAddCampaignId) {
+    hint.textContent = 'Campaign: ' + (currentCampaign.Name || quickAddCampaignId);
+  } else if (quickAddCampaignId) {
+    const c = campaigns.find(function(x) { return String(x.CampaignID) === quickAddCampaignId; });
+    hint.textContent = c ? ('Campaign: ' + c.Name) : ('Campaign ID: ' + quickAddCampaignId);
+  } else {
+    hint.textContent = 'No campaign selected — source note will omit campaign.';
+  }
+  document.getElementById('quickAddError').style.display = 'none';
+  ['qaName', 'qaEmail', 'qaPhone', 'qaAddress', 'qaCity', 'qaState', 'qaZip', 'qaNotes'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('quickAddProspectModal').classList.add('open');
+}
+function submitQuickAddProspect() {
+  const errEl = document.getElementById('quickAddError');
+  errEl.style.display = 'none';
+  const name = document.getElementById('qaName').value.trim();
+  const email = document.getElementById('qaEmail').value.trim();
+  if (!name && !email) {
+    errEl.textContent = 'Enter a name or email.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const btn = document.getElementById('qaSubmitBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Saving…';
+  const c = quickAddCampaignId ? campaigns.find(function(x) { return String(x.CampaignID) === String(quickAddCampaignId); }) : null;
+  callAPI('addMarketingProspect', {
+    actorEmail: staffEmail,
+    name: name,
+    email: email,
+    phone: document.getElementById('qaPhone').value.trim(),
+    address: document.getElementById('qaAddress').value.trim(),
+    city: document.getElementById('qaCity').value.trim(),
+    state: document.getElementById('qaState').value.trim(),
+    zip: document.getElementById('qaZip').value.trim(),
+    notes: document.getElementById('qaNotes').value.trim(),
+    campaignId: quickAddCampaignId || '',
+    campaignName: c ? c.Name : ''
+  }).then(function(res) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    if (res.success) {
+      closeModal('quickAddProspectModal');
+      showToast('Prospect added to Customers.', 'success');
+    } else {
+      errEl.textContent = res.error || 'Failed';
+      errEl.style.display = 'block';
+    }
+  }).catch(function(e) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    errEl.textContent = e.message || 'Error';
+    errEl.style.display = 'block';
+  });
+}
+
+// ============================================================
+// PHONE BANK
+// ============================================================
+function initPhoneBankView() {
+  renderPhoneBankCampaignOptions();
+  if (!phoneBankCampaignId) {
+    const sel = document.getElementById('phoneCampaignSelect');
+    phoneBankCampaignId = sel && sel.value ? String(sel.value) : (currentCampaign ? String(currentCampaign.CampaignID) : '');
+  }
+  if (phoneBankCampaignId) loadPhoneBankData();
+  loadProjectUpdateTargets();
+  loadProjectUpdateLogs();
+}
+
+function renderPhoneBankCampaignOptions() {
+  const sel = document.getElementById('phoneCampaignSelect');
+  if (!sel) return;
+  const prev = phoneBankCampaignId || sel.value;
+  sel.innerHTML = '<option value="">Select campaign…</option>' + campaigns.map(function(c) {
+    return '<option value="' + esc(c.CampaignID) + '">' + esc(c.Name) + ' (' + esc(c.Date || '') + ')</option>';
+  }).join('');
+  if (prev && campaigns.some(function(c) { return String(c.CampaignID) === String(prev); })) {
+    sel.value = prev;
+    phoneBankCampaignId = prev;
+  } else if (currentCampaign) {
+    sel.value = String(currentCampaign.CampaignID);
+    phoneBankCampaignId = String(currentCampaign.CampaignID);
+  }
+}
+
+function onPhoneCampaignChange() {
+  const sel = document.getElementById('phoneCampaignSelect');
+  phoneBankCampaignId = sel ? String(sel.value || '') : '';
+  openedBulkSms = new Set();
+  bulkCampaignRecipients = [];
+  document.getElementById('bulkSummary').textContent = '';
+  document.getElementById('bulkResults').innerHTML = '';
+  loadPhoneBankData();
+  loadProjectUpdateTargets();
+}
+
+function loadPhoneBankData() {
+  if (!phoneBankCampaignId) {
+    phoneBankVisits = [];
+    renderPhoneBankList();
+    document.getElementById('phoneBankSummary').textContent = 'Select a campaign';
+    return;
+  }
+  callAPI('getPhoneBankData', { campaignId: phoneBankCampaignId }, 'GET').then(function(res) {
+    if (!res.success) {
+      showToast(res.error || 'Failed to load phone bank', 'error');
+      return;
+    }
+    phoneBankVisits = res.visits || [];
+    const sum = res.summary || { total: 0, withPhone: 0, interested: 0 };
+    document.getElementById('phoneBankSummary').textContent = sum.total + ' houses • ' + sum.withPhone + ' phones • ' + sum.interested + ' interested';
+    renderPhoneBankList();
+  }).catch(function(err) {
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function renderPhoneBankList() {
+  const wrap = document.getElementById('phoneBankList');
+  if (!wrap) return;
+  const q = String(document.getElementById('pbSearch').value || '').toLowerCase();
+  const onlyPhones = !!document.getElementById('pbOnlyPhones').checked;
+  let rows = phoneBankVisits.slice();
+  if (onlyPhones) rows = rows.filter(function(v) { return String(v.Phone || '').trim(); });
+  if (q) {
+    rows = rows.filter(function(v) {
+      const blob = [v.OwnerName, v.Address, v.City, v.Phone, v.Comment].join(' ').toLowerCase();
+      return blob.includes(q);
+    });
+  }
+  if (!rows.length) {
+    wrap.innerHTML = '<div class="empty-state" style="padding:24px 10px;"><i class="fas fa-phone"></i><h3>No matches</h3><p>Save a report or adjust filters.</p></div>';
+    return;
+  }
+  wrap.innerHTML = rows.map(function(v) {
+    const status = esc(v.VisitStatus || 'Not Visited');
+    const phone = esc(v.Phone || '');
+    const title = esc(v.OwnerName || 'Unknown Owner');
+    const addr = esc([v.Address, v.City, v.State].filter(Boolean).join(', '));
+    return '<div class="phonebank-list-row">'
+      + '<div style="display:flex;gap:8px;align-items:flex-start;flex:1;min-width:0;">'
+      + '<input type="checkbox" class="pb-select" value="' + esc(v.VisitID) + '" ' + (phone ? 'checked' : '') + ' style="margin-top:3px;">'
+      + '<div style="min-width:0;">'
+      + '<div class="title">' + title + '</div>'
+      + '<div class="meta">' + addr + '</div>'
+      + '<div class="meta"><span class="badge badge-gray" style="margin-right:6px;">' + status + '</span>' + (phone ? ('<i class="fas fa-phone" style="color:var(--green);"></i> ' + phone) : 'No phone saved') + '</div>'
+      + (v.Comment ? ('<div class="meta" style="margin-top:5px;">' + esc(v.Comment) + '</div>') : '')
+      + '</div>'
+      + '</div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">'
+      + '<button class="btn btn-ghost btn-sm" onclick="editPhoneReport(\'' + esc(v.VisitID) + '\')"><i class="fas fa-pen"></i></button>'
+      + (phone ? ('<a class="btn btn-success btn-sm" href="sms:' + phone.replace(/\D/g,'') + '"><i class="fas fa-comment"></i></a>') : '')
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function editPhoneReport(visitId) {
+  const v = phoneBankVisits.find(function(x) { return String(x.VisitID) === String(visitId); });
+  if (!v) return;
+  document.getElementById('pbVisitId').value = v.VisitID || '';
+  document.getElementById('pbOwner').value = v.OwnerName || '';
+  document.getElementById('pbPhone').value = v.Phone || '';
+  document.getElementById('pbAddress').value = v.Address || '';
+  document.getElementById('pbCity').value = v.City || '';
+  document.getElementById('pbState').value = v.State || '';
+  document.getElementById('pbZip').value = v.ZIP || '';
+  document.getElementById('pbStatus').value = v.VisitStatus || 'Not Visited';
+  document.getElementById('pbComment').value = v.Comment || '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function clearPhoneReportForm() {
+  ['pbVisitId','pbOwner','pbPhone','pbAddress','pbCity','pbState','pbZip','pbComment'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('pbStatus').value = 'Not Visited';
+}
+
+function savePhoneReport() {
+  if (!phoneBankCampaignId) {
+    showToast('Select a campaign first.', 'error');
+    return;
+  }
+  const payload = {
+    campaignId: phoneBankCampaignId,
+    visitId: document.getElementById('pbVisitId').value.trim(),
+    ownerName: document.getElementById('pbOwner').value.trim(),
+    phone: document.getElementById('pbPhone').value.trim(),
+    address: document.getElementById('pbAddress').value.trim(),
+    city: document.getElementById('pbCity').value.trim(),
+    state: document.getElementById('pbState').value.trim(),
+    zip: document.getElementById('pbZip').value.trim(),
+    status: document.getElementById('pbStatus').value,
+    comment: document.getElementById('pbComment').value.trim()
+  };
+  if (!payload.address && !payload.ownerName && !payload.phone) {
+    showToast('Enter at least address, owner, or phone.', 'error');
+    return;
+  }
+  const btn = document.getElementById('pbSaveBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Saving…';
+  callAPI('saveHouseReport', payload).then(function(res) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    if (!res.success) {
+      showToast(res.error || 'Save failed', 'error');
+      return;
+    }
+    showToast(res.created ? 'House report saved.' : 'Report updated.', 'success');
+    clearPhoneReportForm();
+    loadPhoneBankData();
+  }).catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function getSelectedPhoneVisitIds() {
+  return Array.from(document.querySelectorAll('.pb-select:checked')).map(function(cb) { return cb.value; });
+}
+
+function buildBulkCampaign() {
+  if (!phoneBankCampaignId) {
+    showToast('Select a campaign first.', 'error');
+    return;
+  }
+  const selected = getSelectedPhoneVisitIds();
+  if (!selected.length) {
+    showToast('Select at least one house in the list.', 'error');
+    return;
+  }
+  const template = document.getElementById('pbTemplate').value.trim();
+  const btn = document.getElementById('pbBuildBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Building…';
+  callAPI('createBulkTextCampaign', {
+    campaignId: phoneBankCampaignId,
+    visitIds: selected,
+    template: template
+  }).then(function(res) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    if (!res.success) {
+      showToast(res.error || 'Failed to build campaign', 'error');
+      return;
+    }
+    bulkCampaignRecipients = res.recipients || [];
+    openedBulkSms = new Set();
+    renderBulkCampaignResults();
+    showToast('Campaign built for ' + bulkCampaignRecipients.length + ' contacts.', 'success');
+  }).catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function renderBulkCampaignResults() {
+  const wrap = document.getElementById('bulkResults');
+  const sum = document.getElementById('bulkSummary');
+  if (!bulkCampaignRecipients.length) {
+    sum.textContent = 'No campaign built yet.';
+    wrap.innerHTML = '';
+    return;
+  }
+  const opened = openedBulkSms.size;
+  sum.textContent = opened + ' opened • ' + bulkCampaignRecipients.length + ' total';
+  wrap.innerHTML = bulkCampaignRecipients.map(function(r, i) {
+    const isOpened = openedBulkSms.has(String(r.visitId));
+    return '<div class="result-card">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">'
+      + '<div>'
+      + '<div class="result-title">' + esc(r.ownerName || 'Unknown') + '</div>'
+      + '<div class="result-sub">' + esc(r.address || '') + ' • ' + esc(r.phone || '') + '</div>'
+      + '</div>'
+      + '<span class="badge ' + (isOpened ? 'badge-green' : 'badge-gray') + '">' + (isOpened ? 'Opened' : 'Pending') + '</span>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">'
+      + '<button class="btn btn-primary btn-sm" onclick="openBulkSms(' + i + ')"><i class="fas fa-comment"></i> Open Text</button>'
+      + '<label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);cursor:pointer;">'
+      + '<input type="checkbox" ' + (isOpened ? 'checked' : '') + ' onchange="toggleBulkOpened(\'' + esc(r.visitId) + '\', this.checked)"> Mark sent'
+      + '</label>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function openBulkSms(idx) {
+  const r = bulkCampaignRecipients[idx];
+  if (!r || !r.smsLink) return;
+  openedBulkSms.add(String(r.visitId));
+  window.location.href = r.smsLink;
+  renderBulkCampaignResults();
+}
+
+function toggleBulkOpened(visitId, checked) {
+  if (checked) openedBulkSms.add(String(visitId));
+  else openedBulkSms.delete(String(visitId));
+  renderBulkCampaignResults();
+}
+
+function openNextBulkSms() {
+  if (!bulkCampaignRecipients.length) {
+    showToast('Build a campaign first.', 'error');
+    return;
+  }
+  const nextIdx = bulkCampaignRecipients.findIndex(function(r) { return !openedBulkSms.has(String(r.visitId)); });
+  if (nextIdx < 0) {
+    showToast('All texts already opened.', 'success');
+    return;
+  }
+  openBulkSms(nextIdx);
+}
+
+// ============================================================
+// PROJECT UPDATES (PM_Projects + Marketing)
+// ============================================================
+function loadProjectUpdateTargets() {
+  const sourceMode = String((document.getElementById('puSourceFilter') || {}).value || 'active-projects');
+  const params = {
+    includeProjects: sourceMode !== 'marketing-only',
+    includeMarketing: true,
+    onlyActiveProjects: sourceMode === 'active-projects',
+    marketingCampaignId: phoneBankCampaignId || ''
+  };
+  callAPI('getProjectUpdateTargets', params, 'POST').then(function(res) {
+    if (!res.success) {
+      showToast(res.error || 'Failed to load project update contacts', 'error');
+      return;
+    }
+    projectUpdateTargets = res.targets || [];
+    selectedProjectUpdateTargetIds = new Set();
+    projectUpdateDrafts = [];
+    openedProjectUpdateSms = new Set();
+    renderProjectUpdateTargets();
+    renderProjectUpdateBatchResults();
+  }).catch(function(err) {
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function renderProjectUpdateTargets() {
+  const wrap = document.getElementById('puTargets');
+  const sum = document.getElementById('puTargetSummary');
+  if (!wrap || !sum) return;
+  const q = String((document.getElementById('puSearch') || {}).value || '').toLowerCase();
+  let rows = projectUpdateTargets.slice();
+  if (q) {
+    rows = rows.filter(function(r) {
+      const blob = [r.customerName, r.customerPhone, r.projectId, r.address, r.status, r.sourceType].join(' ').toLowerCase();
+      return blob.includes(q);
+    });
+  }
+  sum.textContent = selectedProjectUpdateTargetIds.size + ' selected • ' + rows.length + ' shown • ' + projectUpdateTargets.length + ' total';
+  if (!rows.length) {
+    wrap.innerHTML = '<div class="empty-state" style="padding:20px 10px;"><i class="fas fa-user-group"></i><h3>No contacts</h3><p>Try changing source/filter.</p></div>';
+    return;
+  }
+  wrap.innerHTML = rows.map(function(r) {
+    const checked = selectedProjectUpdateTargetIds.has(String(r.targetId));
+    const label = r.sourceType === 'project' ? 'Project' : 'Marketing';
+    const sub = [r.projectId ? ('ID ' + r.projectId) : '', r.status || '', r.customerPhone || 'No phone'].filter(Boolean).join(' • ');
+    return '<div class="pu-target-row">'
+      + '<div style="display:flex;gap:8px;align-items:flex-start;min-width:0;flex:1;">'
+      + '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="toggleProjectUpdateTarget(\'' + esc(String(r.targetId)) + '\', this.checked)" style="margin-top:3px;">'
+      + '<div style="min-width:0;">'
+      + '<div class="title" style="font-size:14px;font-weight:700;">' + esc(r.customerName || 'Unknown') + '</div>'
+      + '<div class="meta" style="font-size:12px;color:var(--gray);">' + esc(sub) + '</div>'
+      + (r.address ? ('<div class="meta" style="font-size:12px;color:var(--gray);">' + esc(r.address) + '</div>') : '')
+      + '</div>'
+      + '</div>'
+      + '<span class="badge badge-' + (r.sourceType === 'project' ? 'purple' : 'blue') + '">' + esc(label) + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+function toggleProjectUpdateTarget(targetId, checked) {
+  const key = String(targetId || '');
+  if (!key) return;
+  if (checked) selectedProjectUpdateTargetIds.add(key);
+  else selectedProjectUpdateTargetIds.delete(key);
+  renderProjectUpdateTargets();
+}
+
+function selectAllProjectUpdateTargets(flag) {
+  const q = String((document.getElementById('puSearch') || {}).value || '').toLowerCase();
+  if (!flag) {
+    selectedProjectUpdateTargetIds = new Set();
+    renderProjectUpdateTargets();
+    return;
+  }
+  const rows = projectUpdateTargets.filter(function(r) {
+    if (!q) return true;
+    const blob = [r.customerName, r.customerPhone, r.projectId, r.address, r.status, r.sourceType].join(' ').toLowerCase();
+    return blob.includes(q);
+  });
+  rows.forEach(function(r) { selectedProjectUpdateTargetIds.add(String(r.targetId)); });
+  renderProjectUpdateTargets();
+}
+
+function buildProjectUpdateBatch() {
+  const selected = projectUpdateTargets.filter(function(r) {
+    return selectedProjectUpdateTargetIds.has(String(r.targetId));
+  });
+  if (!selected.length) {
+    showToast('Select at least one contact.', 'error');
+    return;
+  }
+  const template = String((document.getElementById('puTemplate') || {}).value || '').trim();
+  const sendTelegram = !!(document.getElementById('puSendTelegram') || {}).checked;
+  const btn = document.getElementById('puBuildBtn');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Building…';
+  callAPI('createProjectUpdateBatch', {
+    targets: selected,
+    template: template,
+    sendTelegram: sendTelegram
+  }, 'POST').then(function(res) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    if (!res.success) {
+      showToast(res.error || 'Failed to build drafts', 'error');
+      return;
+    }
+    projectUpdateDrafts = res.recipients || [];
+    openedProjectUpdateSms = new Set();
+    renderProjectUpdateBatchResults();
+    loadProjectUpdateLogs();
+    showToast('Built ' + projectUpdateDrafts.length + ' drafts' + (sendTelegram ? ' and sent to Telegram.' : '.'), 'success');
+  }).catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function renderProjectUpdateBatchResults() {
+  const wrap = document.getElementById('puBatchResults');
+  const sum = document.getElementById('puBatchSummary');
+  if (!wrap || !sum) return;
+  if (!projectUpdateDrafts.length) {
+    sum.textContent = 'No drafts built yet.';
+    wrap.innerHTML = '';
+    return;
+  }
+  const opened = openedProjectUpdateSms.size;
+  sum.textContent = opened + ' opened • ' + projectUpdateDrafts.length + ' total';
+  wrap.innerHTML = projectUpdateDrafts.map(function(r, i) {
+    const isOpened = openedProjectUpdateSms.has(String(r.messageId));
+    return '<div class="result-card">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">'
+      + '<div>'
+      + '<div class="result-title">' + esc(r.customerName || 'Unknown') + '</div>'
+      + '<div class="result-sub">' + esc((r.projectId ? ('Project ' + r.projectId + ' • ') : '') + (r.customerPhone || '')) + '</div>'
+      + '</div>'
+      + '<span class="badge ' + (isOpened ? 'badge-green' : 'badge-gray') + '">' + (isOpened ? 'Opened' : 'Pending') + '</span>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">'
+      + '<button class="btn btn-primary btn-sm" onclick="openProjectUpdateSms(' + i + ')"><i class="fas fa-comment"></i> Open Text</button>'
+      + '<button class="btn btn-ghost btn-sm" onclick="copyProjectUpdateText(' + i + ')"><i class="fas fa-copy"></i> Copy</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function openProjectUpdateSms(idx) {
+  const r = projectUpdateDrafts[idx];
+  if (!r || !r.smsLink) return;
+  openedProjectUpdateSms.add(String(r.messageId));
+  window.location.href = r.smsLink;
+  renderProjectUpdateBatchResults();
+}
+
+function openNextProjectUpdateSms() {
+  if (!projectUpdateDrafts.length) {
+    showToast('Build drafts first.', 'error');
+    return;
+  }
+  const idx = projectUpdateDrafts.findIndex(function(r) { return !openedProjectUpdateSms.has(String(r.messageId)); });
+  if (idx < 0) {
+    showToast('All drafts already opened.', 'success');
+    return;
+  }
+  openProjectUpdateSms(idx);
+}
+
+function copyProjectUpdateText(idx) {
+  const r = projectUpdateDrafts[idx];
+  if (!r || !r.message) return;
+  navigator.clipboard.writeText(r.message).then(function() {
+    showToast('Draft copied.', 'success');
+  }).catch(function() {
+    showToast('Could not copy.', 'error');
+  });
+}
+
+function loadProjectUpdateLogs() {
+  callAPI('getProjectUpdateLogs', { limit: 120 }, 'GET').then(function(res) {
+    if (!res.success) {
+      showToast(res.error || 'Failed to load logs', 'error');
+      return;
+    }
+    projectUpdateLogs = res.logs || [];
+    renderProjectUpdateLogs();
+  }).catch(function(err) {
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function renderProjectUpdateLogs() {
+  const wrap = document.getElementById('puLogs');
+  if (!wrap) return;
+  if (!projectUpdateLogs.length) {
+    wrap.innerHTML = '<div class="empty-state" style="padding:18px 10px;"><i class="fas fa-inbox"></i><h3>No tracked updates yet</h3></div>';
+    return;
+  }
+  wrap.innerHTML = projectUpdateLogs.slice(0, 40).map(function(l) {
+    const status = String(l.ResponseStatus || 'Pending');
+    const badgeClass = status === 'Good Lead' ? 'badge-green'
+      : status === 'Bad Lead' ? 'badge-red'
+      : status === 'Responded' ? 'badge-blue'
+      : 'badge-gray';
+    const sent = l.SentAt ? new Date(l.SentAt).toLocaleString() : '—';
+    return '<div class="pu-log-row">'
+      + '<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">'
+      + '<div>'
+      + '<div style="font-size:14px;font-weight:700;">' + esc(l.CustomerName || 'Unknown') + '</div>'
+      + '<div style="font-size:12px;color:var(--gray);">' + esc((l.ProjectID ? ('Project ' + l.ProjectID + ' • ') : '') + (l.CustomerPhone || '') + ' • ' + sent) + '</div>'
+      + '</div>'
+      + '<span class="badge ' + badgeClass + '">' + esc(status) + '</span>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">'
+      + '<select id="puResp_' + esc(String(l.MessageID || '')) + '" class="form-control" style="max-width:170px;padding:8px 10px;font-size:12px;">'
+      + '<option ' + (status === 'Pending' ? 'selected' : '') + '>Pending</option>'
+      + '<option ' + (status === 'Responded' ? 'selected' : '') + '>Responded</option>'
+      + '<option ' + (status === 'Good Lead' ? 'selected' : '') + '>Good Lead</option>'
+      + '<option ' + (status === 'Bad Lead' ? 'selected' : '') + '>Bad Lead</option>'
+      + '<option ' + (status === 'No Response' ? 'selected' : '') + '>No Response</option>'
+      + '</select>'
+      + '<input id="puNote_' + esc(String(l.MessageID || '')) + '" class="form-control" style="flex:1;min-width:150px;padding:8px 10px;font-size:12px;" placeholder="note" value="' + esc(l.ResponseNote || '') + '">'
+      + '<button class="btn btn-amber btn-sm" onclick="saveProjectUpdateResponse(\'' + esc(String(l.MessageID || '')) + '\')"><i class="fas fa-save"></i></button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function saveProjectUpdateResponse(messageId) {
+  const statusEl = document.getElementById('puResp_' + messageId);
+  const noteEl = document.getElementById('puNote_' + messageId);
+  callAPI('markProjectUpdateResponse', {
+    messageId: messageId,
+    responseStatus: statusEl ? statusEl.value : 'Pending',
+    responseNote: noteEl ? noteEl.value.trim() : ''
+  }, 'POST').then(function(res) {
+    if (!res.success) {
+      showToast(res.error || 'Could not save response', 'error');
+      return;
+    }
+    showToast('Response updated.', 'success');
+    loadProjectUpdateLogs();
+  }).catch(function(err) {
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+// ============================================================
+// HISTORY & COMMISSION
+// ============================================================
+function renderHistoryFilter() {
+  const sel = document.getElementById('historyFilter');
+  const existing = Array.from(sel.options).map(o => o.value);
+  campaigns.forEach(c => {
+    if (!existing.includes(c.CampaignID)) {
+      const opt = document.createElement('option');
+      opt.value = c.CampaignID; opt.textContent = c.Name + ' (' + c.Date + ')';
+      sel.appendChild(opt);
+    }
+  });
+}
+function loadHistory() {
+  const campaignId = document.getElementById('historyFilter').value;
+  const el = document.getElementById('historyContent');
+  el.innerHTML = '<div class="empty-state"><i class="fas fa-spinner spinner"></i><h3>Loading…</h3></div>';
+  document.getElementById('commissionCard').style.display = 'none';
+  callAPI('getCommissionReport', { assignedTo: '', campaignId: campaignId || '' }, 'GET').then(function(res) {
+      if (!res.success) { el.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>Error</h3><p>' + esc(res.error||'') + '</p></div>'; return; }
+      document.getElementById('commissionCard').style.display = 'block';
+      document.getElementById('totalLeadsCount').textContent = res.totalLeads || 0;
+      document.getElementById('totalCommissionAmt').textContent = '$' + (res.totalCommission||0).toFixed(2);
+      renderHistoryTable(res.report || [], el);
+    }).catch(err => { el.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h3>Error</h3><p>' + esc(err.message) + '</p></div>'; });
+}
+function renderHistoryTable(report, el) {
+  if (!report.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-history"></i><h3>No history yet</h3></div>'; return; }
+  let html = '<div style="overflow-x:auto;"><table class="history-table"><thead><tr><th>Campaign</th><th>Date</th><th>Staff</th><th>Visits</th><th>Interested</th><th>Leads</th><th>Jobs Won</th><th>Commission</th><th>Actions</th></tr></thead><tbody>';
+  report.forEach(r => {
+    html += `<tr>
+      <td style="font-weight:700;">${esc(r.campaignName)}</td>
+      <td>${esc(r.date)}</td>
+      <td>${esc(r.assignedTo||'—')}</td>
+      <td>${r.totalVisits}</td>
+      <td><span class="badge badge-green">${r.leadsConverted}</span></td>
+      <td><span class="badge badge-blue">${r.leadsConverted}</span></td>
+      <td><span class="badge badge-amber">${r.jobsWon}</span></td>
+      <td style="font-weight:700;color:var(--green);">$${(r.commissionOwed||0).toFixed(2)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openLeadsDetail(${JSON.stringify(JSON.stringify(r.campaignId))})"><i class="fas fa-list"></i></button></td>
+    </tr>`;
+    // Sub-rows for individual leads
+    if (r.leads && r.leads.length) {
+      r.leads.forEach(lead => {
+        html += `<tr style="background:#f8fafc;">
+          <td colspan="2" style="padding-left:28px;font-size:12px;color:var(--gray);"><i class="fas fa-arrow-right" style="color:var(--blue);margin-right:6px;"></i>${esc(lead.name||'')}</td>
+          <td colspan="3" style="font-size:12px;color:var(--gray);">${esc(lead.address||'')}</td>
+          <td colspan="3" style="font-size:12px;"><span class="badge ${lead.outcome==='job'?'badge-amber':'badge-blue'}">${esc(lead.outcome||'lead')}</span></td>
+          <td><button class="btn btn-amber btn-sm" onclick="openLeadModal('${esc(lead.visitId)}')"><i class="fas fa-edit"></i></button></td>
+        </tr>`;
+      });
+    }
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+// ============================================================
+// LEAD OUTCOME MODAL
+// ============================================================
+function openLeadModal(visitId) {
+  document.getElementById('leadVisitId').value = visitId;
+  document.getElementById('leadNote').value = '';
+  selectedLeadOutcome = '';
+  document.getElementById('leadModal').classList.add('open');
+}
+function submitLeadOutcome(outcome) {
+  selectedLeadOutcome = outcome;
+  document.querySelectorAll('#leadModal .btn-full').forEach(b => b.style.border = '');
+  event.target.closest('.btn').style.border = '3px solid #0f172a';
+}
+function doMarkLeadOutcome() {
+  const visitId = document.getElementById('leadVisitId').value;
+  if (!visitId) return;
+  callAPI('markLeadOutcome', { visitId: visitId, outcome: selectedLeadOutcome, note: document.getElementById('leadNote').value.trim() }).then(res => {
+      closeModal('leadModal');
+      showToast(res.success ? 'Outcome saved!' : 'Error: ' + res.error, res.success ? 'success' : 'error');
+      if (res.success) loadHistory();
+    }).catch(err => showToast('Error: ' + err.message, 'error'));
+}
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function closeModal(id, e) {
+  if (!e || e.target === document.getElementById(id)) {
+    document.getElementById(id).classList.remove('open');
+  }
+}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type||'');
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => { t.classList.remove('show'); }, 3200);
+}
+</script>
+</body>
+</html>

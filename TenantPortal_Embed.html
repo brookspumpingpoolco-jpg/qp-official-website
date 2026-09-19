@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: transparent;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .portal-iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <iframe 
+        id="portalFrame"
+        class="portal-iframe"
+        src="https://script.google.com/macros/s/AKfycbxfSwpb2EKeibKH0fyolMgAAfNPz1w18SYjVQqc63DPdWJWIgTLDp2iHI4z_ilp8I8Tsg/exec?action=tenantPortal"
+        allow="payment"
+        allowfullscreen>
+    </iframe>
+</body>
+</html>
+

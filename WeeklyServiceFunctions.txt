@@ -1,0 +1,107 @@
+/**
+ * Send welcome email for WeeklyService contracts
+ */
+function sendWeeklyServiceWelcomeEmail(contractId, contractData, pdfResult) {
+  try {
+    const customerName = contractData.customerName || 'Valued Customer';
+    const customerEmail = contractData.customerEmail;
+    
+    if (!customerEmail) {
+      Logger.log('⚠️ No customer email found for WeeklyService welcome email: ' + contractId);
+      return;
+    }
+    
+    const subject = 'Welcome to A Quality Pool Company Weekly Service!';
+    const htmlBody = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%); padding: 30px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to Weekly Service!</h1>
+        </div>
+        
+        <div style="padding: 30px; background: #f9fafb;">
+          <p style="font-size: 16px; color: #1a1a1a;">Hello, <strong>${customerName}</strong> —</p>
+          
+          <p>Thank you for signing up with A Quality Pool Company for weekly service! We are looking forward to servicing your pool all summer long.</p>
+          
+          <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0369a1;">
+            <p style="margin: 0 0 15px 0;"><strong>Next Steps:</strong></p>
+            <ul style="margin: 0; padding-left: 20px;">
+              <li>We have sent your agreement to your email</li>
+              <li><strong>Please set up autopay via our system</strong> to stay up to date on all payments</li>
+              <li>You will always receive texts and emails for separate invoices</li>
+            </ul>
+          </div>
+          
+          <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; font-size: 14px; color: #92400e;"><strong>Important:</strong> All chemicals are charged extra, as are service calls.</p>
+          </div>
+          
+          ${pdfResult && pdfResult.success ? `
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${pdfResult.pdfUrl}" style="background: #0369a1; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: 600;">
+              Download Your Signed Agreement
+            </a>
+          </div>
+          ` : ''}
+          
+          <p>Thank you for choosing A Quality Pool Company!</p>
+          
+          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <p style="font-size: 12px; color: #6b7280; margin: 0;">
+              A Quality Pool Company<br>
+              ${COMPANY_PHONE}<br>
+              ${COMPANY_EMAIL}
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    MailApp.sendEmail({
+      to: customerEmail,
+      subject: subject,
+      htmlBody: htmlBody
+    });
+    
+    Logger.log('✅ WeeklyService welcome email sent to: ' + customerEmail);
+  } catch (error) {
+    Logger.log('❌ Error sending WeeklyService welcome email: ' + error.toString());
+  }
+}
+
+/**
+ * Send WeeklyService welcome Telegram notification to Brooks
+ */
+function sendWeeklyServiceWelcomeTelegram(contractId, contractData) {
+  try {
+    if (typeof sendTelegramBotMessage_ !== 'function') {
+      Logger.log('⚠️ sendTelegramBotMessage_ function not available for WeeklyService welcome');
+      return;
+    }
+    
+    const customerName = contractData.customerName || 'Unknown Customer';
+    const customerEmail = contractData.customerEmail || '';
+    const amount = parseFloat(contractData.totalAmount || 0).toFixed(2);
+    
+    const telegramMessage = `<b>🏊‍♂️ New Weekly Service Customer Signed!</b>
+    
+<b>Customer:</b> ${escapeTelegramHtml_(customerName)}
+<b>Email:</b> ${escapeTelegramHtml_(customerEmail)}
+<b>Contract ID:</b> ${escapeTelegramHtml_(contractId)}
+<b>Monthly Amount:</b> $${amount}
+
+<b>Welcome message sent to customer:</b>
+Hello, ${escapeTelegramHtml_(customerName)} — thank you for signing up with A Quality Pool Company for weekly service! We are looking forward to servicing your pool all summer long. We have sent your agreement to your email — please make sure you set up autopay via our system so you can stay up to date on all payments. All chemicals are charged extra, as are service calls. You will always receive texts and emails for separate invoices!`;
+
+    const dashboardUrl = 'https://aesthetic-kataifi-88ba27.netlify.app/InvoiceEstimateUI.html#contracts';
+    
+    sendTelegramBotMessage_(
+      telegramMessage,
+      [{ text: 'View Contracts Dashboard', url: dashboardUrl }]
+    );
+    
+    Logger.log('✅ WeeklyService welcome Telegram notification sent for: ' + contractId);
+  } catch (error) {
+    Logger.log('❌ Error sending WeeklyService welcome Telegram: ' + error.toString());
+  }
+}

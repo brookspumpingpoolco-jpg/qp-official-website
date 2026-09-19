@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Schedule Service — A Quality Pool Company</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fafaf9;
+      min-height: 100vh;
+      padding: 28px 20px 48px;
+      color: #1c1917;
+    }
+    body.embed { padding: 16px 12px 24px; min-height: 0; }
+    .page { max-width: 560px; margin: 0 auto; }
+
+    .header { text-align: center; padding: 0 0 28px; border-bottom: 1px solid #e7e5e4; margin-bottom: 28px; }
+    .header img { max-width: 140px; height: auto; border-radius: 8px; margin-bottom: 16px; display: block; margin-left: auto; margin-right: auto; }
+    .header h1 { font-family: 'Barlow Condensed', 'Barlow', sans-serif; font-size: 26px; font-weight: 700; color: #1c1917; letter-spacing: 0.02em; }
+    .header p { font-size: 15px; color: #57534e; margin-top: 6px; }
+    body.embed .header { padding-bottom: 16px; margin-bottom: 20px; }
+    body.embed .header img { max-width: 100px; }
+    body.embed .header h1 { font-size: 22px; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e7e5e4;
+      border-radius: 8px;
+      padding: 24px 22px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-family: 'Barlow Condensed', 'Barlow', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #44403c;
+      margin-bottom: 16px;
+    }
+    .intro-list {
+      list-style: none;
+      margin-bottom: 24px;
+      padding: 0;
+    }
+    .intro-list li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: #44403c;
+      line-height: 1.5;
+    }
+    .intro-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 6px;
+      height: 6px;
+      background: #0c4a6e;
+      border-radius: 50%;
+    }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #44403c;
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d6d3d1;
+      border-radius: 6px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #fff;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #0c4a6e;
+      box-shadow: 0 0 0 2px rgba(12, 74, 110, 0.12);
+    }
+
+    .service-list { list-style: none; padding: 0; margin: 0; }
+    .service-list li {
+      border: 1px solid #e7e5e4;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      color: #44403c;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .service-list li:hover { border-color: #0c4a6e; background: #f8fafc; }
+    .service-list li.selected { border-color: #0c4a6e; background: #f0f9ff; color: #0c4a6e; }
+
+    .frequency-options { display: flex; flex-direction: column; gap: 10px; }
+    .freq-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e7e5e4;
+      border-radius: 6px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .freq-option:hover { border-color: #0c4a6e; background: #f8fafc; }
+    .freq-option.selected { border-color: #0c4a6e; background: #f0f9ff; }
+    .freq-option .label { font-size: 15px; font-weight: 600; color: #1c1917; }
+    .freq-option .desc { font-size: 13px; color: #57534e; margin-top: 2px; }
+    .freq-option .price { font-size: 16px; font-weight: 700; color: #0c4a6e; }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      background: #0c4a6e;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #0a3d5c; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary { background: #fff; color: #44403c; border: 1px solid #d6d3d1; }
+    .btn-secondary:hover { background: #fafaf9; border-color: #a8a29e; }
+    .btn-success { background: #166534; }
+    .btn-success:hover { background: #14532d; }
+    .step-nav { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .step-nav .btn { width: auto; flex: 1; min-width: 120px; }
+
+    .confirm-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+    .confirm-box p { margin-bottom: 8px; font-size: 15px; color: #166534; }
+    .confirm-box p:last-child { margin-bottom: 0; }
+    .confirm-address { font-weight: 600; margin-top: 6px !important; }
+    .map-wrap { border-radius: 6px; overflow: hidden; border: 1px solid #e7e5e4; margin: 12px 0; background: #fafaf9; }
+    .map-wrap iframe { display: block; width: 100%; height: 240px; border: 0; }
+
+    .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .slot-btn {
+      padding: 10px;
+      border: 1px solid #e7e5e4;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .slot-btn:hover { border-color: #0c4a6e; background: #f8fafc; }
+    .slot-btn.selected { border-color: #0c4a6e; background: #f0f9ff; color: #0c4a6e; }
+    .slot-day { margin-bottom: 18px; }
+    .slot-day-label { font-size: 13px; font-weight: 600; color: #57534e; margin-bottom: 8px; }
+    .slot-summary { margin-top: 14px; padding: 12px; background: #f0fdf4; border-radius: 6px; font-weight: 600; color: #166534; font-size: 14px; }
+
+    .radio-option { display: flex; align-items: center; padding: 12px 14px; border: 1px solid #e7e5e4; border-radius: 6px; margin-bottom: 8px; cursor: pointer; }
+    .radio-option input { margin-right: 12px; width: 18px; height: 18px; accent-color: #0c4a6e; }
+    .select-field { width: 100%; padding: 12px 14px; border: 1px solid #d6d3d1; border-radius: 6px; font-size: 15px; font-family: inherit; background: #fff; }
+    .select-field:focus { outline: none; border-color: #0c4a6e; }
+    .estimate-section { margin-bottom: 20px; }
+    .estimate-section .section-label { font-size: 13px; font-weight: 600; color: #44403c; margin-bottom: 8px; display: block; }
+    .addon-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1px solid #e7e5e4; border-radius: 6px; margin-bottom: 8px; cursor: pointer; }
+    .addon-row input { width: 18px; height: 18px; margin-right: 12px; accent-color: #0c4a6e; }
+
+    .msg { padding: 14px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }
+    .msg.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .msg.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .msg.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .loading { text-align: center; padding: 32px 20px; color: #57534e; }
+    .spinner { display: inline-block; width: 36px; height: 36px; border: 2px solid #e7e5e4; border-top-color: #0c4a6e; border-radius: 50%; animation: spin 0.6s linear infinite; margin-bottom: 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body id="scheduleBody">
+  <div class="page">
+    <header class="header">
+      <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763-p-500.jpg" alt="A Quality Pool Company">
+      <h1>Schedule a service</h1>
+      <p>Request an appointment. We’ll confirm once approved.</p>
+    </header>
+    <div id="root"></div>
+  </div>
+  <script>
+    (function() {
+      var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZcMYdXanrOJRd-l5aKeL_qvZoJv7PWGlBp_1gVbgo5FAiC1U7-EMdoBQEqNP6QHmvjw/exec';
+      var MAPS_EMBED_KEY = ''; // Optional: Google Maps Embed API key for satellite + zoom. Get one at https://developers.google.com/maps/documentation/embed/get-api-key
+      var useFetch = typeof google === 'undefined' || !google.script || !google.script.run;
+
+      // JSONP for cross-origin (Netlify): CORS is blocked by Google; <script src="..."> is not. Backend must support ?callback= (SchedulingScript.gs).
+      window._scheduleUsesJsonp = true; // so you can check in console: iframe.contentWindow._scheduleUsesJsonp
+      function jsonp(url, onSuccess, onFailure) {
+        var name = '_sc' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        var timeout = setTimeout(function() {
+          if (window[name]) return;
+          window[name] = function() {};
+          cleanup();
+          onFailure(new Error('Request timeout'));
+        }, 15000);
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[name];
+          if (script && script.parentNode) script.parentNode.removeChild(script);
+        }
+        window[name] = function(data) {
+          cleanup();
+          console.log('[Schedule] API response', name, data);
+          onSuccess(data);
+        };
+        var script = document.createElement('script');
+        var actionMatch = url.match(/action=([^&]+)/);
+        console.log('[Schedule] API request', actionMatch ? actionMatch[1] : '?');
+        var sep = url.indexOf('?') >= 0 ? '&' : '?';
+        script.src = url + sep + 'callback=' + encodeURIComponent(name) + '&_=' + Date.now();
+        script.onerror = function() { cleanup(); onFailure(new Error('Failed to load')); };
+        document.head.appendChild(script);
+      }
+
+      // Default prices (can be overridden by backend later)
+      var SERVICE_PRICES = {
+        weekly: 160,
+        biweekly: 200,
+        onetime: 275
+      };
+
+      function apiLookup(email, onSuccess, onFailure) {
+        if (!useFetch && google.script.run) {
+          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).lookupCustomerByEmail(email);
+          return;
+        }
+        if (!SCRIPT_URL) { onFailure(new Error('API URL not set.')); return; }
+        var url = SCRIPT_URL + '?action=lookupCustomerByEmail&email=' + encodeURIComponent(email);
+        console.log('[Schedule] apiLookup', email);
+        jsonp(url, onSuccess, onFailure);
+      }
+      function apiAvailability(serviceType, start, end, onSuccess, onFailure) {
+        if (!useFetch && google.script.run) {
+          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).getPublicAvailability(serviceType, start, end);
+          return;
+        }
+        if (!SCRIPT_URL) { onFailure(new Error('API URL not set.')); return; }
+        var url = SCRIPT_URL + '?action=getPublicAvailability&serviceType=' + encodeURIComponent(serviceType) + '&start=' + encodeURIComponent(start) + '&end=' + encodeURIComponent(end);
+        console.log('[Schedule] apiAvailability', serviceType, start, end);
+        jsonp(url, onSuccess, onFailure);
+      }
+      function apiSubmit(payload, onSuccess, onFailure) {
+        if (!useFetch && google.script.run) {
+          google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).submitPublicScheduleRequest(payload);
+          return;
+        }
+        if (!SCRIPT_URL) { onFailure(new Error('API URL not set.')); return; }
+        var b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        var url = SCRIPT_URL + '?action=submitPublicScheduleRequest&payload=' + encodeURIComponent(b64);
+        console.log('[Schedule] apiSubmit', payload);
+        jsonp(url, function(res) {
+          if (res && res.success) onSuccess(res); else onFailure(new Error((res && res.error) || 'Submit failed'));
+        }, onFailure);
+      }
+
+      console.log('[Schedule] Loaded', { useFetch: useFetch, embed: window.location.search.indexOf('embed') >= 0 });
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('embed') === '1' || params.get('embed') === 'true') {
+        document.getElementById('scheduleBody').classList.add('embed');
+      }
+      var step = 1;
+      var serviceType = '';
+      var poolServiceFrequency = '';
+      var poolServicePrice = null;
+      var customer = null;
+      var isExistingCustomer = false;
+      var requestedDate = '';
+      var requestedTime = '';
+      var preferredServiceDay = '';
+      var openingFormData = null;
+      var estimateDetails = null;
+
+      function esc(s) {
+        if (!s) return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+      function formatTime12(t) {
+        if (!t) return t;
+        var s = String(t).trim();
+        var parts = s.match(/^(\d{1,2}):(\d{2})/);
+        if (!parts) return t;
+        var h = parseInt(parts[1], 10);
+        var m = parseInt(parts[2], 10);
+        var am = h < 12;
+        if (h === 0) h = 12;
+        else if (h > 12) h = h - 12;
+        return h + ':' + (m < 10 ? '0' + m : m) + ' ' + (am ? 'AM' : 'PM');
+      }
+
+      function renderStep1() {
+        var html = '<div class="card">' +
+          '<div class="card-title">What we offer</div>' +
+          '<ul class="intro-list">' +
+          '<li>Pool cleaning & maintenance (weekly, biweekly, or one-time)</li>' +
+          '<li>Opening & closing</li>' +
+          '<li>Repairs, equipment, and renovations</li>' +
+          '<li>Estimates and quotes for new builds or upgrades</li>' +
+          '</ul>' +
+          '<div class="card-title">What do you need?</div>' +
+          '<ul class="service-list">' +
+          '<li data-type="Pool Service">Pool cleaning (weekly, biweekly, or one-time)</li>' +
+          '<li data-type="Opening">Opening</li>' +
+          '<li data-type="Closing">Closing</li>' +
+          '<li data-type="Estimate/Quote">Estimate or quote</li>' +
+          '<li data-type="Installation">Installation</li>' +
+          '<li data-type="Renovation">Renovation</li>' +
+          '<li data-type="Snow Removal">Snow removal</li>' +
+          '</ul>' +
+          '<div id="step1Message"></div>' +
+          '<button type="button" class="btn" id="step1Next">Request this service</button></div>';
+        document.getElementById('root').innerHTML = html;
+        document.querySelectorAll('.service-list li').forEach(function(el) {
+          el.addEventListener('click', function() {
+            document.querySelectorAll('.service-list li').forEach(function(o) { o.classList.remove('selected'); });
+            el.classList.add('selected');
+            serviceType = el.getAttribute('data-type');
+          });
+        });
+        document.getElementById('step1Next').onclick = function() {
+          if (!serviceType) {
+            document.getElementById('step1Message').innerHTML = '<div class="msg error">Please select a service.</div>';
+            return;
+          }
+          console.log('[Schedule] Service selected', serviceType);
+          if (serviceType === 'Pool Service') {
+            step = 1.5;
+            renderStep1PoolFrequency();
+          } else {
+            step = 2;
+            renderStep2();
+          }
+        };
+      }
+
+      function renderStep1PoolFrequency() {
+        var w = SERVICE_PRICES.weekly, b = SERVICE_PRICES.biweekly, o = SERVICE_PRICES.onetime;
+        var html = '<div class="card">' +
+          '<div class="card-title">Pool cleaning — how often?</div>' +
+          '<p style="font-size:14px;color:#57534e;margin-bottom:18px;">Choose the schedule that works for you. Price shown is per visit.</p>' +
+          '<div class="frequency-options">' +
+          '<div class="freq-option" data-freq="weekly" data-price="' + w + '">' +
+          '<div><div class="label">Weekly</div><div class="desc">Every week — consistent care</div></div><div class="price">$' + w + '</div></div>' +
+          '<div class="freq-option" data-freq="biweekly" data-price="' + b + '">' +
+          '<div><div class="label">Every two weeks</div><div class="desc">Biweekly service</div></div><div class="price">$' + b + '</div></div>' +
+          '<div class="freq-option" data-freq="onetime" data-price="' + o + '">' +
+          '<div><div class="label">One-time cleaning</div><div class="desc">Single visit</div></div><div class="price">$' + o + '</div></div>' +
+          '</div>' +
+          '<div id="step1bMessage"></div>' +
+          '<button type="button" class="btn" id="step1bNext">Continue</button></div>';
+        document.getElementById('root').innerHTML = html;
+        document.querySelectorAll('.freq-option').forEach(function(el) {
+          el.addEventListener('click', function() {
+            document.querySelectorAll('.freq-option').forEach(function(o) { o.classList.remove('selected'); });
+            el.classList.add('selected');
+            poolServiceFrequency = el.getAttribute('data-freq');
+            poolServicePrice = parseInt(el.getAttribute('data-price'), 10) || null;
+          });
+        });
+        document.getElementById('step1bNext').onclick = function() {
+          if (!poolServiceFrequency) {
+            document.getElementById('step1bMessage').innerHTML = '<div class="msg error">Please select a frequency.</div>';
+            return;
+          }
+          step = 2;
+          renderStep2();
+        };
+      }
+
+      function renderStep2() {
+        var html = '<div class="card"><div class="card-title">Your name and email</div>' +
+          '<p style="font-size:14px;color:#57534e;margin-bottom:16px;">We’ll check if we have you on file.</p>' +
+          '<div class="form-group"><label>Full name</label><input type="text" id="inputName" placeholder="John Doe"></div>' +
+          '<div class="form-group"><label>Email</label><input type="email" id="inputEmail" placeholder="you@example.com"></div>' +
+          '<div id="step2Message"></div>' +
+          '<button type="button" class="btn" id="step2Next">Continue</button></div>';
+        document.getElementById('root').innerHTML = html;
+        document.getElementById('step2Next').onclick = function() {
+          var name = document.getElementById('inputName').value.trim();
+          var email = document.getElementById('inputEmail').value.trim();
+          if (!name || !email) {
+            document.getElementById('step2Message').innerHTML = '<div class="msg error">Please enter name and email.</div>';
+            return;
+          }
+          console.log('[Schedule] Step 2: lookup', { name: name, email: email });
+          document.getElementById('step2Message').innerHTML = '<div class="loading"><div class="spinner"></div>Checking…</div>';
+          apiLookup(email,
+            function(result) {
+              console.log('[Schedule] Lookup result', result);
+              if (result && result.found && result.customer) {
+                customer = result.customer;
+                isExistingCustomer = true;
+                console.log('[Schedule] Existing customer → Is this you?', customer);
+                renderStep2Confirm();
+              } else {
+                customer = { name: name, email: email, phone: '', address: '' };
+                isExistingCustomer = false;
+                console.log('[Schedule] New customer → contact form');
+                renderStep2New();
+              }
+            },
+            function(err) {
+              console.warn('[Schedule] Lookup failed', err);
+              document.getElementById('step2Message').innerHTML = '<div class="msg error">' + esc(err.message || String(err)) + '</div>';
+            });
+        };
+      }
+
+      function renderStep2Confirm() {
+        var parts = [(customer.address || '').trim(), (customer.city || '').trim(), (customer.state || '').trim(), (customer.zip || '').trim()].filter(Boolean);
+        var fullAddr = parts.length ? parts.join(', ') : '';
+        var mapUrl = '';
+        if (fullAddr) {
+          if (MAPS_EMBED_KEY) {
+            mapUrl = 'https://www.google.com/maps/embed/v1/place?key=' + encodeURIComponent(MAPS_EMBED_KEY) + '&q=' + encodeURIComponent(fullAddr) + '&zoom=18&maptype=satellite';
+          } else {
+            mapUrl = 'https://www.google.com/maps?q=' + encodeURIComponent(fullAddr) + '&output=embed&z=18&t=k';
+          }
+        }
+        console.log('[Schedule] renderStep2Confirm', { customer: customer, fullAddr: fullAddr });
+        var html = '<div class="card"><div class="card-title">Is this you?</div>' +
+          '<div class="confirm-box">' +
+          '<p><strong>' + esc(customer.name) + '</strong><br>' + esc(customer.email) + (customer.phone ? '<br>' + esc(customer.phone) : '') + '</p>' +
+          (fullAddr ? '<p class="confirm-address">' + esc(fullAddr) + '</p>' : '') +
+          (mapUrl ? '<div class="map-wrap"><iframe src="' + mapUrl + '" title="Your address" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>' : '') +
+          '</div>' +
+          '<div class="step-nav">' +
+          '<button type="button" class="btn btn-success" id="btnYes">Yes, that’s me</button>' +
+          '<button type="button" class="btn btn-secondary" id="btnNo">No, I’m new / different</button>' +
+          '</div></div>';
+        document.getElementById('root').innerHTML = html;
+        document.getElementById('btnYes').onclick = function() {
+          step = 3;
+          if (serviceType === 'Pool Service') renderStep3PoolServiceDay();
+          else renderStep3Slots();
+        };
+        document.getElementById('btnNo').onclick = function() { isExistingCustomer = false; renderStep2New(); };
+      }
+
+      function renderStep2New() {
+        var html = '<div class="card"><div class="card-title">Your contact and address</div>' +
+          '<div class="form-group"><label>Full name</label><input type="text" id="newName" value="' + esc(customer.name) + '" placeholder="John Doe"></div>' +
+          '<div class="form-group"><label>Email</label><input type="email" id="newEmail" value="' + esc(customer.email) + '" placeholder="you@example.com"></div>' +
+          '<div class="form-group"><label>Phone</label><input type="tel" id="newPhone" placeholder="(555) 123-4567"></div>' +
+          '<div class="form-group"><label>Service address</label><input type="text" id="newAddress" placeholder="123 Main St, City, State ZIP"></div>' +
+          '<div id="step2NewMessage"></div><button type="button" class="btn" id="step2NewNext">Continue</button></div>';
+        document.getElementById('root').innerHTML = html;
+        document.getElementById('step2NewNext').onclick = function() {
+          customer = {
+            name: document.getElementById('newName').value.trim(),
+            email: document.getElementById('newEmail').value.trim(),
+            phone: document.getElementById('newPhone').value.trim(),
+            address: document.getElementById('newAddress').value.trim()
+          };
+          if (!customer.name || !customer.email || !customer.address) {
+            document.getElementById('step2NewMessage').innerHTML = '<div class="msg error">Name, email, and address are required.</div>';
+            return;
+          }
+          step = 3;
+          if (serviceType === 'Pool Service') renderStep3PoolServiceDay();
+          else renderStep3Slots();
+        };
+      }
+
+      function renderStep3PoolServiceDay() {
+        var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var options = days.map(function(d) { return '<option value="' + esc(d) + '">' + esc(d) + '</option>'; }).join('');
+        var html = '<div class="card"><div class="card-title">Preferred service day</div>' +
+          '<p style="font-size:14px;color:#57534e;margin-bottom:16px;">Which day of the week would you like us to come for ' + (poolServiceFrequency === 'weekly' ? 'weekly' : poolServiceFrequency === 'biweekly' ? 'biweekly' : 'one-time') + ' service?</p>' +
+          '<div class="form-group"><label>Day of week</label><select id="preferredDay" class="select-field">' + options + '</select></div>' +
+          '<div class="card-title" style="border:none;padding:0;margin:16px 0 8px;">Please note</div>' +
+          '<ul style="font-size:14px;color:#57534e;line-height:1.6;margin:0 0 20px;padding-left:20px;">' +
+          '<li>Issues that require diagnosis while we are on-site may be subject to a <strong>$125 service call fee</strong>.</li>' +
+          '<li>Any parts or items that need to be ordered at the time of visit will be <strong>invoiced separately</strong>.</li>' +
+          '</ul>' +
+          '<p style="font-size:13px;color:#64748b;">After approval, you’ll sign a weekly service agreement and enroll in autopay (Stripe).</p>' +
+          '<div id="step3PoolMessage"></div><button type="button" class="btn btn-success" id="step3PoolNext">Submit request</button></div>';
+        document.getElementById('root').innerHTML = html;
+        document.getElementById('step3PoolNext').onclick = function() {
+          preferredServiceDay = (document.getElementById('preferredDay') && document.getElementById('preferredDay').value) || 'Monday';
+          submitRequest();
+        };
+      }
+
+      function renderStep3Slots() {
+        var start = new Date();
+        start.setDate(start.getDate() + 1);
+        var end = new Date();
+        end.setDate(end.getDate() + 14);
+        function pad(n) { return n < 10 ? '0' + n : n; }
+        var startStr = start.getFullYear() + '-' + pad(start.getMonth() + 1) + '-' + pad(start.getDate());
+        var endStr = end.getFullYear() + '-' + pad(end.getMonth() + 1) + '-' + pad(end.getDate());
+        var html = '<div class="card"><div class="card-title">Choose date and time</div>' +
+          '<p style="font-size:14px;color:#57534e;margin-bottom:16px;">Your request will be sent for approval.</p>' +
+          '<div id="slotsContainer">Loading availability…</div>' +
+          '<div id="slotSummary" class="slot-summary" style="display:none;"></div>' +
+          '<div id="step3Message"></div>' +
+          '<button type="button" class="btn" id="step3Next" style="display:none;margin-top:16px;">Request this appointment</button></div>';
+        document.getElementById('root').innerHTML = html;
+        apiAvailability(serviceType, startStr, endStr,
+          function(res) {
+            var container = document.getElementById('slotsContainer');
+            if (!res.success || !res.slots || res.slots.length === 0) {
+              container.innerHTML = '<p style="color:#57534e;">No available slots in the next two weeks. Please call us to schedule.</p>';
+              return;
+            }
+            var byDate = {};
+            res.slots.forEach(function(s) {
+              if (!byDate[s.date]) byDate[s.date] = [];
+              byDate[s.date].push(s.time);
+            });
+            var days = Object.keys(byDate).sort();
+            var h = '';
+            days.forEach(function(dateStr) {
+              var d = new Date(dateStr + 'T12:00:00');
+              var label = isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+              h += '<div class="slot-day"><div class="slot-day-label">' + esc(label) + '</div><div class="slot-grid">';
+              byDate[dateStr].forEach(function(t) {
+                h += '<button type="button" class="slot-btn" data-date="' + esc(dateStr) + '" data-time="' + esc(t) + '">' + esc(formatTime12(t)) + '</button>';
+              });
+              h += '</div></div>';
+            });
+            container.innerHTML = h;
+            container.querySelectorAll('.slot-btn').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                container.querySelectorAll('.slot-btn').forEach(function(b) { b.classList.remove('selected'); });
+                btn.classList.add('selected');
+                requestedDate = btn.getAttribute('data-date');
+                requestedTime = btn.getAttribute('data-time');
+                var sumEl = document.getElementById('slotSummary');
+                sumEl.textContent = 'Selected: ' + requestedDate + ' at ' + formatTime12(requestedTime);
+                sumEl.style.display = 'block';
+                document.getElementById('step3Next').style.display = 'block';
+              });
+            });
+          },
+          function(err) {
+            document.getElementById('slotsContainer').innerHTML = '<div class="msg error">' + esc(err.message || String(err)) + '</div>';
+          });
+        document.getElementById('step3Next').onclick = function() {
+          if (!requestedDate || !requestedTime) return;
+          if (serviceType === 'Opening') { step = 4; renderStep4Opening(); }
+          else if (serviceType === 'Estimate/Quote') { step = 4; renderStep4Estimate(); }
+          else { step = 5; submitRequest(); }
+        };
+      }
+
+      function renderStep4Estimate() {
+        var html = '<div class="card">' +
+          '<div class="card-title">Estimate / quote details</div>' +
+          '<p style="font-size:14px;color:#57534e;margin-bottom:20px;">Help us prepare for your visit so we can give you an accurate quote.</p>' +
+          '<div class="estimate-section"><label class="section-label">What do you need an estimate for?</label>' +
+          '<select id="estimateType" class="select-field" required><option value="">Select one…</option>' +
+          '<option value="New pool build">New pool build</option><option value="Renovation or repair">Renovation or repair</option>' +
+          '<option value="Equipment upgrade">Equipment upgrade (pump, heater, etc.)</option><option value="Pool opening or closing">Pool opening or closing</option><option value="Other">Other</option></select></div>' +
+          '<div class="estimate-section"><label class="section-label">Preferred contact method</label>' +
+          '<select id="contactMethod" class="select-field"><option value="Phone">Phone</option><option value="Email">Email</option><option value="Either">Either</option></select></div>' +
+          '<div class="estimate-section"><label class="section-label">Best time for us to reach you</label>' +
+          '<select id="bestTime" class="select-field"><option value="Morning (8am–12pm)">Morning (8am–12pm)</option><option value="Afternoon (12pm–5pm)">Afternoon (12pm–5pm)</option><option value="Evening (5pm–8pm)">Evening (5pm–8pm)</option><option value="Any time">Any time</option></select></div>' +
+          '<div class="estimate-section"><label class="section-label">Project description <span style="color:#dc2626;">*</span></label>' +
+          '<textarea id="projectDescription" rows="5" placeholder="Describe your project: pool size, current issues, what you want done, etc." required></textarea></div>' +
+          '<div class="estimate-section"><label class="section-label">When are you looking to have work done?</label>' +
+          '<select id="timeline" class="select-field"><option value="ASAP">ASAP</option><option value="Within 1–2 weeks">Within 1–2 weeks</option><option value="Within 1–3 months">Within 1–3 months</option><option value="Just exploring / flexible">Just exploring / flexible</option></select></div>' +
+          '<div id="step4EstimateMessage"></div><button type="button" class="btn btn-success" id="step4EstimateSubmit">Submit estimate request</button></div>';
+        document.getElementById('root').innerHTML = html;
+        document.getElementById('step4EstimateSubmit').onclick = function() {
+          var estimateType = document.getElementById('estimateType').value.trim();
+          var projectDesc = document.getElementById('projectDescription').value.trim();
+          if (!estimateType) { document.getElementById('step4EstimateMessage').innerHTML = '<div class="msg error">Please select what you need an estimate for.</div>'; return; }
+          if (!projectDesc) { document.getElementById('step4EstimateMessage').innerHTML = '<div class="msg error">Please describe your project.</div>'; return; }
+          estimateDetails = {
+            estimateType: estimateType,
+            contactMethod: document.getElementById('contactMethod').value || 'Phone',
+            bestTime: document.getElementById('bestTime').value || '',
+            projectDescription: projectDesc,
+            timeline: document.getElementById('timeline').value || ''
+          };
+          submitRequest();
+        };
+      }
+
+      function renderStep4Opening() {
+        var state = ((customer.state || '') + ' ' + (customer.address || '')).toUpperCase();
+        var isKY = /KY|KENTUCKY/.test(state);
+        var poolType = isKY ? 'KY' : 'TN';
+        var locationLabel = isKY ? 'Kentucky' : 'Tennessee';
+        var html = '<div class="card"><div class="card-title">Pool opening options</div>' +
+          '<p style="font-size:14px;color:#57534e;margin-bottom:16px;">We’ve set your service area based on your address.</p>' +
+          '<p class="slot-summary" style="margin-bottom:16px;">Service area: ' + esc(locationLabel) + '</p>' +
+          '<div class="card-title" style="border:none;padding:0;margin-bottom:8px;">Add-ons</div>' +
+          '<label class="addon-row"><input type="checkbox" id="chemicals"><span>Chemicals +$50</span></label>' +
+          '<label class="addon-row"><input type="checkbox" id="fullVacuum"><span>Full vacuum +$200</span></label>' +
+          '<div class="form-group"><label>Anything else we should know?</label><textarea id="otherConcerns" rows="3" placeholder="Special requests or access notes…"></textarea></div>' +
+          '<div id="step4Message"></div><button type="button" class="btn btn-success" id="step4Submit">Submit request</button></div>';
+        document.getElementById('root').innerHTML = html;
+        document.getElementById('step4Submit').onclick = function() {
+          openingFormData = {
+            poolType: poolType,
+            chemicals: document.getElementById('chemicals').checked,
+            fullVacuum: document.getElementById('fullVacuum').checked,
+            otherConcerns: (document.getElementById('otherConcerns').value || '').trim()
+          };
+          submitRequest();
+        };
+      }
+
+      function submitRequest() {
+        var payload = {
+          serviceType: serviceType,
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone || '',
+          address: customer.address || '',
+          requestedDate: serviceType === 'Pool Service' ? '' : requestedDate,
+          requestedTime: serviceType === 'Pool Service' ? '' : requestedTime
+        };
+        if (customer.id) payload.customerId = customer.id;
+        if (openingFormData) payload.openingFormData = openingFormData;
+        if (estimateDetails) payload.estimateDetails = estimateDetails;
+        if (serviceType === 'Estimate/Quote') payload.appointmentType = 'Estimate/Quote';
+        if (serviceType === 'Pool Service' && poolServiceFrequency) {
+          payload.poolServiceFrequency = poolServiceFrequency;
+          payload.servicePrice = poolServicePrice;
+          if (preferredServiceDay) payload.preferredServiceDay = preferredServiceDay;
+        }
+        var root = document.getElementById('root');
+        root.innerHTML = '<div class="card"><div class="loading"><div class="spinner"></div>Submitting…</div></div>';
+        apiSubmit(payload,
+          function() {
+            root.innerHTML = '<div class="card"><div class="msg success">Thanks. Your request has been submitted and is waiting for approval. We’ll email you once it’s approved.</div></div>';
+          },
+          function(err) {
+            root.innerHTML = '<div class="card"><div class="msg error">' + esc(err.message || String(err)) + '</div><button type="button" class="btn" onclick="location.reload()">Try again</button></div>';
+          });
+      }
+
+      renderStep1();
+    })();
+  </script>
+</body>
+</html>

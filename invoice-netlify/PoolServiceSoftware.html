@@ -1,0 +1,1168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>PSS | Clients </title>
+        <meta name="viewport"
+          content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="description" content="Pool Service Software">
+    <meta name="author" content="Pool Service Software, LLC">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="/favicon.png"> <!-- Browser tab icon -->
+
+    <!-- Bootstrap -->
+    <link href="/assets/themeasset/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/assets/themeasset/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="/assets/themeasset/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- jQuery custom content scroller -->
+    <link href="/assets/themeasset/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css"
+          rel="stylesheet"/>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css"/>
+    <!-- Poppins font for all pages -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="/assets/themeasset/build/css/custom.css?v=1.0.3" rel="stylesheet">
+
+            <link rel="stylesheet" type="text/css" href="/css/modalheader.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/notification.css?v=1.0.2"/>
+            <!--Drop Down-->
+        <script src="/js/shared/dropit/dropit.js"></script>
+        <link rel="stylesheet" href="/js/shared/dropit/dropit.css" type="text/css"/>
+        <script type="text/javascript" src="/js/shared/notify/pnotify.custom.min.js"></script>
+        <link href="/js/shared/notify/pnotify.custom.min.css" media="all" rel="stylesheet" type="text/css"/>
+
+    
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="/assets/themeasset/magnific/magnific-popup.css">
+
+            <script>window.userpilotSettings = {token: "NX-92c04154"};</script>
+    <script src="https://js.userpilot.io/sdk/latest.js"></script>
+    
+</head>
+
+<body class="nav-sm">
+
+<div class="row" id="loader_row">
+    <div class="col-md-12">
+        <div class="circle"></div>
+        <div class="circle-small"></div>
+        <div class="circle-big"></div>
+        <div class="circle-inner-inner"></div>
+        <div class="circle-inner"></div>
+    </div>
+</div>
+
+<div class="container body" id="container_main" style="display:none;">
+    <div class="main_container">
+        <div class="left_col left_sidebar">
+                        
+            <!-- sidebar user block -->
+                                                            <div class="sidebar_user_block dropdown">
+                <a href="#" class="sidebar_user_trigger dropdown-toggle" data-toggle="dropdown" id="sidebar-user-dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sidebar_user_avatar"><span class="sidebar-user-avatar-initials" aria-hidden="true">SR</span></span>
+                    <div class="sidebar_user_info">
+                        <span class="sidebar-company-name">A Quality Pool Company</span>
+                        <span class="sidebar-user-name">Samuel Roberts</span>
+                    </div>
+                    <i class="menu_category_chevron fa fa-caret-down" aria-hidden="true"></i>
+                </a>
+                <ul class="dropdown-menu sidebar-user-dropdown-menu" role="menu" aria-labelledby="sidebar-user-dropdown">
+                    <li class="sidebar-user-dropdown-card">
+                        <div class="sidebar-user-dropdown-card-inner">
+                            <div class="sidebar-user-dropdown-avatar-wrap">
+                                                                    <span class="sidebar-user-dropdown-avatar-initials" aria-hidden="true">SR</span>
+                                                            </div>
+                            <div class="sidebar-user-dropdown-name">Samuel Roberts</div>
+                            <div class="sidebar-user-dropdown-email">brookspumpingpoolco@gmail.com</div>
+                        </div>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li class="sidebar-switch-company-wrap">
+                        <a href="#" class="sidebar-user-dropdown-item sidebar-switch-company-toggle" aria-expanded="false" aria-haspopup="true" role="button">
+                            <i class="fa fa-building-o"></i>
+                            <span>Switch Company</span>
+                            <i class="fa fa-chevron-right sidebar-user-dropdown-arrow"></i>
+                        </a>
+                        <ul class="sidebar-company-submenu" role="menu" id="sidebar-company-dropdown">
+                                                            <li data-id="6601" class="companyItem active"><a href="#">A Quality Pool Company</a></li>
+                                                                                        <li><a href="#" data-toggle="modal" data-target="#companyRegisterModal" class="sidebar-company-create">Create New Company</a></li>
+                                                    </ul>
+                    </li>
+                    <li><a href="/admin/subscription" class="subscription sidebar-user-dropdown-item"><i class="fa fa-credit-card"></i><span>Subscription & Billing</span></a></li>
+                    <li><a href="/admin/notification-preferences" class="sidebar-user-dropdown-item"><i class="fa fa-sliders"></i><span>Notifications Preferences</span></a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#" class="logout sidebar-user-dropdown-item"><i class="fa fa-sign-out"></i><span>Logout</span></a></li>
+                </ul>
+            </div>
+            
+            <!-- sidebar menu (categorized) -->
+                        <div id="sidebar-menu">
+                                                            <div class="menu-category">
+                            <div class="menu-category-header" id="menu-category-btn-1">
+                                <span class="menu-category-label">GENERAL</span>
+                            </div>
+                            <ul class="nav side-menu" id="menu-category-1" role="region" aria-labelledby="menu-category-btn-1">
+                                                                                                                                                                                                                                    <li class="menu-item">
+                                            <a id="btn-leftnav-dashboard"
+                                                class="" href="/admin/dashboard">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/dashboard.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/dashboard-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Dashboard</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Dashboard</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-catalogs"
+                                                class="" href="/admin/catalogs">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/catalogs.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/catalogs-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Catalog</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Catalog</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-announcements"
+                                                class="" href="/admin/announcements">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/announcements.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/announcements-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Announcements</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Announcements</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-notifications"
+                                                class="" href="/admin/notifications">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/notifications.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/notifications-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Notifications</span>
+                                                </div>
+                                                                                                    <span class="sidebar-notification-badge" id="sidebarNotificationBadge" style="display: none;">0</span>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Notifications</span>
+                                            </a>
+                                        </li>
+                                                                                                                                        </ul>
+                        </div>
+                                                                                <div class="menu-category">
+                            <div class="menu-category-header" id="menu-category-btn-2">
+                                <span class="menu-category-label">PEOPLE &amp; BILLING</span>
+                            </div>
+                            <ul class="nav side-menu" id="menu-category-2" role="region" aria-labelledby="menu-category-btn-2">
+                                                                                                                                                                                                                                    <li class="menu-item">
+                                            <a id="btn-leftnav-team"
+                                                class="" href="/admin/team2.0">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/team.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/team-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Team</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Team</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-clients"
+                                                class="menu_item_selected" href="/admin/clients-new">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/clients.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/clients-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Clients</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Clients</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-leads"
+                                                class="" href="/admin/leads">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/leads.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/leads-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Leads</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Leads</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-invoices"
+                                                class="" href="/admin/invoices">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/invoices.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/invoices-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Invoices</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Invoices</span>
+                                            </a>
+                                        </li>
+                                                                                                                                        </ul>
+                        </div>
+                                                                                <div class="menu-category">
+                            <div class="menu-category-header" id="menu-category-btn-3">
+                                <span class="menu-category-label">WORK MANAGEMENT</span>
+                            </div>
+                            <ul class="nav side-menu" id="menu-category-3" role="region" aria-labelledby="menu-category-btn-3">
+                                                                                                                                                                                                                                    <li class="menu-item">
+                                            <a id="btn-leftnav-routes"
+                                                class="" href="/admin/routes-new">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/routes.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/routes-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Routes</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Routes</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-jobs"
+                                                class="" href="/admin/job">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/jobs.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/jobs-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Jobs &amp; Quotes</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Jobs &amp; Quotes</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-visit-history"
+                                                class="" href="/admin/visit-history">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/visit-history.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/visit-history-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Visit History</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Visit History</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-control-center"
+                                                class="" href="/admin/control-center">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/control-center.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/control-center-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Control Center</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Control Center</span>
+                                            </a>
+                                        </li>
+                                                                                                                                        </ul>
+                        </div>
+                                                                                <div class="menu-category">
+                            <div class="menu-category-header" id="menu-category-btn-4">
+                                <span class="menu-category-label">PURCHASING</span>
+                            </div>
+                            <ul class="nav side-menu" id="menu-category-4" role="region" aria-labelledby="menu-category-btn-4">
+                                                                                                                                                                                                                                    <li class="menu-item">
+                                            <a id="btn-leftnav-shopping-list"
+                                                class="" href="/admin/shopping-list">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/shopping-list.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/shopping-list-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Shopping List</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Shopping List</span>
+                                            </a>
+                                        </li>
+                                                                                                                                                                                                                                                                                                                <li class="menu-item">
+                                            <a id="btn-leftnav-vendors"
+                                                class="" href="/admin/vendors">
+                                                <div class="menu-item-content">
+                                                    <span class="menu-item-icon">
+                                                                                                                    <img src="/assets/images/icons/vendors.svg" class="menu-item-icon-default" alt="">
+                                                            <img src="/assets/images/icons/vendors-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                                                            </span>
+                                                    <span class="menu-item-title">Vendors</span>
+                                                </div>
+                                                                                                <span class="sidebar-item-tooltip" aria-hidden="true">Vendors</span>
+                                            </a>
+                                        </li>
+                                                                                                                                        </ul>
+                        </div>
+                                                                                    </div>
+
+            <!-- sidebar footer: Settings (when in bottom) + collapse -->
+            <div class="sidebar_footer">
+                                <div class="sidebar-footer-settings menu-item">
+                                                                                                                                                            <a id="btn-leftnav-settings" class="sidebar-settings-link " href="/admin/settings">
+                                <div class="menu-item-content">
+                                    <span class="menu-item-icon">
+                                                                                    <img src="/assets/images/icons/settings.svg" class="menu-item-icon-default" alt="">
+                                            <img src="/assets/images/icons/settings-dark.svg" class="menu-item-icon-selected" alt="">
+                                                                            </span>
+                                    <span class="menu-item-title">Settings</span>
+                                </div>
+                                <span class="sidebar-item-tooltip" aria-hidden="true">Settings</span>
+                            </a>
+                                                                                        </div>
+                <div class="sidebar-footer-collapse">
+                    <button type="button" class="sidebar-collapse-btn" id="sidebar_collapse_btn" aria-label="Toggle sidebar">
+                        <i class="fa fa-caret-left sidebar-collapse-icon-expanded" aria-hidden="true"></i>
+                        <i class="fa fa-caret-right sidebar-collapse-icon-collapsed" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            window.notificationEvents = window.notificationEvents || {
+                _listeners: {},
+                on: function(event, callback) {
+                    if (!this._listeners[event]) { this._listeners[event] = []; }
+                    this._listeners[event].push(callback);
+                },
+                off: function(event, callback) {
+                    if (this._listeners[event]) {
+                        this._listeners[event] = this._listeners[event].filter(function(cb) { return cb !== callback; });
+                    }
+                },
+                emit: function(event, data) {
+                    if (this._listeners[event]) {
+                        this._listeners[event].forEach(function(cb) { cb(data); });
+                    }
+                }
+            };
+        </script>
+
+        <!-- page content  style="min-height:700px !important"-->
+        <div class="right_col" role="main">
+            <!-- top navigation -->
+            <div class="top_nav">
+                <nav class="nav_menu">
+                                                            
+                                        
+                    <div class="notice-messages">
+                        <div class="notice-text">
+                            <strong class="notify-text-error">
+                            
+                            </strong>
+                        </div>
+
+                                            </div>
+
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown help-icon-wrapper">
+                            <a href="#" class="icon_div help-icon" aria-label="Help" title="Help">
+                                <img src="/assets/images/icons/question.svg" alt="" class="help-icon-img">
+                            </a>
+                        </li>
+                        <li class="dropdown notification-bell-wrapper" data-notifications-url="/admin/notifications">
+                            <span class="icon_div notification-bell" aria-label="Notifications">
+                                <img src="/assets/images/icons/notifications-black.svg" alt="" class="notification-bell-icon">
+                                <div class="notification-badge" id="notificationBadge" style="display: none;">0</div>
+                            </span>
+                            <div class="notification-dropdown" id="notificationDropdown">
+                                <div class="notification-dropdown-header">
+                                    <span>Notifications</span>
+                                    <button type="button" class="mark-all-read" id="notificationMarkAllRead">Mark all read</button>
+                                </div>
+                                <div class="notification-dropdown-list" id="notificationDropdownList">
+                                    <div class="notification-dropdown-loading" id="notificationDropdownLoading">Loading...</div>
+                                    <div class="notification-dropdown-empty" id="notificationDropdownEmpty" style="display: none; padding: 16px; text-align: center; color: #6b7280;">No notifications</div>
+                                </div>
+                                <div class="notification-dropdown-footer">
+                                    <a href="/admin/notifications" id="notificationSeeAll">See all notifications</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <!-- /top navigation -->
+            
+                            <div class="container_base">
+                    <link href="/jobs-assets/css/style.css?v=1.1.4" media="all" rel="stylesheet" type="text/css"/>
+<link href="/js/shared/notify/pnotify.custom.min.css" media="all" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/js/shared/notify/pnotify.custom.min.js"></script>
+<script src="/jobs-assets/dist/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<link href="/js/desktop/vue-features/dist/clients/css/app.a2387393c.css" rel="stylesheet" type="text/css">
+<link href="/js/desktop/vue-features/dist/clients/css/vendor.a2387393c.css" rel="stylesheet" type="text/css">
+
+<script src="/js/desktop/vue-features/dist/clients/js/app.a2387393c.js"></script>
+<script src="/js/desktop/vue-features/dist/clients/js/vendor.a2387393c.js"></script>
+
+<div class="dashboard-container">
+    <vue-clients></vue-clients>
+</div>
+                </div>
+                    </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+                <!-- /footer content -->
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="companyRegisterModal" tabindex="-1" role="dialog" aria-labelledby="companyRegisterModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create New Company</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <section class="login-form">
+                    <form method="post" id="register_form_data" action="#" role="login">
+                        <div class="col-md-12">
+
+                            <div id="js-login-msg"></div>
+
+                            <input type="text" name="cnm" id="companyname" placeholder="Enter new company name" required
+                                   class="form-control input-lg"/>
+                            <input type="hidden" name="token" value="7745f8864b4470ed2fa5604b9dbe8576">
+
+                            <div class="pwstrength_viewport_progress"></div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="registerCompany();">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap -->
+<script src="/assets/themeasset/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="/assets/themeasset/vendors/fastclick/lib/fastclick.js"></script>
+<!-- NProgress -->
+<script src="/assets/themeasset/vendors/nprogress/nprogress.js"></script>
+<!-- jQuery custom content scroller -->
+<script src="/assets/themeasset/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="/assets/themeasset/magnific/jquery.magnific-popup.min.js"></script>
+<!-- Custom Theme Scripts -->
+    <script src="/assets/themeasset/build/js/custom.js"></script>
+
+<script>
+
+    $(function () {
+
+        var currentCompanyid = 6601;
+
+        var cmpName = "A\u0020Quality\u0020Pool\u0020Company"; //sometimes, the company names have an & ampersand and other special characters
+        var cmpCreateDate = "2026-04-26T17:58:23.000000+00:00";
+        var userEmailID = "brookspumpingpoolco@gmail.com";
+        var userDBID = "15041";
+        var userCreateDate = "2026-04-26T17:58:23.000000+00:00";
+        var uDispName = "Samuel Roberts";
+        var uMobPhone = "+15027069172";
+        var isLicenseExpired = false;
+
+        if (window.userpilot && typeof window.userpilot.identify === 'function') {
+            window.userpilot.identify(userDBID, {
+                name: uDispName,
+                email: userEmailID,
+                mobile: uMobPhone,
+                created_at: userCreateDate,
+                company: {
+                    id: currentCompanyid,
+                    name: cmpName,
+                    created_at: cmpCreateDate
+                }
+            });
+        }
+
+        $('.help-icon').on('click', function (e) {
+            e.preventDefault();
+            if (window.userpilot && typeof window.userpilot.trigger === 'function') {
+                window.userpilot.trigger('resource_center:U1Ldiy0Jfg');
+            }
+        });
+
+        window.__closeSidebarUserDropdown = function () {
+            var $block = $('.sidebar_user_block.dropdown');
+            if (!$block.length) return;
+            $block.removeClass('open');
+            $block.find('.sidebar_user_trigger.dropdown-toggle').attr('aria-expanded', 'false');
+        };
+
+        $('.sidebar_user_block.dropdown').on('show.bs.dropdown', function () {
+            if (typeof window.__closeHeaderNotificationDropdown === 'function') {
+                window.__closeHeaderNotificationDropdown();
+            }
+            if (typeof window.__closeNotificationsPagePopovers === 'function') {
+                window.__closeNotificationsPagePopovers();
+            }
+        });
+
+        function getCenterPosition(width, top) {
+            if (!top) {
+                top = 30;
+
+                $('.ui-pnotify').each(function () {
+                    top += $(this).outerHeight() + 20;
+                });
+            }
+
+            return {
+                "top": top,
+                "left": ($(window).width() / 2) - (width / 2)
+            }
+        }
+
+        $(".view-more").on("click", function () {
+            var messageList = `<ul>
+                            </ul>`;
+
+            new PNotify({
+                title: 'Subscription Warning',
+                text: messageList,
+                type: 'notice',
+                hide: false,
+                addclass: 'messages-pnotify',
+                before_open: function (PNotify) {
+                    PNotify.get().css(getCenterPosition(PNotify.get().width()));
+                },
+                confirm: {
+                    confirm: true
+                },
+                buttons: {
+                    closer: false,
+                    sticker: false
+                },
+                history: {
+                    history: false
+                }
+            });
+        });
+
+        $(".companyItem").on("click", function () {
+
+            var id = $(this).attr('data-id');
+
+            if (currentCompanyid == id)
+                return false;
+
+            $.ajax({
+                type: "POST",
+                url: "/api/swithchcompany",
+                data: {company_id: id}
+            }).done(function (msg) {
+                window.location.href = '/';
+            });
+        });
+
+        /* Sidebar: Switch Company shows company list on hover (no arrow) */
+        $(document).on("mouseenter", ".sidebar-switch-company-wrap", function () {
+            var wrap = $(this);
+            wrap.addClass("open");
+            wrap.find(".sidebar-switch-company-toggle").attr("aria-expanded", "true");
+            $(".sidebar_user_block.dropdown").addClass("open");
+        });
+        $(document).on("mouseleave", ".sidebar-switch-company-wrap", function () {
+            var wrap = $(this);
+            wrap.removeClass("open");
+            wrap.find(".sidebar-switch-company-toggle").attr("aria-expanded", "false");
+        });
+        $(document).on("click", ".sidebar-switch-company-toggle", function (e) {
+            e.preventDefault();
+            return false;
+        });
+        /* Close company dropdown when clicking outside it */
+        $(document).on("click", function (e) {
+            if (!$(e.target).closest(".sidebar-switch-company-wrap").length) {
+                $(".sidebar-switch-company-wrap").removeClass("open");
+            }
+        });
+        /* Close sidebar dropdown when opening Create New Company modal */
+        $(document).on("click", ".sidebar-company-create", function () {
+            $(".sidebar_user_block.dropdown").removeClass("open");
+        });
+
+        /* Switch sidebar menu selection immediately on click (single source of truth: menu_item_selected on the <a>) */
+        $(document).on("click", "#sidebar-menu .menu-item a, .sidebar_footer a.sidebar-settings-link", function () {
+            $("#sidebar-menu .menu-item a, .sidebar_footer a.sidebar-settings-link").removeClass("menu_item_selected");
+            $(this).addClass("menu_item_selected");
+        });
+
+        $(".dropdown-menu").on("click", ".logout", function () {
+            $.ajax({
+                type: "POST",
+                url: "/api/logout",
+                data: {}
+            }).done(function (msg) {
+                window.location.href = '/';
+            });
+        });
+
+    });
+
+    function registerCompany() {
+        $('#js-login-msg').html('<div class="alert alert-success">Please wait...</div>');
+
+        $.ajax({
+            url: '/api/new-company-reg',
+            method: 'POST',
+            data: $('#register_form_data').serialize(),
+            success: function (response) {
+
+                $('#js-login-msg').html('<div class="alert alert-success"> Successfully created new company</div>');
+                location.reload();
+                /*if(response.code==200){
+                    $('#companyRegisterModal').modal('hide');
+                      $('#js-login-msg').html('<div class="alert alert-success"> Successful company creation</div>');
+
+                  //   location.reload();
+                }else{
+                      $('#js-login-msg').html('<div class="alert alert-danger">'+response.message+'</div>');
+                }*/
+            }
+        });
+    }
+
+    function notifyClose(button) {
+        const bar = button.parentElement;
+        bar.classList.add('notify-fadeOut');
+        setTimeout(() => bar.remove(), 400);
+    }
+</script>
+
+<style>
+        .right_col{
+        min-height: 100vh;
+        max-height: 100%;
+    }
+    .icon_div {
+        height: 57px;
+        display: flex;
+        align-items: center;
+    }
+
+    .circle {
+        width: 180px;
+        height: 180px;
+        border: 10px inset rgb(133, 224, 242);
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-left: -96px;
+        margin-top: -94px;
+        border-radius: 200px;
+        -moz-animation: rotate 5s infinitelinear;
+        -webkit-animation: rotate 5s infinite linear;
+        animation: rotate 5s infinite linear;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .circle-small {
+        width: 150px;
+        height: 150px;
+        border: 6px outset rgb(133, 224, 242);
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-left: -81px;
+        margin-top: -79px;
+        border-radius: 156px;
+        -moz-animation: rotate-rev 3s infinite linear;
+        -webkit-animation: rotate-rev 3s infinite linear;
+        animation: rotate-rev 3s infinite linear;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .circle-big {
+        width: 210px;
+        height: 210px;
+        border: 4px dotted rgb(133, 224, 242);
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-left: -109px;
+        margin-top: -109px;
+        border-radius: 214px;
+        -moz-animation: rotate-rev 10s infinite linear;
+        -webkit-animation: rotate-rev 10s infinite linear;
+        animation: rotate-rev 10s infinite linear;
+    }
+
+    .circle-inner {
+        width: 80px;
+        height: 80px;
+        background-color: rgb(133, 224, 242);
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-left: -44px;
+        margin-top: -40px;
+        border-radius: 80px;
+        -moz-animation: pulse 1.5s infinite ease-in;
+        -webkit-animation: pulse 1.5s infinite ease-in;
+        animation: pulse 1.5s infinite ease-in;
+        opacity: 1;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .circle-inner-inner {
+        width: 100px;
+        height: 100px;
+        background-color: rgb(74, 124, 134);
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-left: -54px;
+        margin-top: -50px;
+        border-radius: 100px;
+        -moz-animation: pulse 1.5s infinite ease-in;
+        -webkit-animation: pulse 1.5s infinite ease-in;
+        animation: pulse 1.5s infinite ease-in;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /*==============ANIMATIONS=================*/
+
+    /*==============ROTATE=====================*/
+
+    @-moz-keyframes rotate {
+        0% {
+            -moz-transform: rotate(0deg);
+        }
+        100% {
+            -moz-transform: rotate(360deg);
+        }
+    }
+
+    @-webkit-keyframes rotate {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /*==============ROTATE-REV=================*/
+
+    @-moz-keyframes rotate-rev {
+        0% {
+            -moz-transform: rotate(0deg);
+        }
+        100% {
+            -moz-transform: rotate(-360deg);
+        }
+    }
+
+    @-webkit-keyframes rotate-rev {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(-360deg);
+        }
+    }
+
+    @keyframes rotate-rev {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(-360deg);
+        }
+    }
+
+    /*==============PULSE======================*/
+
+    @-moz-keyframes pulse {
+        0% {
+            -moz-transform: scale(0.1);
+            opacity: 0.2;
+        }
+        50% {
+            -moz-transform: scale(1);
+            opacity: 0.8;
+        }
+        100% {
+            -moz-transform: scale(0.1);
+            opacity: 0.2;
+        }
+    }
+
+    @-webkit-keyframes pulse {
+        0% {
+            -webkit-transform: scale(0.1);
+            opacity: 0.2;
+        }
+        50% {
+            -webkit-transform: scale(1);
+            opacity: 0.8;
+        }
+        100% {
+            -webkit-transform: scale(0.1);
+            opacity: 0.2;
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(0.1);
+            opacity: 0.2;
+        }
+        50% {
+            transform: scale(1);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(0.1);
+            opacity: 0.2;
+        }
+    }
+
+    /* Notification Styles */
+    .notification-bell {
+        cursor: pointer;
+        border-radius: 50%;
+        position: relative;
+        transition: background-color 0.3s ease;
+    }
+    .help-icon .help-icon-img {
+        display: block;
+        width: 20px;
+        height: 20px;
+    }
+    .notification-bell .notification-bell-icon {
+        display: block;
+        width: 20px;
+        height: 20px;
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: 7px;
+        left: 7px;
+        background: #d02a2a;
+        color: white;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    (function() {
+        var unreadCount = 0;
+        var latestId = 0;
+        var lastMutation = null;
+        var pollingTimer = null;
+        var POLL_INTERVAL = 20000; // 20 seconds
+
+        // Event bus initialized earlier (before content block) so Vue components
+        // can register listeners during mount.
+
+        // Public API for Vue components to sync the badge
+        window.notificationAPI = {
+            getUnreadCount: function() {
+                return unreadCount;
+            },
+            updateBadge: function(count) {
+                unreadCount = count;
+                updateNotificationBadge();
+            }
+        };
+
+        function loadNotificationCount() {
+            fetch('/api/notifications/count')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    var previousCount = unreadCount;
+                    var previousLastMutation = lastMutation;
+                    unreadCount = data.unread;
+                    latestId = data.latest_id || 0;
+                    lastMutation = data.last_mutation || null;
+                    updateNotificationBadge();
+
+                    // Emit countUpdated when ANY state changed:
+                    // count change (new/read/unread), or mutation change (dismiss, undo, unfollow, etc.)
+                    if (unreadCount !== previousCount || lastMutation !== previousLastMutation) {
+                        window.notificationEvents.emit('countUpdated', {
+                            unread: unreadCount,
+                            latest_id: latestId,
+                            last_mutation: lastMutation
+                        });
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error loading notification count:', error);
+                });
+        }
+
+        function updateNotificationBadge() {
+            var text = unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : '';
+            var show = unreadCount > 0;
+            var headerBadge = document.getElementById('notificationBadge');
+            if (headerBadge) {
+                headerBadge.textContent = text;
+                headerBadge.style.display = show ? 'flex' : 'none';
+            }
+            var sidebarBadge = document.getElementById('sidebarNotificationBadge');
+            if (sidebarBadge) {
+                sidebarBadge.textContent = text;
+                sidebarBadge.style.display = show ? 'flex' : 'none';
+            }
+        }
+
+        function startPolling() {
+            if (pollingTimer) return;
+            pollingTimer = setInterval(loadNotificationCount, POLL_INTERVAL);
+        }
+
+        function stopPolling() {
+            if (pollingTimer) {
+                clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+        }
+
+        // Pause polling when tab is hidden, resume + immediate fetch when visible
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopPolling();
+            } else {
+                loadNotificationCount(); // Catch up immediately
+                startPolling();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotificationCount();
+            startPolling();
+        });
+    })();
+</script>
+<script src="/js/shared/notification-icon-config.js"></script>
+<script>
+    (function() {
+        function renderDropdownItems(items, baseUrl) {
+            var listEl = document.getElementById('notificationDropdownList');
+            var loadingEl = document.getElementById('notificationDropdownLoading');
+            var emptyEl = document.getElementById('notificationDropdownEmpty');
+            if (!listEl) return;
+
+            loadingEl.style.display = 'none';
+            emptyEl.style.display = items.length === 0 ? 'block' : 'none';
+
+            var existingItems = listEl.querySelectorAll('.notification-list-item');
+            existingItems.forEach(function(el) { el.remove(); });
+
+            items.forEach(function(n) {
+                var unread = !n.read_at;
+                var cfg = typeof getNotificationIconConfig === 'function'
+                    ? getNotificationIconConfig(n.event_type)
+                    : { color: '#6b7280', icon: 'fa fa-bell' };
+                var iconHtml = cfg.img
+                    ? '<img src="' + escapeHtml(cfg.img) + '" alt="" class="icon-img" />'
+                    : '<i class="' + escapeHtml(cfg.icon || 'fa fa-bell') + '"></i>';
+                var row = document.createElement('div');
+                row.className = 'notification-list-item' + (unread ? ' unread' : '');
+                row.setAttribute('data-id', n.id);
+                row.innerHTML =
+                    '<div class="item-content-wrapper">' +
+                    '<div class="item-icon" style="background:' + escapeHtml(cfg.color) + ';">' + iconHtml + '</div>' +
+                    '<div class="item-content">' +
+                    '<div class="item-content-details">' +
+                    '<div class="item-title">' + (unread ? '<span class="unread-dot"></span>' : '') + escapeHtml(n.title || '') + '</div>' +
+                    '<div class="item-body">' + escapeHtml((n.body || '').substring(0, 80)) + (n.body && n.body.length > 80 ? '…' : '') + '</div>' +
+                    '</div>' +
+                    '<div class="item-meta"><span class="item-time">' + escapeHtml(n.time_ago || '') + '</span></div>' +
+                    '</div>' +
+                    '</div>';
+                row.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var id = parseInt(this.getAttribute('data-id'), 10);
+                    var doRedirect = function() {
+                        window.location = baseUrl + '?notification_id=' + id;
+                    };
+                    if (unread) {
+                        fetch('/api/notifications/mark-read', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({ ids: id })
+                        }).then(function() {
+                            if (window.notificationAPI) window.notificationAPI.updateBadge(Math.max(0, (window.notificationAPI.getUnreadCount && window.notificationAPI.getUnreadCount()) - 1));
+                            doRedirect();
+                        }).catch(doRedirect);
+                    } else {
+                        doRedirect();
+                    }
+                });
+                listEl.appendChild(row);
+            });
+        }
+
+        function escapeHtml(s) {
+            var div = document.createElement('div');
+            div.textContent = s;
+            return div.innerHTML;
+        }
+
+        /**
+         * Fetch notifications and render into dropdown. Optionally call onReady when done
+         * (used to show dropdown only after content is built, so no "Loading..." is shown).
+         */
+        function loadDropdownList(wrapper, onReady) {
+            var listEl = document.getElementById('notificationDropdownList');
+            var loadingEl = document.getElementById('notificationDropdownLoading');
+            var emptyEl = document.getElementById('notificationDropdownEmpty');
+            var markAllBtn = document.getElementById('notificationMarkAllRead');
+            if (!listEl || !wrapper) return;
+
+            loadingEl.style.display = 'none';
+            listEl.querySelectorAll('.notification-list-item').forEach(function(el) { el.remove(); });
+            emptyEl.style.display = 'none';
+
+            fetch('/api/notifications?limit=5&status=all&sort=desc', { credentials: 'same-origin' })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    var items = (data && data.items) ? data.items : [];
+                    var baseUrl = wrapper.getAttribute('data-notifications-url') || '/admin/notifications';
+                    renderDropdownItems(items, baseUrl);
+                    var hasUnread = items.some(function(n) { return !n.read_at; });
+                    if (markAllBtn) {
+                        markAllBtn.disabled = !hasUnread;
+                        markAllBtn.setAttribute('aria-disabled', hasUnread ? 'false' : 'true');
+                    }
+                    if (emptyEl) emptyEl.style.display = items.length === 0 ? 'block' : 'none';
+                    if (typeof onReady === 'function') onReady();
+                })
+                .catch(function() {
+                    if (emptyEl) { emptyEl.style.display = 'block'; emptyEl.textContent = 'Unable to load notifications.'; }
+                    if (markAllBtn) { markAllBtn.disabled = true; markAllBtn.setAttribute('aria-disabled', 'true'); }
+                    if (typeof onReady === 'function') onReady();
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var wrapper = document.querySelector('.notification-bell-wrapper');
+            if (!wrapper) return;
+
+            var dropdownEl = document.getElementById('notificationDropdown');
+
+            function closeDropdown() {
+                openRequested = false;
+                wrapper.classList.remove('notification-dropdown-open');
+            }
+            var openRequested = false;
+
+            function openDropdown() {
+                openRequested = true;
+                if (wrapper.classList.contains('notification-dropdown-open')) {
+                    return;
+                }
+                if (typeof window.__closeNotificationsPagePopovers === 'function') {
+                    window.__closeNotificationsPagePopovers();
+                }
+                if (typeof window.__closeSidebarUserDropdown === 'function') {
+                    window.__closeSidebarUserDropdown();
+                }
+                loadDropdownList(wrapper, function() {
+                    if (openRequested) {
+                        wrapper.classList.add('notification-dropdown-open');
+                    }
+                });
+            }
+
+            wrapper.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (wrapper.classList.contains('notification-dropdown-open')) {
+                    closeDropdown();
+                } else {
+                    openDropdown();
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (wrapper.classList.contains('notification-dropdown-open') && !wrapper.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            var markAllBtn = document.getElementById('notificationMarkAllRead');
+            if (markAllBtn) {
+                markAllBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (this.disabled) return;
+                    fetch('/api/notifications/mark-read', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ ids: 'all' })
+                    }).then(function() {
+                        if (window.notificationAPI) window.notificationAPI.updateBadge(0);
+                        loadDropdownList(wrapper);
+                    });
+                });
+            }
+
+            window.__closeHeaderNotificationDropdown = closeDropdown;
+        });
+    })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contract - A Quality Pool Company</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #e5e7eb;
+      padding: 24px 16px 48px;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    .container { 
+      max-width: 850px;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    /* Professional letterhead - full width, formal */
+    .letterhead {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      padding: 32px 48px 28px;
+      border-bottom: 3px solid #0369a1;
+      text-align: center;
+    }
+    .letterhead img {
+      max-width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto 14px;
+    }
+    .letterhead .company-name {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #0369a1;
+      margin: 0 0 4px 0;
+      letter-spacing: 0.02em;
+    }
+    .letterhead .company-tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #64748b;
+      margin: 0 0 10px 0;
+    }
+    .letterhead .company-contact {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #475569;
+      margin: 0;
+    }
+    .letterhead .company-contact a {
+      color: #0369a1;
+      text-decoration: none;
+    }
+
+    .header {
+      background: #0369a1;
+      color: white;
+      padding: 28px 48px;
+    }
+
+    .header h1 {
+      font-family: 'Inter', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .body {
+      padding: 40px 48px 48px;
+      font-size: 15px;
+    }
+
+    .contract-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    @media (max-width: 600px) {
+      .contract-meta {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .body {
+        padding: 24px 20px 36px;
+        font-size: 14px;
+      }
+      .header {
+        padding: 20px 20px;
+      }
+      .letterhead {
+        padding: 24px 20px 20px;
+      }
+      .footer {
+        padding: 20px 20px;
+      }
+    }
+
+    .meta-box h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .meta-box p {
+      font-size: 15px;
+      color: #1a1a1a;
+      margin: 6px 0;
+    }
+
+    .contract-content {
+      margin: 32px 0;
+      white-space: pre-wrap;
+      font-size: 15px;
+      line-height: 1.75;
+      color: #1e293b;
+      border-left: 3px solid #e2e8f0;
+      padding-left: 20px;
+    }
+
+    .terms-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    .terms-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a365d;
+      margin-bottom: 16px;
+    }
+
+    .signature-section {
+      margin-top: 50px;
+      padding-top: 30px;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    .signature-box {
+      margin: 24px 0;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .signature-box h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .signature-box img {
+      max-width: 100%;
+      max-height: 120px;
+      object-fit: contain;
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      background: white;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .signature-placeholder {
+      font-style: italic;
+      color: #94a3b8;
+      padding: 16px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 4px;
+      background: #f8fafc;
+    }
+
+    .signature-line-wrap {
+      margin-top: 14px;
+      padding-top: 8px;
+    }
+
+    .signature-script {
+      font-family: 'Great Vibes', cursive;
+      font-size: 36px;
+      line-height: 1;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .signature-line {
+      height: 1px;
+      background: #1f2937;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 0 6px 0;
+    }
+
+    .signature-caption {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .signature-canvas-container {
+      margin: 20px 0;
+    }
+
+    #signatureCanvas {
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      cursor: crosshair;
+      background: white;
+      display: block;
+      width: 100%;
+      height: 160px;
+      touch-action: none;
+    }
+
+    .signature-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(3, 105, 161, 0.3);
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 2px solid #e5e7eb;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .status-draft {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .status-sent {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-signed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-awaiting-company-signature {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #6b7280;
+    }
+
+    .loading i {
+      font-size: 48px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px;
+      border-left: 4px solid #dc2626;
+    }
+
+    .success-message {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px;
+      border-left: 4px solid #10b981;
+    }
+
+    .footer {
+      background: #f9fafb;
+      padding: 30px 40px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading" class="loading">
+    <i class="fas fa-spinner"></i>
+    <p style="margin-top: 20px;">Loading contract...</p>
+  </div>
+
+  <div id="errorContainer" style="display: none;">
+    <div class="error-message" id="errorMessage"></div>
+  </div>
+
+  <div id="contractContainer" class="container" style="display: none;">
+    <div class="letterhead">
+      <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763-p-500.jpg" alt="A Quality Pool Company" />
+      <p class="company-name">A Quality Pool Company</p>
+      <p class="company-tagline">Professional Pool Construction &amp; Service</p>
+      <p class="company-contact">(502) 731-9217 &nbsp;|&nbsp; <a href="mailto:samr@aqualitypoolcompanyusa.com">samr@aqualitypoolcompanyusa.com</a></p>
+    </div>
+    <div class="header">
+      <h1 id="contractTitle">Service Agreement</h1>
+      <p id="contractId">Contract ID: -</p>
+    </div>
+
+    <div class="body">
+      <div class="status-badge" id="statusBadge"></div>
+
+      <div class="contract-meta">
+        <div class="meta-box">
+          <h3>Customer Information</h3>
+          <p id="customerName"><strong>-</strong></p>
+          <p id="customerAddress">-</p>
+          <p id="customerEmail">-</p>
+          <p id="customerPhone">-</p>
+        </div>
+        <div class="meta-box">
+          <h3>Contract Details</h3>
+          <p><strong>Date Created:</strong> <span id="dateCreated">-</span></p>
+          <p><strong>Date Sent:</strong> <span id="dateSent">-</span></p>
+          <p><strong>Date Signed:</strong> <span id="dateSigned">-</span></p>
+          <p><strong>Total Amount:</strong> $<span id="totalAmount">0.00</span></p>
+        </div>
+      </div>
+
+      <div class="contract-content" id="contractContent"></div>
+
+      <div class="terms-section" id="termsSection" style="display: none;">
+        <h3>Terms and Conditions</h3>
+        <div id="termsContent"></div>
+      </div>
+
+      <div class="signature-section" id="signatureSection">
+        <h3 style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.03em;">Signatures</h3>
+        
+        <div class="signature-box" id="companySignatureBox" style="display: none;">
+          <h4>Company Signature (A Quality Pool Company)</h4>
+          <div id="companySignaturePlaceholder" class="signature-placeholder">Signed by company representative</div>
+          <img id="companySignatureImg" src="" alt="Company Signature" style="display: none; max-width: 280px;" />
+          <div class="signature-line-wrap">
+            <div class="signature-script" id="companySignatureScript">Sam Roberts</div>
+            <div class="signature-line"></div>
+            <div class="signature-caption">Sam Roberts — Vice President, A Quality Pool Company</div>
+          </div>
+        </div>
+
+        <div class="signature-box" id="customerSignatureBox">
+          <h4>Customer Signature</h4>
+          <div id="customerSignaturePlaceholder" class="signature-placeholder">Please sign below</div>
+          <img id="customerSignatureImg" src="" alt="Customer Signature" style="display: none; max-width: 280px;" />
+          <div class="signature-line-wrap" id="customerSignatureLineWrap">
+            <div class="signature-line"></div>
+            <div class="signature-caption" id="customerSignatureCaption">Customer Signature</div>
+          </div>
+        </div>
+
+        <div id="signatureInputSection" style="display: none; margin-top: 28px; padding: 24px; background: #f8fafc; border: 1.5px dashed #94a3b8; border-radius: 10px;">
+          <p style="font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 6px 0;">Sign Here</p>
+          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #94a3b8; margin: 0 0 14px 0;">Draw your signature in the box below using your mouse or finger.</p>
+          <div class="signature-canvas-container">
+            <canvas id="signatureCanvas"></canvas>
+          </div>
+          <div class="signature-actions">
+            <button class="btn btn-secondary btn-sm" onclick="clearSignature()">
+              <i class="fas fa-redo"></i> Clear
+            </button>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn btn-success" onclick="submitSignature()" id="submitSignatureBtn" style="width: 100%; justify-content: center; padding: 16px 32px; font-size: 17px; border-radius: 10px; background: linear-gradient(135deg, #059669 0%, #10b981 100%); box-shadow: 0 4px 14px rgba(16,185,129,0.3);">
+              <i class="fas fa-pen-nib"></i>&nbsp; Sign &amp; Execute Contract
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons" id="actionButtons" style="display: none;">
+        <a href="#" id="downloadPdfBtn" class="btn btn-primary" target="_blank">
+          <i class="fas fa-download"></i> Download PDF
+        </a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 13px;">A Quality Pool Company &nbsp;|&nbsp; (502) 731-9217 &nbsp;|&nbsp; <a href="mailto:samr@aqualitypoolcompanyusa.com" style="color: #0369a1;">samr@aqualitypoolcompanyusa.com</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Get contract ID and token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    let contractId = urlParams.get('id') || urlParams.get('contract') || urlParams.get('contractId');
+    const token = urlParams.get('token');
+
+    console.log('🔍 URL Parameters:', {
+      fullUrl: window.location.href,
+      search: window.location.search,
+      id: contractId,
+      token: token
+    });
+
+    // Invoice / contract web app (same deployment as Invoice & Estimate Maker)
+    const CONTRACT_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyJs4bNnPJfpzxq6i8fznuaCYrlSoYjPsU5Xzy-yz3PBII71BK2XghAB3HJ9s6-wZf8/exec';
+    const GAS_PROXY_BASE = window.location.origin + '/.netlify/functions/gas-proxy';
+    const GAS_PROXY_MAIN_URL = GAS_PROXY_BASE + '?t=main';
+
+    // Primary: your deployed web app. Fallback: same-origin proxy (CORS / timeouts).
+    const API_URL = CONTRACT_WEBAPP_URL;
+    const INVOICE_ESTIMATE_SCRIPT_URL = CONTRACT_WEBAPP_URL;
+
+    let contractData = null;
+    let canvas = null;
+    let ctx = null;
+    let isDrawing = false;
+
+    // Load contract on page load
+    window.onload = function() {
+      console.log('🚀 Page loaded, contractId:', contractId);
+      if (!contractId) {
+        console.error('❌ No contract ID found in URL');
+        showError('No contract ID provided in URL. Please check the link.<br><br>The URL should include a contract ID like:<br><code>?id=CONTRACT-123&token=abc123</code>');
+        return;
+      }
+      contractId = contractId.trim();
+      console.log('✅ Contract ID after trim:', contractId);
+      loadContract();
+    };
+
+    /**
+     * Log contract access
+     */
+    async function logAccess(action) {
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            action: 'logContractAccess',
+            data: JSON.stringify({
+              contractId: contractId,
+              customerEmail: contractData ? contractData.customerEmail : '',
+              ipAddress: '',
+              userAgent: navigator.userAgent,
+              action: action
+            })
+          })
+        });
+      } catch (error) {
+        console.log('Failed to log access:', error);
+      }
+    }
+    
+    async function loadContract() {
+      try {
+        console.log('🔍 Loading contract with ID:', contractId);
+        
+        // Log the view attempt
+        logAccess('Viewed');
+        
+        if (!contractId) {
+          showError('No contract ID provided in URL');
+          return;
+        }
+        
+        const requestBody = new URLSearchParams({
+          action: 'getContract',
+          id: contractId
+        });
+        
+        console.log('📤 Sending request:', requestBody.toString());
+        console.log('📤 API URL:', API_URL);
+        
+        let response;
+        let responseText;
+        let viaProxy = false;
+
+        try {
+          console.log('🔄 Trying contract webapp (direct)...');
+          response = await fetch(CONTRACT_WEBAPP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: requestBody
+          });
+
+          responseText = await response.text();
+          console.log('📥 Webapp response status:', response.status);
+          console.log('📥 Webapp response text length:', responseText.length);
+
+          if (!response.ok || responseText.length < 10) {
+            throw new Error('Webapp request failed or empty body');
+          }
+        } catch (webappError) {
+          console.warn('⚠️ Direct webapp failed:', webappError.message);
+          console.log('🔄 Trying gas-proxy fallback...');
+
+          try {
+            viaProxy = true;
+            response = await fetch(GAS_PROXY_MAIN_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: requestBody
+            });
+
+            responseText = await response.text();
+            console.log('📥 Gas-proxy response status:', response.status);
+            console.log('📥 Gas-proxy response text length:', responseText.length);
+          } catch (proxyError) {
+            console.error('❌ Webapp and gas-proxy both failed');
+            console.error('❌ Webapp error:', webappError);
+            console.error('❌ Proxy error:', proxyError);
+            throw new Error('Could not reach the contract server. Check browser console and your web app deployment.');
+          }
+        }
+
+        console.log('✅ Using', viaProxy ? 'gas-proxy (fallback)' : 'contract webapp (direct)');
+        console.log('📥 Response text length:', responseText.length);
+        console.log('📥 Response status:', response.status);
+        console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        // Log first 500 chars of response for debugging
+        console.log('📥 Response preview:', responseText.substring(0, 500));
+        
+        if (!responseText || responseText.trim().length === 0) {
+          throw new Error('Server returned an empty response.');
+        }
+        
+        // Check if response looks like HTML
+        const responsePreview = responseText.trim();
+        if (responsePreview.startsWith('<') || responsePreview.includes('<!DOCTYPE') || responsePreview.includes('<html')) {
+          console.error('❌ Server returned HTML instead of JSON. Response preview:', responsePreview.substring(0, 200));
+          throw new Error('Upstream server returned HTML instead of JSON. This usually means there\'s an error in the Google Apps Script. Check the response in browser console for details.');
+        }
+        
+        let result;
+        try {
+          result = JSON.parse(responseText);
+          console.log('📥 Response data:', result);
+        } catch (parseError) {
+          console.error('❌ JSON parse error:', parseError);
+          console.error('❌ Raw response text:', responseText);
+          throw new Error('Server returned invalid JSON: ' + responseText.substring(0, 100));
+        }
+
+        if (result && result.success) {
+          contractData = result.data;
+          displayContract(contractData);
+        } else {
+          showError('Failed to load contract: ' + (result && result.error ? result.error : 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('❌ Error loading contract:', error);
+        showError('Error loading contract: ' + (error.message || 'Unknown error'));
+      }
+    }
+
+    function displayContract(data) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('contractContainer').style.display = 'block';
+
+      // Basic info
+      document.getElementById('contractTitle').textContent = data.contractTitle || 'Service Agreement';
+      document.getElementById('contractId').textContent = 'Contract ID: ' + data.id;
+      document.getElementById('customerName').innerHTML = '<strong>' + escapeHtml(data.customerName || '-') + '</strong>';
+      document.getElementById('customerAddress').textContent = data.customerAddress || '-';
+      document.getElementById('customerEmail').textContent = data.customerEmail || '-';
+      document.getElementById('customerPhone').textContent = data.customerPhone || '-';
+      document.getElementById('dateCreated').textContent = data.dateCreated ? formatDate(data.dateCreated) : '-';
+      document.getElementById('dateSent').textContent = data.dateSent ? formatDate(data.dateSent) : '-';
+      document.getElementById('dateSigned').textContent = data.dateSigned ? formatDate(data.dateSigned) : '-';
+      document.getElementById('totalAmount').textContent = formatCurrency(data.totalAmount || 0);
+
+      // Content
+      document.getElementById('contractContent').textContent = data.contractContent || '';
+      
+      // Terms
+      if (data.terms) {
+        document.getElementById('termsSection').style.display = 'block';
+        document.getElementById('termsContent').textContent = data.terms;
+      }
+
+      // Status badge
+      const statusBadge = document.getElementById('statusBadge');
+      const status = data.status || 'Draft';
+      statusBadge.textContent = status;
+      statusBadge.className = 'status-badge status-' + status.toLowerCase().replace(/\s+/g, '-');
+      // Show notice when awaiting company signature
+      let noticeEl = document.getElementById('awaitingCompanyNotice');
+      if (noticeEl) noticeEl.remove();
+      if (status === 'Awaiting Company Signature') {
+        noticeEl = document.createElement('div');
+        noticeEl.id = 'awaitingCompanyNotice';
+        noticeEl.className = 'success-message';
+        noticeEl.style.marginBottom = '20px';
+        noticeEl.innerHTML = 'Thank you for signing. This contract is now awaiting the company\'s signature. You will receive a copy by email once it is fully executed.';
+        document.querySelector('.body').insertBefore(noticeEl, document.getElementById('statusBadge').nextSibling);
+      }
+
+      // Signatures - always show both boxes; toggle placeholder vs image
+      var companyBox = document.getElementById('companySignatureBox');
+      var companyImg = document.getElementById('companySignatureImg');
+      var companyPlaceholder = document.getElementById('companySignaturePlaceholder');
+      var companyScript = document.getElementById('companySignatureScript');
+      if (companyScript) {
+        companyScript.textContent = (data.companyPrintedName || 'Sam Roberts');
+      }
+      if (data.companySignature) {
+        companyPlaceholder.style.display = 'none';
+        companyImg.src = data.companySignature;
+        companyImg.style.display = 'block';
+      } else {
+        companyPlaceholder.style.display = 'block';
+        companyPlaceholder.textContent = 'Signed by company representative';
+        companyImg.style.display = 'none';
+      }
+
+      var customerBox = document.getElementById('customerSignatureBox');
+      var customerImg = document.getElementById('customerSignatureImg');
+      var customerPlaceholder = document.getElementById('customerSignaturePlaceholder');
+      var customerCaption = document.getElementById('customerSignatureCaption');
+      if (customerCaption) {
+        customerCaption.textContent = data.customerName
+          ? ('Customer Signature — ' + data.customerName)
+          : 'Customer Signature';
+      }
+      if (data.customerSignature) {
+        customerPlaceholder.style.display = 'none';
+        customerImg.src = data.customerSignature;
+        customerImg.style.display = 'block';
+      } else if (data.status === 'Sent' && token) {
+        customerPlaceholder.style.display = 'none';
+        document.getElementById('signatureInputSection').style.display = 'block';
+        initSignatureCanvas();
+      } else {
+        customerPlaceholder.style.display = 'block';
+        customerPlaceholder.textContent = 'Awaiting customer signature';
+        customerImg.style.display = 'none';
+      }
+
+      // Download PDF button
+      if (data.signedPdfUrl) {
+        document.getElementById('downloadPdfBtn').href = data.signedPdfUrl;
+        document.getElementById('actionButtons').style.display = 'flex';
+      } else if (data.pdfUrl) {
+        document.getElementById('downloadPdfBtn').href = data.pdfUrl;
+        document.getElementById('actionButtons').style.display = 'flex';
+      }
+    }
+
+    function initSignatureCanvas() {
+      canvas = document.getElementById('signatureCanvas');
+      ctx = canvas.getContext('2d');
+      
+      // Set canvas internal resolution to match display size (fixes blurry/small strokes)
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = 160 * dpr;
+      ctx.scale(dpr, dpr);
+      
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Mouse events
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseleave', stopDrawing);
+
+      // Touch events — use passive:false to prevent scroll
+      canvas.addEventListener('touchstart', handleTouch, { passive: false });
+      canvas.addEventListener('touchmove', handleTouch, { passive: false });
+      canvas.addEventListener('touchend', stopDrawing);
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const rect = canvas.getBoundingClientRect();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      if (isDrawing) {
+        isDrawing = false;
+        ctx.beginPath();
+      }
+    }
+
+    function handleTouch(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      if (!touch) return;
+      const rect = canvas.getBoundingClientRect();
+      if (e.type === 'touchstart') {
+        isDrawing = true;
+        ctx.beginPath();
+        ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      } else if (e.type === 'touchmove' && isDrawing) {
+        ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        ctx.stroke();
+      }
+    }
+
+    function clearSignature() {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+      const errEl = document.getElementById('sigEmptyErr');
+      if (errEl) errEl.remove();
+    }
+
+    async function submitSignature() {
+      if (!canvas) {
+        showError('Signature canvas not initialized');
+        return;
+      }
+
+      // Check if signature is empty
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const hasSignature = imageData.data.some(channel => channel !== 0);
+      
+      if (!hasSignature) {
+        // Show inline error
+        let errEl = document.getElementById('sigEmptyErr');
+        if (!errEl) {
+          errEl = document.createElement('p');
+          errEl.id = 'sigEmptyErr';
+          errEl.style.cssText = 'color:#dc2626;font-size:13px;margin:8px 0 0 0;font-family:Inter,sans-serif;';
+          errEl.textContent = 'Please draw your signature above before submitting.';
+          document.getElementById('signatureInputSection').appendChild(errEl);
+        }
+        return;
+      }
+
+      // Remove any inline error
+      const errEl = document.getElementById('sigEmptyErr');
+      if (errEl) errEl.remove();
+
+      // Convert canvas to base64
+      const signatureImage = canvas.toDataURL('image/png');
+
+      // Disable button and show spinner
+      const submitBtn = document.getElementById('submitSignatureBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            action: 'saveCustomerSignature',
+            data: JSON.stringify({
+              contractId: contractId,
+              token: token,
+              signatureImage: signatureImage
+            })
+          })
+        });
+
+        const responseText = await response.text();
+        let result;
+        try { result = JSON.parse(responseText); } catch (e) { result = { success: false, error: 'Invalid server response' }; }
+
+        if (result.success) {
+          // Log the signing action
+          logAccess('Signed');
+
+          // Show full-page success — DO NOT reload (Apps Script backend is slow,
+          // the PDF/email work happens asynchronously after this response)
+          showSigningSuccess(signatureImage);
+        } else {
+          showError('Failed to sign contract: ' + (result.error || 'Unknown error'));
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-check"></i> Sign Contract';
+        }
+      } catch (error) {
+        console.error('Error submitting signature:', error);
+        showError('Error submitting signature: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check"></i> Sign Contract';
+      }
+    }
+
+    function showSigningSuccess(signatureImage) {
+      // Hide everything else
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('errorContainer').style.display = 'none';
+      document.getElementById('contractContainer').style.display = 'none';
+
+      // Build success screen
+      const successScreen = document.createElement('div');
+      successScreen.style.cssText = 'max-width:680px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.12);font-family:Inter,-apple-system,sans-serif;';
+
+      successScreen.innerHTML = `
+        <div style="background:linear-gradient(135deg,#065f46 0%,#059669 100%);padding:40px 40px 32px;text-align:center;color:white;">
+          <div style="width:72px;height:72px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;">✓</div>
+          <h1 style="margin:0 0 8px;font-size:26px;font-weight:800;">Contract Signed!</h1>
+          <p style="margin:0;opacity:0.9;font-size:15px;">You're all set — here's what happens next.</p>
+        </div>
+
+        <div style="padding:36px 40px;">
+          <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:32px;">
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:16px;background:#f0fdf4;border-radius:8px;border-left:4px solid #10b981;">
+              <div style="font-size:20px;flex-shrink:0;">✅</div>
+              <div>
+                <p style="margin:0 0 4px;font-weight:700;color:#064e3b;font-size:14px;">Agreement confirmed</p>
+                <p style="margin:0;color:#065f46;font-size:13px;line-height:1.5;">Your signed contract is being processed and will be emailed to you for your records.</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:16px;background:#eff6ff;border-radius:8px;border-left:4px solid #3b82f6;" id="stripeSection">
+              <div style="font-size:20px;flex-shrink:0;">💳</div>
+              <div>
+                <p style="margin:0 0 4px;font-weight:700;color:#1e3a8a;font-size:14px;" id="stripeTitle">Redirecting to payment setup...</p>
+                <p style="margin:0;color:#1e40af;font-size:13px;line-height:1.5;" id="stripeMsg">You'll be taken to Stripe to set up your autopay in <span id="countdownTimer">5</span> seconds. <a href="#" id="skipWaitLink" style="color:#1e40af;font-weight:600;text-decoration:none;" onclick="skipCountdown(); return false;">Skip wait</a></p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:16px;background:#faf5ff;border-radius:8px;border-left:4px solid #8b5cf6;">
+              <div style="font-size:20px;flex-shrink:0;">🏊</div>
+              <div>
+                <p style="margin:0 0 4px;font-weight:700;color:#4c1d95;font-size:14px;">We look forward to serving you</p>
+                <p style="margin:0;color:#5b21b6;font-size:13px;line-height:1.5;">We're excited to help keep your pool crystal clear all season long. Let's make this a great year!</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#f8fafc;border-radius:8px;padding:20px;margin-bottom:28px;">
+            <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:0.05em;">Your Signature</p>
+            <img src="${signatureImage}" alt="Your Signature" style="max-width:260px;max-height:90px;object-fit:contain;border:1px solid #e2e8f0;padding:10px;background:white;border-radius:4px;display:block;" />
+          </div>
+
+          <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;line-height:1.6;">
+            Questions? Contact us at <a href="mailto:samr@aqualitypoolcompanyusa.com" style="color:#0369a1;">samr@aqualitypoolcompanyusa.com</a> or <a href="tel:5027319217" style="color:#0369a1;">(502) 731-9217</a>
+          </p>
+        </div>
+
+        <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:20px 40px;text-align:center;">
+          <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763-p-500.jpg" alt="A Quality Pool Company" style="max-width:120px;height:auto;opacity:0.8;" />
+        </div>
+      `;
+
+      document.body.innerHTML = '';
+      document.body.style.cssText = 'background:#e5e7eb;padding:24px 16px 48px;';
+      document.body.appendChild(successScreen);
+
+      // Setup Stripe redirect for weekly service contracts
+      const urlParams = new URLSearchParams(window.location.search);
+      let stripeLink = urlParams.get('stripeLink') || sessionStorage.getItem('stripeLink') || '';
+      const contractId = urlParams.get('id') || '';
+      
+      let countdownInterval;
+      
+      window.skipCountdown = function() {
+        if (countdownInterval) clearInterval(countdownInterval);
+        if (stripeLink) {
+          // Open Stripe in new tab
+          window.open(stripeLink, '_blank');
+        }
+      };
+
+      // If no stripe link in URL, try to fetch it from backend
+      if (!stripeLink && contractId) {
+        console.log('📦 Fetching Stripe link from backend for contract: ' + contractId);
+        fetch(INVOICE_ESTIMATE_SCRIPT_URL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'getWeeklyContractStripeLink',
+            contractId: contractId
+          })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.success && data.stripeLink) {
+            stripeLink = data.stripeLink;
+            console.log('✅ Got Stripe link from backend: ' + stripeLink);
+            initStripeRedirect();
+          } else {
+            console.log('⚠️ No Stripe link available. Response:', data);
+            if (data && data.error) {
+              console.log('❌ Backend error: ' + data.error);
+            }
+            showNoStripeMessage();
+          }
+        })
+        .catch(e => {
+          console.log('⚠️ Failed to fetch Stripe link: ' + e.message);
+          showNoStripeMessage();
+        });
+      } else if (stripeLink) {
+        initStripeRedirect();
+      } else {
+        showNoStripeMessage();
+      }
+
+      function initStripeRedirect() {
+        if (stripeLink) {
+          // Start countdown to Stripe redirect
+          let countdown = 5;
+          const countdownEl = document.getElementById('countdownTimer');
+          
+          countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdownEl) countdownEl.textContent = countdown;
+            if (countdown <= 0) {
+              clearInterval(countdownInterval);
+              // Open Stripe in new tab
+              window.open(stripeLink, '_blank');
+            }
+          }, 1000);
+        }
+      }
+
+      function showNoStripeMessage() {
+        // No Stripe link, show standard message
+        const stripeSection = document.getElementById('stripeSection');
+        const stripeTitle = document.getElementById('stripeTitle');
+        const stripeMsg = document.getElementById('stripeMsg');
+        
+        if (stripeTitle) stripeTitle.textContent = 'Autopay setup available';
+        if (stripeMsg) stripeMsg.innerHTML = 'Check your email for your payment link. Setting up automatic billing keeps everything seamless and hassle-free.';
+      }
+    }
+
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('contractContainer').style.display = 'none';
+      document.getElementById('errorContainer').style.display = 'block';
+      document.getElementById('errorMessage').innerHTML = message;
+    }
+
+    function showSuccess(message) {
+      // Legacy function — kept for compatibility; main success UI uses showSigningSuccess()
+      const successDiv = document.createElement('div');
+      successDiv.className = 'success-message';
+      successDiv.textContent = message;
+      if (document.querySelector('.body')) {
+        document.querySelector('.body').insertBefore(successDiv, document.querySelector('.body').firstChild);
+      }
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function formatCurrency(amount) {
+      return parseFloat(amount || 0).toFixed(2);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
+

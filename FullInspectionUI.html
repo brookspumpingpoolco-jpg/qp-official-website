@@ -1,0 +1,4093 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 25%, #0369a1 50%, #075985 75%, #0c4a6e 100%);
+      background-size: 400% 400%;
+      animation: poolWater 15s ease infinite;
+      padding: 15px;
+      padding-bottom: 100px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Pool water animation */
+    @keyframes poolWater {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    /* Water wave overlay effect */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      animation: waterShimmer 8s ease-in-out infinite;
+    }
+
+    @keyframes waterShimmer {
+      0%, 100% {
+        opacity: 0.5;
+        transform: translateY(0);
+      }
+      50% {
+        opacity: 0.8;
+        transform: translateY(-10px);
+      }
+    }
+
+    /* Water ripple effect */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.03) 2px,
+          rgba(255, 255, 255, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.02) 2px,
+          rgba(255, 255, 255, 0.02) 4px
+        );
+      pointer-events: none;
+      z-index: 0;
+      animation: waterRipple 12s linear infinite;
+    }
+
+    @keyframes waterRipple {
+      0% {
+        transform: translateX(0) translateY(0);
+      }
+      100% {
+        transform: translateX(20px) translateY(10px);
+      }
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 25px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    /* Water reflection effect on header */
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+      );
+      animation: headerShimmer 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes headerShimmer {
+      0%, 100% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+      }
+      50% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+      }
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      transition: width 0.3s ease;
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .progress-step {
+      flex: 1;
+      text-align: center;
+      padding: 5px;
+    }
+
+    .progress-step.active {
+      color: #0284c7;
+      font-weight: 700;
+    }
+
+    .progress-step.completed {
+      color: #059669;
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5);
+      display: none;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .card.active {
+      display: block;
+    }
+
+    .card h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2 i {
+      color: #0284c7;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-family: 'Barlow', sans-serif;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    /* Checkbox Group */
+    .checkbox-group {
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+
+    .checkbox-group h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 15px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .checkbox-item label {
+      margin: 0;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    /* Radio Group */
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .radio-item {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .radio-item input[type="radio"] {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    .radio-item label {
+      display: inline;
+      font-size: 15px;
+    }
+
+    /* Photo Upload */
+    .photo-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .photo-upload-item {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-upload-item:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    .photo-upload-item.has-photo {
+      border-color: #059669;
+      background: #d1fae5;
+      padding: 10px;
+    }
+
+    .photo-upload-item img {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .photo-upload-item video {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .photo-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 10px;
+    }
+
+    .photo-icon {
+      font-size: 32px;
+      color: #0284c7;
+      margin-bottom: 10px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Navigation Buttons */
+    .nav-buttons {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 15px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+    }
+
+    .nav-buttons .btn {
+      flex: 1;
+      max-width: 200px;
+    }
+
+    /* Loading */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Success/Error Messages */
+    .success-message {
+      background: #dcfce7;
+      color: #166534;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    /* Mobile Responsive */
+    /* Floating Pool Emojis */
+    .pool-emoji {
+      position: fixed;
+      font-size: 40px;
+      opacity: 0.15;
+      pointer-events: none;
+      animation: float 20s infinite ease-in-out;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      25% {
+        transform: translateY(-30px) rotate(10deg);
+      }
+      50% {
+        transform: translateY(0) rotate(0deg);
+      }
+      75% {
+        transform: translateY(30px) rotate(-10deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .photo-upload-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .progress-steps {
+        font-size: 10px;
+      }
+
+      .nav-buttons .btn {
+        font-size: 14px;
+        padding: 12px 16px;
+      }
+
+      .pool-emoji {
+        font-size: 30px;
+      }
+    }
+
+    /* Customer Select UI */
+    #customerSelectUI, #selectedCustomerDisplay {
+      margin-bottom: 20px;
+    }
+
+    #addCustomerSection {
+      display: none;
+      margin-top: 15px;
+      background: #fffbeb;
+      border: 2px dashed #fbbf24;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    #selectedCustomerDisplay {
+      display: none;
+      background: #dcfce7;
+      border: 2px solid #10b981;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    /* Notification Banner */
+    .notification-banner {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      position: relative;
+      z-index: 1;
+    }
+
+    .notification-banner.show {
+      display: block;
+    }
+
+    .notification-banner .banner-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .notification-banner h3 {
+      margin: 0;
+      color: #0369a1;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .notification-banner .close-btn {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .notification-banner .close-btn:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .notification-banner p {
+      margin: 0 0 12px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .notification-banner .unsaved-list {
+      margin: 15px 0;
+    }
+
+    .notification-banner .unsaved-item {
+      background: white;
+      padding: 14px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s;
+    }
+
+    .notification-banner .unsaved-item:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .notification-banner .unsaved-item-info {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .notification-banner .unsaved-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Load Past Inspections */
+    .load-inspection-section {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Email Preview Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      overflow: auto;
+    }
+
+    .modal.show {
+      display: block;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 2% auto;
+      padding: 0;
+      border: none;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .modal-close {
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      opacity: 0.7;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-body iframe {
+      width: 100%;
+      border: none;
+      min-height: 600px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating Pool Emojis -->
+  <div class="pool-emoji" style="left: 5%; top: 10%; animation-delay: 0s;">🏊‍♂️</div>
+  <div class="pool-emoji" style="right: 10%; top: 20%; animation-delay: 2s;">💧</div>
+  <div class="pool-emoji" style="left: 15%; top: 40%; animation-delay: 4s;">🌊</div>
+  <div class="pool-emoji" style="right: 5%; top: 60%; animation-delay: 6s;">🏊‍♀️</div>
+  <div class="pool-emoji" style="left: 25%; top: 75%; animation-delay: 8s;">🐠</div>
+  <div class="pool-emoji" style="right: 20%; top: 85%; animation-delay: 10s;">🦈</div>
+  <div class="pool-emoji" style="left: 80%; top: 30%; animation-delay: 3s;">🏖️</div>
+  <div class="pool-emoji" style="right: 70%; top: 50%; animation-delay: 5s;">🌴</div>
+  <div class="pool-emoji" style="left: 50%; top: 15%; animation-delay: 7s;">☀️</div>
+  <div class="pool-emoji" style="right: 40%; top: 70%; animation-delay: 9s;">🐬</div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-clipboard-check"></i> Full Pool Inspection</h1>
+      <p>Professional inspection report builder</p>
+    </div>
+
+    <!-- Notification Banner for Unsaved Inspections -->
+    <div id="notificationBanner" class="notification-banner">
+      <div class="banner-header">
+        <h3 id="bannerTitle"><i class="fas fa-info-circle"></i> <span id="bannerTitleText">You have unfinished reports</span></h3>
+        <button class="close-btn" onclick="hideUnsavedNotification()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <p id="bannerDescription">You have some reports that haven't been completed or saved yet.</p>
+      <div id="unsavedList" class="unsaved-list"></div>
+    </div>
+
+    <!-- Load Past Inspection Section -->
+    <div class="load-inspection-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 style="margin: 0; color: #111827; font-size: 18px;"><i class="fas fa-history"></i> Load Past Inspection</h3>
+        <button class="btn btn-secondary" onclick="loadPastInspections()" style="font-size: 14px; padding: 10px 16px;">
+          <i class="fas fa-sync"></i> Refresh
+        </button>
+      </div>
+      <select id="pastInspectionSelect" class="form-control" onchange="loadSelectedInspection()" style="margin-bottom: 10px;">
+        <option value="">-- Select a past inspection to edit --</option>
+      </select>
+      <div id="loadedInspectionActions" style="display: none; margin-top: 10px;">
+        <button class="btn btn-secondary" onclick="previewEmail()" style="margin-right: 10px;">
+          <i class="fas fa-envelope"></i> Preview Email
+        </button>
+        <button class="btn btn-secondary" onclick="resendEmail()" style="margin-right: 10px;">
+          <i class="fas fa-paper-plane"></i> Resend Email
+        </button>
+        <button class="btn btn-secondary" onclick="clearLoadedInspection()">
+          <i class="fas fa-times"></i> Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- AI Auto-Rewrite Toggle -->
+    <div style="background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); display: flex; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-magic" style="color: #059669; font-size: 20px;"></i>
+        <span style="font-weight: 600; color: #111827;">AI Auto-Rewrite</span>
+        <span style="font-size: 12px; color: #6b7280;">(Automatically enhance notes as you type)</span>
+      </div>
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0;">
+        <input type="checkbox" id="autoRewriteToggle" checked style="width: 20px; height: 20px; cursor: pointer;">
+        <span style="font-weight: 600; color: #059669;" id="autoRewriteLabel">ON</span>
+      </label>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 14%;"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="progress-step active" id="step1Label">Customer</div>
+        <div class="progress-step" id="step2Label">Overview</div>
+        <div class="progress-step" id="step3Label">Structural</div>
+        <div class="progress-step" id="step4Label">Plumbing</div>
+        <div class="progress-step" id="step5Label">Equipment</div>
+        <div class="progress-step" id="step6Label">Media</div>
+        <div class="progress-step" id="step7Label">Summary</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Customer Info -->
+    <div class="card active" id="step1">
+      <h2><i class="fas fa-user"></i> Customer Information</h2>
+      
+      <div class="form-group">
+        <label>Select Existing Customer</label>
+        <select id="customerSelect" onchange="loadCustomerDetails()">
+          <option value="">-- Loading customers... --</option>
+        </select>
+      </div>
+
+      <div style="text-align: center; margin: 15px 0; color: #9ca3af; font-weight: 600;">OR ENTER NEW CUSTOMER</div>
+
+      <div class="form-group">
+        <label>Customer Name *</label>
+        <input type="text" id="customerName" placeholder="Enter customer name" required>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="customerPhone" placeholder="Enter phone number">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="customerEmail" placeholder="customer@email.com">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Property Address *</label>
+        <input type="text" id="propertyAddress" placeholder="Street address" required onchange="updatePropertyMap()" onkeyup="debounceUpdateMap()">
+        <div id="propertyMapContainer" style="display: none; margin-top: 24px;">
+          <!-- Will be populated by loadSatelliteImage function -->
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Inspector Name *</label>
+        <input type="text" id="inspectorName" placeholder="Enter your name" value="Samuel Roberts" required>
+      </div>
+
+      <div id="addCustomerSection">
+        <p style="font-size: 14px; color: #92400e; margin-bottom: 12px; text-align: center; font-weight: 600;">
+          <i class="fas fa-info-circle"></i> New Customer - Not in the Customers Sheet Yet
+        </p>
+        <button class="btn btn-secondary" onclick="addCustomerToSheet()" style="width: 100%; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; font-weight: 700;">
+          <i class="fas fa-user-plus"></i> Add This Customer
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Pool Overview -->
+    <div class="card" id="step2">
+      <h2><i class="fas fa-swimming-pool"></i> Pool Overview</h2>
+      
+      <div class="form-group">
+        <label>Pool Type *</label>
+        <div class="radio-group">
+          <div class="radio-item">
+            <input type="radio" name="poolType" value="Vinyl" id="poolVinyl">
+            <label for="poolVinyl">Vinyl</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="poolType" value="Fiberglass" id="poolFiberglass">
+            <label for="poolFiberglass">Fiberglass</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="poolType" value="Gunite" id="poolGunite">
+            <label for="poolGunite">Gunite</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="poolType" value="Shotcrete" id="poolShotcrete">
+            <label for="poolShotcrete">Shotcrete</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="poolType" value="Concrete" id="poolConcrete">
+            <label for="poolConcrete">Concrete</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Dimensions</label>
+        <input type="text" id="dimensions" placeholder="e.g., 20' x 40'">
+      </div>
+
+      <div class="form-group">
+        <label>Approx. Age</label>
+        <input type="text" id="poolAge" placeholder="e.g., 15 years">
+      </div>
+
+      <div class="form-group">
+        <label>Water Level on Arrival</label>
+        <div class="radio-group">
+          <div class="radio-item">
+            <input type="radio" name="waterLevel" value="Normal" id="waterNormal">
+            <label for="waterNormal">Normal</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="waterLevel" value="Low" id="waterLow">
+            <label for="waterLow">Low</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="waterLevel" value="High" id="waterHigh">
+            <label for="waterHigh">High</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Pool Status</label>
+        <div class="radio-group">
+          <div class="radio-item">
+            <input type="radio" name="poolStatus" value="Running" id="statusRunning">
+            <label for="statusRunning">Running</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="poolStatus" value="Off" id="statusOff">
+            <label for="statusOff">Off</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="poolStatus" value="Green/Cloudy" id="statusGreen">
+            <label for="statusGreen">Green/Cloudy</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="poolStatus" value="Drained/Partially Drained" id="statusDrained">
+            <label for="statusDrained">Drained</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Structural Inspection -->
+    <div class="card" id="step3">
+      <h2><i class="fas fa-building"></i> Structural Condition</h2>
+      
+      <!-- Walls/Shell -->
+      <div class="checkbox-group">
+        <h3>Walls / Shell</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="wallsSound">
+          <label for="wallsSound">Structurally sound</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="wallsMovement">
+          <label for="wallsMovement">⚠️ Detected movement or bulging</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="wallsCracks">
+          <label for="wallsCracks">⚠️ Cracks / separation</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="wallsHollow">
+          <label for="wallsHollow">⚠️ Hollow/sounding areas</label>
+        </div>
+        <div class="form-group">
+          <label>Walls Notes</label>
+          <textarea id="wallsNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Floor/Bottom -->
+      <div class="checkbox-group">
+        <h3>Pool Floor / Bottom</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="floorSmooth">
+          <label for="floorSmooth">Smooth / level</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="floorCracks">
+          <label for="floorCracks">⚠️ Cracks, scaling, spalling</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="floorWrinkles">
+          <label for="floorWrinkles">⚠️ Wrinkles / divots (vinyl)</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="floorBlistering">
+          <label for="floorBlistering">⚠️ Osmotic blistering (fiberglass)</label>
+        </div>
+        <div class="form-group">
+          <label>Floor Notes</label>
+          <textarea id="floorNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Surface Condition -->
+      <div class="checkbox-group">
+        <h3>Surface Condition</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="surfaceClean">
+          <label for="surfaceClean">Surface clean</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="surfaceStaining">
+          <label for="surfaceStaining">⚠️ Staining</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="surfaceAlgae">
+          <label for="surfaceAlgae">⚠️ Algae or deterioration</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="surfacePlasterWear">
+          <label for="surfacePlasterWear">⚠️ Plaster wear (gunite/concrete)</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="surfaceGelcoat">
+          <label for="surfaceGelcoat">⚠️ Gelcoat fading (fiberglass)</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="surfaceTears">
+          <label for="surfaceTears">⚠️ Tears / pinholes (vinyl)</label>
+        </div>
+        <div class="form-group">
+          <label>Surface Notes</label>
+          <textarea id="surfaceNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Coping & Decking -->
+      <div class="checkbox-group">
+        <h3>Coping & Decking</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="copingSecure">
+          <label for="copingSecure">Secure</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="copingLoose">
+          <label for="copingLoose">⚠️ Loose stones/bricks</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="copingCracks">
+          <label for="copingCracks">⚠️ Cracks</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="copingSettlement">
+          <label for="copingSettlement">⚠️ Settlement</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="copingTripHazards">
+          <label for="copingTripHazards">⚠️ Trip hazards</label>
+        </div>
+        <div class="form-group">
+          <label>Coping/Decking Notes</label>
+          <textarea id="copingNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Stairs & Handrails -->
+      <div class="checkbox-group">
+        <h3>Stairs & Handrails</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="stairsSecure">
+          <label for="stairsSecure">Secure</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="stairsLoose">
+          <label for="stairsLoose">⚠️ Loose</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="stairsRust">
+          <label for="stairsRust">⚠️ Rust / corrosion</label>
+        </div>
+        <div class="form-group">
+          <label>Stairs/Handrails Notes</label>
+          <textarea id="stairsNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Plumbing & Leak Detection -->
+    <div class="card" id="step4">
+      <h2><i class="fas fa-tint"></i> Plumbing & Leak Detection</h2>
+      
+      <!-- Pressure Testing -->
+      <div class="checkbox-group">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+          <input type="checkbox" id="pressureTestPerformed" onchange="togglePressureTestSection()" style="width: 20px; height: 20px; cursor: pointer;">
+          <h3 style="margin: 0;">Pressure Testing</h3>
+        </div>
+        <div id="pressureTestSection" style="display: none;">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Testing PSI</label>
+            <input type="text" id="pressurePSI" placeholder="e.g., 20">
+          </div>
+          <div class="form-group">
+            <label>Hold Duration (minutes)</label>
+            <input type="text" id="pressureDuration" placeholder="e.g., 15">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Pressure Drop</label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" name="pressureDrop" value="None" id="dropNone">
+              <label for="dropNone">None</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="pressureDrop" value="Minor" id="dropMinor">
+              <label for="dropMinor">Minor</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="pressureDrop" value="Significant" id="dropSignificant">
+              <label for="dropSignificant">Significant</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Lines Tested</label>
+          <textarea id="linesTested" rows="2" placeholder="e.g., Skimmer, Return, Main Drain..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Pressure Test Notes</label>
+          <textarea id="pressureTestNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+        </div>
+      </div>
+
+      <!-- Leak Detection -->
+      <div class="checkbox-group">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+          <input type="checkbox" id="leakDetectionPerformed" onchange="toggleLeakDetectionSection()" style="width: 20px; height: 20px; cursor: pointer;">
+          <h3 style="margin: 0;">Acoustic / Electronic Leak Detection</h3>
+        </div>
+        <div id="leakDetectionSection" style="display: none;">
+        <div class="checkbox-item">
+          <input type="checkbox" id="leakStrong">
+          <label for="leakStrong">⚠️ Strong leak signature detected</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="leakModerate">
+          <label for="leakModerate">⚠️ Moderate signature</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="leakWeak">
+          <label for="leakWeak">Weak signature</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="leakNone">
+          <label for="leakNone">✓ No leak detected</label>
+        </div>
+        <div class="form-group">
+          <label>Location Notes / Coordinates</label>
+          <textarea id="leakNotes" rows="3" placeholder="Describe leak location, depth, coordinates..."></textarea>
+        </div>
+        </div>
+      </div>
+
+      <!-- Visual Evaluation -->
+      <div class="checkbox-group">
+        <h3>Visual Leak Evaluation</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualDyeTesting">
+          <label for="visualDyeTesting">Dye testing performed</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualSkimmerCracks">
+          <label for="visualSkimmerCracks">⚠️ Skimmer throat cracks</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualReturnJetLeaks">
+          <label for="visualReturnJetLeaks">⚠️ Return jet leaks</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualLightNicheLeaks">
+          <label for="visualLightNicheLeaks">⚠️ Light niche leaks</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualTileLineCracks">
+          <label for="visualTileLineCracks">⚠️ Tile line cracks</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualStructuralCracks">
+          <label for="visualStructuralCracks">⚠️ Structural cracks</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualFittingsLoose">
+          <label for="visualFittingsLoose">⚠️ Fittings loose / deteriorating</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="visualEquipmentPadLeaks">
+          <label for="visualEquipmentPadLeaks">⚠️ Equipment pad leaks</label>
+        </div>
+        <div class="form-group">
+          <label>Visual Evaluation Notes</label>
+          <textarea id="visualNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Equipment Inspection -->
+    <div class="card" id="step5">
+      <h2><i class="fas fa-cogs"></i> Equipment Inspection</h2>
+      
+      <!-- Pump -->
+      <div class="checkbox-group">
+        <h3>Pump System</h3>
+        <div class="form-group">
+          <label>Pump Brand/Model</label>
+          <input type="text" id="pumpBrandModel" placeholder="e.g., Pentair SuperFlo">
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="pumpOperating">
+          <label for="pumpOperating">Operating normally</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="pumpBearingNoise">
+          <label for="pumpBearingNoise">⚠️ Bearing noise</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="pumpLeakingSeal">
+          <label for="pumpLeakingSeal">⚠️ Leaking seal</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="pumpLowFlow">
+          <label for="pumpLowFlow">⚠️ Low flow</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="pumpMotorOverheating">
+          <label for="pumpMotorOverheating">⚠️ Motor overheating</label>
+        </div>
+        <div class="form-group">
+          <label>Pump Notes</label>
+          <textarea id="pumpNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Filter -->
+      <div class="checkbox-group">
+        <h3>Filter System</h3>
+        <div class="form-group">
+          <label>Filter Type</label>
+          <div class="radio-group">
+            <div class="radio-item">
+              <input type="radio" name="filterType" value="Sand" id="filterSand">
+              <label for="filterSand">Sand</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="filterType" value="Cartridge" id="filterCartridge">
+              <label for="filterCartridge">Cartridge</label>
+            </div>
+            <div class="radio-item">
+              <input type="radio" name="filterType" value="DE" id="filterDE">
+              <label for="filterDE">DE</label>
+            </div>
+          </div>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="filterPressureNormal">
+          <label for="filterPressureNormal">Pressure normal</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="filterPressureHigh">
+          <label for="filterPressureHigh">⚠️ Pressure high</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="filterTankCracked">
+          <label for="filterTankCracked">⚠️ Tank cracked / O-ring missing</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="filterValveLeaking">
+          <label for="filterValveLeaking">⚠️ Multiport valve leaking</label>
+        </div>
+        <div class="form-group">
+          <label>Filter Notes</label>
+          <textarea id="filterNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Heater -->
+      <div class="checkbox-group">
+        <h3>Heater</h3>
+        <div class="form-group">
+          <label>Heater Brand/Model</label>
+          <input type="text" id="heaterBrandModel" placeholder="e.g., Raypak 399K BTU">
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="heaterIgnites">
+          <label for="heaterIgnites">Ignites properly</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="heaterWaterBypassing">
+          <label for="heaterWaterBypassing">⚠️ Water bypassing</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="heaterErrorCodes">
+          <label for="heaterErrorCodes">⚠️ Error codes present</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="heaterCorrosion">
+          <label for="heaterCorrosion">⚠️ Internal corrosion / soot</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="heaterGasIssues">
+          <label for="heaterGasIssues">⚠️ Gas supply issues</label>
+        </div>
+        <div class="form-group">
+          <label>Heater Notes</label>
+          <textarea id="heaterNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Salt System & Automation combined for brevity -->
+      <div class="checkbox-group">
+        <h3>Salt System (if applicable)</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="saltProperReadings">
+          <label for="saltProperReadings">Proper readings</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="saltLow">
+          <label for="saltLow">⚠️ Low salt</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="saltCellCleaning">
+          <label for="saltCellCleaning">⚠️ Cell requires cleaning</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="saltFlowSwitch">
+          <label for="saltFlowSwitch">⚠️ Flow switch issue</label>
+        </div>
+        <div class="form-group">
+          <label>Salt System Notes</label>
+          <textarea id="saltNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <h3>Automation / Electrical</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="automationOperational">
+          <label for="automationOperational">System operational</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="automationInactive">
+          <label for="automationInactive">⚠️ Inactive/unresponsive</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="automationExposedWires">
+          <label for="automationExposedWires">⚠️ Exposed wires</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="automationGFCI">
+          <label for="automationGFCI">⚠️ GFCI issues</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="automationTimers">
+          <label for="automationTimers">⚠️ Timers malfunctioning</label>
+        </div>
+        <div class="form-group">
+          <label>Automation/Electrical Notes</label>
+          <textarea id="automationNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- Spa (optional) -->
+      <div class="checkbox-group">
+        <h3>Hot Tub / Spa (if applicable)</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="spaApplicable">
+          <label for="spaApplicable">Spa present and inspected</label>
+        </div>
+        <div class="form-group">
+          <label>Spa Notes</label>
+          <textarea id="spaNotes" rows="2" placeholder="Describe spa condition, jets, heater, etc..."></textarea>
+        </div>
+      </div>
+
+      <!-- Safety -->
+      <div class="checkbox-group">
+        <h3>Safety Compliance</h3>
+        <div class="checkbox-item">
+          <input type="checkbox" id="safetyVGB">
+          <label for="safetyVGB">VGB-compliant main drain</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="safetyDrainCovers">
+          <label for="safetyDrainCovers">Proper drain covers installed</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="safetyFencing">
+          <label for="safetyFencing">Fencing meets code</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="safetyGate">
+          <label for="safetyGate">Gate self-closing / self-latching</label>
+        </div>
+        <div class="checkbox-item">
+          <input type="checkbox" id="safetyBonding">
+          <label for="safetyBonding">Electrical bonding checked</label>
+        </div>
+        <div class="form-group">
+          <label>Safety Notes</label>
+          <textarea id="safetyNotes" rows="2" placeholder="Additional notes..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 6: Photos & Videos -->
+    <div class="card" id="step6">
+      <h2><i class="fas fa-camera"></i> Photo & Video Documentation</h2>
+      
+      <p style="color: #6b7280; margin-bottom: 20px;">Upload photos and videos from your device. All files are optional.</p>
+      
+      <div class="photo-upload-grid" id="mediaGrid">
+        <!-- Photos -->
+        <div class="photo-upload-item" onclick="document.getElementById('photo1').click()">
+          <div class="photo-label">📷 Pool Overview</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo1" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Pool Overview', 1)">
+          <div id="preview1"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('photo2').click()">
+          <div class="photo-label">📷 Equipment Pad</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo2" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Equipment Pad', 2)">
+          <div id="preview2"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('photo3').click()">
+          <div class="photo-label">📷 Pump & Filter</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo3" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Pump & Filter', 3)">
+          <div id="preview3"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('photo4').click()">
+          <div class="photo-label">📷 Heater</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo4" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Heater', 4)">
+          <div id="preview4"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('photo5').click()">
+          <div class="photo-label">📷 Suspected Leak/Issue Area</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo5" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Suspected Leak/Issue Area', 5)">
+          <div id="preview5"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('photo6').click()">
+          <div class="photo-label">📷 Structural Concern</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo6" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Structural Concern', 6)">
+          <div id="preview6"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('photo7').click()">
+          <div class="photo-label">📷 Additional Photo 1</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo7" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Additional Photo 1', 7)">
+          <div id="preview7"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('photo8').click()">
+          <div class="photo-label">📷 Additional Photo 2</div>
+          <div class="photo-icon"><i class="fas fa-camera"></i></div>
+          <input type="file" id="photo8" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event, 'Additional Photo 2', 8)">
+          <div id="preview8"></div>
+        </div>
+
+        <!-- Videos -->
+        <div class="photo-upload-item" onclick="document.getElementById('video1').click()">
+          <div class="photo-label">🎥 Video 1</div>
+          <div class="photo-icon"><i class="fas fa-video"></i></div>
+          <input type="file" id="video1" accept="video/*" capture="camera" style="display: none;" onchange="handleVideoUpload(event, 'Video 1', 1)">
+          <div id="videoPreview1"></div>
+        </div>
+
+        <div class="photo-upload-item" onclick="document.getElementById('video2').click()">
+          <div class="photo-label">🎥 Video 2</div>
+          <div class="photo-icon"><i class="fas fa-video"></i></div>
+          <input type="file" id="video2" accept="video/*" capture="camera" style="display: none;" onchange="handleVideoUpload(event, 'Video 2', 2)">
+          <div id="videoPreview2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 7: Summary & Recommendations -->
+    <div class="card" id="step7">
+      <h2><i class="fas fa-clipboard-list"></i> Summary & Recommendations</h2>
+      
+      <div class="form-group">
+        <label>Overall Condition *</label>
+        <div class="radio-group">
+          <div class="radio-item">
+            <input type="radio" name="overallCondition" value="Good" id="conditionGood">
+            <label for="conditionGood">Good</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="overallCondition" value="Fair" id="conditionFair">
+            <label for="conditionFair">Fair</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="overallCondition" value="Needs Repairs" id="conditionNeeds">
+            <label for="conditionNeeds">Needs Repairs</label>
+          </div>
+          <div class="radio-item">
+            <input type="radio" name="overallCondition" value="Significant Issues Found" id="conditionSignificant">
+            <label for="conditionSignificant">Significant Issues</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Primary Concerns with AI Enhancement -->
+      <div class="form-group">
+        <label>Primary Concerns <span style="color: #059669; font-size: 13px;">✨ AI-Enhanced</span></label>
+        <textarea id="primaryConcerns" rows="6" placeholder="Describe the main issues found during the inspection..."></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="enhanceWithAI('primaryConcerns')" style="flex: 1; font-size: 14px;">
+            <i class="fas fa-magic"></i> Enhance with AI
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="undoAIEnhancement('primaryConcerns')" style="flex: 1; font-size: 14px; display: none;" id="undoPrimaryConcerns">
+            <i class="fas fa-undo"></i> Undo
+          </button>
+        </div>
+      </div>
+
+      <!-- Recommended Services Checklist -->
+      <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 15px;">
+          <i class="fas fa-wrench"></i> Recommended Services
+        </h3>
+        <p style="color: #6b7280; font-size: 14px; margin-bottom: 15px;">Select all services that apply:</p>
+        
+        <div class="grid-2">
+          <div class="checkbox-item">
+            <input type="checkbox" id="servicePoolCleaning">
+            <label for="servicePoolCleaning">Pool Cleaning</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceDeepClean">
+            <label for="serviceDeepClean">Deep Clean</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceLinerReplacement">
+            <label for="serviceLinerReplacement">Liner Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceReplastering">
+            <label for="serviceReplastering">Pool Replastering</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceLightFixes">
+            <label for="serviceLightFixes">Light Repairs/Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceSkimmerReplacement">
+            <label for="serviceSkimmerReplacement">Skimmer Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="servicePipeRerouting">
+            <label for="servicePipeRerouting">Pipe Rerouting/Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="servicePumpPadReplumbing">
+            <label for="servicePumpPadReplumbing">Pump Pad Replumbing</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceNewManifold">
+            <label for="serviceNewManifold">New Manifold Installation</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceFilterChange">
+            <label for="serviceFilterChange">Filter Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceGlassMediaConversion">
+            <label for="serviceGlassMediaConversion">Glass Media Change/Conversion</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceHeaterReplacement">
+            <label for="serviceHeaterReplacement">Heater Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="servicePumpReplacement">
+            <label for="servicePumpReplacement">Pump Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceLeakDetectionRepair">
+            <label for="serviceLeakDetectionRepair">Leak Detection & Repair</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceTileRepair">
+            <label for="serviceTileRepair">Tile Repair/Replacement</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceDeckRepair">
+            <label for="serviceDeckRepair">Deck Repair/Resurfacing</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="serviceCopingRepair">
+            <label for="serviceCopingRepair">Coping Repair/Replacement</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Services Text -->
+      <div class="form-group">
+        <label>Additional Recommended Services <span style="color: #059669; font-size: 13px;">✨ AI-Enhanced</span></label>
+        <textarea id="additionalServices" rows="4" placeholder="Describe any other recommended services not listed above..."></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="enhanceWithAI('additionalServices')" style="flex: 1; font-size: 14px;">
+            <i class="fas fa-magic"></i> Enhance with AI
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="undoAIEnhancement('additionalServices')" style="flex: 1; font-size: 14px; display: none;" id="undoAdditionalServices">
+            <i class="fas fa-undo"></i> Undo
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Estimate Will Be Emailed To</label>
+        <input type="email" id="estimateEmail" placeholder="Email for repair estimate">
+      </div>
+
+      <!-- Inspector Notes with AI Enhancement -->
+      <div class="form-group">
+        <label>Inspector Notes <span style="color: #059669; font-size: 13px;">✨ AI-Enhanced</span></label>
+        <textarea id="additionalNotes" rows="4" placeholder="Any other observations or recommendations..."></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="enhanceWithAI('additionalNotes')" style="flex: 1; font-size: 14px;">
+            <i class="fas fa-magic"></i> Enhance with AI
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="undoAIEnhancement('additionalNotes')" style="flex: 1; font-size: 14px; display: none;" id="undoAdditionalNotes">
+            <i class="fas fa-undo"></i> Undo
+          </button>
+        </div>
+      </div>
+
+      <!-- Inspector Signature -->
+      <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 15px;">
+          <i class="fas fa-signature"></i> Inspector Signature *
+        </h3>
+        <p style="color: #6b7280; font-size: 14px; margin-bottom: 15px;">Sign below using your finger or mouse:</p>
+        
+        <div style="border: 2px solid #cbd5e1; border-radius: 8px; background: white; margin-bottom: 15px;">
+          <canvas id="signatureCanvas" width="800" height="200" style="width: 100%; height: auto; touch-action: none; cursor: crosshair; display: block;"></canvas>
+        </div>
+        <p id="signatureStatus" style="font-size: 12px; color: #9ca3af; margin-top: -10px; margin-bottom: 10px;">
+          <i class="fas fa-info-circle"></i> Draw your signature above
+        </p>
+        
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="clearSignature()" style="flex: 1; font-size: 14px;">
+            <i class="fas fa-eraser"></i> Clear Signature
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="testSignature()" style="flex: 1; font-size: 14px;">
+            <i class="fas fa-vial"></i> Test Draw
+          </button>
+        </div>
+        <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">
+          ℹ️ This signature certifies that you performed this inspection. Use mouse or finger to sign.
+        </p>
+      </div>
+
+      <!-- Send Report Options -->
+      <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; margin: 20px 0;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #0369a1; margin-bottom: 15px;">
+          <i class="fas fa-paper-plane"></i> Send Report
+        </h3>
+        
+        <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer;">
+          <input type="checkbox" id="emailCustomerCheckbox" style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="font-size: 15px; font-weight: 600;">📧 Email report to customer</span>
+        </label>
+        
+        <label style="display: flex; align-items: center; gap: 12px; cursor: not-allowed; opacity: 0.5;">
+          <input type="checkbox" id="textCustomerCheckbox" style="width: 20px; height: 20px; cursor: not-allowed;" disabled>
+          <span style="font-size: 15px; font-weight: 600;">📱 Send text message <span style="font-size: 12px; color: #9ca3af;">(Coming Soon)</span></span>
+        </label>
+        
+        <p style="font-size: 12px; color: #6b7280; margin-top: 12px; margin-bottom: 0;">
+          ℹ️ Report is always emailed to team at brookspumpingpoolco@gmail.com
+        </p>
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" id="prevBtn" onclick="previousStep()" style="display: none;">
+        <i class="fas fa-arrow-left"></i> Previous
+      </button>
+      <button class="btn btn-secondary" id="saveBtn" onclick="saveDraftInspection()" style="display: inline-block;">
+        <i class="fas fa-save"></i> Save Draft
+      </button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+        Next <i class="fas fa-arrow-right"></i>
+      </button>
+      <button class="btn btn-info" id="previewBtn" onclick="previewReport()" style="display: none; background: #0ea5e9; color: white;">
+        <i class="fas fa-eye"></i> Preview Report
+      </button>
+      <button class="btn btn-primary" id="submitBtn" onclick="generateReport()" style="display: none;">
+        <i class="fas fa-file-pdf"></i> Generate Report
+      </button>
+      <button class="btn btn-success" id="sendEmailBtn" onclick="sendEmailToCustomer()" style="display: none; background: #10b981; color: white;">
+        <i class="fas fa-envelope"></i> Send Email to Customer
+      </button>
+      <button class="btn btn-info" id="sendTextBtn" onclick="sendTextToCompany()" style="display: none; background: #0ea5e9; color: white; margin-left: 10px;">
+        <i class="fas fa-sms"></i> Send Text to Company
+      </button>
+    </div>
+
+    <div id="successMessage" class="success-message"></div>
+    <div id="errorMessage" class="error-message"></div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 7;
+    let squareCustomers = [];
+    let selectedCustomerId = null;
+
+    // Load Square customers on page load
+    window.onload = function() {
+      loadCustomers();
+      // Check saved state for pressure test and leak detection
+      checkSavedToggleStates();
+      // Load past inspections and check for unsaved
+      loadPastInspections();
+      checkUnsavedInspections();
+      
+      // Check if address is already filled and load map
+      setTimeout(function() {
+        const address = document.getElementById('propertyAddress').value.trim();
+        if (address && address.length > 5) {
+          updatePropertyMap();
+        }
+      }, 500);
+    };
+
+    // Toggle pressure test section
+    function togglePressureTestSection() {
+      const checkbox = document.getElementById('pressureTestPerformed');
+      const section = document.getElementById('pressureTestSection');
+      section.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    // Toggle leak detection section
+    function toggleLeakDetectionSection() {
+      const checkbox = document.getElementById('leakDetectionPerformed');
+      const section = document.getElementById('leakDetectionSection');
+      section.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    // Check saved toggle states when loading a draft
+    function checkSavedToggleStates() {
+      // This will be called when loading a draft to restore toggle states
+      // For now, sections are hidden by default
+    }
+
+    function loadCustomers() {
+      const select = document.getElementById('customerSelect');
+      select.innerHTML = '<option value="">-- Loading customers...</option>';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('Customers result:', result);
+          if (result.success && result.customers) {
+            squareCustomers = result.customers;
+            select.innerHTML = '<option value="">-- Select existing customer or enter new --</option>';
+            
+            if (result.customers.length === 0) {
+              const option = document.createElement('option');
+              option.value = '';
+              option.textContent = '-- No customers found --';
+              option.disabled = true;
+              select.appendChild(option);
+            } else {
+              result.customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.email || customer.id || '';
+                option.textContent = customer.name + (customer.phone ? ' - ' + customer.phone : '');
+                option.dataset.customer = JSON.stringify(customer);
+                select.appendChild(option);
+              });
+              console.log('Loaded ' + result.customers.length + ' customers from sheet');
+            }
+          } else {
+            console.error('Failed to load customers:', result.error);
+            select.innerHTML = '<option value="">-- Error loading customers: ' + (result.error || 'Unknown error') + ' --</option>';
+            showError('Failed to load customers: ' + (result.error || 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error loading customers:', error);
+          select.innerHTML = '<option value="">-- Error: ' + (error.message || error.toString() || 'Failed to load') + ' --</option>';
+          showError('Error loading customers: ' + (error.message || error.toString() || 'Unknown error'));
+        })
+        .getCustomersFromSheet();
+    }
+
+    function loadCustomerDetails() {
+      const selectedValue = document.getElementById('customerSelect').value;
+      
+      if (!selectedValue) {
+        selectedCustomerId = null;
+        return;
+      }
+      
+      const customer = squareCustomers.find(c => c.id === selectedValue || c.email === selectedValue);
+      
+      if (customer) {
+        selectedCustomerId = customer.email || customer.id || selectedValue;
+        document.getElementById('customerName').value = customer.name;
+        const emailField = document.getElementById('customerEmail');
+        emailField.value = customer.email || '';
+        // Auto-check email customer checkbox if email is present
+        if (customer.email) {
+          document.getElementById('emailCustomerCheckbox').checked = true;
+        }
+        document.getElementById('customerPhone').value = customer.phone || '';
+        const addressField = document.getElementById('propertyAddress');
+        addressField.value = customer.address || '';
+        // Update map if address is provided
+        if (customer.address) {
+          // Small delay to ensure field is updated
+          setTimeout(function() {
+            updatePropertyMap();
+          }, 100);
+        }
+      }
+    }
+
+    // Show add customer button when typing manually
+    document.addEventListener('DOMContentLoaded', function() {
+      const nameInput = document.getElementById('customerName');
+      if (nameInput) {
+        nameInput.addEventListener('input', function() {
+          const value = this.value.trim();
+          const selectValue = document.getElementById('customerSelect').value;
+          
+          if (value && !selectValue) {
+            document.getElementById('addCustomerSection').style.display = 'block';
+          } else {
+            document.getElementById('addCustomerSection').style.display = 'none';
+          }
+        });
+      }
+      
+      // Auto-check email checkbox when email is entered
+      const emailInput = document.getElementById('customerEmail');
+      if (emailInput) {
+        emailInput.addEventListener('input', function() {
+          const email = this.value.trim();
+          if (email && email.includes('@')) {
+            document.getElementById('emailCustomerCheckbox').checked = true;
+          }
+        });
+      }
+    });
+
+    // Debounce function for map updates
+    let mapUpdateTimeout;
+    function debounceUpdateMap() {
+      clearTimeout(mapUpdateTimeout);
+      mapUpdateTimeout = setTimeout(updatePropertyMap, 500);
+    }
+
+    // Load satellite image when address is entered (same format as customer portal)
+    async function updatePropertyMap() {
+      const address = document.getElementById('propertyAddress').value.trim();
+      const container = document.getElementById('propertyMapContainer');
+      
+      if (!address || address.length < 5) {
+        if (container) container.style.display = 'none';
+        return;
+      }
+
+      if (!container) return;
+      
+      container.innerHTML = '<div style="text-align: center; padding: 20px; color: #3b82f6;"><i class="fas fa-spinner fa-spin"></i> Loading satellite image...</div>';
+      container.style.display = 'block';
+
+      try {
+        const result = await new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)
+            .getSatelliteImage(address);
+        });
+        
+        console.log('Satellite image result:', result);
+        
+        if (result && result.success && result.satelliteImageUrl) {
+          container.innerHTML = `
+            <div>
+              <h4 style="color: #3b82f6; font-size: 16px; font-weight: 700; margin-bottom: 12px;">
+                <i class="fas fa-satellite"></i> Property Location
+              </h4>
+              <div style="border-radius: 8px; overflow: hidden; margin-bottom: 12px; max-width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <img id="propertyMapImage" src="${result.satelliteImageUrl}" alt="Property satellite view" style="width: 100%; height: auto; display: block;" onerror="this.parentElement.parentElement.innerHTML='<div style=\'color: #f59e0b; padding: 20px; text-align: center; border: 2px solid #f59e0b; border-radius: 8px; background: rgba(245, 158, 11, 0.1);\'><i class=\'fas fa-exclamation-triangle\'></i><br>Image failed to load, but you can continue.</div>'">
+              </div>
+              <p style="color: #9ca3af; font-size: 13px; margin-bottom: 16px;">${escapeHtml(result.formattedAddress || address)}</p>
+            </div>
+          `;
+        } else {
+          const errorMsg = result && result.error ? result.error : 'Satellite image service is temporarily unavailable';
+          container.innerHTML = `
+            <div style="color: #f59e0b; padding: 20px; text-align: center; border: 2px solid #f59e0b; border-radius: 8px; background: rgba(245, 158, 11, 0.1);">
+              <i class="fas fa-exclamation-triangle"></i><br>
+              ${errorMsg}
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading satellite image:', error);
+        container.innerHTML = `
+          <div style="color: #dc2626; padding: 20px; text-align: center; border: 2px solid #dc2626; border-radius: 8px; background: rgba(220, 38, 38, 0.1);">
+            <i class="fas fa-exclamation-triangle"></i><br>
+            Error loading satellite image: ${error.message || error.toString()}
+          </div>
+        `;
+      }
+    }
+    
+    // Helper function to escape HTML
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.toString().replace(/[&<>"']/g, m => map[m]);
+    }
+
+    function addCustomerToSheet() {
+      const name = document.getElementById('customerName').value.trim();
+      const email = document.getElementById('customerEmail').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+      const address = document.getElementById('propertyAddress').value.trim();
+      
+      if (!name) {
+        alert('Please enter a customer name first!');
+        return;
+      }
+      
+      if (!confirm(`Add "${name}" to the Customers sheet?`)) {
+        return;
+      }
+      
+      const customerData = { name, email, phone, address };
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            selectedCustomerId = result.customerId || result.customer.email || result.customer.name;
+            squareCustomers.unshift(result.customer);
+            
+            const select = document.getElementById('customerSelect');
+            const option = document.createElement('option');
+            option.value = result.customer.email || result.customer.id || '';
+            option.textContent = result.customer.name + (result.customer.phone ? ' - ' + result.customer.phone : '');
+            option.dataset.customer = JSON.stringify(result.customer);
+            select.insertBefore(option, select.options[1]);
+            select.value = result.customer.email || result.customer.id || '';
+            
+            document.getElementById('addCustomerSection').style.display = 'none';
+            alert('✅ Customer added successfully!');
+          } else {
+            alert('Error: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+        })
+        .addCustomerToSheet(customerData);
+    }
+
+    // Navigation
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        // Validate current step
+        if (!validateStep(currentStep)) {
+          return;
+        }
+        
+        document.getElementById('step' + currentStep).classList.remove('active');
+        document.getElementById('step' + currentStep + 'Label').classList.remove('active');
+        document.getElementById('step' + currentStep + 'Label').classList.add('completed');
+        
+        currentStep++;
+        
+        document.getElementById('step' + currentStep).classList.add('active');
+        document.getElementById('step' + currentStep + 'Label').classList.add('active');
+        
+        updateProgress();
+        updateButtons();
+        window.scrollTo(0, 0);
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 1) {
+        document.getElementById('step' + currentStep).classList.remove('active');
+        document.getElementById('step' + currentStep + 'Label').classList.remove('active');
+        
+        currentStep--;
+        
+        document.getElementById('step' + currentStep).classList.add('active');
+        document.getElementById('step' + currentStep + 'Label').classList.add('active');
+        document.getElementById('step' + currentStep + 'Label').classList.remove('completed');
+        
+        updateProgress();
+        updateButtons();
+        window.scrollTo(0, 0);
+      }
+    }
+
+    function updateProgress() {
+      const progress = (currentStep / totalSteps) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+    }
+
+    function updateButtons() {
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const previewBtn = document.getElementById('previewBtn');
+      const sendEmailBtn = document.getElementById('sendEmailBtn');
+      const sendTextBtn = document.getElementById('sendTextBtn');
+      
+      if (currentStep === 1) {
+        prevBtn.style.display = 'none';
+      } else {
+        prevBtn.style.display = 'block';
+      }
+      
+      // Save button is always visible
+      saveBtn.style.display = 'inline-block';
+      
+      if (currentStep === totalSteps) {
+        nextBtn.style.display = 'none';
+        previewBtn.style.display = 'inline-block';
+        submitBtn.style.display = 'block';
+      } else {
+        nextBtn.style.display = 'block';
+        previewBtn.style.display = 'none';
+        submitBtn.style.display = 'none';
+      }
+      
+      // Show send email and send text buttons only if report has been generated
+      if (currentInspectionId) {
+        sendEmailBtn.style.display = 'inline-block';
+        sendTextBtn.style.display = 'inline-block';
+      } else {
+        sendEmailBtn.style.display = 'none';
+        sendTextBtn.style.display = 'none';
+      }
+    }
+
+    function validateStep(step) {
+      if (step === 1) {
+        const name = document.getElementById('customerName').value.trim();
+        const address = document.getElementById('propertyAddress').value.trim();
+        const inspector = document.getElementById('inspectorName').value.trim();
+        
+        if (!name || !address || !inspector) {
+          alert('Please fill in all required fields (Customer Name, Property Address, Inspector Name)');
+          return false;
+        }
+      }
+      
+      if (step === 2) {
+        const poolType = document.querySelector('input[name="poolType"]:checked');
+        if (!poolType) {
+          alert('Please select a pool type');
+          return false;
+        }
+      }
+      
+      if (step === 7) {
+        const overallCondition = document.querySelector('input[name="overallCondition"]:checked');
+        if (!overallCondition) {
+          alert('Please select an overall condition rating');
+          return false;
+        }
+        
+        if (!hasSignature) {
+          alert('Please sign the inspection report before submitting');
+          return false;
+        }
+      }
+      
+      return true;
+    }
+
+    // Photo and video storage
+    let photos = [];
+    let videos = [];
+
+    // Signature capture
+    let signatureCanvas;
+    let signatureCtx;
+    let isDrawing = false;
+    let hasSignature = false;
+
+    // AI enhancement storage
+    let originalTexts = {};
+    let autoRewriteEnabled = true;
+    let rewriteTimers = {};
+
+    // Initialize signature canvas and auto-rewrite when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      // Signature canvas setup - wait for canvas to be visible
+      setTimeout(() => {
+        signatureCanvas = document.getElementById('signatureCanvas');
+        if (signatureCanvas) {
+          signatureCtx = signatureCanvas.getContext('2d');
+          
+          // Configure drawing style
+          signatureCtx.strokeStyle = '#000';
+          signatureCtx.lineWidth = 2.5;
+          signatureCtx.lineCap = 'round';
+          signatureCtx.lineJoin = 'round';
+        
+          // Mouse events
+          signatureCanvas.addEventListener('mousedown', startDrawing);
+          signatureCanvas.addEventListener('mousemove', draw);
+          signatureCanvas.addEventListener('mouseup', stopDrawing);
+          signatureCanvas.addEventListener('mouseout', stopDrawing);
+          
+          // Touch events for mobile
+          signatureCanvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = signatureCanvas.getBoundingClientRect();
+            const scaleX = signatureCanvas.width / rect.width;
+            const scaleY = signatureCanvas.height / rect.height;
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+            
+            console.log('Touch start at:', x, y);
+            
+            signatureCtx.strokeStyle = '#000';
+            signatureCtx.lineWidth = 2.5;
+            signatureCtx.lineCap = 'round';
+            signatureCtx.lineJoin = 'round';
+            signatureCtx.beginPath();
+            signatureCtx.moveTo(x, y);
+            signatureCtx.lineTo(x, y);
+            signatureCtx.stroke();
+            isDrawing = true;
+          });
+          
+          signatureCanvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const touch = e.touches[0];
+            const rect = signatureCanvas.getBoundingClientRect();
+            const scaleX = signatureCanvas.width / rect.width;
+            const scaleY = signatureCanvas.height / rect.height;
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+            
+            signatureCtx.lineTo(x, y);
+            signatureCtx.stroke();
+            signatureCtx.beginPath();
+            signatureCtx.moveTo(x, y);
+            
+            if (!hasSignature) {
+              hasSignature = true;
+              updateSignatureStatus();
+              console.log('✓ Touch signature capture started');
+            }
+          });
+          
+          signatureCanvas.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            isDrawing = false;
+            signatureCtx.beginPath();
+          });
+          
+          console.log('✓ Signature canvas initialized successfully');
+          console.log('Canvas dimensions:', signatureCanvas.width, 'x', signatureCanvas.height);
+        } else {
+          console.error('❌ Signature canvas not found!');
+        }
+      }, 1000);
+
+      // Auto-rewrite toggle
+      const toggle = document.getElementById('autoRewriteToggle');
+      const label = document.getElementById('autoRewriteLabel');
+      if (toggle) {
+        toggle.addEventListener('change', function() {
+          autoRewriteEnabled = this.checked;
+          label.textContent = this.checked ? 'ON' : 'OFF';
+          label.style.color = this.checked ? '#059669' : '#9ca3af';
+        });
+      }
+
+      // Setup auto-rewrite for ALL note text areas
+      const aiTextAreas = [
+        // Step 7 - Main AI-enhanced fields
+        'primaryConcerns', 'additionalServices', 'additionalNotes',
+        // Step 3 - Structural notes
+        'wallsNotes', 'floorNotes', 'surfaceNotes', 'copingNotes', 'stairsNotes',
+        // Step 4 - Plumbing notes
+        'pressureTestNotes', 'leakNotes', 'visualNotes',
+        // Step 5 - Equipment notes
+        'pumpNotes', 'filterNotes', 'heaterNotes', 'saltNotes', 'automationNotes', 'spaNotes', 'safetyNotes'
+      ];
+      
+      aiTextAreas.forEach(fieldId => {
+        const textarea = document.getElementById(fieldId);
+        if (textarea) {
+          textarea.addEventListener('blur', function() {
+            if (autoRewriteEnabled && this.value.trim().length > 10) {
+              // Clear any existing timer
+              if (rewriteTimers[fieldId]) {
+                clearTimeout(rewriteTimers[fieldId]);
+              }
+              
+              // Set a delay before auto-rewriting
+              rewriteTimers[fieldId] = setTimeout(() => {
+                autoRewriteField(fieldId);
+              }, 500);
+            }
+          });
+        }
+      });
+    });
+
+    function startDrawing(e) {
+      if (!signatureCanvas || !signatureCtx) {
+        console.error('Canvas not initialized!');
+        return;
+      }
+      isDrawing = true;
+      const rect = signatureCanvas.getBoundingClientRect();
+      const scaleX = signatureCanvas.width / rect.width;
+      const scaleY = signatureCanvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      console.log('Start drawing at:', x, y);
+      
+      signatureCtx.strokeStyle = '#000';
+      signatureCtx.lineWidth = 2.5;
+      signatureCtx.lineCap = 'round';
+      signatureCtx.lineJoin = 'round';
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(x, y);
+      signatureCtx.lineTo(x, y);
+      signatureCtx.stroke();
+    }
+
+    function draw(e) {
+      if (!isDrawing || !signatureCtx) return;
+      const rect = signatureCanvas.getBoundingClientRect();
+      const scaleX = signatureCanvas.width / rect.width;
+      const scaleY = signatureCanvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      signatureCtx.lineTo(x, y);
+      signatureCtx.stroke();
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(x, y);
+      
+      if (!hasSignature) {
+        hasSignature = true;
+        updateSignatureStatus();
+        console.log('✓ Signature capture started');
+      }
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+      if (signatureCtx) {
+        signatureCtx.beginPath();
+      }
+    }
+
+    function clearSignature() {
+      if (!signatureCanvas || !signatureCtx) return;
+      signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+      hasSignature = false;
+      updateSignatureStatus();
+    }
+
+    function getSignatureData() {
+      if (!hasSignature) return null;
+      return signatureCanvas.toDataURL('image/png');
+    }
+
+    function updateSignatureStatus() {
+      const status = document.getElementById('signatureStatus');
+      if (status) {
+        if (hasSignature) {
+          status.innerHTML = '<i class="fas fa-check-circle" style="color: #059669;"></i> <span style="color: #059669; font-weight: 600;">Signature captured</span>';
+        } else {
+          status.innerHTML = '<i class="fas fa-info-circle"></i> Draw your signature above';
+        }
+      }
+    }
+
+    // Test signature function - draws a test signature
+    function testSignature() {
+      if (!signatureCanvas || !signatureCtx) {
+        alert('Signature canvas not initialized yet. Wait a moment and try again.');
+        return;
+      }
+      
+      clearSignature();
+      
+      // Draw a test signature using canvas dimensions
+      const width = signatureCanvas.width;
+      const height = signatureCanvas.height;
+      
+      console.log('Drawing test signature on canvas:', width, 'x', height);
+      
+      signatureCtx.strokeStyle = '#000';
+      signatureCtx.lineWidth = 2.5;
+      signatureCtx.lineCap = 'round';
+      signatureCtx.lineJoin = 'round';
+      
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(width * 0.1, height * 0.7);
+      signatureCtx.lineTo(width * 0.3, height * 0.3);
+      signatureCtx.lineTo(width * 0.5, height * 0.7);
+      signatureCtx.lineTo(width * 0.7, height * 0.3);
+      signatureCtx.lineTo(width * 0.9, height * 0.7);
+      signatureCtx.stroke();
+      
+      hasSignature = true;
+      updateSignatureStatus();
+      
+      console.log('✓ Test signature drawn');
+      alert('✓ Test signature drawn! The signature feature is working. You can now clear it and sign for real.');
+    }
+
+    // AI Enhancement Functions
+    function enhanceWithAI(fieldId) {
+      const textarea = document.getElementById(fieldId);
+      const text = textarea.value.trim();
+      
+      if (!text) {
+        alert('Please enter some text first before using AI enhancement.');
+        return;
+      }
+      
+      // Store original text
+      originalTexts[fieldId] = text;
+      
+      // Show loading
+      textarea.disabled = true;
+      textarea.style.opacity = '0.6';
+      const button = event.target.closest('button');
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
+      button.disabled = true;
+      
+      // Determine context
+      let context = 'Inspection';
+      if (fieldId === 'primaryConcerns') context = 'Primary Concerns';
+      if (fieldId === 'additionalServices') context = 'Recommended Services';
+      if (fieldId === 'additionalNotes') context = 'Inspector Notes';
+      
+      // Call Google Apps Script
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Apply enhanced text
+            textarea.value = result.enhancedNotes;
+            
+            // Show undo button
+            const undoButton = document.getElementById('undo' + fieldId.charAt(0).toUpperCase() + fieldId.slice(1));
+            if (undoButton) {
+              undoButton.style.display = 'block';
+            }
+            
+            // Reset button
+            button.innerHTML = '<i class="fas fa-check"></i> Enhanced!';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-magic"></i> Enhance with AI';
+              button.disabled = false;
+            }, 2000);
+          } else {
+            alert('AI enhancement failed: ' + result.error);
+            button.innerHTML = '<i class="fas fa-magic"></i> Enhance with AI';
+            button.disabled = false;
+          }
+          
+          textarea.disabled = false;
+          textarea.style.opacity = '1';
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+          button.innerHTML = '<i class="fas fa-magic"></i> Enhance with AI';
+          button.disabled = false;
+          textarea.disabled = false;
+          textarea.style.opacity = '1';
+        })
+        .enhanceNotesWithAI(text, context);
+    }
+
+    function undoAIEnhancement(fieldId) {
+      const textarea = document.getElementById(fieldId);
+      
+      if (originalTexts[fieldId]) {
+        textarea.value = originalTexts[fieldId];
+        delete originalTexts[fieldId];
+        
+        // Hide undo button
+        const undoButton = document.getElementById('undo' + fieldId.charAt(0).toUpperCase() + fieldId.slice(1));
+        if (undoButton) {
+          undoButton.style.display = 'none';
+        }
+      }
+    }
+
+    // Auto-rewrite function (called on blur)
+    function autoRewriteField(fieldId) {
+      const textarea = document.getElementById(fieldId);
+      const text = textarea.value.trim();
+      
+      // Only auto-rewrite if text is substantial and hasn't been enhanced already
+      if (!text || text.length < 10 || originalTexts[fieldId]) {
+        return;
+      }
+      
+      // Store original text
+      originalTexts[fieldId] = text;
+      
+      // Visual feedback
+      textarea.style.borderColor = '#059669';
+      textarea.style.background = '#f0fdf4';
+      
+      // Determine context
+      let context = 'Inspection';
+      if (fieldId === 'primaryConcerns') context = 'Primary Concerns';
+      if (fieldId === 'additionalServices') context = 'Recommended Services';
+      if (fieldId === 'additionalNotes') context = 'Inspector Notes';
+      
+      // Call Google Apps Script silently
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Apply enhanced text
+            textarea.value = result.enhancedNotes;
+            
+            // Show undo button
+            const undoButton = document.getElementById('undo' + fieldId.charAt(0).toUpperCase() + fieldId.slice(1));
+            if (undoButton) {
+              undoButton.style.display = 'block';
+            }
+            
+            // Keep green border for a moment
+            setTimeout(() => {
+              textarea.style.borderColor = '#059669';
+              textarea.style.background = 'white';
+            }, 1000);
+          } else {
+            // Revert on error
+            delete originalTexts[fieldId];
+            textarea.style.borderColor = '#e5e7eb';
+            textarea.style.background = 'white';
+          }
+        })
+        .withFailureHandler(function(error) {
+          // Revert on error
+          delete originalTexts[fieldId];
+          textarea.style.borderColor = '#e5e7eb';
+          textarea.style.background = 'white';
+        })
+        .enhanceNotesWithAI(text, context);
+    }
+
+    function handlePhotoUpload(event, label, index) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          photos[index] = {
+            label: label,
+            data: e.target.result
+          };
+          
+          const preview = document.getElementById('preview' + index);
+          const parent = preview.parentElement;
+          preview.innerHTML = `<img src="${e.target.result}" alt="${label}">`;
+          parent.classList.add('has-photo');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleVideoUpload(event, label, index) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          videos[index] = {
+            label: label,
+            data: e.target.result
+          };
+          
+          const preview = document.getElementById('videoPreview' + index);
+          const parent = preview.parentElement;
+          preview.innerHTML = `<video src="${e.target.result}" controls></video><p style="font-size: 12px; margin-top: 5px;">✓ ${label} added</p>`;
+          parent.classList.add('has-photo');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function generateReport() {
+      // Show loading
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('submitBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Report...';
+      
+      // Gather all form data
+      const reportData = {
+        // Step 1: Customer Info
+        customerName: document.getElementById('customerName').value.trim(),
+        customerPhone: document.getElementById('customerPhone').value.trim(),
+        customerEmail: document.getElementById('customerEmail').value.trim(),
+        propertyAddress: document.getElementById('propertyAddress').value.trim(),
+        inspectorName: document.getElementById('inspectorName').value.trim(),
+        squareCustomerId: selectedCustomerId,
+        
+        // Step 2: Pool Overview
+        poolType: document.querySelector('input[name="poolType"]:checked')?.value || '',
+        dimensions: document.getElementById('dimensions').value,
+        poolAge: document.getElementById('poolAge').value,
+        waterLevel: document.querySelector('input[name="waterLevel"]:checked')?.value || '',
+        poolStatus: document.querySelector('input[name="poolStatus"]:checked')?.value || '',
+        
+        // Step 3: Structural
+        structural: {
+          walls: {
+            sound: document.getElementById('wallsSound').checked,
+            movement: document.getElementById('wallsMovement').checked,
+            cracks: document.getElementById('wallsCracks').checked,
+            hollow: document.getElementById('wallsHollow').checked,
+            notes: document.getElementById('wallsNotes').value
+          },
+          floor: {
+            smooth: document.getElementById('floorSmooth').checked,
+            cracks: document.getElementById('floorCracks').checked,
+            wrinkles: document.getElementById('floorWrinkles').checked,
+            blistering: document.getElementById('floorBlistering').checked,
+            notes: document.getElementById('floorNotes').value
+          },
+          surface: {
+            clean: document.getElementById('surfaceClean').checked,
+            staining: document.getElementById('surfaceStaining').checked,
+            algae: document.getElementById('surfaceAlgae').checked,
+            plasterWear: document.getElementById('surfacePlasterWear').checked,
+            gelcoatFading: document.getElementById('surfaceGelcoat').checked,
+            tears: document.getElementById('surfaceTears').checked,
+            notes: document.getElementById('surfaceNotes').value
+          },
+          coping: {
+            secure: document.getElementById('copingSecure').checked,
+            loose: document.getElementById('copingLoose').checked,
+            cracks: document.getElementById('copingCracks').checked,
+            settlement: document.getElementById('copingSettlement').checked,
+            tripHazards: document.getElementById('copingTripHazards').checked,
+            notes: document.getElementById('copingNotes').value
+          },
+          stairs: {
+            secure: document.getElementById('stairsSecure').checked,
+            loose: document.getElementById('stairsLoose').checked,
+            rust: document.getElementById('stairsRust').checked,
+            notes: document.getElementById('stairsNotes').value
+          }
+        },
+        
+        // Step 4: Plumbing
+        plumbing: {
+          pressureTest: {
+            performed: document.getElementById('pressureTestPerformed').checked,
+            psi: document.getElementById('pressurePSI').value,
+            duration: document.getElementById('pressureDuration').value,
+            drop: document.querySelector('input[name="pressureDrop"]:checked')?.value || '',
+            linesTest: document.getElementById('linesTested').value,
+            notes: document.getElementById('pressureTestNotes').value
+          },
+          leakDetection: {
+            performed: document.getElementById('leakDetectionPerformed').checked,
+            strongSignature: document.getElementById('leakStrong').checked,
+            moderateSignature: document.getElementById('leakModerate').checked,
+            weakSignature: document.getElementById('leakWeak').checked,
+            noLeak: document.getElementById('leakNone').checked,
+            notes: document.getElementById('leakNotes').value
+          },
+          visual: {
+            dyeTesting: document.getElementById('visualDyeTesting').checked,
+            skimmerCracks: document.getElementById('visualSkimmerCracks').checked,
+            returnJetLeaks: document.getElementById('visualReturnJetLeaks').checked,
+            lightNicheLeaks: document.getElementById('visualLightNicheLeaks').checked,
+            tileLineCracks: document.getElementById('visualTileLineCracks').checked,
+            structuralCracks: document.getElementById('visualStructuralCracks').checked,
+            fittingsLoose: document.getElementById('visualFittingsLoose').checked,
+            equipmentPadLeaks: document.getElementById('visualEquipmentPadLeaks').checked,
+            notes: document.getElementById('visualNotes').value
+          }
+        },
+        
+        // Step 5: Equipment
+        equipment: {
+          pump: {
+            brandModel: document.getElementById('pumpBrandModel').value,
+            operating: document.getElementById('pumpOperating').checked,
+            bearingNoise: document.getElementById('pumpBearingNoise').checked,
+            leakingSeal: document.getElementById('pumpLeakingSeal').checked,
+            lowFlow: document.getElementById('pumpLowFlow').checked,
+            motorOverheating: document.getElementById('pumpMotorOverheating').checked,
+            notes: document.getElementById('pumpNotes').value
+          },
+          filter: {
+            type: document.querySelector('input[name="filterType"]:checked')?.value || '',
+            pressureNormal: document.getElementById('filterPressureNormal').checked,
+            pressureHigh: document.getElementById('filterPressureHigh').checked,
+            tankCracked: document.getElementById('filterTankCracked').checked,
+            valveLeaking: document.getElementById('filterValveLeaking').checked,
+            notes: document.getElementById('filterNotes').value
+          },
+          heater: {
+            brandModel: document.getElementById('heaterBrandModel').value,
+            ignites: document.getElementById('heaterIgnites').checked,
+            waterBypassing: document.getElementById('heaterWaterBypassing').checked,
+            errorCodes: document.getElementById('heaterErrorCodes').checked,
+            corrosion: document.getElementById('heaterCorrosion').checked,
+            gasIssues: document.getElementById('heaterGasIssues').checked,
+            notes: document.getElementById('heaterNotes').value
+          },
+          salt: {
+            properReadings: document.getElementById('saltProperReadings').checked,
+            lowSalt: document.getElementById('saltLow').checked,
+            cellCleaning: document.getElementById('saltCellCleaning').checked,
+            flowSwitch: document.getElementById('saltFlowSwitch').checked,
+            notes: document.getElementById('saltNotes').value
+          },
+          automation: {
+            operational: document.getElementById('automationOperational').checked,
+            inactive: document.getElementById('automationInactive').checked,
+            exposedWires: document.getElementById('automationExposedWires').checked,
+            gfciIssues: document.getElementById('automationGFCI').checked,
+            timersMalfunction: document.getElementById('automationTimers').checked,
+            notes: document.getElementById('automationNotes').value
+          }
+        },
+        
+        // Spa and Safety
+        spa: {
+          applicable: document.getElementById('spaApplicable').checked,
+          notes: document.getElementById('spaNotes').value
+        },
+        
+        safety: {
+          vgbCompliant: document.getElementById('safetyVGB').checked,
+          drainCovers: document.getElementById('safetyDrainCovers').checked,
+          fencingCode: document.getElementById('safetyFencing').checked,
+          gateSelfClosing: document.getElementById('safetyGate').checked,
+          electricalBonding: document.getElementById('safetyBonding').checked,
+          notes: document.getElementById('safetyNotes').value
+        },
+        
+        // Step 7: Summary
+        findings: {
+          overallCondition: document.querySelector('input[name="overallCondition"]:checked')?.value || '',
+          primaryConcerns: document.getElementById('primaryConcerns').value
+        },
+        
+        recommendations: {
+          services: {
+            poolCleaning: document.getElementById('servicePoolCleaning').checked,
+            deepClean: document.getElementById('serviceDeepClean').checked,
+            linerReplacement: document.getElementById('serviceLinerReplacement').checked,
+            replastering: document.getElementById('serviceReplastering').checked,
+            lightFixes: document.getElementById('serviceLightFixes').checked,
+            skimmerReplacement: document.getElementById('serviceSkimmerReplacement').checked,
+            pipeRerouting: document.getElementById('servicePipeRerouting').checked,
+            pumpPadReplumbing: document.getElementById('servicePumpPadReplumbing').checked,
+            newManifold: document.getElementById('serviceNewManifold').checked,
+            filterChange: document.getElementById('serviceFilterChange').checked,
+            glassMediaConversion: document.getElementById('serviceGlassMediaConversion').checked,
+            heaterReplacement: document.getElementById('serviceHeaterReplacement').checked,
+            pumpReplacement: document.getElementById('servicePumpReplacement').checked,
+            leakDetectionRepair: document.getElementById('serviceLeakDetectionRepair').checked,
+            tileRepair: document.getElementById('serviceTileRepair').checked,
+            deckRepair: document.getElementById('serviceDeckRepair').checked,
+            copingRepair: document.getElementById('serviceCopingRepair').checked
+          },
+          additionalServices: document.getElementById('additionalServices').value,
+          estimateEmail: document.getElementById('estimateEmail').value,
+          additionalNotes: document.getElementById('additionalNotes').value
+        },
+        
+        // Inspector signature
+        inspectorSignature: getSignatureData(),
+        
+        // Photos and videos (filter out empty slots)
+        photos: photos.filter(p => p && p.data),
+        videos: videos.filter(v => v && v.data),
+        
+        // Email options
+        emailCustomer: document.getElementById('emailCustomerCheckbox').checked,
+        textCustomer: false // Disabled for now
+      };
+      
+      // Include inspection ID if this is an update to a draft
+      if (currentInspectionId) {
+        reportData.inspectionId = currentInspectionId;
+      }
+      
+      console.log('Sending report data...', reportData);
+      
+      // Call Google Apps Script
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Store inspection ID
+            if (result.inspectionId) {
+              currentInspectionId = result.inspectionId;
+              // Save button is always visible now
+            }
+            
+            const wasDraft = reportData.inspectionId ? ' (Updated from draft)' : '';
+            let successHTML = `
+              <i class="fas fa-check-circle"></i> <strong>Inspection Report Generated Successfully!${wasDraft}</strong><br><br>
+              
+              <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                <strong>📁 Saved to Folder:</strong><br>
+                <a href="${result.folderUrl}" target="_blank" style="color: #0284c7; text-decoration: underline;">
+                  ${result.folderName}
+                </a>
+              </div>
+
+              <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                <strong>📄 View Report:</strong><br>
+                <a href="${result.fileUrl}" target="_blank" style="color: #0284c7; text-decoration: underline;">
+                  ${result.fileName}
+                </a>
+              </div>
+
+              <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                <strong>📧 Emails Sent To:</strong><br>
+                • brookspumpingpoolco@gmail.com (Team)<br>
+                ${reportData.emailCustomer && reportData.customerEmail ? `• ${reportData.customerEmail} (Customer)` : ''}
+              </div>
+
+              <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                <strong>📷 Media Saved:</strong><br>
+                • ${result.photoCount} photo(s)<br>
+                • ${result.videoCount} video(s)
+              </div>
+              
+              ${result.inspectionId ? `<div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #f59e0b;">
+                <strong>💾 Status:</strong> Generated (not yet saved)<br>
+                <small>Click "Save Inspection" to mark this as saved.</small>
+              </div>` : ''}
+            `;
+            
+            document.getElementById('successMessage').innerHTML = successHTML;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-check"></i> Report Generated!';
+            
+            // Store inspection ID for sending email later
+            if (result.inspectionId) {
+              currentInspectionId = result.inspectionId;
+            }
+            
+            // Update buttons to show send email button
+            updateButtons();
+            
+            // Check for unsaved inspections
+            checkUnsavedInspections();
+            
+            window.scrollTo(0, 0);
+          } else {
+            showError(result.error);
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').innerHTML = '<i class="fas fa-file-pdf"></i> Generate Report';
+          }
+        })
+        .withFailureHandler(function(error) {
+          showError(error);
+          document.getElementById('submitBtn').disabled = false;
+          document.getElementById('submitBtn').innerHTML = '<i class="fas fa-file-pdf"></i> Generate Report';
+        })
+        .saveInspectionReport(reportData);
+    }
+
+    function showError(error) {
+      document.getElementById('errorMessage').innerHTML = `
+        <i class="fas fa-exclamation-circle"></i> Error: ${error}
+      `;
+      document.getElementById('errorMessage').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    // Send test text message to company phone
+    function sendTestText() {
+      const testMessage = prompt('Enter test message (or leave blank for default):', 'Test message from inspection tool');
+      if (testMessage === null) return; // User cancelled
+      
+      const btn = document.getElementById('testTextBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            document.getElementById('successMessage').innerHTML = `
+              <i class="fas fa-check-circle"></i> ${result.message || 'Test text sent successfully!'}
+            `;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            setTimeout(() => {
+              document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+          } else {
+            showError(result.error || 'Failed to send test text');
+          }
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to send test text: ' + error);
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        })
+        .sendTestTextToCompany(testMessage);
+    }
+
+    // ==================== INSPECTION TRACKING FUNCTIONS ====================
+    
+    let currentInspectionId = null;
+    let loadedInspectionData = null;
+
+    // Check for unsaved inspections on load
+    window.addEventListener('load', function() {
+      checkUnsavedInspections();
+      loadPastInspections();
+    });
+
+    // Check for unsaved inspections
+    function checkUnsavedInspections() {
+      console.log('Checking for unsaved inspections...');
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('Unsaved inspections result:', result);
+          
+          if (!result) {
+            console.error('getUnsavedInspections returned null or undefined');
+            hideUnsavedNotification();
+            return;
+          }
+          
+          if (result.success && result.inspections && Array.isArray(result.inspections) && result.inspections.length > 0) {
+            console.log('Found ' + result.inspections.length + ' unsaved inspections');
+            showUnsavedNotification(result.inspections);
+          } else {
+            console.log('No unsaved inspections found');
+            hideUnsavedNotification();
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error checking unsaved inspections:', error);
+          console.error('Error details:', error.message, error.stack);
+          hideUnsavedNotification();
+        })
+        .getUnsavedInspections();
+    }
+
+    // Show unsaved notification
+    function showUnsavedNotification(inspections) {
+      const banner = document.getElementById('notificationBanner');
+      const list = document.getElementById('unsavedList');
+      const titleText = document.getElementById('bannerTitleText');
+      const description = document.getElementById('bannerDescription');
+      
+      // Check if we have drafts (unfinished) or generated (unsaved)
+      const hasDrafts = inspections.some(i => i.status === 'draft');
+      const hasGenerated = inspections.some(i => i.status === 'generated');
+      
+      if (hasDrafts && hasGenerated) {
+        titleText.textContent = 'You have unfinished reports and unsaved inspections';
+        description.textContent = 'You have some reports that haven\'t been completed, and some that have been generated but not saved.';
+      } else if (hasDrafts) {
+        titleText.textContent = 'You have unfinished reports';
+        description.textContent = 'You have some reports that haven\'t been completed yet.';
+      } else {
+        titleText.textContent = 'You have unsaved inspections';
+        description.textContent = 'You have some inspections that have been generated but not saved.';
+      }
+      
+      list.innerHTML = '';
+      inspections.forEach(inspection => {
+        const item = document.createElement('div');
+        item.className = 'unsaved-item';
+        const statusBadge = inspection.status === 'draft' 
+          ? '<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">UNFINISHED</span>'
+          : '<span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">GENERATED</span>';
+        
+        item.innerHTML = `
+          <div class="unsaved-item-info">
+            <strong>${inspection.customerName || 'Unnamed'}</strong> - ${inspection.propertyAddress || 'No address'}
+            ${statusBadge}
+            <br><small style="color: #6b7280;">${inspection.inspectionDate || 'Date unknown'}</small>
+          </div>
+          <div class="unsaved-item-actions">
+            ${inspection.status === 'generated' ? `
+            <button class="btn btn-secondary" onclick="saveInspectionById('${inspection.inspectionId}')" style="font-size: 12px; padding: 6px 12px;">
+              <i class="fas fa-save"></i> Mark Saved
+            </button>
+            ` : `
+            <button class="btn btn-secondary" onclick="loadDraftInspection('${inspection.inspectionId}')" style="font-size: 12px; padding: 6px 12px; background: #0284c7; color: white;">
+              <i class="fas fa-edit"></i> Continue
+            </button>
+            `}
+            <button class="btn btn-secondary" onclick="deleteInspectionById('${inspection.inspectionId}')" style="font-size: 12px; padding: 6px 12px; background: #dc2626; color: white;">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+      
+      banner.classList.add('show');
+    }
+
+    // Hide unsaved notification
+    // Load draft inspection to continue editing
+    function loadDraftInspection(inspectionId) {
+      console.log('Loading draft inspection:', inspectionId);
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('Draft load result:', result);
+          if (result.success && result.inspection) {
+            loadedInspectionData = result.inspection;
+            currentInspectionId = inspectionId;
+            
+            // Navigate to step 1
+            currentStep = 1;
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.progress-step').forEach(step => {
+              step.classList.remove('active', 'completed');
+            });
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step1Label').classList.add('active');
+            updateProgress();
+            updateButtons();
+            
+            // Populate form with loaded data
+            populateFormFromInspection(result.inspection);
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Show success message
+            showSuccess('Draft loaded! You can continue editing.');
+            
+            // Refresh the list
+            checkUnsavedInspections();
+            loadPastInspections();
+          } else {
+            console.error('Draft load failed:', result);
+            alert('Error loading draft: ' + (result.error || 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Draft load error:', error);
+          alert('Error: ' + error);
+        })
+        .loadInspection(inspectionId);
+    }
+
+    // Hide unsaved notification
+    function hideUnsavedNotification() {
+      const banner = document.getElementById('notificationBanner');
+      banner.classList.remove('show');
+    }
+
+    // Save inspection by ID
+    function saveInspectionById(inspectionId) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            alert('Inspection saved successfully!');
+            checkUnsavedInspections();
+          } else {
+            alert('Error saving inspection: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+        })
+        .saveInspection(inspectionId);
+    }
+
+    // Delete inspection by ID
+    function deleteInspectionById(inspectionId) {
+      if (confirm('Are you sure you want to delete this inspection? This action cannot be undone.')) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              showSuccess('Inspection deleted successfully.');
+              checkUnsavedInspections();
+              loadPastInspections();
+            } else {
+              alert('Error deleting inspection: ' + result.error);
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('Error: ' + error);
+          })
+          .deleteInspection(inspectionId);
+      }
+    }
+
+    // Restore inspection by ID
+    function restoreInspectionById(inspectionId) {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            alert('Inspection restored!');
+            checkUnsavedInspections();
+          } else {
+            alert('Error restoring inspection: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+        })
+        .restoreInspection(inspectionId);
+    }
+
+    // Save draft inspection (can be called at any point)
+    function saveDraftInspection() {
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+      // Collect all current form data (same structure as generateReport)
+      const reportData = collectAllFormData();
+      
+      // Include current inspection ID if it exists
+      if (currentInspectionId) {
+        reportData.inspectionId = currentInspectionId;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Store the inspection ID
+            currentInspectionId = result.inspectionId;
+            
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Draft Saved!';
+            saveBtn.style.background = '#059669';
+            setTimeout(() => {
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
+              saveBtn.style.background = '';
+            }, 2000);
+            
+            checkUnsavedInspections();
+            loadPastInspections();
+            
+            // Show success message
+            showSuccess('Draft saved successfully! You can continue editing and save again anytime.');
+          } else {
+            alert('Error saving draft: ' + result.error);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
+        })
+        .saveDraftInspection(reportData);
+    }
+
+    // Collect all form data (used for saving drafts)
+    function collectAllFormData() {
+      return {
+        // Step 1: Customer Info
+        customerName: document.getElementById('customerName').value.trim(),
+        customerPhone: document.getElementById('customerPhone').value.trim(),
+        customerEmail: document.getElementById('customerEmail').value.trim(),
+        propertyAddress: document.getElementById('propertyAddress').value.trim(),
+        inspectorName: document.getElementById('inspectorName').value.trim(),
+        squareCustomerId: selectedCustomerId,
+        
+        // Step 2: Pool Overview
+        poolType: document.querySelector('input[name="poolType"]:checked')?.value || '',
+        dimensions: document.getElementById('dimensions').value,
+        poolAge: document.getElementById('poolAge').value,
+        waterLevel: document.querySelector('input[name="waterLevel"]:checked')?.value || '',
+        poolStatus: document.querySelector('input[name="poolStatus"]:checked')?.value || '',
+        
+        // Step 3: Structural
+        structural: {
+          walls: {
+            sound: document.getElementById('wallsSound')?.checked || false,
+            movement: document.getElementById('wallsMovement')?.checked || false,
+            cracks: document.getElementById('wallsCracks')?.checked || false,
+            hollow: document.getElementById('wallsHollow')?.checked || false,
+            notes: document.getElementById('wallsNotes')?.value || ''
+          },
+          floor: {
+            smooth: document.getElementById('floorSmooth')?.checked || false,
+            cracks: document.getElementById('floorCracks')?.checked || false,
+            wrinkles: document.getElementById('floorWrinkles')?.checked || false,
+            blistering: document.getElementById('floorBlistering')?.checked || false,
+            notes: document.getElementById('floorNotes')?.value || ''
+          },
+          surface: {
+            clean: document.getElementById('surfaceClean')?.checked || false,
+            staining: document.getElementById('surfaceStaining')?.checked || false,
+            algae: document.getElementById('surfaceAlgae')?.checked || false,
+            plasterWear: document.getElementById('surfacePlasterWear')?.checked || false,
+            gelcoatFading: document.getElementById('surfaceGelcoat')?.checked || false,
+            tears: document.getElementById('surfaceTears')?.checked || false,
+            notes: document.getElementById('surfaceNotes')?.value || ''
+          },
+          coping: {
+            secure: document.getElementById('copingSecure')?.checked || false,
+            loose: document.getElementById('copingLoose')?.checked || false,
+            cracks: document.getElementById('copingCracks')?.checked || false,
+            settlement: document.getElementById('copingSettlement')?.checked || false,
+            tripHazards: document.getElementById('copingTripHazards')?.checked || false,
+            notes: document.getElementById('copingNotes')?.value || ''
+          },
+          stairs: {
+            secure: document.getElementById('stairsSecure')?.checked || false,
+            loose: document.getElementById('stairsLoose')?.checked || false,
+            rust: document.getElementById('stairsRust')?.checked || false,
+            notes: document.getElementById('stairsNotes')?.value || ''
+          }
+        },
+        
+        // Step 4: Plumbing
+        plumbing: {
+          pressureTest: {
+            performed: document.getElementById('pressureTestPerformed')?.checked || false,
+            psi: document.getElementById('pressurePSI')?.value || '',
+            duration: document.getElementById('pressureDuration')?.value || '',
+            drop: document.querySelector('input[name="pressureDrop"]:checked')?.value || '',
+            linesTest: document.getElementById('linesTested')?.value || '',
+            notes: document.getElementById('pressureTestNotes')?.value || ''
+          },
+          leakDetection: {
+            performed: document.getElementById('leakDetectionPerformed')?.checked || false,
+            strongSignature: document.getElementById('leakStrong')?.checked || false,
+            moderateSignature: document.getElementById('leakModerate')?.checked || false,
+            weakSignature: document.getElementById('leakWeak')?.checked || false,
+            noLeak: document.getElementById('leakNone')?.checked || false,
+            notes: document.getElementById('leakNotes')?.value || ''
+          },
+          visual: {
+            dyeTesting: document.getElementById('visualDyeTesting')?.checked || false,
+            skimmerCracks: document.getElementById('visualSkimmerCracks')?.checked || false,
+            returnJetLeaks: document.getElementById('visualReturnJetLeaks')?.checked || false,
+            lightNicheLeaks: document.getElementById('visualLightNicheLeaks')?.checked || false,
+            tileLineCracks: document.getElementById('visualTileLineCracks')?.checked || false,
+            structuralCracks: document.getElementById('visualStructuralCracks')?.checked || false,
+            fittingsLoose: document.getElementById('visualFittingsLoose')?.checked || false,
+            equipmentPadLeaks: document.getElementById('visualEquipmentPadLeaks')?.checked || false,
+            notes: document.getElementById('visualNotes')?.value || ''
+          }
+        },
+        
+        // Step 5: Equipment
+        equipment: {
+          pump: {
+            brandModel: document.getElementById('pumpBrandModel')?.value || '',
+            operating: document.getElementById('pumpOperating')?.checked || false,
+            bearingNoise: document.getElementById('pumpBearingNoise')?.checked || false,
+            leakingSeal: document.getElementById('pumpLeakingSeal')?.checked || false,
+            lowFlow: document.getElementById('pumpLowFlow')?.checked || false,
+            motorOverheating: document.getElementById('pumpMotorOverheating')?.checked || false,
+            notes: document.getElementById('pumpNotes')?.value || ''
+          },
+          filter: {
+            type: document.getElementById('filterType')?.value || '',
+            pressureNormal: document.getElementById('filterPressureNormal')?.checked || false,
+            pressureHigh: document.getElementById('filterPressureHigh')?.checked || false,
+            tankCracked: document.getElementById('filterTankCracked')?.checked || false,
+            valveLeaking: document.getElementById('filterValveLeaking')?.checked || false,
+            notes: document.getElementById('filterNotes')?.value || ''
+          },
+          heater: {
+            brandModel: document.getElementById('heaterBrandModel')?.value || '',
+            ignites: document.getElementById('heaterIgnites')?.checked || false,
+            waterBypassing: document.getElementById('heaterWaterBypassing')?.checked || false,
+            errorCodes: document.getElementById('heaterErrorCodes')?.checked || false,
+            corrosion: document.getElementById('heaterCorrosion')?.checked || false,
+            gasIssues: document.getElementById('heaterGasIssues')?.checked || false,
+            notes: document.getElementById('heaterNotes')?.value || ''
+          },
+          salt: {
+            properReadings: document.getElementById('saltProperReadings')?.checked || false,
+            lowSalt: document.getElementById('saltLowSalt')?.checked || false,
+            cellCleaning: document.getElementById('saltCellCleaning')?.checked || false,
+            flowSwitch: document.getElementById('saltFlowSwitch')?.checked || false,
+            notes: document.getElementById('saltNotes')?.value || ''
+          },
+          automation: {
+            operational: document.getElementById('automationOperational')?.checked || false,
+            inactive: document.getElementById('automationInactive')?.checked || false,
+            exposedWires: document.getElementById('automationExposedWires')?.checked || false,
+            gfciIssues: document.getElementById('automationGFCI')?.checked || false,
+            timersMalfunction: document.getElementById('automationTimers')?.checked || false,
+            notes: document.getElementById('automationNotes')?.value || ''
+          }
+        },
+        
+        // Step 6: Spa & Safety
+        spa: {
+          applicable: document.getElementById('spaApplicable')?.checked || false,
+          shellInspected: document.getElementById('spaShellInspected')?.checked || false,
+          jetsFunctional: document.getElementById('spaJetsFunctional')?.checked || false,
+          diversWorking: document.getElementById('spaDiversWorking')?.checked || false,
+          heaterOperating: document.getElementById('spaHeaterOperating')?.checked || false,
+          blowerFunctional: document.getElementById('spaBlowerFunctional')?.checked || false,
+          circulationPump: document.getElementById('spaCirculationPump')?.checked || false,
+          spaLightWorking: document.getElementById('spaLightWorking')?.checked || false,
+          notes: document.getElementById('spaNotes')?.value || ''
+        },
+        
+        safety: {
+          vgbCompliant: document.getElementById('safetyVGB')?.checked || false,
+          drainCovers: document.getElementById('safetyDrainCovers')?.checked || false,
+          fencingCode: document.getElementById('safetyFencing')?.checked || false,
+          gateSelfClosing: document.getElementById('safetyGate')?.checked || false,
+          electricalBonding: document.getElementById('safetyBonding')?.checked || false,
+          notes: document.getElementById('safetyNotes')?.value || ''
+        },
+        
+        // Step 7: Summary
+        findings: {
+          overallCondition: document.querySelector('input[name="overallCondition"]:checked')?.value || '',
+          primaryConcerns: document.getElementById('primaryConcerns')?.value || ''
+        },
+        
+        recommendations: {
+          services: {
+            poolCleaning: document.getElementById('servicePoolCleaning')?.checked || false,
+            deepClean: document.getElementById('serviceDeepClean')?.checked || false,
+            linerReplacement: document.getElementById('serviceLinerReplacement')?.checked || false,
+            replastering: document.getElementById('serviceReplastering')?.checked || false,
+            lightFixes: document.getElementById('serviceLightFixes')?.checked || false,
+            skimmerReplacement: document.getElementById('serviceSkimmerReplacement')?.checked || false,
+            pipeRerouting: document.getElementById('servicePipeRerouting')?.checked || false,
+            pumpPadReplumbing: document.getElementById('servicePumpPadReplumbing')?.checked || false,
+            newManifold: document.getElementById('serviceNewManifold')?.checked || false,
+            filterChange: document.getElementById('serviceFilterChange')?.checked || false,
+            glassMediaConversion: document.getElementById('serviceGlassMediaConversion')?.checked || false,
+            heaterReplacement: document.getElementById('serviceHeaterReplacement')?.checked || false,
+            pumpReplacement: document.getElementById('servicePumpReplacement')?.checked || false,
+            leakDetectionRepair: document.getElementById('serviceLeakDetectionRepair')?.checked || false,
+            tileRepair: document.getElementById('serviceTileRepair')?.checked || false,
+            deckRepair: document.getElementById('serviceDeckRepair')?.checked || false,
+            copingRepair: document.getElementById('serviceCopingRepair')?.checked || false
+          },
+          additionalServices: document.getElementById('additionalServices')?.value || '',
+          estimateEmail: document.getElementById('estimateEmail')?.value || '',
+          additionalNotes: document.getElementById('additionalNotes')?.value || ''
+        },
+        
+        // Inspector signature
+        inspectorSignature: getSignatureData ? getSignatureData() : '',
+        
+        // Photos and videos (filter out empty slots)
+        photos: photos ? photos.filter(p => p && p.data) : [],
+        videos: videos ? videos.filter(v => v && v.data) : []
+      };
+    }
+
+    // Save current inspection (from form) - for generated inspections
+    function saveCurrentInspection() {
+      if (!currentInspectionId) {
+        // If no inspection ID, save as draft instead
+        saveDraftInspection();
+        return;
+      }
+
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+            saveBtn.style.background = '#059669';
+            setTimeout(() => {
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
+              saveBtn.style.background = '';
+            }, 2000);
+            checkUnsavedInspections();
+            loadPastInspections();
+          } else {
+            alert('Error saving inspection: ' + result.error);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
+        })
+        .saveInspection(currentInspectionId);
+    }
+
+    // Load past inspections into dropdown
+    function loadPastInspections() {
+      console.log('Loading past inspections...');
+      const select = document.getElementById('pastInspectionSelect');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('Past inspections result:', result);
+          
+          // Handle null or undefined result
+          if (!result) {
+            console.error('getAllInspections returned null or undefined');
+            select.innerHTML = '<option value="">-- Error: No response from server --</option>';
+            return;
+          }
+          
+          // Handle error response
+          if (!result.success) {
+            console.error('Failed to load inspections:', result.error);
+            select.innerHTML = '<option value="">-- Error: ' + (result.error || 'Unknown error') + ' --</option>';
+            return;
+          }
+          
+          // Handle success with inspections array
+          if (result.inspections && Array.isArray(result.inspections)) {
+            select.innerHTML = '<option value="">-- Select a past inspection to edit --</option>';
+            
+            if (result.inspections.length === 0) {
+              const option = document.createElement('option');
+              option.value = '';
+              option.textContent = '-- No inspections found --';
+              option.disabled = true;
+              select.appendChild(option);
+              console.log('No inspections found in sheet');
+            } else {
+              console.log('Processing ' + result.inspections.length + ' inspections...');
+              result.inspections.forEach((inspection, index) => {
+                console.log('Inspection ' + index + ':', inspection);
+                
+                if (!inspection.inspectionId) {
+                  console.warn('Inspection missing ID:', inspection);
+                  return;
+                }
+                
+                const option = document.createElement('option');
+                option.value = String(inspection.inspectionId);
+                const statusLabel = inspection.status === 'draft' ? 'DRAFT' : 
+                                   inspection.status === 'generated' ? 'GENERATED' : 
+                                   inspection.status === 'saved' ? 'SAVED' : inspection.status || 'UNKNOWN';
+                const customerName = inspection.customerName || 'Unnamed';
+                const address = inspection.propertyAddress || 'No address';
+                const date = inspection.inspectionDate || 'Unknown date';
+                option.textContent = `${customerName} - ${address} (${date}) [${statusLabel}]`;
+                select.appendChild(option);
+                console.log('Added option for inspection:', inspection.inspectionId);
+              });
+              console.log('Successfully loaded ' + result.inspections.length + ' inspections into dropdown');
+            }
+          } else {
+            console.error('Invalid inspections array:', result);
+            select.innerHTML = '<option value="">-- Error: Invalid response format --</option>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error loading past inspections:', error);
+          console.error('Error details:', error.message, error.stack);
+          select.innerHTML = '<option value="">-- Error: ' + (error.message || error.toString() || 'Unknown error') + ' --</option>';
+        })
+        .getAllInspections();
+    }
+
+    // Load selected inspection
+    function loadSelectedInspection() {
+      const select = document.getElementById('pastInspectionSelect');
+      const inspectionId = select.value;
+      
+      if (!inspectionId) {
+        document.getElementById('loadedInspectionActions').style.display = 'none';
+        loadedInspectionData = null;
+        currentInspectionId = null;
+        return;
+      }
+
+      console.log('Loading inspection:', inspectionId);
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          console.log('Load result:', result);
+          if (result.success && result.inspection) {
+            loadedInspectionData = result.inspection;
+            currentInspectionId = inspectionId;
+            
+            // Navigate to step 1
+            currentStep = 1;
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.progress-step').forEach(step => {
+              step.classList.remove('active', 'completed');
+            });
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step1Label').classList.add('active');
+            updateProgress();
+            updateButtons();
+            
+            // Populate form with loaded data
+            populateFormFromInspection(result.inspection);
+            document.getElementById('loadedInspectionActions').style.display = 'block';
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            showSuccess('Inspection loaded successfully! You can now edit and regenerate it.');
+          } else {
+            console.error('Load failed:', result);
+            alert('Error loading inspection: ' + (result.error || 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Load error:', error);
+          alert('Error: ' + error);
+        })
+        .loadInspection(inspectionId);
+    }
+
+    // Populate form from inspection data
+    function populateFormFromInspection(data) {
+      console.log('Loading inspection data:', data);
+      
+      if (!data) {
+        console.error('No data provided to populateFormFromInspection');
+        return;
+      }
+      
+      // Helper function to safely set value
+      function setValue(id, value) {
+        const el = document.getElementById(id);
+        if (el && value !== undefined && value !== null && value !== '') {
+          el.value = value;
+        }
+      }
+      
+      // Helper function to safely check checkbox
+      function setCheckbox(id, checked) {
+        const el = document.getElementById(id);
+        if (el && checked !== undefined) {
+          el.checked = checked;
+        }
+      }
+      
+      // Helper function to safely check radio
+      function setRadio(name, value) {
+        if (value) {
+          const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+          if (radio) radio.checked = true;
+        }
+      }
+      
+      // Customer info
+      setValue('customerName', data.customerName);
+      setValue('customerEmail', data.customerEmail);
+      setValue('customerPhone', data.customerPhone);
+      setValue('propertyAddress', data.propertyAddress);
+      // Update map if address is provided
+      if (data.propertyAddress) {
+        updatePropertyMap();
+      }
+      setValue('inspectorName', data.inspectorName);
+      
+      // Pool info - Radio buttons
+      if (data.poolType) {
+        const poolTypeRadio = document.querySelector(`input[name="poolType"][value="${data.poolType}"]`);
+        if (poolTypeRadio) poolTypeRadio.checked = true;
+      }
+      if (data.dimensions) document.getElementById('dimensions').value = data.dimensions;
+      if (data.poolAge) document.getElementById('poolAge').value = data.poolAge;
+      if (data.waterLevel) {
+        const waterLevelRadio = document.querySelector(`input[name="waterLevel"][value="${data.waterLevel}"]`);
+        if (waterLevelRadio) waterLevelRadio.checked = true;
+      }
+      if (data.poolStatus) {
+        const poolStatusRadio = document.querySelector(`input[name="poolStatus"][value="${data.poolStatus}"]`);
+        if (poolStatusRadio) poolStatusRadio.checked = true;
+      }
+      
+      // Structural - Walls
+      if (data.structural && data.structural.walls) {
+        const w = data.structural.walls;
+        if (w.sound) document.getElementById('wallsSound').checked = true;
+        if (w.movement) document.getElementById('wallsMovement').checked = true;
+        if (w.cracks) document.getElementById('wallsCracks').checked = true;
+        if (w.hollow) document.getElementById('wallsHollow').checked = true;
+        if (w.notes) document.getElementById('wallsNotes').value = w.notes;
+      }
+      
+      // Structural - Floor
+      if (data.structural && data.structural.floor) {
+        const f = data.structural.floor;
+        if (f.smooth) document.getElementById('floorSmooth').checked = true;
+        if (f.cracks) document.getElementById('floorCracks').checked = true;
+        if (f.wrinkles) document.getElementById('floorWrinkles').checked = true;
+        if (f.blistering) document.getElementById('floorBlistering').checked = true;
+        if (f.notes) document.getElementById('floorNotes').value = f.notes;
+      }
+      
+      // Structural - Surface
+      if (data.structural && data.structural.surface) {
+        const s = data.structural.surface;
+        if (s.clean) document.getElementById('surfaceClean').checked = true;
+        if (s.staining) document.getElementById('surfaceStaining').checked = true;
+        if (s.algae) document.getElementById('surfaceAlgae').checked = true;
+        if (s.plasterWear) document.getElementById('surfacePlasterWear').checked = true;
+        if (s.gelcoatFading) document.getElementById('surfaceGelcoat').checked = true;
+        if (s.tears) document.getElementById('surfaceTears').checked = true;
+        if (s.notes) document.getElementById('surfaceNotes').value = s.notes;
+      }
+      
+      // Structural - Coping
+      if (data.structural && data.structural.coping) {
+        const c = data.structural.coping;
+        if (c.secure) document.getElementById('copingSecure').checked = true;
+        if (c.loose) document.getElementById('copingLoose').checked = true;
+        if (c.cracks) document.getElementById('copingCracks').checked = true;
+        if (c.settlement) document.getElementById('copingSettlement').checked = true;
+        if (c.tripHazards) document.getElementById('copingTripHazards').checked = true;
+        if (c.notes) document.getElementById('copingNotes').value = c.notes;
+      }
+      
+      // Structural - Stairs
+      if (data.structural && data.structural.stairs) {
+        const st = data.structural.stairs;
+        if (st.secure) document.getElementById('stairsSecure').checked = true;
+        if (st.loose) document.getElementById('stairsLoose').checked = true;
+        if (st.rust) document.getElementById('stairsRust').checked = true;
+        if (st.notes) document.getElementById('stairsNotes').value = st.notes;
+      }
+      
+      // Plumbing - Pressure Test
+      if (data.plumbing && data.plumbing.pressureTest) {
+        const pt = data.plumbing.pressureTest;
+        if (pt.performed !== undefined) {
+          document.getElementById('pressureTestPerformed').checked = pt.performed;
+          togglePressureTestSection();
+        }
+        if (pt.psi) document.getElementById('pressurePSI').value = pt.psi;
+        if (pt.duration) document.getElementById('pressureDuration').value = pt.duration;
+        if (pt.drop) {
+          const radio = document.querySelector(`input[name="pressureDrop"][value="${pt.drop}"]`);
+          if (radio) radio.checked = true;
+        }
+        if (pt.linesTest) document.getElementById('linesTested').value = pt.linesTest;
+        if (pt.notes) document.getElementById('pressureTestNotes').value = pt.notes;
+      }
+      
+      // Plumbing - Leak Detection
+      if (data.plumbing && data.plumbing.leakDetection) {
+        const ld = data.plumbing.leakDetection;
+        if (ld.performed !== undefined) {
+          document.getElementById('leakDetectionPerformed').checked = ld.performed;
+          toggleLeakDetectionSection();
+        }
+        if (ld.strongSignature) document.getElementById('leakStrong').checked = true;
+        if (ld.moderateSignature) document.getElementById('leakModerate').checked = true;
+        if (ld.weakSignature) document.getElementById('leakWeak').checked = true;
+        if (ld.noLeak) document.getElementById('leakNone').checked = true;
+        if (ld.notes) document.getElementById('leakNotes').value = ld.notes;
+      }
+      
+      // Plumbing - Visual
+      if (data.plumbing && data.plumbing.visual) {
+        const v = data.plumbing.visual;
+        if (v.dyeTesting) document.getElementById('visualDyeTesting').checked = true;
+        if (v.skimmerCracks) document.getElementById('visualSkimmerCracks').checked = true;
+        if (v.returnJetLeaks) document.getElementById('visualReturnJetLeaks').checked = true;
+        if (v.lightNicheLeaks) document.getElementById('visualLightNicheLeaks').checked = true;
+        if (v.tileLineCracks) document.getElementById('visualTileLineCracks').checked = true;
+        if (v.structuralCracks) document.getElementById('visualStructuralCracks').checked = true;
+        if (v.fittingsLoose) document.getElementById('visualFittingsLoose').checked = true;
+        if (v.equipmentPadLeaks) document.getElementById('visualEquipmentPadLeaks').checked = true;
+        if (v.notes) document.getElementById('visualNotes').value = v.notes;
+      }
+      
+      // Equipment - Pump
+      if (data.equipment && data.equipment.pump) {
+        const p = data.equipment.pump;
+        if (p.brandModel) document.getElementById('pumpBrandModel').value = p.brandModel;
+        if (p.operating) document.getElementById('pumpOperating').checked = true;
+        if (p.bearingNoise) document.getElementById('pumpBearingNoise').checked = true;
+        if (p.leakingSeal) document.getElementById('pumpLeakingSeal').checked = true;
+        if (p.lowFlow) document.getElementById('pumpLowFlow').checked = true;
+        if (p.motorOverheating) document.getElementById('pumpMotorOverheating').checked = true;
+        if (p.notes) document.getElementById('pumpNotes').value = p.notes;
+      }
+      
+      // Equipment - Filter
+      if (data.equipment && data.equipment.filter) {
+        const f = data.equipment.filter;
+        if (f.type) document.getElementById('filterType').value = f.type;
+        if (f.pressureNormal) document.getElementById('filterPressureNormal').checked = true;
+        if (f.pressureHigh) document.getElementById('filterPressureHigh').checked = true;
+        if (f.tankCracked) document.getElementById('filterTankCracked').checked = true;
+        if (f.valveLeaking) document.getElementById('filterValveLeaking').checked = true;
+        if (f.notes) document.getElementById('filterNotes').value = f.notes;
+      }
+      
+      // Equipment - Heater
+      if (data.equipment && data.equipment.heater) {
+        const h = data.equipment.heater;
+        if (h.brandModel) document.getElementById('heaterBrandModel').value = h.brandModel;
+        if (h.ignites) document.getElementById('heaterIgnites').checked = true;
+        if (h.waterBypassing) document.getElementById('heaterWaterBypassing').checked = true;
+        if (h.errorCodes) document.getElementById('heaterErrorCodes').checked = true;
+        if (h.corrosion) document.getElementById('heaterCorrosion').checked = true;
+        if (h.gasIssues) document.getElementById('heaterGasIssues').checked = true;
+        if (h.notes) document.getElementById('heaterNotes').value = h.notes;
+      }
+      
+      // Equipment - Salt
+      if (data.equipment && data.equipment.salt) {
+        const s = data.equipment.salt;
+        if (s.properReadings) document.getElementById('saltProperReadings').checked = true;
+        if (s.lowSalt) document.getElementById('saltLowSalt').checked = true;
+        if (s.cellCleaning) document.getElementById('saltCellCleaning').checked = true;
+        if (s.flowSwitch) document.getElementById('saltFlowSwitch').checked = true;
+        if (s.notes) document.getElementById('saltNotes').value = s.notes;
+      }
+      
+      // Equipment - Automation
+      if (data.equipment && data.equipment.automation) {
+        const a = data.equipment.automation;
+        if (a.operational) document.getElementById('automationOperational').checked = true;
+        if (a.inactive) document.getElementById('automationInactive').checked = true;
+        if (a.exposedWires) document.getElementById('automationExposedWires').checked = true;
+        if (a.gfciIssues) document.getElementById('automationGFCI').checked = true;
+        if (a.timersMalfunction) document.getElementById('automationTimers').checked = true;
+        if (a.notes) document.getElementById('automationNotes').value = a.notes;
+      }
+      
+      // Spa
+      if (data.spa) {
+        if (data.spa.applicable !== undefined) document.getElementById('spaApplicable').checked = data.spa.applicable;
+        if (data.spa.shellInspected) document.getElementById('spaShellInspected').checked = true;
+        if (data.spa.jetsFunctional) document.getElementById('spaJetsFunctional').checked = true;
+        if (data.spa.diversWorking) document.getElementById('spaDiversWorking').checked = true;
+        if (data.spa.heaterOperating) document.getElementById('spaHeaterOperating').checked = true;
+        if (data.spa.blowerFunctional) document.getElementById('spaBlowerFunctional').checked = true;
+        if (data.spa.circulationPump) document.getElementById('spaCirculationPump').checked = true;
+        if (data.spa.spaLightWorking) document.getElementById('spaLightWorking').checked = true;
+        if (data.spa.notes) document.getElementById('spaNotes').value = data.spa.notes;
+      }
+      
+      // Safety
+      if (data.safety) {
+        if (data.safety.vgbCompliant) document.getElementById('safetyVGB').checked = true;
+        if (data.safety.drainCovers) document.getElementById('safetyDrainCovers').checked = true;
+        if (data.safety.fencingCode) document.getElementById('safetyFencing').checked = true;
+        if (data.safety.gateSelfClosing) document.getElementById('safetyGate').checked = true;
+        if (data.safety.electricalBonding) document.getElementById('safetyBonding').checked = true;
+        if (data.safety.notes) document.getElementById('safetyNotes').value = data.safety.notes;
+      }
+      
+      // Findings
+      if (data.findings) {
+        if (data.findings.overallCondition) {
+          const ocRadio = document.querySelector(`input[name="overallCondition"][value="${data.findings.overallCondition}"]`);
+          if (ocRadio) ocRadio.checked = true;
+        }
+        if (data.findings.primaryConcerns) {
+          document.getElementById('primaryConcerns').value = data.findings.primaryConcerns;
+        }
+      }
+      
+      // Recommendations
+      if (data.recommendations) {
+        if (data.recommendations.services) {
+          const svc = data.recommendations.services;
+          if (svc.poolCleaning) document.getElementById('servicePoolCleaning').checked = true;
+          if (svc.deepClean) document.getElementById('serviceDeepClean').checked = true;
+          if (svc.linerReplacement) document.getElementById('serviceLinerReplacement').checked = true;
+          if (svc.replastering) document.getElementById('serviceReplastering').checked = true;
+          if (svc.lightFixes) document.getElementById('serviceLightFixes').checked = true;
+          if (svc.skimmerReplacement) document.getElementById('serviceSkimmerReplacement').checked = true;
+          if (svc.pipeRerouting) document.getElementById('servicePipeRerouting').checked = true;
+          if (svc.pumpPadReplumbing) document.getElementById('servicePumpPadReplumbing').checked = true;
+          if (svc.newManifold) document.getElementById('serviceNewManifold').checked = true;
+          if (svc.filterChange) document.getElementById('serviceFilterChange').checked = true;
+          if (svc.glassMediaConversion) document.getElementById('serviceGlassMediaConversion').checked = true;
+          if (svc.heaterReplacement) document.getElementById('serviceHeaterReplacement').checked = true;
+          if (svc.pumpReplacement) document.getElementById('servicePumpReplacement').checked = true;
+          if (svc.leakDetectionRepair) document.getElementById('serviceLeakDetectionRepair').checked = true;
+          if (svc.tileRepair) document.getElementById('serviceTileRepair').checked = true;
+          if (svc.deckRepair) document.getElementById('serviceDeckRepair').checked = true;
+          if (svc.copingRepair) document.getElementById('serviceCopingRepair').checked = true;
+        }
+        if (data.recommendations.additionalServices) {
+          document.getElementById('additionalServices').value = data.recommendations.additionalServices;
+        }
+        if (data.recommendations.additionalNotes) {
+          document.getElementById('additionalNotes').value = data.recommendations.additionalNotes;
+        }
+        if (data.recommendations.estimateEmail) {
+          document.getElementById('estimateEmail').value = data.recommendations.estimateEmail;
+        }
+      }
+      
+      // Photos - Load base64 images back
+      if (data.photos && Array.isArray(data.photos) && data.photos.length > 0) {
+        // Initialize photos array if needed
+        if (typeof photos === 'undefined') {
+          photos = [];
+        }
+        data.photos.forEach((photo, index) => {
+          if (photo && photo.data && photo.label && index < 10) { // Support up to 10 photos
+            photos[index] = {
+              label: photo.label,
+              data: photo.data
+            };
+            const preview = document.getElementById('preview' + index);
+            if (preview) {
+              preview.innerHTML = `<img src="${photo.data}" alt="${photo.label}" style="max-width: 100%; border-radius: 8px;">`;
+              const parent = preview.parentElement;
+              if (parent) {
+                parent.classList.add('has-photo');
+              }
+            }
+          }
+        });
+      }
+      
+      // Videos - Load base64 videos back
+      if (data.videos && Array.isArray(data.videos) && data.videos.length > 0) {
+        // Initialize videos array if needed
+        if (typeof videos === 'undefined') {
+          videos = [];
+        }
+        data.videos.forEach((video, index) => {
+          if (video && video.data && video.label && index < 5) { // Support up to 5 videos
+            videos[index] = {
+              label: video.label,
+              data: video.data
+            };
+            const preview = document.getElementById('videoPreview' + index);
+            if (preview) {
+              preview.innerHTML = `<video src="${video.data}" controls style="max-width: 100%; border-radius: 8px;"></video>`;
+              const parent = preview.parentElement;
+              if (parent) {
+                parent.classList.add('has-video');
+              }
+            }
+          }
+        });
+      }
+      
+      // Inspector Signature
+      if (data.inspectorSignature) {
+        const canvas = document.getElementById('signatureCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.onload = function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = data.inspectorSignature;
+      }
+      
+      // Email checkbox
+      if (data.emailCustomer !== undefined) {
+        document.getElementById('emailCustomerCheckbox').checked = data.emailCustomer;
+      }
+      
+      console.log('Inspection data loaded successfully');
+    }
+
+    // Clear loaded inspection
+    function clearLoadedInspection() {
+      document.getElementById('pastInspectionSelect').value = '';
+      document.getElementById('loadedInspectionActions').style.display = 'none';
+      loadedInspectionData = null;
+      currentInspectionId = null;
+    }
+
+    // Preview email
+    function previewEmail() {
+      let reportData;
+      
+      // Use loaded inspection data if available, otherwise use current form data
+      if (loadedInspectionData) {
+        reportData = loadedInspectionData;
+      } else {
+        // Check if we have current form data
+        const customerName = document.getElementById('customerName').value.trim();
+        if (!customerName) {
+          alert('Please load an inspection or fill out the form first.');
+          return;
+        }
+        reportData = collectFormData();
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showEmailPreview(result.html);
+          } else {
+            alert('Error generating email preview: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+        })
+        .generateEmailPreview(reportData);
+    }
+
+    // Show email preview modal
+    function showEmailPreview(html) {
+      const modal = document.getElementById('emailPreviewModal');
+      const iframe = document.getElementById('emailPreviewFrame');
+      
+      // Create blob URL for the HTML
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      iframe.src = url;
+      
+      modal.classList.add('show');
+    }
+
+    // Close email preview modal
+    function closeEmailPreview() {
+      const modal = document.getElementById('emailPreviewModal');
+      modal.classList.remove('show');
+      const iframe = document.getElementById('emailPreviewFrame');
+      if (iframe.src) {
+        URL.revokeObjectURL(iframe.src);
+        iframe.src = '';
+      }
+    }
+
+    // Preview report before generating
+    function previewReport() {
+      // Use collectFormData function if it exists, otherwise use generateReport's data collection
+      let reportData;
+      if (typeof collectFormData === 'function') {
+        reportData = collectFormData();
+      } else {
+        // Fallback: collect basic data
+        reportData = {
+          customerName: document.getElementById('customerName').value.trim(),
+          customerEmail: document.getElementById('customerEmail').value.trim(),
+          propertyAddress: document.getElementById('propertyAddress').value.trim(),
+          inspectorName: document.getElementById('inspectorName').value.trim(),
+          poolType: document.querySelector('input[name="poolType"]:checked')?.value || '',
+          photos: [],
+          videos: []
+        };
+      }
+      
+      if (!reportData.customerName) {
+        alert('Please fill out customer information first.');
+        return;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            showReportPreview(result.html);
+          } else {
+            alert('Error generating preview: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error);
+        })
+        .previewInspectionReport(reportData);
+    }
+
+    // Show report preview modal
+    function showReportPreview(html) {
+      const modal = document.getElementById('reportPreviewModal');
+      const iframe = document.getElementById('reportPreviewFrame');
+      
+      // Create blob URL for the HTML
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      iframe.src = url;
+      
+      modal.classList.add('show');
+    }
+
+    // Close report preview modal
+    function closeReportPreview() {
+      const modal = document.getElementById('reportPreviewModal');
+      modal.classList.remove('show');
+      const iframe = document.getElementById('reportPreviewFrame');
+      if (iframe.src) {
+        URL.revokeObjectURL(iframe.src);
+        iframe.src = '';
+      }
+    }
+
+    // Send email to customer (after report is generated)
+    function sendEmailToCustomer() {
+      if (!currentInspectionId) {
+        alert('No inspection found. Please generate a report first.');
+        return;
+      }
+      
+      if (!confirm('Send inspection report email to customer? This will also send a text message template to your phone.')) {
+        return;
+      }
+      
+      const btn = document.getElementById('sendEmailBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            document.getElementById('successMessage').innerHTML = `
+              <i class="fas fa-check-circle"></i> ${result.message || 'Email sent to customer successfully!'}
+            `;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            setTimeout(() => {
+              document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+          } else {
+            showError(result.error || 'Failed to send email');
+          }
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to send email: ' + error);
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        })
+        .sendEmailToCustomer(currentInspectionId);
+    }
+
+    // Send text message to company phone
+    function sendTextToCompany() {
+      if (!currentInspectionId) {
+        alert('No inspection found. Please generate a report first.');
+        return;
+      }
+      
+      if (!confirm('Send text message template to company phone (8654142817)?')) {
+        return;
+      }
+      
+      const btn = document.getElementById('sendTextBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            document.getElementById('successMessage').innerHTML = `
+              <i class="fas fa-check-circle"></i> ${result.message || 'Text message sent to company phone successfully!'}
+            `;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            setTimeout(() => {
+              document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+          } else {
+            showError(result.error || 'Failed to send text message');
+          }
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        })
+        .withFailureHandler(function(error) {
+          showError('Failed to send text message: ' + error);
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        })
+        .sendTextToCompany(currentInspectionId);
+    }
+
+    // Resend email
+    function resendEmail() {
+      if (!currentInspectionId) {
+        alert('Please load an inspection first.');
+        return;
+      }
+
+      if (confirm('Send email to customer?')) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              alert('Email sent successfully!');
+            } else {
+              alert('Error sending email: ' + result.error);
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('Error: ' + error);
+          })
+          .resendInspectionEmail(currentInspectionId, true);
+      }
+    }
+
+    // Helper function to collect form data (used for email preview)
+    function collectFormData() {
+      // This is a simplified version - in practice, you'd want to collect all form data
+      // For now, we'll use the same structure as generateReport
+      return {
+        customerName: document.getElementById('customerName').value.trim(),
+        customerEmail: document.getElementById('customerEmail').value.trim(),
+        customerPhone: document.getElementById('customerPhone').value.trim(),
+        propertyAddress: document.getElementById('propertyAddress').value.trim(),
+        inspectorName: document.getElementById('inspectorName').value.trim(),
+        poolType: document.querySelector('input[name="poolType"]:checked')?.value || '',
+        overallCondition: document.querySelector('input[name="overallCondition"]:checked')?.value || '',
+        photos: photos.filter(p => p && p.data),
+        recommendations: {
+          additionalNotes: document.getElementById('additionalNotes').value
+        },
+        findings: {
+          primaryConcerns: document.getElementById('primaryConcerns').value
+        }
+      };
+    }
+  </script>
+
+  <!-- Email Preview Modal -->
+  <div id="emailPreviewModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-envelope"></i> Email Preview</h2>
+        <button class="modal-close" onclick="closeEmailPreview()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <iframe id="emailPreviewFrame"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Preview Modal -->
+  <div id="reportPreviewModal" class="modal">
+    <div class="modal-content" style="max-width: 90%; width: 90%;">
+      <div class="modal-header">
+        <h2><i class="fas fa-file-pdf"></i> Report Preview</h2>
+        <button class="modal-close" onclick="closeReportPreview()">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height: 80vh; overflow: auto;">
+        <iframe id="reportPreviewFrame" style="width: 100%; height: 70vh; border: 1px solid #ddd;"></iframe>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

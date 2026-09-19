@@ -1,0 +1,234 @@
+<link rel="stylesheet" href="https://script.google.com/macros/s/AKfycbwe79iB2_OR6xco-ycEjvPKTOaCfLwtNx44je_CBMJxUK1_ncI6s3N4JnuDw0wk4z5x/exec?file=dashboard-css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<div class="dashboard-embed-wrapper">
+    <div class="dashboard-embed-container">
+        <!-- Header -->
+        <div class="dashboard-embed-header">
+            <div class="dashboard-embed-header-inner">
+                <div class="dashboard-embed-logo-section">
+                    <div class="dashboard-embed-logo-icon">
+                        <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6931dca5c5fb5c5fc0860f2c_test.png" alt="Logo">
+                    </div>
+                    <div class="dashboard-embed-logo-text">
+                        <h1>A Quality Pool Company</h1>
+                        <p>Team Dashboard</p>
+                    </div>
+                </div>
+                <nav class="dashboard-embed-nav-menu">
+                    <a href="https://a-quality-pool-company.webflow.io//" class="dashboard-embed-nav-link">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="https://a-quality-pool-company.webflow.io/pool-inspection-leak-detection" class="dashboard-embed-nav-link">
+                        <i class="fas fa-search"></i> Pool Inspection
+                    </a>
+                </nav>
+                <div class="dashboard-embed-user-section">
+                    <div class="dashboard-embed-user-info">
+                        <div class="dashboard-embed-user-name" id="dashboardUserName">Team Member</div>
+                        <div class="dashboard-embed-user-role" id="dashboardUserRole">Inspector</div>
+                    </div>
+                    <div class="dashboard-embed-user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Admin Notification Bar -->
+        <div class="dashboard-embed-notification-bar" id="notificationBar">
+            <div class="dashboard-embed-notification-content">
+                <div class="dashboard-embed-notification-text">
+                    <i class="fas fa-bell"></i>
+                    <span>You have <span class="dashboard-embed-notification-badge" id="pendingCount">0</span> pending account request(s)</span>
+                </div>
+                <div class="dashboard-embed-notification-actions">
+                    <button class="dashboard-embed-notification-button view" id="viewPendingBtn">View Requests</button>
+                    <button class="dashboard-embed-notification-button dismiss" id="dismissNotificationBtn">Dismiss</button>
+                </div>
+            </div>
+        </div>
+        <!-- Pending Accounts Modal -->
+        <div class="dashboard-embed-modal" id="pendingAccountsModal">
+            <div class="dashboard-embed-modal-content">
+                <div class="dashboard-embed-modal-header">
+                    <h2 class="dashboard-embed-modal-title">Pending Account Requests</h2>
+                    <button class="dashboard-embed-modal-close" id="closeModalBtn">&times;</button>
+                </div>
+                <div class="dashboard-embed-modal-body" id="pendingAccountsList">
+                    <div class="dashboard-embed-empty-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading pending accounts...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Stats -->
+        <div class="dashboard-embed-stats-grid">
+            <div class="dashboard-embed-stat-card">
+                <div class="dashboard-embed-stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <span class="dashboard-embed-stat-number">0</span>
+                <span class="dashboard-embed-stat-label">Today's Jobs</span>
+            </div>
+            <div class="dashboard-embed-stat-card">
+                <div class="dashboard-embed-stat-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <span class="dashboard-embed-stat-number" id="dashboardPhotoCount">0</span>
+                <span class="dashboard-embed-stat-label">Photos Uploaded</span>
+            </div>
+            <div class="dashboard-embed-stat-card">
+                <div class="dashboard-embed-stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <span class="dashboard-embed-stat-number" id="dashboardCurrentTime">--:--</span>
+                <span class="dashboard-embed-stat-label">Current Time</span>
+            </div>
+            <div class="dashboard-embed-stat-card">
+                <div class="dashboard-embed-stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <span class="dashboard-embed-stat-number">0</span>
+                <span class="dashboard-embed-stat-label">Completed</span>
+            </div>
+        </div>
+        <!-- Quick Tools -->
+        <div class="dashboard-embed-section">
+            <h2 class="dashboard-embed-section-title">Quick Tools</h2>
+            <div class="dashboard-embed-tools-grid">
+                <div class="dashboard-embed-tool-card" onclick="dashboardOpenPhotoUpload()">
+                    <div class="dashboard-embed-tool-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3 class="dashboard-embed-tool-title">Take Photos</h3>
+                    <p class="dashboard-embed-tool-description">Capture inspection photos directly or upload from gallery</p>
+                </div>
+                <div class="dashboard-embed-tool-card" onclick="dashboardOpenJobList()">
+                    <div class="dashboard-embed-tool-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="dashboard-embed-tool-title">Job List</h3>
+                    <p class="dashboard-embed-tool-description">View and manage today's inspection schedule</p>
+                </div>
+                <div class="dashboard-embed-tool-card" onclick="dashboardOpenNotes()">
+                    <div class="dashboard-embed-tool-icon">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+                    <h3 class="dashboard-embed-tool-title">Inspection Notes</h3>
+                    <p class="dashboard-embed-tool-description">Record findings and observations</p>
+                </div>
+                <div class="dashboard-embed-tool-card" onclick="dashboardOpenCalculator()">
+                    <div class="dashboard-embed-tool-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="dashboard-embed-tool-title">Pool Calculator</h3>
+                    <p class="dashboard-embed-tool-description">Calculate volume, chemical needs, and measurements</p>
+                </div>
+                <div class="dashboard-embed-tool-card" onclick="dashboardOpenFullInspection()">
+                    <div class="dashboard-embed-tool-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3 class="dashboard-embed-tool-title">Full Pool Inspection</h3>
+                    <p class="dashboard-embed-tool-description">Complete inspection report with photos and videos</p>
+                </div>
+                <div class="dashboard-embed-tool-card" onclick="dashboardOpenCustomers()">
+                    <div class="dashboard-embed-tool-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="dashboard-embed-tool-title">Customer Info</h3>
+                    <p class="dashboard-embed-tool-description">Access customer details and history</p>
+                </div>
+                <div class="dashboard-embed-tool-card" onclick="dashboardOpenQuickQuote()">
+                    <div class="dashboard-embed-tool-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3 class="dashboard-embed-tool-title">Quick Quote</h3>
+                    <p class="dashboard-embed-tool-description">Fast material cost estimation for field quotes</p>
+                </div>
+            </div>
+        </div>
+        <!-- Photo Upload Section -->
+        <div class="dashboard-embed-section">
+            <h2 class="dashboard-embed-section-title">Job Photos</h2>
+            <div class="dashboard-embed-upload-area" id="dashboardUploadArea">
+                <i class="fas fa-cloud-upload-alt dashboard-embed-upload-icon"></i>
+                <div class="dashboard-embed-upload-text">Click or Drag Photos Here</div>
+                <div class="dashboard-embed-upload-hint">Support for JPG, PNG, HEIC • Max 10MB per file</div>
+                <input type="file" id="dashboardFileInput" multiple accept="image/*" capture="environment" style="display: none;">
+            </div>
+            <div class="dashboard-embed-photos-grid" id="dashboardPhotosGrid"></div>
+        </div>
+    </div>
+    <!-- Pool Calculator Overlay -->
+    <div class="dashboard-embed-calculator-overlay" id="dashboardCalculatorOverlay">
+        <div class="dashboard-embed-calculator-container">
+            <div class="dashboard-embed-calculator-header">
+                <h3 class="dashboard-embed-calculator-title">
+                    <i class="fas fa-calculator"></i> Pool & Chemical Calculator
+                </h3>
+                <button class="dashboard-embed-close-btn" onclick="dashboardCloseCalculator()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <iframe id="dashboardCalculatorIframe" class="dashboard-embed-calculator-iframe" src=""></iframe>
+        </div>
+    </div>
+    <!-- Full Inspection Overlay -->
+    <div class="dashboard-embed-calculator-overlay" id="dashboardInspectionOverlay">
+        <div class="dashboard-embed-calculator-container">
+            <div class="dashboard-embed-calculator-header">
+                <h3 class="dashboard-embed-calculator-title">
+                    <i class="fas fa-clipboard-check"></i> Full Pool Inspection
+                </h3>
+                <button class="dashboard-embed-close-btn" onclick="dashboardCloseFullInspection()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <iframe id="dashboardInspectionIframe" class="dashboard-embed-calculator-iframe" src=""></iframe>
+        </div>
+    </div>
+    <!-- Customer Info Overlay -->
+    <div class="dashboard-embed-calculator-overlay" id="dashboardCustomerOverlay">
+        <div class="dashboard-embed-calculator-container">
+            <div class="dashboard-embed-calculator-header">
+                <h3 class="dashboard-embed-calculator-title">
+                    <i class="fas fa-users"></i> Customer Info & History
+                </h3>
+                <button class="dashboard-embed-close-btn" onclick="dashboardCloseCustomers()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <iframe id="dashboardCustomerIframe" class="dashboard-embed-calculator-iframe" src=""></iframe>
+        </div>
+    </div>
+    <!-- Photo Upload Overlay -->
+    <div class="dashboard-embed-calculator-overlay" id="dashboardPhotoOverlay">
+        <div class="dashboard-embed-calculator-container">
+            <div class="dashboard-embed-calculator-header">
+                <h3 class="dashboard-embed-calculator-title">
+                    <i class="fas fa-camera"></i> Take Photos
+                </h3>
+                <button class="dashboard-embed-close-btn" onclick="dashboardClosePhotoUpload()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <iframe id="dashboardPhotoIframe" class="dashboard-embed-calculator-iframe" src=""></iframe>
+        </div>
+    </div>
+    <!-- Quick Quote Overlay -->
+    <div class="dashboard-embed-calculator-overlay" id="dashboardQuickQuoteOverlay">
+        <div class="dashboard-embed-calculator-container">
+            <div class="dashboard-embed-calculator-header">
+                <h3 class="dashboard-embed-calculator-title">
+                    <i class="fas fa-file-invoice-dollar"></i> Quick Pool Quote
+                </h3>
+                <button class="dashboard-embed-close-btn" onclick="dashboardCloseQuickQuote()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <iframe id="dashboardQuickQuoteIframe" class="dashboard-embed-calculator-iframe" src=""></iframe>
+        </div>
+    </div>
+</div>
+<script src="https://script.google.com/macros/s/AKfycbwe79iB2_OR6xco-ycEjvPKTOaCfLwtNx44je_CBMJxUK1_ncI6s3N4JnuDw0wk4z5x/exec?file=dashboard-js"></script>
+

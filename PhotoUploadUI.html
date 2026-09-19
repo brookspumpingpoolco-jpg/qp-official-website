@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Photo Upload Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      color: #111827;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(3, 105, 161, 0.3);
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0369a1;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .form-group select {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-family: 'Barlow', sans-serif;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .form-group select:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #0284c7;
+    }
+
+    /* Button */
+    .btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Barlow', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      padding: 14px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Photo Upload Area */
+    .photo-upload {
+      border: 3px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f9fafb;
+    }
+
+    .photo-upload:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    .photo-upload.active {
+      border-color: #0284c7;
+      background: #dbeafe;
+    }
+
+    .photo-upload i {
+      font-size: 48px;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+
+    .photo-upload h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .photo-upload p {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    /* Photo Grid */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .photo-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-delete {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      background: rgba(220, 38, 38, 0.9);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .photo-delete:hover {
+      background: #dc2626;
+      transform: scale(1.1);
+    }
+
+    /* Success Message */
+    .success-box {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border: 2px solid #059669;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .success-box.active {
+      display: block;
+    }
+
+    .success-box h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #065f46;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .success-box p {
+      font-size: 16px;
+      color: #047857;
+      margin-bottom: 8px;
+    }
+
+    .success-box a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #047857;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 12px 20px;
+      background: white;
+      border-radius: 8px;
+      margin-top: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .success-box a:hover {
+      background: #f0fdf4;
+      transform: translateX(4px);
+    }
+
+    /* Loading Spinner */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid white;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      background: #dbeafe;
+      color: #0369a1;
+      margin-left: 10px;
+    }
+
+    /* Add Customer Link */
+    .add-customer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0284c7;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 8px;
+    }
+
+    .add-customer-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #0369a1;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Photo count badge */
+    .photo-count {
+      background: #0284c7;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 24px;
+      }
+      
+      .photo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-camera"></i> Photo Upload Tool</h1>
+      <p>Take job photos and upload them to customer folders</p>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-box" id="successBox">
+      <h3><i class="fas fa-check-circle"></i> Photos Uploaded Successfully!</h3>
+      <p id="successMessage"></p>
+      <a href="#" id="folderLink" target="_blank">
+        <i class="fas fa-folder-open"></i> Open Customer Folder
+      </a>
+    </div>
+
+    <!-- Customer Selection -->
+    <div class="card">
+      <h2><i class="fas fa-user"></i> Select Customer</h2>
+      
+      <div class="form-group">
+        <label>Customer *</label>
+        <select id="customerSelect" onchange="handleCustomerChange()">
+          <option value="">Loading customers...</option>
+        </select>
+        <a class="add-customer-link" onclick="showAddCustomerModal()">
+          <i class="fas fa-user-plus"></i> Add New Customer
+        </a>
+      </div>
+    </div>
+
+    <!-- Photo Upload -->
+    <div class="card" id="uploadSection" style="display: none;">
+      <h2><i class="fas fa-images"></i> Job Photos <span class="badge" id="photoCount">0 photos</span></h2>
+      
+      <div class="photo-upload" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+        <i class="fas fa-camera"></i>
+        <h3>Take or Upload Photos</h3>
+        <p>Tap to access camera or select from gallery</p>
+      </div>
+      
+      <input 
+        type="file" 
+        id="fileInput" 
+        accept="image/*" 
+        capture="environment" 
+        multiple 
+        style="display: none;" 
+        onchange="handleFileSelect(event)">
+      
+      <div class="photo-grid" id="photoGrid"></div>
+      
+      <button 
+        class="btn btn-primary" 
+        id="uploadButton" 
+        onclick="uploadPhotos()" 
+        style="margin-top: 20px; display: none;">
+        <i class="fas fa-cloud-upload-alt"></i> Upload Photos to Drive
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal" id="addCustomerModal">
+    <div class="modal-content">
+      <h2 class="modal-header">Add New Customer</h2>
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" id="newFirstName" required>
+      </div>
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" id="newLastName" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="newEmail">
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="newPhone" placeholder="e.g. +15551234567">
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input type="text" id="newAddress">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="addNewCustomer()" style="flex: 1;">
+          <i class="fas fa-user-plus"></i> Add Customer
+        </button>
+        <button class="btn btn-secondary" onclick="closeAddCustomerModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedCustomerId = null;
+    let photos = [];
+    let allCustomers = [];
+
+    // Load customers on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCustomers();
+    });
+
+    // Load all customers from Square
+    function loadCustomers() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          const select = document.getElementById('customerSelect');
+          
+          if (result.success && result.customers.length > 0) {
+            allCustomers = result.customers;
+            
+            select.innerHTML = '<option value="">-- Select a customer --</option>';
+            
+            result.customers.forEach(customer => {
+              const name = `${customer.given_name || ''} ${customer.family_name || ''}`.trim();
+              const address = customer.address ? customer.address.address_line_1 || '' : '';
+              const displayText = address ? `${name} - ${address}` : name;
+              
+              const option = document.createElement('option');
+              option.value = customer.id;
+              option.textContent = displayText;
+              select.appendChild(option);
+            });
+          } else {
+            select.innerHTML = '<option value="">No customers found</option>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Failed to load customers: ' + error);
+        })
+        .getSquareCustomers();
+    }
+
+    // Handle customer selection
+    function handleCustomerChange() {
+      const select = document.getElementById('customerSelect');
+      selectedCustomerId = select.value;
+      
+      if (selectedCustomerId) {
+        document.getElementById('uploadSection').style.display = 'block';
+        document.getElementById('successBox').classList.remove('active');
+        // Clear previous photos when switching customers
+        photos = [];
+        updatePhotoDisplay();
+      } else {
+        document.getElementById('uploadSection').style.display = 'none';
+      }
+    }
+
+    // Handle file selection
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            photos.push({
+              id: Date.now() + Math.random(),
+              data: e.target.result,
+              name: `Photo_${new Date().toISOString().split('T')[0]}_${photos.length + 1}.jpg`,
+              mimeType: file.type
+            });
+            updatePhotoDisplay();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      // Reset file input
+      event.target.value = '';
+    }
+
+    // Update photo display
+    function updatePhotoDisplay() {
+      const grid = document.getElementById('photoGrid');
+      const count = document.getElementById('photoCount');
+      const uploadBtn = document.getElementById('uploadButton');
+      
+      count.textContent = photos.length + ' photo' + (photos.length !== 1 ? 's' : '');
+      
+      if (photos.length > 0) {
+        uploadBtn.style.display = 'flex';
+        
+        grid.innerHTML = photos.map((photo, index) => `
+          <div class="photo-item">
+            <img src="${photo.data}" alt="Photo ${index + 1}">
+            <button class="photo-delete" onclick="deletePhoto(${photo.id})">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `).join('');
+      } else {
+        uploadBtn.style.display = 'none';
+        grid.innerHTML = '';
+      }
+    }
+
+    // Delete photo
+    function deletePhoto(id) {
+      photos = photos.filter(p => p.id !== id);
+      updatePhotoDisplay();
+    }
+
+    // Upload photos to Drive
+    function uploadPhotos() {
+      if (!selectedCustomerId) {
+        alert('Please select a customer first');
+        return;
+      }
+      
+      if (photos.length === 0) {
+        alert('Please add at least one photo');
+        return;
+      }
+      
+      // Show loading
+      const btn = document.getElementById('uploadButton');
+      btn.innerHTML = '<div class="loading"></div> Uploading...';
+      btn.disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Show success message
+            const successBox = document.getElementById('successBox');
+            const successMsg = document.getElementById('successMessage');
+            const folderLink = document.getElementById('folderLink');
+            
+            successMsg.innerHTML = `
+              <strong>${result.uploadedCount} photo${result.uploadedCount !== 1 ? 's' : ''}</strong> uploaded to 
+              <strong>${result.folderName}</strong>
+              ${result.isNewFolder ? ' (new folder created)' : ''}
+            `;
+            
+            folderLink.href = result.folderUrl;
+            successBox.classList.add('active');
+            
+            // Clear photos
+            photos = [];
+            updatePhotoDisplay();
+            
+            // Scroll to success message
+            successBox.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            alert('Error uploading photos: ' + result.error);
+          }
+          
+          // Reset button
+          btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Photos to Drive';
+          btn.disabled = false;
+        })
+        .withFailureHandler(function(error) {
+          alert('Failed to upload photos: ' + error);
+          btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Photos to Drive';
+          btn.disabled = false;
+        })
+        .uploadPhotos(selectedCustomerId, photos);
+    }
+
+    // Add Customer Modal
+    function showAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.add('active');
+    }
+
+    function closeAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.remove('active');
+      document.getElementById('newFirstName').value = '';
+      document.getElementById('newLastName').value = '';
+      document.getElementById('newEmail').value = '';
+      document.getElementById('newPhone').value = '';
+      document.getElementById('newAddress').value = '';
+    }
+
+    function addNewCustomer() {
+      const firstName = document.getElementById('newFirstName').value.trim();
+      const lastName = document.getElementById('newLastName').value.trim();
+      const email = document.getElementById('newEmail').value.trim();
+      const phone = document.getElementById('newPhone').value.trim();
+      const address = document.getElementById('newAddress').value.trim();
+      
+      if (!firstName || !lastName) {
+        alert('Please enter first and last name');
+        return;
+      }
+      
+      const customerData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email || null,
+        phone: phone || null,
+        address: address || null
+      };
+      
+      // Show loading
+      const modal = document.getElementById('addCustomerModal');
+      const btn = modal.querySelector('.btn-primary');
+      btn.innerHTML = '<div class="loading"></div> Adding...';
+      btn.disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            alert('✅ Customer added successfully!');
+            closeAddCustomerModal();
+            loadCustomers();
+            
+            // Auto-select the new customer
+            setTimeout(() => {
+              document.getElementById('customerSelect').value = result.customer.id;
+              handleCustomerChange();
+            }, 500);
+          } else {
+            alert('Error adding customer: ' + result.error);
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Add Customer';
+            btn.disabled = false;
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Failed to add customer: ' + error);
+          btn.innerHTML = '<i class="fas fa-user-plus"></i> Add Customer';
+          btn.disabled = false;
+        })
+        .addSquareCustomer(customerData);
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('addCustomerModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAddCustomerModal();
+      }
+    });
+  </script>
+</body>
+</html>
+

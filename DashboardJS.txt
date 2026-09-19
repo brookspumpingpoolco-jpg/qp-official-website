@@ -1,0 +1,576 @@
+(function() {
+    // Configuration - Google Apps Script Web App URL
+    // Use dynamically injected script URL, fallback to hardcoded if not available
+    const SCRIPT_URL = window.SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwe79iB2_OR6xco-ycEjvPKTOaCfLwtNx44je_CBMJxUK1_ncI6s3N4JnuDw0wk4z5x/exec';
+    
+    // Get user email from localStorage or session
+    function getUserEmail() {
+        return localStorage.getItem('userEmail') || sessionStorage.getItem('userEmail') || '';
+    }
+
+    // Get user role
+    function getUserRole() {
+        return localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || '';
+    }
+
+    // Check if user is admin
+    function isAdminUser() {
+        const role = getUserRole();
+        const email = getUserEmail();
+        // Check both role and email (in case role isn't set)
+        const isAdminByRole = role === 'Admin' || role === 'admin';
+        const isAdminByEmail = email && (email.toLowerCase() === 'samr@aqualitypoolcompanyusa.com' || email.toLowerCase() === 'samr@aqualitypoolcompanyusa');
+        
+        // Debug logging
+        console.log('Admin check - Email:', email, 'Role:', role, 'IsAdmin:', isAdminByRole || isAdminByEmail);
+        
+        return isAdminByRole || isAdminByEmail;
+    }
+
+    // Admin Notification Bar Functionality
+    const notificationBar = document.getElementById('notificationBar');
+    const pendingCountEl = document.getElementById('pendingCount');
+    const viewPendingBtn = document.getElementById('viewPendingBtn');
+    const dismissNotificationBtn = document.getElementById('dismissNotificationBtn');
+    const pendingAccountsModal = document.getElementById('pendingAccountsModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const pendingAccountsList = document.getElementById('pendingAccountsList');
+
+    // Check for pending accounts
+    async function checkPendingAccounts() {
+        const userEmail = getUserEmail();
+        if (!userEmail) {
+            hideNotificationBar();
+            return;
+        }
+
+        // Only show for admin users
+        if (!isAdminUser()) {
+            hideNotificationBar();
+            return;
+        }
+
+        try {
+            // Use form-encoded POST to avoid CORS issues
+            const formData = new URLSearchParams();
+            formData.append('action', 'getPendingAccounts');
+            formData.append('email', userEmail);
+
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.pendingAccounts && result.pendingAccounts.length > 0) {
+                showNotificationBar(result.pendingAccounts.length);
+                // Store accounts for modal
+                window.pendingAccountsCache = result.pendingAccounts;
+            } else {
+                hideNotificationBar();
+                window.pendingAccountsCache = [];
+            }
+        } catch (error) {
+            console.error('Error checking pending accounts:', error);
+            hideNotificationBar();
+        }
+    }
+
+    function showNotificationBar(count) {
+        if (notificationBar && pendingCountEl) {
+            pendingCountEl.textContent = count;
+            notificationBar.classList.add('show');
+            document.querySelector('.dashboard-embed-wrapper').classList.add('has-notification');
+        }
+    }
+
+    function hideNotificationBar() {
+        if (notificationBar) {
+            notificationBar.classList.remove('show');
+            document.querySelector('.dashboard-embed-wrapper').classList.remove('has-notification');
+        }
+    }
+
+    function loadPendingAccounts(accounts) {
+        if (!pendingAccountsList) return;
+
+        if (accounts.length === 0) {
+            pendingAccountsList.innerHTML = `
+                <div class="dashboard-embed-empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <p>No pending account requests</p>
+                </div>
+            `;
+            return;
+        }
+
+        pendingAccountsList.innerHTML = accounts.map(account => `
+            <div class="dashboard-embed-pending-account" data-row-index="${account.rowIndex}">
+                <div class="dashboard-embed-pending-account-header">
+                    <div class="dashboard-embed-pending-account-info">
+                        <h3>${escapeHtml(account.name || 'N/A')}</h3>
+                        <p><strong>Email:</strong> ${escapeHtml(account.email)}</p>
+                        <p><strong>Company:</strong> ${escapeHtml(account.company || 'N/A')}</p>
+                        <p><strong>Role:</strong> ${escapeHtml(account.role || 'User')}</p>
+                        <p style="font-size: 12px; color: #9ca3af; margin-top: 8px;">
+                            Requested: ${new Date(account.dateCreated).toLocaleDateString()}
+                        </p>
+                    </div>
+                    <div class="dashboard-embed-pending-account-actions">
+                        <button class="dashboard-embed-account-button approve" onclick="approveAccount(${account.rowIndex})">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="dashboard-embed-account-button reject" onclick="rejectAccount(${account.rowIndex})">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Approve account
+    window.approveAccount = async function(rowIndex) {
+        const userEmail = getUserEmail();
+        if (!userEmail) {
+            alert('Please log in to approve accounts');
+            return;
+        }
+
+        if (!isAdminUser()) {
+            alert('Only administrators can approve accounts');
+            return;
+        }
+
+        if (!confirm('Are you sure you want to approve this account?')) {
+            return;
+        }
+
+        try {
+            // Use form-encoded POST
+            const formData = new URLSearchParams();
+            formData.append('action', 'approveAccount');
+            formData.append('adminEmail', userEmail);
+            formData.append('rowIndex', rowIndex);
+
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Account approved successfully! The user has been notified via email.');
+                // Refresh the list
+                await checkPendingAccounts();
+                if (pendingAccountsModal && pendingAccountsModal.classList.contains('show')) {
+                    if (window.pendingAccountsCache) {
+                        loadPendingAccounts(window.pendingAccountsCache);
+                    }
+                }
+            } else {
+                alert('Error: ' + (result.message || 'Failed to approve account'));
+            }
+        } catch (error) {
+            console.error('Error approving account:', error);
+            alert('Network error. Please try again.');
+        }
+    };
+
+    // Reject account
+    window.rejectAccount = async function(rowIndex) {
+        if (!confirm('Are you sure you want to reject this account request? The user will be notified via email.')) {
+            return;
+        }
+
+        const userEmail = getUserEmail();
+        if (!userEmail) {
+            alert('Please log in to reject accounts');
+            return;
+        }
+
+        if (!isAdminUser()) {
+            alert('Only administrators can reject accounts');
+            return;
+        }
+
+        try {
+            // Use form-encoded POST
+            const formData = new URLSearchParams();
+            formData.append('action', 'rejectAccount');
+            formData.append('adminEmail', userEmail);
+            formData.append('rowIndex', rowIndex);
+
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Account rejected. The user has been notified via email.');
+                // Refresh the list
+                await checkPendingAccounts();
+                if (pendingAccountsModal && pendingAccountsModal.classList.contains('show')) {
+                    if (window.pendingAccountsCache) {
+                        loadPendingAccounts(window.pendingAccountsCache);
+                    }
+                }
+            } else {
+                alert('Error: ' + (result.message || 'Failed to reject account'));
+            }
+        } catch (error) {
+            console.error('Error rejecting account:', error);
+            alert('Network error. Please try again.');
+        }
+    };
+
+    // Event listeners
+    if (viewPendingBtn) {
+        viewPendingBtn.addEventListener('click', async () => {
+            if (pendingAccountsModal) {
+                pendingAccountsModal.classList.add('show');
+                // Load accounts into modal
+                if (window.pendingAccountsCache && window.pendingAccountsCache.length > 0) {
+                    loadPendingAccounts(window.pendingAccountsCache);
+                } else {
+                    // Refresh if cache is empty
+                    await checkPendingAccounts();
+                    if (window.pendingAccountsCache) {
+                        loadPendingAccounts(window.pendingAccountsCache);
+                    }
+                }
+            }
+        });
+    }
+
+    if (dismissNotificationBtn) {
+        dismissNotificationBtn.addEventListener('click', () => {
+            hideNotificationBar();
+        });
+    }
+
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            if (pendingAccountsModal) {
+                pendingAccountsModal.classList.remove('show');
+            }
+        });
+    }
+
+    // Close modal when clicking outside
+    if (pendingAccountsModal) {
+        pendingAccountsModal.addEventListener('click', (e) => {
+            if (e.target === pendingAccountsModal) {
+                pendingAccountsModal.classList.remove('show');
+            }
+        });
+    }
+
+    // Escape HTML helper
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Update user info display
+    function updateUserInfo() {
+        const userName = localStorage.getItem('userName') || sessionStorage.getItem('userName') || 'Team Member';
+        const userRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || 'User';
+        const userNameEl = document.getElementById('dashboardUserName');
+        const userRoleEl = document.getElementById('dashboardUserRole');
+        
+        if (userNameEl) userNameEl.textContent = userName;
+        if (userRoleEl) {
+            userRoleEl.textContent = userRole;
+            // Highlight if admin
+            if (isAdminUser()) {
+                userRoleEl.style.color = '#fbbf24';
+                userRoleEl.style.fontWeight = '700';
+            }
+        }
+    }
+
+    // Initialize on page load
+    updateUserInfo();
+    
+    // Check for pending accounts on page load
+    checkPendingAccounts();
+    // Check every 30 seconds
+    setInterval(checkPendingAccounts, 30000);
+
+    // Current Time Update
+    function updateDashboardTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const timeEl = document.getElementById('dashboardCurrentTime');
+        if (timeEl) timeEl.textContent = `${hours}:${minutes}`;
+    }
+    updateDashboardTime();
+    setInterval(updateDashboardTime, 60000);
+
+    // Photo Upload Handling
+    const uploadArea = document.getElementById('dashboardUploadArea');
+    const fileInput = document.getElementById('dashboardFileInput');
+    const photosGrid = document.getElementById('dashboardPhotosGrid');
+    const photoCount = document.getElementById('dashboardPhotoCount');
+    let photos = [];
+
+    if (uploadArea && fileInput) {
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragging');
+            handleDashboardFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleDashboardFiles(e.target.files);
+        });
+    }
+
+    function handleDashboardFiles(files) {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    addDashboardPhoto(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    function addDashboardPhoto(src) {
+        const id = Date.now() + Math.random();
+        photos.push({ id, src });
+        
+        const photoItem = document.createElement('div');
+        photoItem.className = 'dashboard-embed-photo-item';
+        photoItem.innerHTML = `
+            <img src="${src}" alt="Job Photo">
+            <button class="dashboard-embed-photo-delete" onclick="deleteDashboardPhoto(${id})">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        
+        photosGrid.appendChild(photoItem);
+        if (photoCount) photoCount.textContent = photos.length;
+    }
+
+    window.deleteDashboardPhoto = function(id) {
+        photos = photos.filter(p => p.id !== id);
+        renderDashboardPhotos();
+        if (photoCount) photoCount.textContent = photos.length;
+    }
+
+    function renderDashboardPhotos() {
+        photosGrid.innerHTML = '';
+        photos.forEach(photo => {
+            const photoItem = document.createElement('div');
+            photoItem.className = 'dashboard-embed-photo-item';
+            photoItem.innerHTML = `
+                <img src="${photo.src}" alt="Job Photo">
+                <button class="dashboard-embed-photo-delete" onclick="deleteDashboardPhoto(${photo.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            photosGrid.appendChild(photoItem);
+        });
+    }
+
+    // Tool Functions
+    window.dashboardOpenPhotoUpload = function() {
+        const overlay = document.getElementById('dashboardPhotoOverlay');
+        const iframe = document.getElementById('dashboardPhotoIframe');
+        
+        // Set the iframe source to your Photo Upload Google Apps Script web app
+        iframe.src = 'https://script.google.com/macros/s/AKfycby74-UNcBt9Q8BGWLVb1ffDGRrziBj5SIbBPNJjIqKktFP0hNmIVXSrg-7-u051xMyg/exec';
+        
+        // Show the overlay
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    window.dashboardClosePhotoUpload = function() {
+        const overlay = document.getElementById('dashboardPhotoOverlay');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+    }
+
+    window.dashboardOpenJobList = function() {
+        alert('Job List feature coming soon!');
+    }
+
+    window.dashboardOpenNotes = function() {
+        alert('Inspection Notes feature coming soon!');
+    }
+
+    window.dashboardOpenCalculator = function() {
+        const overlay = document.getElementById('dashboardCalculatorOverlay');
+        const iframe = document.getElementById('dashboardCalculatorIframe');
+        
+        // Set the iframe source to your Google Apps Script web app
+        iframe.src = 'https://script.google.com/macros/s/AKfycbwLcoKHdF4cTne5Crt9_fJtZvokM4tmyXnyPhIxwFmSd3R5LxaVTkIqS8buU-uz3U_L1Q/exec';
+        
+        // Show the overlay
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    window.dashboardCloseCalculator = function() {
+        const overlay = document.getElementById('dashboardCalculatorOverlay');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+    }
+
+    // Full Inspection Functions
+    window.dashboardOpenFullInspection = function() {
+        const overlay = document.getElementById('dashboardInspectionOverlay');
+        const iframe = document.getElementById('dashboardInspectionIframe');
+        
+        // Set the iframe source to your Full Inspection Google Apps Script web app
+        iframe.src = 'https://script.google.com/macros/s/AKfycbxV5XT00EhjLSdc9zHpMozLzTVGSJABagG_7f-vQCAT2VGvBbdW3Jkfa1984rhYvuyL/exec';
+        
+        // Show the overlay
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    window.dashboardCloseFullInspection = function() {
+        const overlay = document.getElementById('dashboardInspectionOverlay');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+    }
+
+    // Close overlays when clicking outside the container
+    document.addEventListener('click', function(e) {
+        const overlay = document.getElementById('dashboardCalculatorOverlay');
+        if (e.target === overlay) {
+            dashboardCloseCalculator();
+        }
+        
+        // Close inspection when clicking outside
+        const inspectionOverlay = document.getElementById('dashboardInspectionOverlay');
+        if (e.target === inspectionOverlay) {
+            dashboardCloseFullInspection();
+        }
+        
+        // Close customer info when clicking outside
+        const customerOverlay = document.getElementById('dashboardCustomerOverlay');
+        if (e.target === customerOverlay) {
+            dashboardCloseCustomers();
+        }
+        
+        // Close photo upload when clicking outside
+        const photoOverlay = document.getElementById('dashboardPhotoOverlay');
+        if (e.target === photoOverlay) {
+            dashboardClosePhotoUpload();
+        }
+        
+        // Close quick quote when clicking outside
+        const quickQuoteOverlay = document.getElementById('dashboardQuickQuoteOverlay');
+        if (e.target === quickQuoteOverlay) {
+            dashboardCloseQuickQuote();
+        }
+    });
+
+    // Close calculator/inspection/customer/photo with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const overlay = document.getElementById('dashboardCalculatorOverlay');
+            if (overlay && overlay.classList.contains('active')) {
+                dashboardCloseCalculator();
+            }
+            
+            const inspectionOverlay = document.getElementById('dashboardInspectionOverlay');
+            if (inspectionOverlay && inspectionOverlay.classList.contains('active')) {
+                dashboardCloseFullInspection();
+            }
+            
+            const customerOverlay = document.getElementById('dashboardCustomerOverlay');
+            if (customerOverlay && customerOverlay.classList.contains('active')) {
+                dashboardCloseCustomers();
+            }
+            
+            const photoOverlay = document.getElementById('dashboardPhotoOverlay');
+            if (photoOverlay && photoOverlay.classList.contains('active')) {
+                dashboardClosePhotoUpload();
+            }
+            
+            const quickQuoteOverlay = document.getElementById('dashboardQuickQuoteOverlay');
+            if (quickQuoteOverlay && quickQuoteOverlay.classList.contains('active')) {
+                dashboardCloseQuickQuote();
+            }
+        }
+    });
+
+    window.dashboardOpenReports = function() {
+        if (photos.length === 0) {
+            alert('Please upload photos first!');
+            return;
+        }
+        alert('Report generation feature coming soon!');
+    }
+
+    window.dashboardOpenCustomers = function() {
+        const overlay = document.getElementById('dashboardCustomerOverlay');
+        const iframe = document.getElementById('dashboardCustomerIframe');
+        
+        // Set the iframe source to your Customer Info Google Apps Script web app
+        iframe.src = 'https://script.google.com/macros/s/AKfycbxH0Wyd5XaWRlNVR-oxvi7_SeGOZ8SGylthvdUvkyccXeBKeFn8uTqkPBdFnostDcx7Hw/exec';
+        
+        // Show the overlay
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    window.dashboardCloseCustomers = function() {
+        const overlay = document.getElementById('dashboardCustomerOverlay');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+    }
+
+    window.dashboardOpenQuickQuote = function() {
+        const overlay = document.getElementById('dashboardQuickQuoteOverlay');
+        const iframe = document.getElementById('dashboardQuickQuoteIframe');
+        
+        // Set the iframe source to your Quick Quote Google Apps Script web app
+        iframe.src = 'https://script.google.com/macros/s/AKfycbyL_GsKX3x4ZdWWZY7pASE18QNeFmt7Sgs-lpi0ladeiqIWJ_rtbDrt18sFHMeRcibmXA/exec';
+        
+        // Show the overlay
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    window.dashboardCloseQuickQuote = function() {
+        const overlay = document.getElementById('dashboardQuickQuoteOverlay');
+        overlay.classList.remove('active');
+        document.body.style.overflow = ''; // Re-enable scrolling
+    }
+})();
+

@@ -1,0 +1,2920 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0369a1">
+  <title>Customer Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      /* POOL-INSPIRED COLOR PALETTE */
+      --pool-cyan: #06b6d4;
+      --pool-sky: #0ea5e9;
+      --pool-aqua: #22d3ee;
+      --pool-deep: #0a1929;
+      --pool-ocean: #1a2f3f;
+      --pool-water: #0891b2;
+      
+      --primary: #06b6d4;
+      --primary-dark: #0891b2;
+      --primary-light: #22d3ee;
+      --secondary: #10b981;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --success: #10b981;
+      
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --gray-900: #0f172a;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(6, 182, 212, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(6, 182, 212, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-pool: 0 8px 32px rgba(6, 182, 212, 0.3);
+      
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a1929 0%, #1a2f3f 50%, #0f172a 100%);
+      color: var(--gray-100);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
+    }
+
+    /* Wave Pattern Background */
+    body::before {
+      content: '';
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background: linear-gradient(to top, rgba(6, 182, 212, 0.1), transparent);
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 Q300,20 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(6,182,212,0.05)"/></svg>');
+      background-size: cover;
+      background-position: bottom;
+      pointer-events: none;
+      z-index: 0;
+      animation: wave 15s linear infinite;
+    }
+
+    @keyframes wave {
+      0% { background-position-x: 0; }
+      100% { background-position-x: 1200px; }
+    }
+
+    /* Water Ripple Effect */
+    @keyframes ripple {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1.1);
+        opacity: 0;
+      }
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-width: 100%;
+    }
+
+    /* Enhanced Top Bar with Pool Theme */
+    .top-bar {
+      background: linear-gradient(135deg, var(--pool-deep) 0%, var(--pool-ocean) 50%, var(--pool-water) 100%);
+      color: #ffffff;
+      padding: 24px 32px;
+      box-shadow: var(--shadow-pool);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .top-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 Q300,0 600,20 T1200,20 L1200,40 L0,40 Z" fill="rgba(6,182,212,0.3)"/></svg>');
+      background-size: 1200px 40px;
+      animation: wave 10s linear infinite;
+    }
+
+    .top-bar-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .top-bar h1 {
+      font-size: 28px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .top-bar-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-icon {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(14, 165, 233, 0.15) 100%);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(6, 182, 212, 0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at top right, rgba(6, 182, 212, 0.2), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.3) 0%, rgba(14, 165, 233, 0.25) 100%);
+      border-color: rgba(6, 182, 212, 0.5);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(6, 182, 212, 0.3);
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      opacity: 0.9;
+    }
+
+    .stat-value {
+      font-size: 48px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .stat-trend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .stat-trend.positive {
+      color: var(--success);
+    }
+
+    .stat-trend.negative {
+      color: var(--danger);
+    }
+
+    .sparkline {
+      height: 20px;
+      width: 60px;
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sparkline::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: linear-gradient(to right, var(--pool-cyan), var(--pool-aqua));
+      clip-path: polygon(0 100%, 10% 80%, 20% 60%, 30% 70%, 40% 50%, 50% 40%, 60% 30%, 70% 20%, 80% 10%, 90% 5%, 100% 0, 100% 100%);
+      animation: sparkline 2s ease-in-out infinite;
+    }
+
+    @keyframes sparkline {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    /* Company Filter Bar - HIDDEN FOR NON-ADMIN */
+    .company-filter-bar {
+      background: rgba(26, 47, 63, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 16px 32px;
+      border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .company-filter-bar.show {
+      display: block;
+    }
+
+    .filter-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-select {
+      padding: 8px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Advanced Search & Filter Bar */
+    .search-filter-bar {
+      background: rgba(26, 47, 63, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 20px 32px;
+      border-bottom: 2px solid rgba(6, 182, 212, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .search-wrapper {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 16px 14px 48px;
+      font-size: 15px;
+      border: 2px solid rgba(6, 182, 212, 0.3);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      transition: all 0.2s ease;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--pool-cyan);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2);
+    }
+
+    /* Search Autocomplete Dropdown */
+    .search-autocomplete {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(26, 47, 63, 0.98);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(6, 182, 212, 0.3);
+      border-top: none;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      margin-top: 4px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      display: none;
+      z-index: 1000;
+    }
+
+    .search-autocomplete.show {
+      display: block;
+    }
+
+    .autocomplete-section {
+      padding: 12px;
+      border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+    }
+
+    .autocomplete-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+
+    .autocomplete-item {
+      padding: 12px;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .autocomplete-item:hover {
+      background: rgba(6, 182, 212, 0.2);
+    }
+
+    .autocomplete-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(6, 182, 212, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pool-cyan);
+    }
+
+    .autocomplete-item-text {
+      flex: 1;
+    }
+
+    .autocomplete-item-name {
+      font-weight: 600;
+      color: white;
+      font-size: 14px;
+    }
+
+    .autocomplete-item-meta {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-400);
+    }
+
+    .search-shortcut {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--gray-100);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--gray-600);
+      font-weight: 600;
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-chip {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(6, 182, 212, 0.3);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .filter-chip:hover {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: rgba(6, 182, 212, 0.5);
+    }
+
+    .filter-chip.active {
+      background: var(--pool-cyan);
+      color: white;
+      border-color: var(--pool-cyan);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+
+    .active-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .active-filter-pill {
+      padding: 6px 12px;
+      background: var(--primary);
+      color: white;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .active-filter-pill .remove {
+      cursor: pointer;
+      opacity: 0.8;
+    }
+
+    .active-filter-pill .remove:hover {
+      opacity: 1;
+    }
+
+    .view-switcher {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+      background: var(--gray-100);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+    }
+
+    .view-btn {
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--gray-600);
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    .view-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Premium Customer Cards */
+    .customer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .customer-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-content {
+        padding: 16px;
+      }
+      .top-bar {
+        padding: 16px 20px;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+    }
+
+    .customer-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      border: 2px solid rgba(6, 182, 212, 0.2);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .customer-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--pool-cyan), var(--pool-aqua), var(--pool-sky));
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    .customer-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.1), transparent);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .customer-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: var(--shadow-pool);
+      border-color: var(--pool-cyan);
+      background: white;
+    }
+
+    .customer-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .customer-card:hover::after {
+      width: 300px;
+      height: 300px;
+      animation: ripple 0.6s ease-out;
+    }
+
+    .customer-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .customer-name-section {
+      flex: 1;
+    }
+
+    .customer-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .customer-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: -0.3px;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.active {
+      background: var(--success);
+      color: white;
+    }
+
+    .status-badge.inactive {
+      background: var(--gray-300);
+      color: var(--gray-700);
+    }
+
+    .status-badge.lead {
+      background: var(--accent);
+      color: white;
+    }
+
+    .status-badge.vip {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+
+    .priority-flag {
+      font-size: 16px;
+    }
+
+    .customer-id {
+      font-size: 12px;
+      color: var(--gray-500);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .company-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--gray-100);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-top: 8px;
+    }
+
+    .customer-menu-btn {
+      background: none;
+      border: none;
+      color: var(--gray-400);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .customer-menu-btn:hover {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+
+    .customer-info {
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+    }
+
+    .info-row i {
+      width: 16px;
+      color: var(--gray-400);
+      font-size: 14px;
+    }
+
+    .info-row a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .info-row a:hover {
+      text-decoration: underline;
+    }
+
+    /* Financial Summary Card */
+    .financial-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1px solid var(--success);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .financial-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .financial-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gray-700);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .financial-amount {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gray-900);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .financial-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .financial-label {
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    .financial-value {
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .financial-value.positive {
+      color: var(--success);
+    }
+
+    .financial-value.negative {
+      color: var(--danger);
+    }
+
+    .financial-value.overdue {
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--gray-200);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), var(--secondary));
+      border-radius: 3px;
+      transition: width 0.6s ease;
+    }
+
+    /* Pool & Service Info */
+    .pool-service-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+
+    .pool-service-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gray-700);
+    }
+
+    .pool-service-row i {
+      width: 16px;
+      color: var(--primary);
+    }
+
+    /* Tags */
+    .customer-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tag-more {
+      color: var(--gray-500);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .customer-card:hover .quick-actions {
+      opacity: 1;
+    }
+
+    .quick-action-btn {
+      flex: 1;
+      padding: 8px 12px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--gray-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .quick-action-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* Slide-Over Detail Panel */
+    .slide-over {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 600px;
+      height: 100vh;
+      background: white;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide-over.show {
+      transform: translateX(0);
+    }
+
+    .slide-over-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--gray-200);
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .slide-over-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .slide-over-back {
+      background: none;
+      border: none;
+      color: var(--gray-600);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .slide-over-back:hover {
+      background: var(--gray-100);
+    }
+
+    .slide-over-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--gray-900);
+      letter-spacing: -0.5px;
+    }
+
+    .slide-over-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .slide-over-tab {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-600);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .slide-over-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .slide-over-body {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 200px;
+      margin-top: 16px;
+    }
+
+    /* Invoice List */
+    .invoice-item {
+      padding: 16px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .invoice-item:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .invoice-number {
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .invoice-date {
+      font-size: 13px;
+      color: var(--gray-500);
+    }
+
+    .invoice-amount {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin: 8px 0;
+    }
+
+    .invoice-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .invoice-status.paid {
+      background: var(--success);
+      color: white;
+    }
+
+    .invoice-status.overdue {
+      background: var(--danger);
+      color: white;
+    }
+
+    .invoice-status.unpaid {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(14, 165, 233, 0.05) 100%);
+      border-radius: var(--radius-lg);
+      border: 2px dashed rgba(6, 182, 212, 0.3);
+      margin: 40px 0;
+    }
+
+    .empty-state-icon {
+      font-size: 120px;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--pool-cyan), var(--pool-aqua));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .empty-state h2 {
+      font-size: 32px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .empty-state p {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .empty-state .wave-emoji {
+      font-size: 48px;
+      display: block;
+      margin: 20px 0;
+      animation: wave-emoji 2s ease-in-out infinite;
+    }
+
+    @keyframes wave-emoji {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--gray-900);
+      color: white;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 2000;
+      box-shadow: var(--shadow-xl);
+      animation: slideUp 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .toast.success {
+      background: var(--success);
+    }
+
+    .toast.error {
+      background: var(--danger);
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-xl);
+      animation: modalSlide 0.3s ease;
+    }
+
+    @keyframes modalSlide {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--gray-400);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 15px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      transition: all 0.2s ease;
+      background: white;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    /* Context Menu */
+    .context-menu {
+      position: fixed;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      min-width: 180px;
+      box-shadow: var(--shadow-xl);
+      z-index: 1500;
+      display: none;
+      overflow: hidden;
+    }
+
+    .context-menu.show {
+      display: block;
+      animation: popIn 0.2s ease;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .context-menu-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-700);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .context-menu-item:hover {
+      background: var(--gray-50);
+    }
+
+    .context-menu-item.danger {
+      color: var(--danger);
+    }
+
+    /* Number Counter Animation */
+    @keyframes countUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .count-up {
+      animation: countUp 0.6s ease;
+    }
+
+    /* Skeleton Loading */
+    .skeleton {
+      background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+      background-size: 200% 100%;
+      animation: skeleton 1.5s ease-in-out infinite;
+      border-radius: var(--radius-sm);
+    }
+
+    @keyframes skeleton {
+      0% {
+        background-position: 200% 0;
+      }
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .slide-over {
+        max-width: 100%;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .customer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Enhanced Top Bar with Stats -->
+    <div class="top-bar">
+      <div class="top-bar-content">
+      <h1>
+        <i class="fas fa-users"></i>
+        Customers
+      </h1>
+        <div class="top-bar-actions">
+          <button class="btn btn-icon" onclick="openSettings()" title="Settings">
+            <i class="fas fa-cog"></i>
+          </button>
+          <button class="btn btn-primary" onclick="openAddModal()">
+        <i class="fas fa-plus"></i>
+            <span>Add Customer</span>
+      </button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card" onclick="filterByStatus('all')">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Total Customers</div>
+          <div class="stat-trend positive">
+            <span id="statTotalChange">+0 this month</span>
+            <div class="sparkline"></div>
+          </div>
+        </div>
+        <div class="stat-card" onclick="filterByBalance('all')">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="statRevenue">$0</div>
+          <div class="stat-label">Revenue YTD</div>
+          <div class="stat-trend positive">
+            <span id="statRevenueChange">+0% YoY</span>
+            <div class="sparkline"></div>
+          </div>
+        </div>
+        <div class="stat-card" onclick="filterByBalance('unpaid')">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-value" id="statUnpaid">$0</div>
+          <div class="stat-label">Outstanding Balance</div>
+          <div class="stat-trend negative">
+            <span id="statUnpaidChange">-0% MoM</span>
+            <div class="sparkline"></div>
+          </div>
+        </div>
+        <div class="stat-card" onclick="filterByService('upcoming')">
+          <div class="stat-icon">🏊</div>
+          <div class="stat-value" id="statServices">0</div>
+          <div class="stat-label">Services This Week</div>
+          <div class="stat-trend positive">
+            <span id="statServicesChange">+0 scheduled</span>
+            <div class="sparkline"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Company Filter (Admin Only - HIDDEN BY DEFAULT) -->
+    <div class="company-filter-bar" id="companyFilterBar" style="display: none !important;">
+      <div class="filter-content">
+        <label style="font-weight: 600; color: rgba(255, 255, 255, 0.9);">🏢 Filter by Company:</label>
+        <select id="companyFilter" class="filter-select" style="background: rgba(255, 255, 255, 0.1); color: white; border-color: rgba(6, 182, 212, 0.3);">
+          <option value="all" style="background: var(--pool-deep);">All Companies</option>
+        </select>
+        <span style="font-weight: 600; color: rgba(255, 255, 255, 0.9); margin-left: auto;">
+          Total: <span id="totalCountNumber">0</span> customers
+        </span>
+      </div>
+    </div>
+
+    <!-- Advanced Search & Filter Bar -->
+    <div class="search-filter-bar">
+      <div class="search-wrapper" style="position: relative;">
+        <i class="fas fa-search search-icon" style="color: rgba(255, 255, 255, 0.7);"></i>
+      <input 
+        type="text" 
+        class="search-input" 
+        id="searchInput"
+          placeholder="Search customers, invoices, tags..."
+        autocomplete="off"
+      >
+        <span class="search-shortcut" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7);">⌘K</span>
+        <div class="search-autocomplete" id="searchAutocomplete">
+          <!-- Autocomplete results will be inserted here -->
+        </div>
+      </div>
+      <div class="filters-row">
+        <div class="filter-chip" onclick="toggleFilter('company')">
+          <i class="fas fa-building"></i>
+          Company
+          <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+        </div>
+        <div class="filter-chip" onclick="toggleFilter('tags')">
+          <i class="fas fa-tags"></i>
+          Tags
+          <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+        </div>
+        <div class="filter-chip" onclick="toggleFilter('balance')">
+          <i class="fas fa-dollar-sign"></i>
+          Balance
+          <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+        </div>
+        <div class="filter-chip" onclick="toggleFilter('service')">
+          <i class="fas fa-calendar"></i>
+          Service
+          <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+        </div>
+        <div class="filter-chip" onclick="toggleFilter('status')">
+          <i class="fas fa-filter"></i>
+          Status
+          <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+        </div>
+        <div class="view-switcher">
+          <button class="view-btn active" onclick="switchView('grid')" title="Grid View">
+            <i class="fas fa-th"></i>
+          </button>
+          <button class="view-btn" onclick="switchView('list')" title="List View">
+            <i class="fas fa-list"></i>
+          </button>
+          <button class="view-btn" onclick="switchView('analytics')" title="Analytics">
+            <i class="fas fa-chart-bar"></i>
+          </button>
+        </div>
+      </div>
+      <div class="active-filters" id="activeFilters"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div id="customerGrid" class="customer-grid">
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Detail Slide-Over -->
+  <div class="slide-over" id="customerDetailPanel">
+    <div class="slide-over-header">
+      <div class="slide-over-nav">
+        <button class="slide-over-back" onclick="closeDetailPanel()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div>
+          <div class="slide-over-title" id="detailCustomerName">Customer Name</div>
+          <div style="font-size: 12px; color: var(--gray-500); margin-top: 4px;" id="detailCustomerId">CUST-2026-000000</div>
+        </div>
+      </div>
+      <div class="slide-over-tabs">
+        <button class="slide-over-tab active" onclick="switchDetailTab('overview')">Overview</button>
+        <button class="slide-over-tab" onclick="switchDetailTab('invoices')">Invoices</button>
+        <button class="slide-over-tab" onclick="switchDetailTab('services')">Services</button>
+        <button class="slide-over-tab" onclick="switchDetailTab('pool')">Pool</button>
+        <button class="slide-over-tab" onclick="switchDetailTab('files')">Files</button>
+      </div>
+    </div>
+    <div class="slide-over-body" id="detailContent">
+      <!-- Content will be dynamically loaded -->
+    </div>
+  </div>
+
+  <!-- Add/Edit Customer Modal -->
+  <div class="modal-overlay" id="customerModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Add Customer</div>
+        <button class="modal-close" onclick="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="customerForm">
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input type="text" class="form-input" id="customerName" required placeholder="John Smith">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="customerEmail" placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-input" id="customerPhone" placeholder="(555) 123-4567">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Address</label>
+            <input type="text" class="form-input" id="customerAddress" placeholder="123 Main St">
+          </div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input type="text" class="form-input" id="customerCity" placeholder="Louisville">
+            </div>
+            <div class="form-group">
+              <label class="form-label">State</label>
+              <input type="text" class="form-input" id="customerState" placeholder="KY" maxlength="2">
+            </div>
+          <div class="form-group">
+              <label class="form-label">Zip</label>
+              <input type="text" class="form-input" id="customerZip" placeholder="40202">
+          </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-input" id="customerNotes" rows="4" placeholder="Additional notes..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn" style="background: var(--gray-100); color: var(--gray-700);" onclick="closeModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              Save Customer
+            </button>
+          </div>
+          <input type="hidden" id="editRowIndex" value="">
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div class="context-menu" id="contextMenu">
+    <div class="context-menu-item" onclick="editCustomerFromMenu()">
+      <i class="fas fa-edit"></i>
+      Edit
+    </div>
+    <div class="context-menu-item" onclick="viewCustomerDetail()">
+      <i class="fas fa-eye"></i>
+      View Details
+    </div>
+    <div class="context-menu-item danger" onclick="deleteCustomerFromMenu()">
+      <i class="fas fa-trash"></i>
+      Delete
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <script>
+    // Configuration
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxH0Wyd5XaWRlNVR-oxvi7_SeGOZ8SGylthvdUvkyccXeBKeFn8uTqkPBdFnostDcx7Hw/exec';
+    const INVOICE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5FBpDpuc4brNeQUEx4vr9Ndbc01toRVApoBJiYSagFImliWscvHQ4kO1nuLp6wd82/exec';
+    
+    // Get user email from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const userEmail = urlParams.get('email') || '';
+    
+    // Global state
+    let allCustomers = [];
+    let filteredCustomers = [];
+    let currentCustomer = null;
+    let isAdmin = false;
+    let companies = [];
+    let selectedCompanyId = 'all';
+    let currentView = 'grid';
+    let activeFilters = {};
+    let currentDetailTab = 'overview';
+    let revenueChart = null;
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCustomers();
+      setupKeyboardShortcuts();
+    });
+
+    // Keyboard shortcuts
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          document.getElementById('searchInput').focus();
+        }
+        if (e.key === 'Escape') {
+          closeModal();
+          closeDetailPanel();
+          closeContextMenu();
+        }
+      });
+    }
+
+    // Load customers
+    async function loadCustomers() {
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getCustomers&email=${encodeURIComponent(userEmail)}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          allCustomers = result.customers || [];
+          isAdmin = result.isAdmin || false;
+          companies = result.companies || [];
+          
+          // Enhance customers with financial data (mock for now - will integrate with invoice system)
+          allCustomers = allCustomers.map(customer => ({
+            ...customer,
+            totalRevenue: Math.random() * 20000,
+            totalInvoiced: Math.random() * 25000,
+            totalPaid: Math.random() * 20000,
+            outstandingBalance: Math.random() * 5000,
+            overdueAmount: Math.random() * 2000,
+            paymentStatus: ['paid-in-full', 'current', 'overdue'][Math.floor(Math.random() * 3)],
+            status: customer.status || 'active',
+            priority: customer.priority || 'normal',
+            tags: customer.tags || [],
+            poolData: customer.poolData || {},
+            serviceData: customer.serviceData || {}
+          }));
+          
+          // Setup admin UI - CRITICAL: Only show for admin
+          if (isAdmin) {
+            setupAdminUI(companies, result.totalCount || allCustomers.length);
+            const aqpcCompany = companies.find(c => c.name === 'A Quality Pool Company');
+            if (aqpcCompany) {
+              selectedCompanyId = aqpcCompany.id;
+              const filterSelect = document.getElementById('companyFilter');
+              if (filterSelect) {
+                filterSelect.value = aqpcCompany.id;
+              }
+            }
+          } else {
+            // HIDE company filter for non-admin users (SECURITY)
+            const filterBar = document.getElementById('companyFilterBar');
+            if (filterBar) {
+              filterBar.style.display = 'none';
+            }
+          }
+          
+          // Calculate and update stats
+          updateStats();
+          
+          // Apply filters and render
+          applyFilters();
+        } else {
+          showToast(result.error || 'Failed to load customers', 'error');
+          renderEmptyState();
+        }
+      } catch (error) {
+        console.error('Error loading customers:', error);
+        showToast('Failed to load customers', 'error');
+        renderEmptyState();
+      }
+    }
+
+    // Update stats with animation
+    function updateStats() {
+      const total = allCustomers.length;
+      const revenue = allCustomers.reduce((sum, c) => sum + (c.totalRevenue || 0), 0);
+      const unpaid = allCustomers.reduce((sum, c) => sum + (c.outstandingBalance || 0), 0);
+      const services = allCustomers.filter(c => {
+        const nextService = c.serviceData?.nextServiceDate;
+        if (!nextService) return false;
+        const daysUntil = Math.ceil((new Date(nextService) - new Date()) / (1000 * 60 * 60 * 24));
+        return daysUntil >= 0 && daysUntil <= 7;
+      }).length;
+
+      animateValue('statTotal', 0, total, 1000);
+      animateValue('statRevenue', 0, revenue, 1000, true);
+      animateValue('statUnpaid', 0, unpaid, 1000, true);
+      animateValue('statServices', 0, services, 1000);
+    }
+
+    // Animate number counter
+    function animateValue(id, start, end, duration, isCurrency = false) {
+      const element = document.getElementById(id);
+      if (!element) return;
+      
+      const range = end - start;
+      const increment = range / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+          current = end;
+          clearInterval(timer);
+        }
+        element.textContent = isCurrency 
+          ? formatCurrency(current)
+          : Math.floor(current).toLocaleString();
+        element.classList.add('count-up');
+      }, 16);
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    // Setup admin UI - ONLY CALLED FOR ADMIN
+    function setupAdminUI(companiesList, totalCount) {
+      const filterBar = document.getElementById('companyFilterBar');
+      const filterSelect = document.getElementById('companyFilter');
+      const totalCountEl = document.getElementById('totalCountNumber');
+      
+      // CRITICAL: Only show for admin
+      if (filterBar && isAdmin) {
+        filterBar.style.display = 'block';
+        filterBar.classList.add('show');
+      } else if (filterBar) {
+        filterBar.style.display = 'none';
+      }
+      
+      if (totalCountEl) totalCountEl.textContent = totalCount;
+      
+      if (filterSelect && isAdmin) {
+        filterSelect.innerHTML = '<option value="all">All Companies</option>';
+        companiesList.forEach(company => {
+          const option = document.createElement('option');
+          option.value = company.id;
+          option.textContent = `${company.name} (${company.count})`;
+          option.style.background = 'var(--pool-deep)';
+          filterSelect.appendChild(option);
+        });
+        
+        filterSelect.addEventListener('change', (e) => {
+          selectedCompanyId = e.target.value;
+          applyFilters();
+        });
+      }
+    }
+
+    // Apply filters
+    function applyFilters() {
+      const query = document.getElementById('searchInput')?.value.toLowerCase() || '';
+      
+      filteredCustomers = allCustomers;
+      
+      // Company filter (admin)
+      if (isAdmin && selectedCompanyId !== 'all') {
+        filteredCustomers = filteredCustomers.filter(c => c.companyId === selectedCompanyId);
+      }
+      
+      // Search filter
+      if (query) {
+        filteredCustomers = filteredCustomers.filter(customer => 
+          (customer.name || '').toLowerCase().includes(query) ||
+          (customer.email || '').toLowerCase().includes(query) ||
+          (customer.phone || '').toLowerCase().includes(query) ||
+          (customer.address || '').toLowerCase().includes(query) ||
+          (isAdmin && customer.companyName && customer.companyName.toLowerCase().includes(query))
+        );
+      }
+      
+      // Status filter
+      if (activeFilters.status && activeFilters.status !== 'all') {
+        filteredCustomers = filteredCustomers.filter(c => c.status === activeFilters.status);
+      }
+      
+      // Balance filter
+      if (activeFilters.balance) {
+        if (activeFilters.balance === 'unpaid') {
+          filteredCustomers = filteredCustomers.filter(c => (c.outstandingBalance || 0) > 0);
+        } else if (activeFilters.balance === 'overdue') {
+          filteredCustomers = filteredCustomers.filter(c => c.paymentStatus === 'overdue');
+        } else if (activeFilters.balance === 'paid') {
+          filteredCustomers = filteredCustomers.filter(c => c.paymentStatus === 'paid-in-full');
+        }
+      }
+      
+      renderCustomers(filteredCustomers);
+      updateCustomerCount(filteredCustomers.length);
+    }
+
+    // Render customers
+    function renderCustomers(customers) {
+      const grid = document.getElementById('customerGrid');
+      
+      if (customers.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      grid.innerHTML = customers.map(customer => {
+        const paymentPercent = customer.totalInvoiced > 0 
+          ? Math.round((customer.totalPaid / customer.totalInvoiced) * 100)
+          : 100;
+        const isOverdue = customer.paymentStatus === 'overdue';
+        const overdueDays = isOverdue ? Math.floor(Math.random() * 30) + 1 : 0;
+        
+        return `
+          <div class="customer-card" onclick="viewCustomerDetail(${customer.rowIndex})">
+          <div class="customer-card-header">
+              <div class="customer-name-section">
+                <div class="customer-name-row">
+              <div class="customer-name">${escapeHtml(customer.name || 'Unnamed')}</div>
+                  ${customer.priority === 'vip' ? '<span class="priority-flag">⭐</span>' : ''}
+                  ${customer.priority === 'attention-needed' ? '<span class="priority-flag">🚨</span>' : ''}
+                  <span class="status-badge ${customer.status || 'active'}">${customer.status || 'active'}</span>
+            </div>
+                <div class="customer-id">${escapeHtml(customer.id || '')}</div>
+                ${isAdmin && customer.companyName ? `
+                  <div class="company-label">
+                    <i class="fas fa-building"></i>
+                    ${escapeHtml(customer.companyName)}
+                  </div>
+                ` : ''}
+              </div>
+              <button class="customer-menu-btn" onclick="openContextMenu(event, ${customer.rowIndex})">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+          </div>
+            
+          <div class="customer-info">
+            ${customer.email ? `
+              <div class="info-row">
+                <i class="fas fa-envelope"></i>
+                  <a href="mailto:${escapeHtml(customer.email)}" onclick="event.stopPropagation()">
+                    ${escapeHtml(customer.email)}
+                  </a>
+              </div>
+            ` : ''}
+            ${customer.phone ? `
+              <div class="info-row">
+                <i class="fas fa-phone"></i>
+                  <a href="tel:${escapeHtml(customer.phone)}" onclick="event.stopPropagation()">
+                    ${escapeHtml(customer.phone)}
+                  </a>
+              </div>
+            ` : ''}
+            ${customer.address ? `
+              <div class="info-row">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${escapeHtml(customer.address)}${customer.city ? `, ${escapeHtml(customer.city)}` : ''}</span>
+              </div>
+            ` : ''}
+          </div>
+            
+            <div class="financial-card">
+              <div class="financial-header">
+                <div class="financial-title">💰 Financial Overview</div>
+        </div>
+              <div class="financial-row">
+                <span class="financial-label">Total Revenue:</span>
+                <span class="financial-value positive">${formatCurrency(customer.totalRevenue || 0)}</span>
+              </div>
+              <div class="financial-row">
+                <span class="financial-label">Outstanding:</span>
+                <span class="financial-value ${isOverdue ? 'overdue' : ''}">
+                  ${formatCurrency(customer.outstandingBalance || 0)}
+                  ${isOverdue ? `<span style="font-size: 10px;">⚠️ OVERDUE ${overdueDays} days</span>` : ''}
+                </span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${paymentPercent}%"></div>
+              </div>
+              <div style="font-size: 11px; color: var(--gray-600); margin-top: 4px; text-align: right;">
+                ${paymentPercent}% paid
+              </div>
+            </div>
+            
+            ${customer.poolData?.type ? `
+              <div class="pool-service-info">
+                <div class="pool-service-row">
+                  <i class="fas fa-swimming-pool"></i>
+                  <span>Pool: ${customer.poolData.type || 'Unknown'} • ${customer.poolData.gallons ? customer.poolData.gallons.toLocaleString() + ' gal' : 'N/A'}</span>
+                </div>
+              </div>
+            ` : ''}
+            
+            ${customer.tags && customer.tags.length > 0 ? `
+              <div class="customer-tags">
+                ${customer.tags.slice(0, 3).map(tag => `
+                  <span class="tag" style="background: ${tag.color || '#e5e7eb'}; color: white;">
+                    ${escapeHtml(tag.name)}
+                  </span>
+                `).join('')}
+                ${customer.tags.length > 3 ? `<span class="tag-more">+${customer.tags.length - 3} more</span>` : ''}
+              </div>
+            ` : ''}
+            
+            <div class="quick-actions">
+              <button class="quick-action-btn" onclick="event.stopPropagation(); callCustomer('${customer.phone}')">
+                <i class="fas fa-phone"></i> Call
+              </button>
+              <button class="quick-action-btn" onclick="event.stopPropagation(); emailCustomer('${customer.email}')">
+                <i class="fas fa-envelope"></i> Email
+              </button>
+              <button class="quick-action-btn" onclick="event.stopPropagation(); createInvoice(${customer.rowIndex})">
+                <i class="fas fa-file-invoice"></i> Invoice
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // View customer detail
+    function viewCustomerDetail(rowIndex) {
+      const customer = allCustomers.find(c => c.rowIndex === rowIndex);
+      if (!customer) return;
+      
+      currentCustomer = customer;
+      document.getElementById('detailCustomerName').textContent = customer.name || 'Unnamed';
+      document.getElementById('detailCustomerId').textContent = customer.id || '';
+      
+      loadDetailContent('overview');
+      document.getElementById('customerDetailPanel').classList.add('show');
+    }
+
+    // Load detail content
+    async function loadDetailContent(tab) {
+      currentDetailTab = tab;
+      const content = document.getElementById('detailContent');
+      
+      // Update active tab
+      document.querySelectorAll('.slide-over-tab').forEach(t => t.classList.remove('active'));
+      const tabButtons = document.querySelectorAll('.slide-over-tab');
+      tabButtons.forEach((btn, index) => {
+        const tabs = ['overview', 'invoices', 'services', 'pool', 'files'];
+        if (tabs[index] === tab) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // Show loading
+      content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      
+      if (tab === 'overview') {
+        content.innerHTML = generateOverviewTab();
+      } else if (tab === 'invoices') {
+        content.innerHTML = await generateInvoicesTab();
+      } else if (tab === 'services') {
+        content.innerHTML = generateServicesTab();
+      } else if (tab === 'pool') {
+        content.innerHTML = generatePoolTab();
+      } else if (tab === 'files') {
+        content.innerHTML = await generateFilesTab();
+      }
+    }
+
+    // Generate overview tab
+    function generateOverviewTab() {
+      const c = currentCustomer;
+      const paymentPercent = c.totalInvoiced > 0 
+        ? Math.round((c.totalPaid / c.totalInvoiced) * 100)
+        : 100;
+      
+      return `
+        <div class="section">
+          <div class="section-title">💰 Financial Summary</div>
+          <div class="section-card">
+            <div class="financial-row" style="margin-bottom: 12px;">
+              <span class="financial-label">Total Revenue:</span>
+              <span class="financial-value positive" style="font-size: 24px;">${formatCurrency(c.totalRevenue || 0)}</span>
+            </div>
+            <div class="financial-row">
+              <span class="financial-label">Total Invoiced:</span>
+              <span class="financial-value">${formatCurrency(c.totalInvoiced || 0)}</span>
+            </div>
+            <div class="financial-row">
+              <span class="financial-label">Total Paid:</span>
+              <span class="financial-value positive">${formatCurrency(c.totalPaid || 0)}</span>
+            </div>
+            <div class="financial-row">
+              <span class="financial-label">Outstanding:</span>
+              <span class="financial-value ${c.paymentStatus === 'overdue' ? 'overdue' : ''}">
+                ${formatCurrency(c.outstandingBalance || 0)}
+                ${c.paymentStatus === 'overdue' ? ' ⚠️ OVERDUE' : ''}
+              </span>
+            </div>
+            <div class="progress-bar" style="margin-top: 16px;">
+              <div class="progress-fill" style="width: ${paymentPercent}%"></div>
+            </div>
+            <div style="text-align: right; font-size: 12px; color: var(--gray-600); margin-top: 8px;">
+              ${paymentPercent}% paid
+            </div>
+          </div>
+        </div>
+        
+        <div class="section">
+          <div class="section-title">📞 Contact Information</div>
+          <div class="section-card">
+            ${c.email ? `
+              <div style="margin-bottom: 12px;">
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Email</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span>${escapeHtml(c.email)}</span>
+                  <button class="btn" style="padding: 4px 8px; font-size: 11px;" onclick="emailCustomer('${c.email}')">
+                    <i class="fas fa-envelope"></i> Send
+                  </button>
+                </div>
+              </div>
+            ` : ''}
+            ${c.phone ? `
+              <div style="margin-bottom: 12px;">
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Phone</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span>${escapeHtml(c.phone)}</span>
+                  <button class="btn" style="padding: 4px 8px; font-size: 11px;" onclick="callCustomer('${c.phone}')">
+                    <i class="fas fa-phone"></i> Call
+                  </button>
+                </div>
+              </div>
+            ` : ''}
+            ${c.address ? `
+              <div>
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 4px;">Address</div>
+                <div>${escapeHtml(c.address)}${c.city ? `, ${escapeHtml(c.city)}` : ''}${c.state ? `, ${escapeHtml(c.state)}` : ''} ${c.zip || ''}</div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // Generate invoices tab with full integration
+    async function generateInvoicesTab() {
+      if (!currentCustomer || !currentCustomer.email) {
+        return `
+          <div class="section">
+            <div class="section-title">🧾 Invoices</div>
+            <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+              No email on file for this customer.
+            </div>
+          </div>
+        `;
+      }
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?action=getCustomerInvoices&customerEmail=${encodeURIComponent(currentCustomer.email)}&email=${encodeURIComponent(userEmail)}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+          return `
+            <div class="section">
+              <div class="section-title">🧾 Invoices</div>
+              <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                Error loading invoices: ${result.error || 'Unknown error'}
+              </div>
+            </div>
+          `;
+        }
+
+        const invoices = result.invoices || [];
+        const summary = result.summary || { totalInvoiced: 0, totalPaid: 0, totalOutstanding: 0, totalOverdue: 0 };
+
+        return `
+          <div class="section">
+            <div class="section-title">🧾 Invoices</div>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+              <div class="section-card">
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 8px; font-weight: 600; text-transform: uppercase;">Total Invoiced</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--gray-900);">${formatCurrency(summary.totalInvoiced)}</div>
+              </div>
+              <div class="section-card">
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 8px; font-weight: 600; text-transform: uppercase;">Total Paid</div>
+                <div style="font-size: 24px; font-weight: 800; color: var(--success);">${formatCurrency(summary.totalPaid)}</div>
+              </div>
+              <div class="section-card">
+                <div style="font-size: 12px; color: var(--gray-600); margin-bottom: 8px; font-weight: 600; text-transform: uppercase;">Outstanding</div>
+                <div style="font-size: 24px; font-weight: 800; color: ${summary.totalOverdue > 0 ? 'var(--danger)' : 'var(--accent)'};">
+                  ${formatCurrency(summary.totalOutstanding)}
+                  ${summary.totalOverdue > 0 ? ' ⚠️' : ''}
+                </div>
+              </div>
+            </div>
+
+            ${invoices.length > 0 ? `
+              <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                <button class="filter-chip active" onclick="filterInvoices('all')">All</button>
+                <button class="filter-chip" onclick="filterInvoices('paid')">Paid</button>
+                <button class="filter-chip" onclick="filterInvoices('unpaid')">Unpaid</button>
+                <button class="filter-chip" onclick="filterInvoices('overdue')">Overdue</button>
+              </div>
+
+              <div id="invoiceList">
+                  ${invoices.map(inv => {
+                    const statusClass = inv.status.toLowerCase() === 'paid' ? 'paid' : inv.isOverdue ? 'overdue' : 'unpaid';
+                    const statusText = inv.status === 'Paid' ? '✓ PAID' : inv.isOverdue ? `⚠️ OVERDUE ${inv.daysOverdue} days` : 'UNPAID';
+                    const invoiceId = escapeHtml(inv.id);
+                    const invoiceNum = escapeHtml(inv.invoiceNumber || inv.id);
+                    const invoiceDate = formatDate(inv.date);
+                    const invoiceTotal = formatCurrency(inv.total);
+                    const invoiceDesc = inv.description ? escapeHtml(inv.description) : '';
+                    const shareLink = inv.shareLink || '';
+                    
+                    return `
+                      <div class="invoice-item">
+                        <div class="invoice-header">
+                          <div>
+                            <div class="invoice-number">${invoiceNum}</div>
+                            <div class="invoice-date">${invoiceDate}</div>
+                          </div>
+                          <span class="invoice-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="invoice-amount">${invoiceTotal}</div>
+                        ${invoiceDesc ? `<div style="font-size: 13px; color: var(--gray-600); margin-bottom: 12px;">${invoiceDesc}</div>` : ''}
+                        <div style="display: flex; gap: 8px;">
+                          ${shareLink ? `
+                            <a href="${shareLink}" target="_blank" class="quick-action-btn" style="flex: 0 0 auto;">
+                              <i class="fas fa-external-link-alt"></i> View
+                            </a>
+                          ` : ''}
+                          <button class="quick-action-btn" onclick="downloadInvoice('${invoiceId}')" style="flex: 0 0 auto;">
+                            <i class="fas fa-download"></i> Download PDF
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+              </div>
+            ` : `
+              <div style="text-align: center; padding: 60px 20px; background: var(--gray-50); border-radius: var(--radius); border: 2px dashed var(--gray-200);">
+                <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+                <div style="font-size: 18px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px;">No Invoices Yet</div>
+                <div style="font-size: 14px; color: var(--gray-500);">Create your first invoice for this customer</div>
+              </div>
+            `}
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading invoices:', error);
+        return `
+          <div class="section">
+            <div class="section-title">🧾 Invoices</div>
+            <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+              Error loading invoices. Please try again.
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Generate services tab
+    function generateServicesTab() {
+      return `
+        <div class="section">
+          <div class="section-title">📅 Service Schedule</div>
+          <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+            Service schedule integration coming soon.
+          </div>
+        </div>
+      `;
+    }
+
+    // Generate pool tab
+    function generatePoolTab() {
+      return `
+        <div class="section">
+          <div class="section-title">🏊 Pool Information</div>
+          <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+            Pool details integration coming soon.
+          </div>
+        </div>
+      `;
+    }
+
+    // Generate files tab with Drive integration
+    async function generateFilesTab() {
+      if (!currentCustomer) {
+        return `
+          <div class="section">
+            <div class="section-title">📁 Files & Documents</div>
+            <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+              No customer selected.
+            </div>
+          </div>
+        `;
+      }
+
+      try {
+        const customerName = currentCustomer.name || '';
+        const customerAddress = currentCustomer.address || '';
+        
+        const response = await fetch(`${SCRIPT_URL}?action=getCustomerFiles&customerName=${encodeURIComponent(customerName)}&customerAddress=${encodeURIComponent(customerAddress)}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+          return `
+            <div class="section">
+              <div class="section-title">📁 Files & Documents</div>
+              <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                ${result.error || 'Error loading files'}
+              </div>
+            </div>
+          `;
+        }
+
+        const files = result.files || [];
+        const photos = files.filter(f => f.isImage);
+        const documents = files.filter(f => !f.isImage);
+
+        return `
+          <div class="section">
+            <div class="section-title">📁 Files & Documents</div>
+            
+            ${result.folderUrl ? `
+              <div style="margin-bottom: 24px; padding: 16px; background: var(--gray-50); border-radius: var(--radius); border: 1px solid var(--gray-200);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div>
+                    <div style="font-weight: 600; color: var(--gray-900); margin-bottom: 4px;">Customer Folder</div>
+                    <div style="font-size: 13px; color: var(--gray-600);">${escapeHtml(result.folderName || 'Customer Files')}</div>
+                  </div>
+                  <a href="${result.folderUrl}" target="_blank" class="btn btn-primary" style="text-decoration: none;">
+                    <i class="fas fa-folder-open"></i> Open Folder
+                  </a>
+                </div>
+              </div>
+            ` : ''}
+
+            ${photos.length > 0 ? `
+              <div style="margin-bottom: 32px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                  <div class="section-title" style="margin: 0;">📷 Photos (${photos.length})</div>
+                  <button class="btn btn-primary" onclick="sendPhotosToCustomer()" style="padding: 8px 16px; font-size: 13px;">
+                    <i class="fas fa-paper-plane"></i> Send to Customer
+                  </button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;">
+                  ${photos.map(photo => `
+                    <div style="position: relative; border-radius: var(--radius-sm); overflow: hidden; cursor: pointer; aspect-ratio: 1; background: var(--gray-100);" onclick="viewPhoto('${photo.url}')">
+                      <img src="${photo.thumbnailUrl || photo.url}" alt="${escapeHtml(photo.name)}" style="width: 100%; height: 100%; object-fit: cover;">
+                      <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 8px; color: white; font-size: 11px; font-weight: 600;">
+                        ${escapeHtml(photo.name)}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            ${documents.length > 0 ? `
+              <div>
+                <div class="section-title" style="margin-bottom: 16px;">📄 Documents (${documents.length})</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  ${documents.map(doc => `
+                    <div style="padding: 16px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between;">
+                      <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: var(--pool-cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                          <i class="fas fa-file"></i>
+                        </div>
+                        <div>
+                          <div style="font-weight: 600; color: var(--gray-900);">${escapeHtml(doc.name)}</div>
+                          <div style="font-size: 12px; color: var(--gray-500);">${formatFileSize(doc.size)} • ${formatDate(doc.dateCreated)}</div>
+                        </div>
+                      </div>
+                      <a href="${doc.url}" target="_blank" class="btn" style="padding: 6px 12px; font-size: 12px; background: var(--gray-100); color: var(--gray-700); text-decoration: none;">
+                        <i class="fas fa-external-link-alt"></i> Open
+                      </a>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            ${files.length === 0 ? `
+              <div style="text-align: center; padding: 60px 20px; background: var(--gray-50); border-radius: var(--radius); border: 2px dashed var(--gray-200);">
+                <div style="font-size: 48px; margin-bottom: 16px;">📁</div>
+                <div style="font-size: 18px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px;">No Files Yet</div>
+                <div style="font-size: 14px; color: var(--gray-500);">Files and photos will appear here</div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      } catch (error) {
+        console.error('Error loading files:', error);
+        return `
+          <div class="section">
+            <div class="section-title">📁 Files & Documents</div>
+            <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+              Error loading files. Please try again.
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Switch detail tab
+    function switchDetailTab(tab) {
+      loadDetailContent(tab);
+    }
+
+    // View photo in lightbox
+    function viewPhoto(url) {
+      // Create lightbox modal
+      const lightbox = document.createElement('div');
+      lightbox.className = 'modal-overlay show';
+      lightbox.style.display = 'flex';
+      lightbox.innerHTML = `
+        <div style="position: relative; max-width: 90vw; max-height: 90vh;">
+          <button onclick="this.closest('.modal-overlay').remove()" style="position: absolute; top: -40px; right: 0; background: rgba(0,0,0,0.5); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; z-index: 10;">
+            <i class="fas fa-times"></i> Close
+          </button>
+          <img src="${url}" style="max-width: 100%; max-height: 90vh; border-radius: var(--radius); box-shadow: var(--shadow-xl);">
+        </div>
+      `;
+      document.body.appendChild(lightbox);
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) lightbox.remove();
+      });
+    }
+
+    // Send photos to customer
+    async function sendPhotosToCustomer() {
+      if (!currentCustomer || !currentCustomer.email) {
+        showToast('Customer email required', 'error');
+        return;
+      }
+
+      // Get all photo URLs from files tab
+      const filesResponse = await fetch(`${SCRIPT_URL}?action=getCustomerFiles&customerName=${encodeURIComponent(currentCustomer.name || '')}&customerAddress=${encodeURIComponent(currentCustomer.address || '')}`);
+      const filesResult = await filesResponse.json();
+      
+      if (!filesResult.success || !filesResult.files) {
+        showToast('Error loading photos', 'error');
+        return;
+      }
+
+      const photos = filesResult.files.filter(f => f.isImage).map(f => f.url);
+      
+      if (photos.length === 0) {
+        showToast('No photos to send', 'error');
+        return;
+      }
+
+      try {
+        const formData = new URLSearchParams({
+          action: 'sendPhotosToCustomer',
+          customerEmail: currentCustomer.email,
+          customerName: currentCustomer.name || '',
+          photoUrls: JSON.stringify(photos)
+        });
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast(`Sent ${photos.length} photo${photos.length > 1 ? 's' : ''} to ${currentCustomer.email}`, 'success');
+        } else {
+          showToast(result.error || 'Failed to send photos', 'error');
+        }
+      } catch (error) {
+        console.error('Error sending photos:', error);
+        showToast('Failed to send photos', 'error');
+      }
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Format date
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    // Download invoice
+    function downloadInvoice(invoiceId) {
+      showToast('Invoice download integration coming soon', 'success');
+      // Will integrate with invoice system
+    }
+
+    // Filter invoices
+    function filterInvoices(type) {
+      // Filter logic for invoices
+      console.log('Filter invoices:', type);
+    }
+
+    // Close detail panel
+    function closeDetailPanel() {
+      document.getElementById('customerDetailPanel').classList.remove('show');
+    }
+
+    // Search input handler with autocomplete
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      let searchTimeout;
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        
+        clearTimeout(searchTimeout);
+        if (query.length > 0) {
+          searchTimeout = setTimeout(() => {
+            showSearchAutocomplete(query);
+          }, 300);
+        } else {
+          hideSearchAutocomplete();
+        }
+        
+        applyFilters();
+      });
+      
+      searchInput.addEventListener('blur', () => {
+        setTimeout(() => hideSearchAutocomplete(), 200);
+      });
+    }
+
+    // Show search autocomplete
+    function showSearchAutocomplete(query) {
+      const autocomplete = document.getElementById('searchAutocomplete');
+      if (!autocomplete) return;
+      
+      const q = query.toLowerCase();
+      const matches = {
+        customers: allCustomers.filter(c => 
+          (c.name || '').toLowerCase().includes(q) ||
+          (c.email || '').toLowerCase().includes(q)
+        ).slice(0, 5),
+        invoices: [], // Will integrate with invoice system
+        tags: [] // Will integrate with tag system
+      };
+      
+      let html = '';
+      
+      if (matches.customers.length > 0) {
+        html += `
+          <div class="autocomplete-section">
+            <div class="autocomplete-section-title">Customers (${matches.customers.length})</div>
+            ${matches.customers.map(c => `
+              <div class="autocomplete-item" onclick="selectSearchResult('customer', ${c.rowIndex})">
+                <div class="autocomplete-item-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="autocomplete-item-text">
+                  <div class="autocomplete-item-name">${escapeHtml(c.name || 'Unnamed')}</div>
+                  <div class="autocomplete-item-meta">${escapeHtml(c.email || '')} • ${escapeHtml(c.id || '')}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+      
+      if (html) {
+        autocomplete.innerHTML = html;
+        autocomplete.classList.add('show');
+      } else {
+        autocomplete.classList.remove('show');
+      }
+    }
+
+    function hideSearchAutocomplete() {
+      const autocomplete = document.getElementById('searchAutocomplete');
+      if (autocomplete) {
+        autocomplete.classList.remove('show');
+      }
+    }
+
+    function selectSearchResult(type, id) {
+      if (type === 'customer') {
+        viewCustomerDetail(id);
+      }
+      hideSearchAutocomplete();
+      document.getElementById('searchInput').value = '';
+    }
+
+    // Filter functions
+    function toggleFilter(type) {
+      // Filter dropdown implementation
+      console.log('Toggle filter:', type);
+    }
+
+    function filterByStatus(status) {
+      activeFilters.status = status;
+      applyFilters();
+    }
+
+    function filterByBalance(type) {
+      activeFilters.balance = type;
+      applyFilters();
+    }
+
+    function filterByService(type) {
+      activeFilters.service = type;
+      applyFilters();
+    }
+
+    // View switcher
+    function switchView(view) {
+      currentView = view;
+      document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      if (view === 'analytics') {
+        showAnalyticsView();
+      } else {
+        renderCustomers(filteredCustomers);
+      }
+    }
+
+    // Analytics view
+    function showAnalyticsView() {
+      const grid = document.getElementById('customerGrid');
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; background: white; border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow);">
+          <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 24px;">📈 Customer Analytics</h2>
+          <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      `;
+      
+      // Initialize chart
+      setTimeout(() => {
+        const ctx = document.getElementById('revenueChart');
+        if (ctx && Chart) {
+          revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+              datasets: [{
+                label: 'Revenue',
+                data: [1200, 1900, 3000, 2500, 2200, 3000, 3500, 4000, 3800, 4200, 4500, 5000],
+                borderColor: 'rgb(37, 99, 235)',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                tension: 0.4,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false
+                }
+              }
+            }
+          });
+        }
+      }, 100);
+    }
+
+    // Quick actions
+    function callCustomer(phone) {
+      window.location.href = `tel:${phone}`;
+    }
+
+    function emailCustomer(email) {
+      window.location.href = `mailto:${email}`;
+    }
+
+    function createInvoice(rowIndex) {
+      showToast('Invoice creation will open in new window', 'success');
+      // Integrate with invoice system
+    }
+
+    // Context menu
+    function openContextMenu(event, rowIndex) {
+      event.stopPropagation();
+      currentCustomer = allCustomers.find(c => c.rowIndex === rowIndex);
+      const menu = document.getElementById('contextMenu');
+      menu.style.left = event.pageX + 'px';
+      menu.style.top = event.pageY + 'px';
+      menu.classList.add('show');
+      
+      setTimeout(() => {
+        document.addEventListener('click', closeContextMenu);
+      }, 10);
+    }
+
+    function closeContextMenu() {
+      document.getElementById('contextMenu').classList.remove('show');
+      document.removeEventListener('click', closeContextMenu);
+    }
+
+    function editCustomerFromMenu() {
+      if (currentCustomer) {
+        editCustomer(currentCustomer.rowIndex);
+      }
+      closeContextMenu();
+    }
+
+    function viewCustomerDetail() {
+      if (currentCustomer) {
+        viewCustomerDetail(currentCustomer.rowIndex);
+      }
+      closeContextMenu();
+    }
+
+    // Modal functions
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add Customer';
+      document.getElementById('customerForm').reset();
+      document.getElementById('editRowIndex').value = '';
+      document.getElementById('customerModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('customerModal').classList.remove('show');
+    }
+
+    function editCustomer(rowIndex) {
+      const customer = allCustomers.find(c => c.rowIndex === rowIndex);
+      if (!customer) return;
+
+      document.getElementById('modalTitle').textContent = 'Edit Customer';
+      document.getElementById('customerName').value = customer.name || '';
+      document.getElementById('customerEmail').value = customer.email || '';
+      document.getElementById('customerPhone').value = customer.phone || '';
+      document.getElementById('customerAddress').value = customer.address || '';
+      document.getElementById('customerCity').value = customer.city || '';
+      document.getElementById('customerState').value = customer.state || '';
+      document.getElementById('customerZip').value = customer.zip || '';
+      document.getElementById('customerNotes').value = customer.notes || '';
+      document.getElementById('editRowIndex').value = rowIndex;
+      document.getElementById('customerModal').classList.add('show');
+    }
+
+    // Form submission
+    document.getElementById('customerForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const rowIndex = document.getElementById('editRowIndex').value;
+      const isEdit = rowIndex !== '';
+      
+      const formData = new URLSearchParams({
+        action: isEdit ? 'updateCustomer' : 'addCustomer',
+        email: userEmail,
+        name: document.getElementById('customerName').value,
+        customerEmail: document.getElementById('customerEmail').value,
+        phone: document.getElementById('customerPhone').value,
+        address: document.getElementById('customerAddress').value,
+        city: document.getElementById('customerCity').value,
+        state: document.getElementById('customerState').value.toUpperCase(),
+        zip: document.getElementById('customerZip').value,
+        notes: document.getElementById('customerNotes').value
+      });
+
+      if (isEdit) {
+        formData.append('rowIndex', rowIndex);
+      }
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast(isEdit ? 'Customer updated successfully' : 'Customer added successfully', 'success');
+          closeModal();
+          loadCustomers();
+        } else {
+          showToast(result.error || 'Failed to save customer', 'error');
+        }
+      } catch (error) {
+        console.error('Error saving customer:', error);
+        showToast('Failed to save customer', 'error');
+      }
+    });
+
+    // Delete customer
+    async function deleteCustomerFromMenu() {
+      if (!currentCustomer) return;
+      
+      if (!confirm(`Delete ${currentCustomer.name}?`)) {
+        closeContextMenu();
+        return;
+      }
+
+      try {
+        const formData = new URLSearchParams({
+          action: 'deleteCustomer',
+          email: userEmail,
+          rowIndex: currentCustomer.rowIndex
+        });
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast('Customer deleted successfully', 'success');
+          loadCustomers();
+        } else {
+          showToast(result.error || 'Failed to delete customer', 'error');
+        }
+      } catch (error) {
+        console.error('Error deleting customer:', error);
+        showToast('Failed to delete customer', 'error');
+      }
+      
+      closeContextMenu();
+    }
+
+    // Update customer count
+    function updateCustomerCount(count) {
+      // Count is shown in stats
+    }
+
+    // Render empty state with pool theme
+    function renderEmptyState() {
+      const grid = document.getElementById('customerGrid');
+      const isFiltered = filteredCustomers.length === 0 && allCustomers.length > 0;
+      
+      const emptyStateHTML = isFiltered 
+        ? '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">🏊‍♂️💦</div><div class="wave-emoji">~~~~~~~</div><h2>No Matches Found</h2><p>Try adjusting your filters to find what you\'re looking for</p><button class="btn btn-primary" onclick="openAddModal()" style="background: linear-gradient(135deg, var(--pool-cyan), var(--pool-sky)); border: none; box-shadow: var(--shadow-pool);"><i class="fas fa-plus"></i>Clear Filters</button></div>'
+        : '<div class="empty-state" style="grid-column: 1 / -1;"><div class="empty-state-icon">🏊‍♂️💦</div><div class="wave-emoji">~~~~~~~</div><h2>Dive Into Success!</h2><p>Add your first customer and start making waves in pool management</p><button class="btn btn-primary" onclick="openAddModal()" style="background: linear-gradient(135deg, var(--pool-cyan), var(--pool-sky)); border: none; box-shadow: var(--shadow-pool);"><i class="fas fa-plus"></i>Add Your First Customer</button><p style="margin-top: 24px; font-size: 14px; color: rgba(255, 255, 255, 0.6);">💡 Pro Tip: Import from spreadsheet</p></div>';
+      
+      grid.innerHTML = emptyStateHTML;
+    }
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.animation = 'slideUp 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Settings (placeholder)
+    function openSettings() {
+      showToast('Settings coming soon', 'success');
+    }
+
+    // Close modal on overlay click
+    document.getElementById('customerModal')?.addEventListener('click', (e) => {
+      if (e.target.classList.contains('modal-overlay')) {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>

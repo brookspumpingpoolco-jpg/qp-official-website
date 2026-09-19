@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Your Contract - A Quality Pool Company</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .content {
+            padding: 30px;
+        }
+        .invoice-preview {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .signature-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .signature-canvas {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            margin: 20px 0;
+            cursor: crosshair;
+            background: white;
+            display: block;
+            touch-action: none; /* For Apple Pencil support */
+        }
+        .signature-controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        .btn-success {
+            background: #10b981;
+            color: white;
+            font-size: 1.1em;
+            padding: 15px 30px;
+        }
+        .btn-success:hover {
+            background: #059669;
+        }
+        .signature-name {
+            margin-top: 20px;
+        }
+        .signature-name input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .agreement-text {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e0f2fe;
+            border-radius: 6px;
+            border-left: 4px solid #0369a1;
+        }
+        .signature-status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .status-empty {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-ready {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .pencil-support {
+            font-size: 0.9em;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            .header {
+                padding: 20px;
+            }
+            .content {
+                padding: 20px;
+            }
+            .signature-controls {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖊️ Digital Signature</h1>
+            <p>A Quality Pool Company Contract</p>
+        </div>
+        
+        <div class="content">
+            <div id="loadingMessage">
+                <p>Loading your contract details...</p>
+            </div>
+            
+            <div id="signatureContent" style="display: none;">
+                <div class="invoice-preview" id="invoicePreview">
+                    <!-- Invoice content will be loaded here -->
+                </div>
+                
+                <div class="signature-section">
+                    <h3>📝 Sign Your Contract</h3>
+                    
+                    <div class="agreement-text">
+                        <p><strong>By signing below, I agree to:</strong></p>
+                        <ul>
+                            <li>The terms and conditions outlined in this estimate</li>
+                            <li>Authorize A Quality Pool Company to proceed with the described work</li>
+                            <li>The total amount and payment schedule as specified</li>
+                            <li>Allow reasonable access to property for completion of work</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="signature-name">
+                        <label for="signerName"><strong>Your Full Name:</strong></label>
+                        <input type="text" id="signerName" placeholder="Enter your full legal name">
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <label for="signatureCanvas"><strong>Your Signature:</strong></label>
+                        <div class="signature-status status-empty" id="signatureStatus">
+                            Please sign below to proceed
+                        </div>
+                        <canvas id="signatureCanvas" class="signature-canvas" width="750" height="200"></canvas>
+                        <div class="pencil-support">
+                            💡 Use your finger, mouse, or Apple Pencil to sign
+                        </div>
+                    </div>
+                    
+                    <div class="signature-controls">
+                        <button class="btn btn-danger" onclick="clearSignature()">🗑️ Clear Signature</button>
+                        <button class="btn btn-secondary" onclick="downloadPDF()">📄 Download PDF</button>
+                        <button class="btn btn-success" onclick="submitSignature()" id="submitBtn" disabled>
+                            ✅ Submit Signed Contract
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="agreement-text" style="margin-top: 30px;">
+                    <p><strong>What happens next?</strong></p>
+                    <ol>
+                        <li>You'll receive a copy of the signed contract via email</li>
+                        <li>We'll begin ordering materials within 24-48 hours</li>
+                        <li>Our team will contact you to schedule the project start date</li>
+                        <li>Work will begin as scheduled in your contract</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div id="successMessage" style="display: none;">
+                <div style="text-align: center; padding: 40px;">
+                    <h2 style="color: #10b981;">✅ Contract Successfully Signed!</h2>
+                    <p>Thank you for signing your contract. You'll receive a confirmation email shortly with your signed documents.</p>
+                    <p>Our team will contact you within 24-48 hours to schedule your project.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let canvas;
+        let ctx;
+        let isDrawing = false;
+        let hasSignature = false;
+        let invoiceData = null;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSignaturePad();
+            loadInvoiceData();
+        });
+
+        function initializeSignaturePad() {
+            canvas = document.getElementById('signatureCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set up canvas for high DPI displays
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events (including Apple Pencil)
+            canvas.addEventListener('touchstart', handleTouch, {passive: false});
+            canvas.addEventListener('touchmove', handleTouch, {passive: false});
+            canvas.addEventListener('touchend', stopDrawing);
+            
+            // Pointer events for Apple Pencil
+            if (window.PointerEvent) {
+                canvas.addEventListener('pointerdown', handlePointer);
+                canvas.addEventListener('pointermove', handlePointer);
+                canvas.addEventListener('pointerup', stopDrawing);
+            }
+            
+            // Set up drawing style
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000000';
+        }
+
+        function getPointerPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        }
+
+        function getTouchPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            return {
+                x: (e.touches[0].clientX - rect.left) * scaleX,
+                y: (e.touches[0].clientY - rect.top) * scaleY
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getPointerPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPointerPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            updateSignatureStatus();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                updateSignatureStatus();
+            }
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                           e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            
+            if (e.type === 'touchstart') startDrawing(mouseEvent);
+            else if (e.type === 'touchmove') draw(mouseEvent);
+        }
+
+        function handlePointer(e) {
+            // Prefer Apple Pencil input
+            if (e.pointerType === 'pen') {
+                ctx.lineWidth = e.pressure ? Math.max(1, e.pressure * 3) : 2;
+            }
+            
+            const mouseEvent = new MouseEvent(e.type === 'pointerdown' ? 'mousedown' : 'mousemove', {
+                clientX: e.clientX,
+                clientY: e.clientY
+            });
+            
+            if (e.type === 'pointerdown') startDrawing(mouseEvent);
+            else if (e.type === 'pointermove') draw(mouseEvent);
+        }
+
+        function updateSignatureStatus() {
+            // Check if canvas has content
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            hasSignature = imageData.data.some(channel => channel !== 0);
+            
+            const statusEl = document.getElementById('signatureStatus');
+            const submitBtn = document.getElementById('submitBtn');
+            const signerName = document.getElementById('signerName').value.trim();
+            
+            if (hasSignature && signerName) {
+                statusEl.textContent = 'Signature and name ready ✅';
+                statusEl.className = 'signature-status status-ready';
+                submitBtn.disabled = false;
+            } else if (hasSignature) {
+                statusEl.textContent = 'Signature captured - please enter your name above';
+                statusEl.className = 'signature-status status-empty';
+                submitBtn.disabled = true;
+            } else {
+                statusEl.textContent = 'Please sign below to proceed';
+                statusEl.className = 'signature-status status-empty';
+                submitBtn.disabled = true;
+            }
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSignature = false;
+            updateSignatureStatus();
+        }
+
+        function downloadPDF() {
+            if (!invoiceData) {
+                alert('Invoice data not loaded yet. Please wait and try again.');
+                return;
+            }
+            
+            // Call backend to generate PDF
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        window.open(result.url, '_blank');
+                    } else {
+                        alert('Error generating PDF: ' + result.error);
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    alert('Error generating PDF: ' + error.message);
+                })
+                .generateAndSavePDF(invoiceData.id);
+        }
+
+        async function submitSignature() {
+            const signerName = document.getElementById('signerName').value.trim();
+            
+            if (!hasSignature) {
+                alert('Please provide your signature first.');
+                return;
+            }
+            
+            if (!signerName) {
+                alert('Please enter your full name.');
+                return;
+            }
+            
+            if (!invoiceData) {
+                alert('Invoice data not available. Please refresh and try again.');
+                return;
+            }
+            
+            try {
+                document.getElementById('submitBtn').textContent = 'Processing...';
+                document.getElementById('submitBtn').disabled = true;
+                
+                // Get signature as data URL
+                const signatureDataUrl = canvas.toDataURL('image/png');
+                
+                // Submit to backend
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result.success) {
+                            // Update quote status to Signed
+                            google.script.run
+                                .withSuccessHandler(function() {
+                                    // Show success message
+                                    document.getElementById('signatureContent').style.display = 'none';
+                                    document.getElementById('successMessage').style.display = 'block';
+                                })
+                                .withFailureHandler(function(error) {
+                                    console.error('Error updating status:', error);
+                                    // Still show success since signature was processed
+                                    document.getElementById('signatureContent').style.display = 'none';
+                                    document.getElementById('successMessage').style.display = 'block';
+                                })
+                                .updateQuoteStatus(invoiceData.id, 'Signed');
+                        } else {
+                            alert('Error processing signature: ' + result.error);
+                            document.getElementById('submitBtn').textContent = '✅ Submit Signed Contract';
+                            document.getElementById('submitBtn').disabled = false;
+                        }
+                    })
+                    .withFailureHandler(function(error) {
+                        alert('Error submitting signature: ' + error.message);
+                        document.getElementById('submitBtn').textContent = '✅ Submit Signed Contract';
+                        document.getElementById('submitBtn').disabled = false;
+                    })
+                    .processSignedContract(invoiceData, signatureDataUrl, signerName);
+                    
+            } catch (error) {
+                alert('Error submitting signature: ' + error.message);
+                document.getElementById('submitBtn').textContent = '✅ Submit Signed Contract';
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+
+        function loadInvoiceData() {
+            // Get invoice ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const invoiceId = urlParams.get('id');
+            const token = urlParams.get('token');
+            
+            if (!invoiceId) {
+                document.getElementById('loadingMessage').innerHTML = 
+                    '<p style="color: red;">Error: No invoice ID provided</p>';
+                return;
+            }
+            
+            // Load invoice data
+            google.script.run
+                .withSuccessHandler(function(result) {
+                    if (result.success) {
+                        invoiceData = result.data;
+                        displayInvoicePreview(result.data);
+                        
+                        // Pre-fill customer name if available
+                        if (result.data.customerName) {
+                            document.getElementById('signerName').value = result.data.customerName;
+                            updateSignatureStatus();
+                        }
+                        
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        document.getElementById('signatureContent').style.display = 'block';
+                    } else {
+                        document.getElementById('loadingMessage').innerHTML = 
+                            '<p style="color: red;">Error loading invoice: ' + result.error + '</p>';
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    document.getElementById('loadingMessage').innerHTML = 
+                        '<p style="color: red;">Error loading invoice: ' + error.message + '</p>';
+                })
+                .getInvoiceEstimate(invoiceId);
+        }
+
+        function displayInvoicePreview(data) {
+            const preview = document.getElementById('invoicePreview');
+            preview.innerHTML = `
+                <h3>${data.type} ${data.quoteNumber || data.invoiceNumber || data.id}</h3>
+                <p><strong>Customer:</strong> ${data.customerName}</p>
+                <p><strong>Address:</strong> ${data.customerAddress}</p>
+                <p><strong>Total Amount:</strong> $${parseFloat(data.totalAmount || 0).toFixed(2)}</p>
+                <p><strong>Project Description:</strong> ${data.projectDescription || 'Pool construction/renovation project'}</p>
+                ${data.items && data.items.length > 0 ? `
+                    <div style="margin-top: 15px;">
+                        <strong>Project Details:</strong>
+                        <ul style="margin: 5px 0; padding-left: 20px;">
+                            ${data.items.map(item => `
+                                <li>${item.title || item.description} - $${parseFloat(item.cost || 0).toFixed(2)}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // Update signature status when name field changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const signerNameField = document.getElementById('signerName');
+            if (signerNameField) {
+                signerNameField.addEventListener('input', updateSignatureStatus);
+            }
+        });
+    </script>
+</body>
+</html>

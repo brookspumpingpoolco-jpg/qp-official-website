@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Test Invoice Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #f5f7fa;
+    }
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #0369a1;
+    }
+    .test-link {
+      display: block;
+      padding: 12px;
+      background: #f0f9ff;
+      border-left: 4px solid #0369a1;
+      margin: 20px 0;
+      word-break: break-all;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #0369a1;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      margin: 10px 5px;
+    }
+    .btn:hover {
+      background: #0284c7;
+    }
+    .info {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      margin: 20px 0;
+    }
+    #frame-container {
+      margin-top: 30px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🧪 Invoice Viewer Test Page</h1>
+    
+    <p>Use this page to test the invoice viewer before deploying to Webflow.</p>
+    
+    <div class="info">
+      <strong>⚠️ Instructions:</strong><br>
+      1. Send a test invoice from the invoice maker<br>
+      2. Copy the share link from the success message<br>
+      3. Replace "YOUR-INVOICE-ID" in the URL below<br>
+      4. Click "Test in iframe" or "Open Direct"
+    </div>
+    
+    <h3>Test URL:</h3>
+    <div class="test-link" id="testUrl">
+      https://aesthetic-kataifi-88ba27.netlify.app/InvoiceEstimateViewer.html?id=Invoice-60669512-8825&token=7b76c96a-c2ad-4727-971c-f1bf49431c22
+    </div>
+    
+    <div>
+      <a href="https://aesthetic-kataifi-88ba27.netlify.app/InvoiceEstimateViewer.html?id=Invoice-60669512-8825&token=7b76c96a-c2ad-4727-971c-f1bf49431c22" class="btn" target="_blank">
+        Open Direct (New Tab)
+      </a>
+      <button class="btn" onclick="loadInIframe()">Test in iframe</button>
+      <button class="btn" onclick="openConsole()">Open Console (F12)</button>
+    </div>
+    
+    <div id="frame-container" style="display: none;">
+      <iframe id="testFrame" width="100%" height="800px" frameborder="0"></iframe>
+    </div>
+    
+    <h3 style="margin-top: 30px;">Troubleshooting:</h3>
+    <ul>
+      <li>If you see "No invoice ID provided" → The URL is missing <code>?id=Invoice-xxx</code></li>
+      <li>If you see "Loading invoice..." forever → Check browser console (F12) for errors</li>
+      <li>If you see "Failed to load invoice" → The invoice ID might be wrong or not exist</li>
+      <li>Press <strong>F12</strong> to open browser console and see debug logs</li>
+    </ul>
+    
+    <h3 style="margin-top: 30px;">For Webflow Embed:</h3>
+    <p>Once this works, use this code in Webflow:</p>
+    <pre style="background: #1a1a1a; color: #fff; padding: 15px; border-radius: 6px; overflow-x: auto;">
+&lt;div style="width: 100%; min-height: 100vh;"&gt;
+  &lt;iframe 
+    src="https://aesthetic-kataifi-88ba27.netlify.app/InvoiceEstimateViewer.html" 
+    width="100%" 
+    height="100%" 
+    frameborder="0"
+    style="min-height: 100vh; border: none;"&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  const iframe = document.querySelector('iframe');
+  const urlParams = window.location.search;
+  if (urlParams && iframe) {
+    iframe.src = iframe.src + urlParams;
+  }
+&lt;/script&gt;</pre>
+  </div>
+  
+  <script>
+    function loadInIframe() {
+      const url = document.getElementById('testUrl').textContent.trim();
+      document.getElementById('testFrame').src = url;
+      document.getElementById('frame-container').style.display = 'block';
+      window.scrollTo(0, document.getElementById('frame-container').offsetTop - 20);
+    }
+    
+    function openConsole() {
+      alert('Press F12 (Windows/Linux) or Cmd+Option+I (Mac) to open the browser console.\n\nLook for blue 🔵 logs from the invoice viewer.');
+    }
+  </script>
+</body>
+</html>
+
+

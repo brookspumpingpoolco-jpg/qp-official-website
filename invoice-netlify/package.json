@@ -1,0 +1,5 @@
+{
+  "name": "invoice-netlify",
+  "private": true,
+  "description": "Signals a Node project for Netlify; functions live in netlify/functions/"
+}

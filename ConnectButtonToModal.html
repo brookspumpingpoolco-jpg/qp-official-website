@@ -1,0 +1,17 @@
+<script>
+// This makes any button with the class "open-contact-modal" trigger the contact form
+document.addEventListener('DOMContentLoaded', function() {
+  // Find all buttons that should open the contact modal
+  const contactButtons = document.querySelectorAll('.open-contact-modal, [data-contact-modal]');
+  
+  contactButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (typeof openContactModal === 'function') {
+        openContactModal();
+      }
+    });
+  });
+});
+</script>
+

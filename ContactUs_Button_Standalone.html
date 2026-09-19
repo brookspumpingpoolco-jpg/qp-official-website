@@ -1,0 +1,41 @@
+<style>
+.contact-us-button-wrapper {
+  display: inline-flex;
+  margin: 20px 0;
+}
+
+.btn-contact-us {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 48px;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 200px;
+}
+
+.btn-contact-us:hover {
+  background: #000000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-contact-us:active {
+  transform: scale(0.98);
+}
+</style>
+
+<div class="contact-us-button-wrapper">
+  <button onclick="openContactModal(); return false;" class="btn-contact-us">
+    CONTACT US
+  </button>
+</div>
+

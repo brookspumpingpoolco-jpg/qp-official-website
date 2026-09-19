@@ -1,0 +1,1 @@
+# Stripe keys removed from backup. Store secrets in Netlify/Apps Script properties, not in git.

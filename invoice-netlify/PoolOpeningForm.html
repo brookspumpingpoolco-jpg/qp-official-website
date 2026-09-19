@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pool Opening Options — A Quality Pool Company</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      padding: 28px 0 24px;
+    }
+    .header-logo-img {
+      display: block;
+      margin: 0 auto 16px;
+      max-width: 180px;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+    .header-logo {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .header-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .header-sub {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.06);
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .appt-block {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 18px 20px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .appt-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #0ea5e9;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .appt-details { flex: 1; min-width: 0; }
+    .appt-name { font-size: 17px; font-weight: 700; color: #0c4a6e; margin-bottom: 4px; }
+    .appt-date { font-size: 14px; color: #0369a1; font-weight: 500; }
+    .appt-address {
+      font-size: 14px; color: #0369a1; margin-top: 8px; line-height: 1.4;
+      padding: 10px 14px; background: rgba(255,255,255,0.6); border-radius: 8px; border: 1px solid #bae6fd;
+    }
+    .map-wrap {
+      margin-top: 16px; border-radius: 12px; overflow: hidden; border: 1px solid #bae6fd;
+      background: #e0f2fe; min-height: 200px;
+    }
+    .map-wrap iframe {
+      display: block; width: 100%; height: 220px; border: 0;
+    }
+    .map-link {
+      display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 600; color: #0369a1;
+      text-decoration: none;
+    }
+    .map-link:hover { text-decoration: underline; }
+    .location-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0c4a6e;
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      margin-bottom: 20px;
+    }
+    .price-block {
+      padding: 20px 20px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .price-label { font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .price-amount { font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
+    .price-note { font-size: 13px; color: #64748b; margin-top: 6px; }
+    .radio-group { display: flex; flex-direction: column; gap: 10px; }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      padding: 16px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .radio-option:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .radio-option input { margin-right: 14px; width: 20px; height: 20px; accent-color: #0ea5e9; cursor: pointer; }
+    .radio-option span { font-size: 15px; font-weight: 600; color: #0f172a; }
+    .radio-option input:checked ~ span { color: #0369a1; }
+    .radio-option.selected { border-color: #0ea5e9; background: #f0f9ff; }
+    .addon-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .addon-row:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .addon-row input { width: 20px; height: 20px; margin-right: 14px; accent-color: #0ea5e9; cursor: pointer; }
+    .addon-label { font-size: 15px; font-weight: 600; color: #0f172a; flex: 1; }
+    .addon-price { font-size: 14px; font-weight: 700; color: #0ea5e9; }
+    .addon-row.checked { border-color: #0ea5e9; background: #f0f9ff; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .form-group textarea {
+      width: 100%;
+      padding: 16px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 100px;
+      transition: border-color 0.2s;
+    }
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+    .form-group textarea::placeholder { color: #94a3b8; }
+    .btn {
+      width: 100%;
+      padding: 18px 24px;
+      background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .msg {
+      padding: 16px 18px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+    .msg.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .msg.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .msg.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .loading {
+      text-align: center;
+      padding: 56px 24px;
+      color: #94a3b8;
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #334155;
+      border-top-color: #0ea5e9;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 20px;
+    }
+    .loading p { font-size: 15px; font-weight: 500; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .footer {
+      text-align: center;
+      padding: 28px 0 0;
+    }
+    .footer-tag {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      letter-spacing: 0.04em;
+    }
+    .error-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px 24px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+    .error-card h1 { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+    .slot-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+    .slot-btn {
+      padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; background: #f8fafc;
+      font-size: 13px; font-weight: 600; color: #0f172a; cursor: pointer; text-align: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .slot-btn:hover { border-color: #0ea5e9; background: #f0f9ff; }
+    .slot-btn.selected { border-color: #0ea5e9; background: #e0f2fe; color: #0369a1; }
+    .slot-day { margin-bottom: 20px; }
+    .slot-day-label { font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+    .schedule-summary { margin-top: 16px; padding: 16px; background: #f0fdf4; border: 2px solid #86efac; border-radius: 12px; font-size: 14px; font-weight: 600; color: #166534; }
+    .accept-suggested-card { text-align: center; padding: 32px 24px; }
+    .accept-suggested-card .btn { max-width: 280px; margin: 20px auto 0; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763-p-500.jpg" alt="A Quality Pool Company" class="header-logo-img">
+      <div class="header-logo">A Quality Pool Company</div>
+      <h1 class="header-title">Pool Opening</h1>
+      <p class="header-sub">Confirm your options for your scheduled service</p>
+    </header>
+    <div id="root">
+      <div class="card loading">
+        <div class="spinner"></div>
+        <p>Loading your pool opening options…</p>
+      </div>
+    </div>
+    <footer class="footer">
+      <p class="footer-tag">Professional pool care you can trust</p>
+    </footer>
+  </div>
+  <script>
+    var OPENING_FORM_TOKEN = <?!= token ?>;
+    var OPENING_FORM_ACCEPT_SUGGESTED = ""; // Set from URL param acceptSuggested=1
+    (function() {
+      function getToken() {
+        if (typeof OPENING_FORM_TOKEN === 'string' && OPENING_FORM_TOKEN) return OPENING_FORM_TOKEN.trim();
+        var params = new URLSearchParams(window.location.search);
+        return (params.get('token') || '').trim();
+      }
+      function getAcceptSuggested() {
+        if (OPENING_FORM_ACCEPT_SUGGESTED === '1' || OPENING_FORM_ACCEPT_SUGGESTED === true) return true;
+        var params = new URLSearchParams(window.location.search);
+        return params.get('acceptSuggested') === '1' || params.get('acceptSuggested') === 'true';
+      }
+      function esc(s) {
+        if (!s) return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+      function renderError(message) {
+        document.getElementById('root').innerHTML =
+          '<div class="card error-card">' +
+          '<h1>Unable to load form</h1>' +
+          '<div class="msg error">' + esc(message) + '</div>' +
+          '<p style="color:#64748b;font-size:14px;line-height:1.5;">Use the full link that was sent to you, or contact us for a new link.</p>' +
+          '</div>';
+      }
+      function renderAcceptSuggested(data) {
+        var suggestedDisplayDate = data.suggestedDisplayDate || data.suggestedDate || '';
+        var suggestedTime = data.suggestedTime || '';
+        var html = '<div class="card accept-suggested-card">' +
+          '<div class="card-title">Suggested time</div>' +
+          '<p style="font-size:16px;color:#374151;line-height:1.6;">We suggest the following time for your pool opening:</p>' +
+          '<p style="font-size:20px;font-weight:700;color:#0c4a6e;margin:16px 0;">' + esc(suggestedDisplayDate) + ' at ' + esc(suggestedTime) + '</p>' +
+          '<button type="button" class="btn" id="acceptSuggestedBtn">Accept this appointment</button>' +
+          '<div id="acceptMessage"></div></div>';
+        document.getElementById('root').innerHTML = html;
+        document.getElementById('acceptSuggestedBtn').onclick = function() {
+          var btn = this;
+          btn.disabled = true;
+          btn.textContent = 'Accepting…';
+          google.script.run
+            .withSuccessHandler(function() {
+              document.getElementById('root').innerHTML = '<div class="card"><div class="msg success">You\'ve accepted. We\'ll send confirmation shortly.</div></div>';
+            })
+            .withFailureHandler(function(err) {
+              document.getElementById('acceptMessage').innerHTML = '<div class="msg error">' + esc(err && err.message ? err.message : String(err)) + '</div>';
+              btn.disabled = false;
+              btn.textContent = 'Accept this appointment';
+            })
+            .acceptSuggestedOpeningSlot(getToken());
+        };
+      }
+      function renderSchedulingPlatform(data) {
+        var appt = data.appointment;
+        var start = new Date();
+        start.setDate(start.getDate() + 1);
+        var end = new Date();
+        end.setDate(end.getDate() + 14);
+        function pad(n) { return n < 10 ? '0' + n : n; }
+        var startStr = start.getFullYear() + '-' + pad(start.getMonth() + 1) + '-' + pad(start.getDate());
+        var endStr = end.getFullYear() + '-' + pad(end.getMonth() + 1) + '-' + pad(end.getDate());
+        var html = '<div class="card">' +
+          '<div class="card-title">Choose your preferred date & time</div>' +
+          '<p style="font-size:14px;color:#64748b;margin-bottom:16px;">Select one slot. Your request will be sent for approval; you\'ll receive an email when it\'s confirmed.</p>' +
+          '<div id="scheduleSlots">Loading availability…</div>' +
+          '<div id="scheduleSummary" style="display:none;" class="schedule-summary"></div>' +
+          '<button type="button" class="btn" id="submitScheduleBtn" style="display:none;margin-top:16px;">Submit request</button>' +
+          '<div id="scheduleMessage"></div></div>';
+        document.getElementById('root').innerHTML = html;
+        var selectedDate = null;
+        var selectedTime = null;
+        google.script.run
+          .withSuccessHandler(function(res) {
+            var container = document.getElementById('scheduleSlots');
+            if (!res.success || !res.slots || res.slots.length === 0) {
+              container.innerHTML = '<p style="color:#64748b;">No available slots in the next two weeks. Please contact us.</p>';
+              return;
+            }
+            var byDate = {};
+            res.slots.forEach(function(s) {
+              if (!byDate[s.date]) byDate[s.date] = [];
+              byDate[s.date].push(s.time);
+            });
+            var days = Object.keys(byDate).sort();
+            var html2 = '';
+            days.forEach(function(dateStr) {
+              var d = new Date(dateStr + 'T12:00:00');
+              var label = isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+              html2 += '<div class="slot-day"><div class="slot-day-label">' + esc(label) + '</div><div class="slot-grid">';
+              byDate[dateStr].forEach(function(t) {
+                html2 += '<button type="button" class="slot-btn" data-date="' + esc(dateStr) + '" data-time="' + esc(t) + '">' + esc(t) + '</button>';
+              });
+              html2 += '</div></div>';
+            });
+            container.innerHTML = html2;
+            container.querySelectorAll('.slot-btn').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                container.querySelectorAll('.slot-btn').forEach(function(b) { b.classList.remove('selected'); });
+                btn.classList.add('selected');
+                selectedDate = btn.getAttribute('data-date');
+                selectedTime = btn.getAttribute('data-time');
+                document.getElementById('scheduleSummary').style.display = 'block';
+                document.getElementById('scheduleSummary').textContent = 'Selected: ' + selectedDate + ' at ' + selectedTime;
+                document.getElementById('submitScheduleBtn').style.display = 'block';
+              });
+            });
+          })
+          .withFailureHandler(function(err) {
+            document.getElementById('scheduleSlots').innerHTML = '<div class="msg error">' + esc(err && err.message ? err.message : String(err)) + '</div>';
+          })
+          .getOpeningAvailability(getToken(), startStr, endStr);
+        document.getElementById('submitScheduleBtn').onclick = function() {
+          if (!selectedDate || !selectedTime) return;
+          var btn = document.getElementById('submitScheduleBtn');
+          var msgEl = document.getElementById('scheduleMessage');
+          btn.disabled = true;
+          msgEl.innerHTML = '';
+          google.script.run
+            .withSuccessHandler(function() {
+              document.getElementById('root').innerHTML = '<div class="card">' +
+                '<div class="msg success">Thank you. Your requested date is waiting for company approval. You will receive an email when it\'s approved.</div></div>';
+            })
+            .withFailureHandler(function(err) {
+              msgEl.innerHTML = '<div class="msg error">' + esc(err && err.message ? err.message : String(err)) + '</div>';
+              btn.disabled = false;
+            })
+            .submitOpeningScheduleRequest(getToken(), selectedDate, selectedTime);
+        };
+      }
+      function renderForm(data) {
+        var appt = data.appointment;
+        var state = data.state || '';
+        var formData = data.formData || {};
+        var status = data.status || 'Not Complete';
+        var isComplete = status === 'Complete';
+
+        var locationLabel = '';
+        var poolTypeValue = '';
+        var poolTypeHtml = '';
+        if (state === 'TN') {
+          locationLabel = 'Tennessee';
+          poolTypeValue = 'TN';
+          poolTypeHtml = '<div class="price-block">' +
+            '<div class="price-label">Pool opening (your area)</div>' +
+            '<div class="price-amount">$250</div>' +
+            '<div class="price-note">Standard pool opening for Tennessee</div>' +
+            '</div><input type="hidden" id="poolType" value="TN">';
+        } else if (state === 'KY') {
+          locationLabel = 'Kentucky';
+          poolTypeValue = 'KY';
+          poolTypeHtml = '<div class="price-block">' +
+            '<div class="price-label">Pool opening (your area)</div>' +
+            '<div class="price-amount">$400</div>' +
+            '<div class="price-note">Standard pool opening for Kentucky</div>' +
+            '</div><input type="hidden" id="poolType" value="KY">';
+        } else {
+          locationLabel = 'Select your state';
+          poolTypeValue = formData.poolType || '';
+          poolTypeHtml = '<div class="form-group"><div class="card-title">Your location</div><div class="radio-group">' +
+            '<label class="radio-option' + (poolTypeValue === 'TN' ? ' selected' : '') + '">' +
+            '<input type="radio" name="poolType" value="TN" ' + (poolTypeValue === 'TN' ? 'checked' : '') + '><span>Tennessee — $250</span></label>' +
+            '<label class="radio-option' + (poolTypeValue === 'KY' ? ' selected' : '') + '">' +
+            '<input type="radio" name="poolType" value="KY" ' + (poolTypeValue === 'KY' ? 'checked' : '') + '><span>Kentucky — $400</span></label>' +
+            '</div></div>';
+        }
+
+        var existingMsg = isComplete
+          ? '<div class="msg info">You’ve already submitted. You can update your choices below and save again.</div>'
+          : '';
+
+        var dateDisplay = (appt.displayDate || appt.date) || '';
+        var timeDisplay = (appt.displayTime || appt.time) || '';
+        var dateTimeLine = dateDisplay + (timeDisplay ? ' &middot; ' + timeDisplay : '');
+        var address = (appt.address || '').trim();
+        var addressBlock = address
+          ? ('<div class="appt-address">' + esc(address) + '</div>' +
+             '<div class="map-wrap">' +
+             '<iframe src="https://www.google.com/maps?q=' + encodeURIComponent(address) + '&output=embed&t=k" title="Map of service address"></iframe>' +
+             '</div>' +
+             '<a class="map-link" href="https://www.google.com/maps?q=' + encodeURIComponent(address) + '" target="_blank" rel="noopener">View address in Google Maps (satellite / directions)</a>')
+          : '';
+        var html =
+          '<div class="card">' +
+          '<div class="card-title">Your appointment</div>' +
+          '<div class="appt-block">' +
+          '<div class="appt-icon">&#128167;</div>' +
+          '<div class="appt-details">' +
+          '<div class="appt-name">' + esc(appt.customerName) + '</div>' +
+          '<div class="appt-date">' + (dateTimeLine ? esc(dateTimeLine) : (esc(appt.date) + (appt.time ? ' &middot; ' + esc(appt.time) : ''))) + '</div>' +
+          (addressBlock ? addressBlock : '') +
+          '</div></div>' +
+          (locationLabel && (state === 'TN' || state === 'KY') ? '<div class="location-pill">' + esc(locationLabel) + '</div>' : '') +
+          '<div class="card-title">Service &amp; pricing</div>' +
+          poolTypeHtml +
+          existingMsg +
+          '<div class="card-title" style="margin-top:24px;">Add-ons</div>' +
+          '<label class="addon-row' + (formData.chemicals ? ' checked' : '') + '">' +
+          '<input type="checkbox" id="chemicals" ' + (formData.chemicals ? 'checked' : '') + '><span class="addon-label">Chemicals</span><span class="addon-price">+$50</span></label>' +
+          '<label class="addon-row' + (formData.fullVacuum ? ' checked' : '') + '">' +
+          '<input type="checkbox" id="fullVacuum" ' + (formData.fullVacuum ? 'checked' : '') + '><span class="addon-label">Full vacuum</span><span class="addon-price">+$200</span></label>' +
+          '<div class="form-group" style="margin-top:22px;">' +
+          '<label for="otherConcerns">Anything else we should know?</label>' +
+          '<textarea id="otherConcerns" placeholder="Special requests, access notes, or concerns…">' + esc(formData.otherConcerns || '') + '</textarea>' +
+          '</div>' +
+          '<div id="formMessage"></div>' +
+          '<button type="button" class="btn" id="submitBtn">' + (isComplete ? 'Save updates' : 'Submit my options') + '</button>' +
+          '</div>';
+
+        document.getElementById('root').innerHTML = html;
+
+        var radioOpts = document.querySelectorAll('.radio-option');
+        radioOpts.forEach(function(el) {
+          el.addEventListener('click', function() { radioOpts.forEach(function(o) { o.classList.remove('selected'); }); el.classList.add('selected'); });
+        });
+        document.querySelectorAll('.addon-row').forEach(function(el) {
+          el.addEventListener('click', function(e) { if (e.target.tagName !== 'INPUT') { var cb = el.querySelector('input'); if (cb) { cb.checked = !cb.checked; el.classList.toggle('checked', cb.checked); } } });
+        });
+        var chemRow = document.getElementById('chemicals').closest('.addon-row');
+        var vacRow = document.getElementById('fullVacuum').closest('.addon-row');
+        if (chemRow) document.getElementById('chemicals').addEventListener('change', function() { chemRow.classList.toggle('checked', this.checked); });
+        if (vacRow) document.getElementById('fullVacuum').addEventListener('change', function() { vacRow.classList.toggle('checked', this.checked); });
+
+        document.getElementById('submitBtn').onclick = function() {
+          var poolTypeEl = document.getElementById('poolType');
+          var poolType = poolTypeEl ? poolTypeEl.value : (document.querySelector('input[name="poolType"]:checked') || {}).value || '';
+          var payload = {
+            poolType: poolType,
+            chemicals: document.getElementById('chemicals').checked,
+            fullVacuum: document.getElementById('fullVacuum').checked,
+            otherConcerns: (document.getElementById('otherConcerns').value || '').trim()
+          };
+          var btn = document.getElementById('submitBtn');
+          var msgEl = document.getElementById('formMessage');
+          btn.disabled = true;
+          msgEl.innerHTML = '';
+          google.script.run
+            .withSuccessHandler(function() {
+              msgEl.innerHTML = '<div class="msg success">Saved. Our team has been notified. You can return to this link anytime to update your options.</div>';
+              btn.disabled = false;
+            })
+            .withFailureHandler(function(err) {
+              msgEl.innerHTML = '<div class="msg error">' + esc(err.message || String(err)) + '</div>';
+              btn.disabled = false;
+            })
+            .saveOpeningForm(getToken(), payload);
+        };
+      }
+      var token = getToken();
+      if (!token) {
+        renderError('No form link was found. Open the full link that was sent to you (it should include a long code after "token=").');
+        return;
+      }
+      var acceptSuggested = getAcceptSuggested();
+      google.script.run
+        .withSuccessHandler(function(data) {
+          if (data && data.success) {
+            if (acceptSuggested && data.suggestedDate && data.suggestedTime) {
+              renderAcceptSuggested(data);
+              return;
+            }
+            if (!data.appointment.date) {
+              renderSchedulingPlatform(data);
+              return;
+            }
+            renderForm(data);
+          } else {
+            renderError(data && data.error ? data.error : 'Invalid or expired link.');
+          }
+        })
+        .withFailureHandler(function(err) {
+          renderError(err.message || 'Something went wrong. Please try again.');
+        })
+        .getOpeningFormByToken(token);
+    })();
+  </script>
+</body>
+</html>

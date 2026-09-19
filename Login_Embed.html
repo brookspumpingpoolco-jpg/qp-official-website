@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoolFlowPro - Sign In</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .feature-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+        
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #ffffff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .view-hidden {
+            display: none !important;
+        }
+        
+        .view-visible {
+            display: block !important;
+        }
+        
+        .pool-bg {
+            background-image: url('https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .gradient-overlay {
+            background: linear-gradient(135deg, rgba(3, 105, 161, 0.92) 0%, rgba(2, 132, 199, 0.88) 50%, rgba(12, 74, 110, 0.95) 100%);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex">
+        <!-- Left Side - Hero Section -->
+        <div class="hidden lg:flex lg:w-1/2 pool-bg relative overflow-hidden">
+            <div class="absolute inset-0 gradient-overlay"></div>
+            <div class="relative z-10 flex flex-col justify-center px-12 xl:px-16 py-16 text-white">
+                <!-- Logo & Branding -->
+                <div class="mb-12 fade-in">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-20 h-20 glass-effect border-2 border-white/30 rounded-xl flex items-center justify-center p-4">
+                            <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6972f0e8ed917fdb61dead8f_Gemini_Generated_Image_n1brs8n1brs8n1br.png" 
+                                 alt="PoolFlowPro Logo" 
+                                 class="w-full h-full object-contain">
+                        </div>
+                        <div>
+                            <h1 class="text-4xl font-black tracking-tight mb-1">PoolFlowPro</h1>
+                            <p class="text-xs font-bold tracking-widest uppercase text-blue-200">A Product of A Quality Pool Company</p>
+                        </div>
+                    </div>
+                    <h2 class="text-4xl xl:text-5xl font-bold mb-6 leading-tight">
+                        Built for Pool Professionals,<br>by Pool Professionals
+                    </h2>
+                    <p class="text-lg text-blue-100 leading-relaxed max-w-xl">
+                        Completely customizable system. Run by pool business owners, built by pool professionals. 
+                        If you need something, you call us—we build it.
+                    </p>
+                </div>
+
+                <!-- Features Grid -->
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="feature-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 slide-in" style="animation-delay: 0.1s">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-file-invoice-dollar text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-white mb-2 text-lg">Invoicing & Estimates</h3>
+                        <p class="text-sm text-blue-100 leading-relaxed">Professional invoices with auto-numbering, templates, and payment tracking</p>
+                    </div>
+
+                    <div class="feature-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 slide-in" style="animation-delay: 0.2s">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-users-cog text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-white mb-2 text-lg">Team Management</h3>
+                        <p class="text-sm text-blue-100 leading-relaxed">Manage your team with role-based permissions and access control</p>
+                    </div>
+
+                    <div class="feature-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 slide-in" style="animation-delay: 0.3s">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-clipboard-check text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-white mb-2 text-lg">Pool Inspections</h3>
+                        <p class="text-sm text-blue-100 leading-relaxed">Comprehensive inspections with photos and detailed reports</p>
+                    </div>
+
+                    <div class="feature-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 slide-in" style="animation-delay: 0.4s">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-calculator text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-white mb-2 text-lg">Pool Calculator</h3>
+                        <p class="text-sm text-blue-100 leading-relaxed">Calculate volume, chemicals, and material requirements accurately</p>
+                    </div>
+                </div>
+
+                <!-- Custom CTA -->
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 slide-in" style="animation-delay: 0.5s">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-tools text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white mb-2 text-lg">Fully Customizable</h4>
+                            <p class="text-sm text-blue-100 leading-relaxed">
+                                Need a feature that's not listed? We build custom solutions specifically for your business. 
+                                Call us and we'll make it happen.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-center px-6 py-12 bg-white relative">
+            <div class="w-full max-w-md mx-auto flex-1 flex flex-col justify-center">
+                <!-- Error/Success Messages -->
+                <div id="errorMessage" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm" role="alert" aria-live="polite"></div>
+                <div id="successMessage" class="hidden mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm" role="alert" aria-live="polite"></div>
+
+                <!-- Login View -->
+                <div id="loginView" class="view-visible fade-in">
+                    <div class="mb-8">
+                        <h2 id="formTitle" class="text-4xl font-black text-gray-900 mb-2">Sign In</h2>
+                        <p id="formSubtitle" class="text-gray-600">Access your PoolFlowPro account</p>
+                    </div>
+
+                    <form id="loginForm" class="space-y-6" aria-label="Sign in form">
+                        <div>
+                            <label for="loginEmail" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="loginEmail" 
+                                name="email"
+                                required
+                                autocomplete="email"
+                                aria-required="true"
+                                aria-describedby="email-error"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="you@example.com">
+                        </div>
+
+                        <div>
+                            <label for="loginPassword" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Password
+                            </label>
+                            <input 
+                                type="password" 
+                                id="loginPassword" 
+                                name="password"
+                                required
+                                autocomplete="current-password"
+                                aria-required="true"
+                                aria-describedby="password-error"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="Enter your password">
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="keepSignedIn" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-600">Keep me signed in</span>
+                            </label>
+                            <a href="#" id="forgotPasswordLink" class="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            id="loginButton"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl uppercase tracking-wide text-sm">
+                            Sign In
+                        </button>
+
+                        <div class="relative my-6">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-200"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-4 bg-white text-gray-500">or</span>
+                            </div>
+                        </div>
+
+                        <p class="text-center text-sm text-gray-600">
+                            Don't have an account? 
+                            <a href="#" id="signUpLink" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Sign up
+                            </a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Sign Up View -->
+                <div id="signUpView" class="view-hidden fade-in">
+                    <div class="mb-8">
+                        <h2 id="formTitleSignUp" class="text-4xl font-black text-gray-900 mb-2">Start Your Trial</h2>
+                        <p id="formSubtitleSignUp" class="text-gray-600">14-day free trial • $0 today • Full access</p>
+                    </div>
+
+                    <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-600 rounded-lg">
+                        <p class="text-sm text-blue-900 leading-relaxed">
+                            <strong>🎉 Start Your Free 14-Day Trial!</strong><br>
+                            Full access to all features. You will be required to enroll payment through Stripe for your 14-day trial.
+                            $0 today, charged on day 15. We'll discuss pricing before your trial ends.
+                        </p>
+                    </div>
+
+                    <form id="signUpForm" class="space-y-6" aria-label="Sign up form">
+                        <div>
+                            <label for="signUpName" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Full Name
+                            </label>
+                            <input 
+                                type="text" 
+                                id="signUpName" 
+                                name="name"
+                                required
+                                autocomplete="name"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="John Doe">
+                        </div>
+
+                        <div>
+                            <label for="signUpCompany" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Company Name
+                            </label>
+                            <input 
+                                type="text" 
+                                id="signUpCompany" 
+                                name="company"
+                                required
+                                autocomplete="organization"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="Your Company Name">
+                        </div>
+
+                        <div>
+                            <label for="signUpEmail" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="signUpEmail" 
+                                name="email"
+                                required
+                                autocomplete="email"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="you@example.com">
+                        </div>
+
+                        <div>
+                            <label for="signUpPassword" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Password
+                            </label>
+                            <input 
+                                type="password" 
+                                id="signUpPassword" 
+                                name="password"
+                                required
+                                autocomplete="new-password"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="Create a password">
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            id="signUpButton"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl uppercase tracking-wide text-sm">
+                            Start Free Trial
+                        </button>
+
+                        <p class="text-center text-sm text-gray-600">
+                            Already have an account? 
+                            <a href="#" id="backToLoginLink" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Sign in
+                            </a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Forgot Password View -->
+                <div id="forgotPasswordView" class="view-hidden fade-in">
+                    <div class="mb-8">
+                        <h2 class="text-4xl font-black text-gray-900 mb-2">Reset Password</h2>
+                        <p class="text-gray-600">We'll send you a verification code</p>
+                    </div>
+
+                    <form id="forgotPasswordForm" class="space-y-6" aria-label="Forgot password form">
+                        <div>
+                            <label for="forgotEmail" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="forgotEmail" 
+                                name="email"
+                                required
+                                autocomplete="email"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="you@example.com">
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            id="forgotPasswordButton"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl uppercase tracking-wide text-sm">
+                            Send Reset Code
+                        </button>
+
+                        <p class="text-center text-sm text-gray-600">
+                            <a href="#" id="backToLoginFromForgotLink" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Back to Sign In
+                            </a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Reset Password View -->
+                <div id="resetPasswordView" class="view-hidden fade-in">
+                    <div class="mb-8">
+                        <h2 class="text-4xl font-black text-gray-900 mb-2">Set New Password</h2>
+                        <p class="text-gray-600">Enter your verification code</p>
+                    </div>
+
+                    <form id="resetPasswordForm" class="space-y-6" aria-label="Reset password form">
+                        <div>
+                            <label for="resetEmail" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="resetEmail" 
+                                name="email"
+                                required
+                                autocomplete="email"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="you@example.com">
+                        </div>
+
+                        <div>
+                            <label for="resetCode" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Verification Code
+                            </label>
+                            <input 
+                                type="text" 
+                                id="resetCode" 
+                                name="code"
+                                required
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400 text-center tracking-widest font-mono"
+                                placeholder="000000" 
+                                maxlength="6">
+                        </div>
+
+                        <div>
+                            <label for="resetNewPassword" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                New Password
+                            </label>
+                            <input 
+                                type="password" 
+                                id="resetNewPassword" 
+                                name="newPassword"
+                                required
+                                autocomplete="new-password"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="Enter new password">
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            id="resetPasswordButton"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl uppercase tracking-wide text-sm">
+                            Reset Password
+                        </button>
+
+                        <p class="text-center text-sm text-gray-600">
+                            <a href="#" id="backToLoginFromResetLink" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Back to Sign In
+                            </a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Verification View -->
+                <div id="verificationView" class="view-hidden fade-in">
+                    <div class="mb-8">
+                        <h2 class="text-4xl font-black text-gray-900 mb-2">Verify Email</h2>
+                        <p class="text-gray-600">Enter the code sent to your email</p>
+                    </div>
+
+                    <form id="verificationForm" class="space-y-6" aria-label="Email verification form">
+                        <p class="text-sm text-gray-600 mb-6">
+                            We've sent a verification code to your email. Please enter it below to verify your account.
+                        </p>
+
+                        <div>
+                            <label for="verifyEmail" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                id="verifyEmail" 
+                                name="email"
+                                required
+                                autocomplete="email"
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400"
+                                placeholder="you@example.com">
+                        </div>
+
+                        <div>
+                            <label for="verifyCode" class="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
+                                Verification Code
+                            </label>
+                            <input 
+                                type="text" 
+                                id="verifyCode" 
+                                name="code"
+                                required
+                                aria-required="true"
+                                class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-0 input-focus transition-all duration-200 text-gray-900 placeholder-gray-400 text-center tracking-widest font-mono text-2xl"
+                                placeholder="000000" 
+                                maxlength="6">
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            id="verifyButton"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl uppercase tracking-wide text-sm">
+                            Verify Email
+                        </button>
+
+                        <p class="text-center text-sm text-gray-600">
+                            <a href="#" id="backToLoginFromVerifyLink" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Back to Sign In
+                            </a>
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Approval Pending View -->
+                <div id="approvalPendingView" class="view-hidden fade-in">
+                    <div class="text-center py-12">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-hourglass-half text-blue-600 text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-4">Approval Pending</h2>
+                        <p class="text-gray-600 leading-relaxed max-w-md mx-auto mb-8">
+                            We are requesting approval for your system access. You will be notified once approved.
+                            Please check your email for updates.
+                        </p>
+                        <a href="#" id="backToLoginFromApprovalLink" class="inline-block font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                            Back to Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-auto pt-8 pb-4 text-center">
+                <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+                    <a href="#" id="privacyPolicyLink" class="hover:text-blue-600 transition-colors font-medium">
+                        Privacy Policy
+                    </a>
+                    <span class="text-gray-300">|</span>
+                    <a href="mailto:samr@aqualitypoolcompanyusa.com?subject=PoolFlowPro Support Request" class="hover:text-blue-600 transition-colors font-medium">
+                        Contact Support
+                    </a>
+                </div>
+                <p class="mt-4 text-xs text-gray-500">
+                    © 2024 PoolFlowPro. All rights reserved.
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="privacy-modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closePrivacyModal()"></div>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-2xl font-black text-gray-900" id="privacy-modal-title">Privacy Policy</h3>
+                        <button onclick="closePrivacyModal()" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="Close">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    <div class="max-h-[70vh] overflow-y-auto pr-2">
+                        <div class="text-sm text-gray-700 leading-relaxed space-y-6">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-2">Last Updated: <span id="privacyLastUpdated"></span></p>
+                            </div>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">1. Agreement to Privacy Policy</h4>
+                                <p class="mb-3">
+                                    By accessing and using PoolFlowPro ("the Service"), you acknowledge that you have read, understood, and agree to be bound by this Privacy Policy. If you do not agree with any part of this Privacy Policy, you must not use the Service.
+                                </p>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">2. Communications via Twilio</h4>
+                                <p class="mb-3">
+                                    <strong>Important Notice:</strong> PoolFlowPro uses Twilio, Inc. ("Twilio") as our third-party service provider for all communications, including but not limited to:
+                                </p>
+                                <ul class="list-disc list-inside mb-3 ml-4 space-y-1">
+                                    <li>SMS text messages</li>
+                                    <li>Voice calls</li>
+                                    <li>Email notifications</li>
+                                    <li>Automated notifications and alerts</li>
+                                </ul>
+                                <p class="mb-3">
+                                    By using PoolFlowPro, you expressly consent to receive communications from us via Twilio. You understand that:
+                                </p>
+                                <ul class="list-disc list-inside mb-3 ml-4 space-y-1">
+                                    <li>Standard message and data rates may apply to SMS messages</li>
+                                    <li>You may receive automated messages even if your phone number is on a Do Not Call registry</li>
+                                    <li>You can opt-out of SMS communications by replying "STOP" to any message or contacting us directly</li>
+                                    <li>Twilio may process and store your contact information in accordance with their privacy policy</li>
+                                </ul>
+                                <p class="mb-3 font-semibold text-gray-900">
+                                    By accessing this website and using PoolFlowPro, you are agreeing to receive communications via Twilio and acknowledge that you have been informed of this practice.
+                                </p>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">3. TCPA Compliance</h4>
+                                <p class="mb-3">
+                                    In compliance with the Telephone Consumer Protection Act (TCPA) and related regulations:
+                                </p>
+                                <ul class="list-disc list-inside mb-3 ml-4 space-y-1">
+                                    <li>We will only send SMS messages to phone numbers for which we have obtained prior express written consent</li>
+                                    <li>You may revoke consent at any time by replying "STOP" to any message</li>
+                                    <li>We will honor opt-out requests within 10 business days</li>
+                                    <li>You may contact us at any time to update your communication preferences</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">4. Information We Collect</h4>
+                                <p class="mb-3">We collect information that you provide directly to us, including:</p>
+                                <ul class="list-disc list-inside mb-3 ml-4 space-y-1">
+                                    <li>Name, email address, phone number, and company information</li>
+                                    <li>Account credentials and authentication information</li>
+                                    <li>Payment and billing information (processed securely through Stripe)</li>
+                                    <li>Business data, invoices, estimates, and customer information</li>
+                                    <li>Usage data and interaction with the Service</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">5. How We Use Your Information</h4>
+                                <p class="mb-3">We use the information we collect to:</p>
+                                <ul class="list-disc list-inside mb-3 ml-4 space-y-1">
+                                    <li>Provide, maintain, and improve the Service</li>
+                                    <li>Process transactions and send related information</li>
+                                    <li>Send technical notices, updates, and support messages</li>
+                                    <li>Respond to your comments and questions</li>
+                                    <li>Monitor and analyze usage patterns</li>
+                                    <li>Detect, prevent, and address technical issues</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">6. Information Sharing and Disclosure</h4>
+                                <p class="mb-3">We may share your information with:</p>
+                                <ul class="list-disc list-inside mb-3 ml-4 space-y-1">
+                                    <li><strong>Twilio:</strong> For all communications as described above</li>
+                                    <li><strong>Stripe:</strong> For payment processing and billing</li>
+                                    <li><strong>Google:</strong> For hosting and data storage (Google Apps Script, Google Sheets)</li>
+                                    <li>Service providers who assist in operating the Service</li>
+                                    <li>Legal authorities when required by law or to protect rights</li>
+                                </ul>
+                                <p class="mb-3">
+                                    We do not sell your personal information to third parties.
+                                </p>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">7. Data Security</h4>
+                                <p class="mb-3">
+                                    We implement appropriate technical and organizational measures to protect your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your information, we cannot guarantee absolute security.
+                                </p>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">8. Your Rights and Choices</h4>
+                                <p class="mb-3">You have the right to:</p>
+                                <ul class="list-disc list-inside mb-3 ml-4 space-y-1">
+                                    <li>Access and update your personal information</li>
+                                    <li>Opt-out of marketing communications</li>
+                                    <li>Request deletion of your account and data</li>
+                                    <li>Opt-out of SMS communications by replying "STOP"</li>
+                                    <li>File a complaint with relevant regulatory authorities</li>
+                                </ul>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">9. Children's Privacy</h4>
+                                <p class="mb-3">
+                                    The Service is not intended for individuals under the age of 18. We do not knowingly collect personal information from children. If you become aware that a child has provided us with personal information, please contact us immediately.
+                                </p>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">10. Changes to This Privacy Policy</h4>
+                                <p class="mb-3">
+                                    We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date. You are advised to review this Privacy Policy periodically for any changes.
+                                </p>
+                            </section>
+
+                            <section>
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">11. Contact Us</h4>
+                                <p class="mb-3">
+                                    If you have any questions about this Privacy Policy or our data practices, please contact us at:
+                                </p>
+                                <p class="mb-3">
+                                    <strong>Email:</strong> brookspumpingpoolco@gmail.com<br>
+                                    <strong>Address:</strong> A Quality Pool Company<br>
+                                </p>
+                                <p class="mb-3">
+                                    For questions specifically related to Twilio communications, you may also contact Twilio directly or visit their privacy policy at <a href="https://www.twilio.com/legal/privacy" target="_blank" class="text-blue-600 hover:underline">twilio.com/legal/privacy</a>.
+                                </p>
+                            </section>
+
+                            <section class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
+                                <h4 class="font-bold text-gray-900 mb-2 text-base">Consent Acknowledgment</h4>
+                                <p class="mb-0 font-semibold text-gray-900">
+                                    By continuing to use PoolFlowPro, you acknowledge that you have read this Privacy Policy and consent to receive communications via Twilio as described herein.
+                                </p>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button onclick="closePrivacyModal()" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                        I Understand
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Configuration - Authentication Script Web App URL (direct GAS /exec)
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5FBpDpuc4brNeQUEx4vr9Ndbc01toRVApoBJiYSagFImliWscvHQ4kO1nuLp6wd82/exec';
+            // Browser cannot call script.google.com from Netlify/custom domains (CORS). Use same-origin gas-proxy.
+            const EXTRA_GAS_PROXY_HOSTS = [];
+            const _authHost = typeof window !== 'undefined' ? (window.location.hostname || '') : '';
+            const useAuthGasProxy = !!_authHost && _authHost !== 'script.google.com' && (
+                _authHost.indexOf('netlify.app') !== -1 ||
+                _authHost.slice(-14) === '.netlify.live' ||
+                _authHost === 'localhost' ||
+                _authHost === '127.0.0.1' ||
+                EXTRA_GAS_PROXY_HOSTS.indexOf(_authHost) !== -1
+            );
+            const AUTH_API_URL = useAuthGasProxy
+                ? (window.location.origin + '/.netlify/functions/gas-proxy?t=auth')
+                : SCRIPT_URL;
+
+            // View management
+            const views = {
+                login: document.getElementById('loginView'),
+                signUp: document.getElementById('signUpView'),
+                forgotPassword: document.getElementById('forgotPasswordView'),
+                resetPassword: document.getElementById('resetPasswordView'),
+                verification: document.getElementById('verificationView'),
+                approvalPending: document.getElementById('approvalPendingView')
+            };
+
+            function showView(viewName) {
+                Object.values(views).forEach(view => {
+                    view.classList.add('view-hidden');
+                    view.classList.remove('view-visible');
+                });
+                if (views[viewName]) {
+                    views[viewName].classList.remove('view-hidden');
+                    views[viewName].classList.add('view-visible');
+                }
+                hideMessages();
+                
+                // Update form headers
+                const formTitle = document.getElementById('formTitle');
+                const formSubtitle = document.getElementById('formSubtitle');
+                if (formTitle && formSubtitle) {
+                    if (viewName === 'login') {
+                        formTitle.textContent = 'Sign In';
+                        formSubtitle.textContent = 'Access your PoolFlowPro account';
+                    } else if (viewName === 'forgotPassword') {
+                        formTitle.textContent = 'Reset Password';
+                        formSubtitle.textContent = 'We\'ll send you a verification code';
+                    } else if (viewName === 'resetPassword') {
+                        formTitle.textContent = 'Set New Password';
+                        formSubtitle.textContent = 'Enter your verification code';
+                    } else if (viewName === 'verification') {
+                        formTitle.textContent = 'Verify Email';
+                        formSubtitle.textContent = 'Enter the code sent to your email';
+                    }
+                }
+            }
+
+            function showError(message) {
+                const errorEl = document.getElementById('errorMessage');
+                errorEl.textContent = message;
+                errorEl.classList.remove('hidden');
+                document.getElementById('successMessage').classList.add('hidden');
+            }
+
+            function showSuccess(message) {
+                const successEl = document.getElementById('successMessage');
+                successEl.textContent = message;
+                successEl.classList.remove('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
+            }
+
+            function hideMessages() {
+                document.getElementById('errorMessage').classList.add('hidden');
+                document.getElementById('successMessage').classList.add('hidden');
+            }
+
+            function setLoading(button, loading) {
+                if (loading) {
+                    button.classList.add('btn-loading');
+                    button.disabled = true;
+                } else {
+                    button.classList.remove('btn-loading');
+                    button.disabled = false;
+                }
+            }
+
+            // API call function
+            async function callAPI(action, data) {
+                try {
+                    if (!SCRIPT_URL || SCRIPT_URL.includes('YOUR_') || SCRIPT_URL.includes('REPLACE')) {
+                        return {
+                            success: false,
+                            message: 'Web App URL not configured. Please update SCRIPT_URL in Login_Embed.html with your deployed Web App URL from Google Apps Script.'
+                        };
+                    }
+                    
+                    const formData = new URLSearchParams();
+                    formData.append('action', action);
+                    
+                    Object.keys(data).forEach(key => {
+                        if (data[key] !== null && data[key] !== undefined) {
+                            formData.append(key, data[key]);
+                        }
+                    });
+                    
+                    const response = await fetch(AUTH_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: formData.toString()
+                    });
+
+                    const responseText = await response.text();
+
+                    if (!response.ok) {
+                        if (response.status === 404 && (AUTH_API_URL || '').indexOf('gas-proxy') !== -1) {
+                            return {
+                                success: false,
+                                message: 'Auth proxy not found (404). Deploy this site with netlify/functions/gas-proxy (Base directory invoice-netlify) or set GAS_AUTH_URL in Netlify env.'
+                            };
+                        }
+                        if (response.status === 404) {
+                            return {
+                                success: false,
+                                message: 'Web App not found (404). The URL may be incorrect or the Web App may not be deployed.'
+                            };
+                        } else if (response.status === 403) {
+                            return {
+                                success: false,
+                                message: 'Access denied (403). The Web App may not be set to "Anyone" access.'
+                            };
+                        } else if (response.status === 500) {
+                            return {
+                                success: false,
+                                message: 'Server error (500). There may be an issue with the Apps Script.'
+                            };
+                        }
+                        throw new Error(`HTTP ${response.status}: ${responseText.substring(0, 100)}`);
+                    }
+
+                    let result;
+                    try {
+                        result = JSON.parse(responseText);
+                    } catch (parseErr) {
+                        return {
+                            success: false,
+                            message: 'Invalid response from server. If you are on Netlify, ensure gas-proxy is deployed with t=auth.'
+                        };
+                    }
+                    return result;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    
+                    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                        return {
+                            success: false,
+                            message: useAuthGasProxy
+                                ? 'Network error. Check gas-proxy deployment and GAS_AUTH_URL on Netlify.'
+                                : 'Network error. From Netlify you must use gas-proxy (open this page from your deployed site with functions).'
+                        };
+                    } else if (error.message.includes('CORS')) {
+                        return {
+                            success: false,
+                            message: 'CORS blocked. Host this page on Netlify with gas-proxy?t=auth, or open the login from the Apps Script web app URL only.'
+                        };
+                    } else {
+                        return {
+                            success: false,
+                            message: 'Error: ' + error.message
+                        };
+                    }
+                }
+            }
+
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const button = document.getElementById('loginButton');
+                setLoading(button, true);
+                hideMessages();
+
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+
+                const result = await callAPI('login', { email, password });
+
+                setLoading(button, false);
+
+                if (result.success) {
+                    if (result.needsVerification) {
+                        showSuccess('Login successful, but email verification required.');
+                        document.getElementById('verifyEmail').value = email;
+                        showView('verification');
+                    } else {
+                        const keepSignedIn = document.getElementById('keepSignedIn').checked;
+                        const userRole = result.user?.role || '';
+                        const userName = result.user?.name || '';
+                        const companyId = result.user?.companyId || '';
+                        const features = JSON.stringify(result.user?.features || []);
+                        const trialEnd = result.user?.trialEnd || '';
+                        
+                        if (keepSignedIn) {
+                            localStorage.setItem('userEmail', email);
+                            localStorage.setItem('userName', userName);
+                            localStorage.setItem('userRole', userRole);
+                            localStorage.setItem('companyId', companyId);
+                            localStorage.setItem('userFeatures', features);
+                            localStorage.setItem('trialEnd', trialEnd);
+                        } else {
+                            sessionStorage.setItem('userEmail', email);
+                            sessionStorage.setItem('userName', userName);
+                            sessionStorage.setItem('userRole', userRole);
+                            sessionStorage.setItem('companyId', companyId);
+                            sessionStorage.setItem('userFeatures', features);
+                            sessionStorage.setItem('trialEnd', trialEnd);
+                        }
+                        
+                        const dashboardUrl = new URL('https://aesthetic-kataifi-88ba27.netlify.app/Dashboard_Embed.html');
+                        dashboardUrl.searchParams.set('email', encodeURIComponent(email));
+                        dashboardUrl.searchParams.set('name', encodeURIComponent(userName));
+                        dashboardUrl.searchParams.set('role', encodeURIComponent(userRole));
+                        dashboardUrl.searchParams.set('companyId', encodeURIComponent(companyId));
+                        dashboardUrl.searchParams.set('features', encodeURIComponent(features));
+                        dashboardUrl.searchParams.set('trialEnd', encodeURIComponent(trialEnd));
+                        dashboardUrl.searchParams.set('keepSignedIn', keepSignedIn ? 'true' : 'false');
+                        
+                        window.location.href = dashboardUrl.toString();
+                    }
+                } else {
+                    showError(result.message || 'Invalid email or password');
+                }
+            });
+
+            // Sign up form
+            document.getElementById('signUpForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const button = document.getElementById('signUpButton');
+                setLoading(button, true);
+                hideMessages();
+
+                const name = document.getElementById('signUpName').value.trim();
+                const companyName = document.getElementById('signUpCompany').value.trim();
+                const email = document.getElementById('signUpEmail').value.trim();
+                const password = document.getElementById('signUpPassword').value;
+
+                if (!companyName) {
+                    showError('Company name is required');
+                    setLoading(button, false);
+                    return;
+                }
+
+                const result = await callAPI('register', { name, email, password, company: companyName });
+
+                setLoading(button, false);
+
+                if (result.success) {
+                    if (result.checkoutUrl) {
+                        window.location.href = result.checkoutUrl;
+                    } else {
+                        showSuccess('🎉 Account created! Check your email for verification. Your 14-day trial begins after admin approval.');
+                        document.getElementById('verifyEmail').value = email;
+                        showView('verification');
+                    }
+                } else {
+                    showError(result.message || 'Registration failed. Please try again.');
+                }
+            });
+
+            // Forgot password form
+            document.getElementById('forgotPasswordForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const button = document.getElementById('forgotPasswordButton');
+                setLoading(button, true);
+                hideMessages();
+
+                const email = document.getElementById('forgotEmail').value.trim();
+
+                const result = await callAPI('forgotPassword', { email });
+
+                setLoading(button, false);
+
+                if (result.success) {
+                    showSuccess(result.message || 'Password reset code sent to your email.');
+                    document.getElementById('resetEmail').value = email;
+                    setTimeout(() => showView('resetPassword'), 2000);
+                } else {
+                    showError(result.message || 'Failed to send reset code. Please try again.');
+                }
+            });
+
+            // Reset password form
+            document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const button = document.getElementById('resetPasswordButton');
+                setLoading(button, true);
+                hideMessages();
+
+                const email = document.getElementById('resetEmail').value.trim();
+                const code = document.getElementById('resetCode').value.trim();
+                const newPassword = document.getElementById('resetNewPassword').value;
+
+                const result = await callAPI('resetPassword', { email, code, newPassword });
+
+                setLoading(button, false);
+
+                if (result.success) {
+                    showSuccess(result.message || 'Password reset successfully!');
+                    setTimeout(() => showView('login'), 2000);
+                } else {
+                    showError(result.message || 'Invalid verification code or email.');
+                }
+            });
+
+            // Verification form
+            document.getElementById('verificationForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const button = document.getElementById('verifyButton');
+                setLoading(button, true);
+                hideMessages();
+
+                const email = document.getElementById('verifyEmail').value.trim();
+                const code = document.getElementById('verifyCode').value.trim();
+
+                const result = await callAPI('verifyEmail', { email, code });
+
+                setLoading(button, false);
+
+                if (result.success) {
+                    showSuccess(result.message || 'Email verified successfully!');
+                    setTimeout(() => {
+                        const loginEmail = document.getElementById('loginEmail');
+                        if (loginEmail) {
+                            loginEmail.value = email;
+                            showView('login');
+                            showSuccess('Email verified! Please sign in.');
+                        }
+                    }, 2000);
+                } else {
+                    showError(result.message || 'Invalid verification code.');
+                }
+            });
+
+            // Navigation links
+            document.getElementById('signUpLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showView('signUp');
+            });
+
+            document.getElementById('backToLoginLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showView('login');
+            });
+
+            document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showView('forgotPassword');
+            });
+
+            document.getElementById('backToLoginFromForgotLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showView('login');
+            });
+
+            document.getElementById('backToLoginFromResetLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showView('login');
+            });
+
+            document.getElementById('backToLoginFromVerifyLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                showView('login');
+            });
+
+            if (document.getElementById('backToLoginFromApprovalLink')) {
+                document.getElementById('backToLoginFromApprovalLink').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showView('login');
+                });
+            }
+
+            // Check URL parameters for approval pending
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('page') === 'approvalPending') {
+                showView('approvalPending');
+            }
+
+            // Privacy Policy Modal
+            function openPrivacyModal() {
+                document.getElementById('privacyModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                // Set last updated date
+                const date = new Date();
+                document.getElementById('privacyLastUpdated').textContent = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+
+            function closePrivacyModal() {
+                document.getElementById('privacyModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Make functions globally accessible
+            window.openPrivacyModal = openPrivacyModal;
+            window.closePrivacyModal = closePrivacyModal;
+
+            // Privacy Policy link
+            document.getElementById('privacyPolicyLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                openPrivacyModal();
+            });
+
+            // Close modal on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !document.getElementById('privacyModal').classList.contains('hidden')) {
+                    closePrivacyModal();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

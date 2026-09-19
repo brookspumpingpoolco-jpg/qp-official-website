@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armory Storage - Customer Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .portal-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,100 Q300,50 600,100 T1200,100 L1200,0 L0,0 Z" fill="rgba(255,255,255,0.1)"/></svg>') repeat-x bottom;
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .company-name {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .company-name h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            color: white;
+        }
+
+        .company-name .subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fbbf24;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .header-text {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .header-text p {
+            opacity: 0.95;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #f97316;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn:hover {
+            background: #ea580c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+        }
+
+        .btn-success {
+            background: #10b981;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .property-info h2 {
+            font-size: 24px;
+            color: #1e3a8a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .property-info p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: #64748b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 6px rgba(100, 116, 139, 0.3);
+        }
+
+        .logout-btn:hover {
+            background: #475569;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(100, 116, 139, 0.4);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #f97316;
+            border-bottom-color: #f97316;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #1e3a8a;
+            font-weight: 700;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .payment-table th,
+        .payment-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .payment-table th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .lease-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .lease-item-info h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .lease-item-info p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-container">
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/694b0eaf60f0836e2ccbe633_DD67636E-EDDF-4A2F-A3B7-07741BD5615C.PNG" alt="McAfee Properties" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <div class="company-name">
+                        <h1>Armory Storage</h1>
+                        <div class="subtitle">Customer Portal</div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-text">
+                <p>Manage Your Storage Unit</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Login Screen -->
+            <div id="loginScreen" class="login-screen">
+                <h2 style="margin-bottom: 30px; text-align: center; color: #1e3a8a; font-weight: 700;">Welcome to Armory Storage</h2>
+                <div id="loginAlert"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" required placeholder="your.email@example.com">
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                            Use the email associated with your storage unit
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn">Login</button>
+                    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 12px;">Don't have an account?</p>
+                        <button type="button" class="btn btn-secondary" onclick="showStorageSignupForm()" style="width: 100%; padding: 14px 24px; background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%); margin-top: 12px; font-weight: 600;">
+                            <i class="fas fa-cube"></i> Rent a Storage Unit
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sign-up Screen (Hidden - Storage only) -->
+            <div id="signupScreen" class="login-screen" style="display: none;">
+                <h2 style="margin-bottom: 30px; text-align: center; color: #1e3a8a; font-weight: 700;">Create Account</h2>
+                <div id="signupAlert"></div>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName">Full Name <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="signupName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address <span style="color: #ef4444;">*</span></label>
+                        <input type="email" id="signupEmail" required placeholder="your.email@example.com">
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                            Must match the email on your lease
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPhone">Phone Number</label>
+                        <input type="tel" id="signupPhone" placeholder="(555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password <span style="color: #ef4444;">*</span></label>
+                        <input type="password" id="signupPassword" required placeholder="At least 6 characters" minlength="6">
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                            Minimum 6 characters
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPasswordConfirm">Confirm Password <span style="color: #ef4444;">*</span></label>
+                        <input type="password" id="signupPasswordConfirm" required placeholder="Re-enter your password" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPropertyId">Property ID (Optional)</label>
+                        <input type="text" id="signupPropertyId" placeholder="Leave blank if unsure">
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                            If you know your property ID, enter it here
+                        </small>
+                    </div>
+                    <button type="submit" class="btn">Create Account</button>
+                    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 12px;">Already have an account?</p>
+                        <button type="button" class="btn btn-secondary" onclick="showLoginForm()" style="width: auto; padding: 10px 24px;">
+                            Back to Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Storage Unit Sign-up Screen -->
+            <div id="storageSignupScreen" class="login-screen" style="display: none;">
+                <h2 style="margin-bottom: 30px; text-align: center; color: #1e3a8a; font-weight: 700;">
+                    <i class="fas fa-cube"></i> Rent a Storage Unit
+                </h2>
+                <div id="storageSignupAlert"></div>
+                <form id="storageSignupForm">
+                    <div class="form-group">
+                        <label for="storageSignupName">Full Name <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="storageSignupName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="storageSignupEmail">Email Address <span style="color: #ef4444;">*</span></label>
+                        <input type="email" id="storageSignupEmail" required placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="storageSignupPhone">Phone Number <span style="color: #ef4444;">*</span></label>
+                        <input type="tel" id="storageSignupPhone" required placeholder="(555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Insurance <span style="color: #ef4444;">*</span></label>
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; margin-bottom: 8px;">
+                                <input type="radio" name="storageInsurance" id="storageInsurancePaid" value="paid" checked style="margin-right: 10px;" onchange="updateInsuranceOptions()">
+                                <div>
+                                    <strong>Pay $25/month for insurance</strong>
+                                    <small style="display: block; color: #6b7280; font-size: 12px;">Recommended - includes coverage</small>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
+                                <input type="radio" name="storageInsurance" id="storageInsuranceOwn" value="own" style="margin-right: 10px;" onchange="updateInsuranceOptions()">
+                                <div>
+                                    <strong>I have my own insurance</strong>
+                                    <small style="display: block; color: #6b7280; font-size: 12px;">Upload your declarations page</small>
+                                </div>
+                            </label>
+                        </div>
+                        <div id="insuranceUploadSection" style="display: none; margin-top: 12px; padding: 16px; background: #f9fafb; border-radius: 8px;">
+                            <label for="storageInsuranceFile" style="display: block; margin-bottom: 8px; font-weight: 600;">Upload Insurance Declarations Page *</label>
+                            <input type="file" id="storageInsuranceFile" accept=".pdf,.jpg,.jpeg,.png" style="margin-bottom: 8px;">
+                            <small style="color: #6b7280; font-size: 12px; display: block; margin-bottom: 12px;">PDF or image file showing policy details</small>
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="storageInsurancePolicy">Policy Number</label>
+                                <input type="text" id="storageInsurancePolicy" placeholder="Enter policy number">
+                            </div>
+                            <div class="form-group">
+                                <label for="storageInsuranceExpiry">Expiration Date</label>
+                                <input type="date" id="storageInsuranceExpiry">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Emergency Contact <span style="color: #ef4444;">*</span></label>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <input type="text" id="storageEmergencyName" required placeholder="Emergency contact name">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <input type="tel" id="storageEmergencyPhone" required placeholder="Emergency contact phone">
+                        </div>
+                        <div class="form-group">
+                            <select id="storageEmergencyRelation" required>
+                                <option value="">Relationship *</option>
+                                <option value="Spouse">Spouse</option>
+                                <option value="Family">Family Member</option>
+                                <option value="Friend">Friend</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Vehicle Information <span style="color: #ef4444;">*</span></label>
+                        <small style="color: #6b7280; font-size: 12px; display: block; margin-bottom: 12px;">
+                            Required for license plate reader access to the facility
+                        </small>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label for="storageLicensePlate">License Plate *</label>
+                            <input type="text" id="storageLicensePlate" required placeholder="ABC1234" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div class="form-group">
+                            <label for="storageVehicleColor">Vehicle Color *</label>
+                            <input type="text" id="storageVehicleColor" required placeholder="Blue, Red, White, etc.">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="storageSignupPassword">Password <span style="color: #ef4444;">*</span></label>
+                        <input type="password" id="storageSignupPassword" required placeholder="At least 6 characters" minlength="6">
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                            Minimum 6 characters - you'll use this to log in and manage your unit
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="storageSignupPasswordConfirm">Confirm Password <span style="color: #ef4444;">*</span></label>
+                        <input type="password" id="storageSignupPasswordConfirm" required placeholder="Re-enter your password" minlength="6">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="font-weight: 700; color: #1e3a8a; margin-bottom: 12px; display: block; font-size: 16px;">
+                            <i class="fas fa-map"></i> Select Your Storage Unit <span style="color: #ef4444;">*</span>
+                        </label>
+                        <p style="color: #6b7280; font-size: 13px; margin-bottom: 16px;">
+                            Click on an available unit on the map below to select it. Green units are available, gray units are occupied.
+                        </p>
+                        
+                        <!-- Unit Selection Map -->
+                        <div id="unitMapContainer" style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 16px;">
+                            <div id="unitMap" style="display: grid; gap: 12px; position: relative;">
+                                <!-- Units will be rendered here -->
+                            </div>
+                            <div id="selectedUnitInfo" style="display: none; margin-top: 16px; padding: 16px; background: #dcfce7; border: 2px solid #10b981; border-radius: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 700; color: #065f46; font-size: 18px; margin-bottom: 4px;">
+                                            Selected: <span id="selectedUnitNumber">-</span>
+                                        </div>
+                                        <div style="color: #047857; font-size: 14px;">
+                                            Size: <span id="selectedUnitSize">-</span>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="clearUnitSelection()" style="padding: 8px 16px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                                        <i class="fas fa-times"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="hidden" id="selectedUnitId" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="storageStartDate">Start Date <span style="color: #ef4444;">*</span></label>
+                        <input type="date" id="storageStartDate" required>
+                        <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">
+                            Rent will be prorated for the remaining days in the month
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="storageIncludePower" onchange="updateStorageProratedTotal()">
+                            <div>
+                                <div style="font-weight: 600;">Add Power Service ($60/month)</div>
+                                <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 4px;">
+                                    Electrical power provided to your storage unit
+                                </small>
+                            </div>
+                        </label>
+                    </div>
+                    <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600;">Estimated Monthly Rent:</span>
+                            <span id="storageMonthlyRentDisplay">$200.00 (estimated)</span>
+                        </div>
+                        <small style="color: #6b7280; font-size: 11px; display: block; margin-bottom: 12px;">
+                            Final rent depends on unit size assigned ($150-$250/month)
+                        </small>
+                        <div style="display: none; justify-content: space-between; margin-bottom: 8px;" id="storageInsuranceRow">
+                            <span>Insurance:</span>
+                            <span id="storageInsuranceDisplay">+$25.00</span>
+                        </div>
+                        <div style="display: none; justify-content: space-between; margin-bottom: 8px;" id="storagePowerRow">
+                            <span>Power:</span>
+                            <span id="storagePowerDisplay">+$60.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;" id="storageTaxRow">
+                            <span>Tax (9.5%):</span>
+                            <span id="storageTaxDisplay">$0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-top: 1px solid #d1d5db; padding-top: 8px;">
+                            <span style="font-weight: 600;">Full Monthly Total:</span>
+                            <span id="storageFullMonthlyDisplay" style="font-weight: 700; font-size: 16px;">$0.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 2px solid #d1d5db;">
+                            <span style="font-weight: 700; color: #7c3aed;">First Month (Prorated):</span>
+                            <span id="storageProratedDisplay" style="font-weight: 800; font-size: 18px; color: #7c3aed;">$0.00</span>
+                        </div>
+                        <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 8px;" id="storageProratedDetails">
+                            Amount will be calculated based on start date
+                        </small>
+                    </div>
+                    <button type="submit" class="btn" style="background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);">
+                        <i class="fas fa-cube"></i> Complete Signup & Rent Unit
+                    </button>
+                    <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                        <button type="button" class="btn btn-secondary" onclick="hideStorageSignupForm()" style="width: auto; padding: 10px 24px;">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboard" class="dashboard">
+                <div class="dashboard-header">
+                    <div class="property-info">
+                        <h2 id="propertyName" style="color: #1e3a8a; margin-bottom: 4px;">Loading...</h2>
+                        <p id="propertyAddress" style="color: #6b7280; font-size: 14px;">Loading...</p>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('overview')">Overview</button>
+                    <button class="tab" onclick="switchTab('payments')">Payments</button>
+                    <button class="tab" onclick="switchTab('profile')">Profile</button>
+                    <button class="tab" onclick="switchTab('leases')">Leases</button>
+                    <button class="tab" onclick="switchTab('autopay')">Autopay</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="overviewTab" class="tab-content active">
+                    <div class="card">
+                        <h3>Property Information</h3>
+                        <div class="info-row">
+                            <span class="info-label">Monthly Rent:</span>
+                            <span class="info-value" id="monthlyRent">$0.00</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value" id="propertyStatus">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Tenant Name:</span>
+                            <span class="info-value" id="tenantName">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" id="tenantEmail">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value" id="tenantPhone">-</span>
+                        </div>
+                        <div class="info-row" id="gateCodeRow" style="display: none; align-items: center;">
+                            <span class="info-label">Gate Code:</span>
+                            <span class="info-value" id="gateCodeDisplay" style="font-family: monospace; font-size: 20px; font-weight: 700; color: #7c3aed; margin-right: 12px;">-</span>
+                            <button onclick="copyGateCode()" style="padding: 6px 12px; background: #7c3aed; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Quick Actions</h3>
+                        <button class="btn btn-success" onclick="payRent()" style="margin-bottom: 10px;">
+                            <i class="fas fa-credit-card"></i> Pay Rent Now
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchTab('autopay')">
+                            <i class="fas fa-sync-alt"></i> Manage Autopay
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payments Tab -->
+                <div id="paymentsTab" class="tab-content">
+                    <div class="card">
+                        <h3>Payment History</h3>
+                        <div id="paymentsLoading" class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading payment history...</p>
+                        </div>
+                        <table class="payment-table" id="paymentsTable" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Date Due</th>
+                                    <th>Date Paid</th>
+                                    <th>Amount</th>
+                                    <th>Late Fee</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsBody">
+                            </tbody>
+                        </table>
+                        <div id="noPayments" style="display: none; text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-receipt" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                            <p>No payment history yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leases Tab -->
+                <div id="leasesTab" class="tab-content">
+                    <div class="card">
+                        <h3>Lease Documents</h3>
+                        <div id="leasesLoading" class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading lease documents...</p>
+                        </div>
+                        <div id="leasesList" style="display: none;">
+                        </div>
+                        <div id="noLeases" style="display: none; text-align: center; padding: 40px; color: #6b7280;">
+                            <i class="fas fa-file-contract" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                            <p>No lease documents available</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Tab -->
+                <div id="profileTab" class="tab-content">
+                    <!-- Vehicle Information -->
+                    <div class="card">
+                        <h3><i class="fas fa-car"></i> Vehicle Information</h3>
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                            Required for license plate reader access to the facility
+                        </p>
+                        
+                        <div class="info-row" style="margin-bottom: 16px;">
+                            <span class="info-label">License Plate:</span>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="info-value" id="licensePlateDisplay" style="font-family: monospace; font-size: 18px; font-weight: 600;">-</span>
+                                <button onclick="editLicensePlate()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="licensePlateEditForm" style="display: none; padding: 16px; background: #f9fafb; border-radius: 8px; margin-bottom: 16px;">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="editLicensePlate">License Plate *</label>
+                                <input type="text" id="editLicensePlate" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()" placeholder="ABC1234">
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="saveLicensePlate()" class="btn btn-success" style="padding: 8px 16px;">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button onclick="cancelEditLicensePlate()" class="btn btn-secondary" style="padding: 8px 16px;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row" style="margin-bottom: 16px;">
+                            <span class="info-label">Vehicle Color:</span>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="info-value" id="vehicleColorDisplay">-</span>
+                                <button onclick="editVehicleColor()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="vehicleColorEditForm" style="display: none; padding: 16px; background: #f9fafb; border-radius: 8px;">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="editVehicleColor">Vehicle Color *</label>
+                                <input type="text" id="editVehicleColor" placeholder="Blue, Red, White, etc.">
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="saveVehicleColor()" class="btn btn-success" style="padding: 8px 16px;">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button onclick="cancelEditVehicleColor()" class="btn btn-secondary" style="padding: 8px 16px;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Methods -->
+                    <div class="card">
+                        <h3><i class="fas fa-credit-card"></i> Payment Methods</h3>
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                            Manage your payment methods and set up autopay
+                        </p>
+                        
+                        <div id="paymentMethodStatus" style="margin-bottom: 20px;">
+                            <div class="info-row">
+                                <span class="info-label">Autopay Status:</span>
+                                <span class="info-value" id="profileAutopayStatus">Checking...</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <button class="btn btn-primary" onclick="openStripeCustomerPortal()" style="width: 100%;">
+                                <i class="fas fa-credit-card"></i> Manage Payment Methods
+                            </button>
+                            <button class="btn btn-success" id="setupAutopayBtnProfile" onclick="setupStorageAutopay()" style="width: 100%; display: none;">
+                                <i class="fas fa-sync-alt"></i> Set Up Autopay
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 16px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px;">
+                            <p style="margin: 0; color: #78350f; font-size: 13px; line-height: 1.6;">
+                                <strong>💡 Tip:</strong> Setting up autopay ensures your rent is paid automatically on the 1st of each month, preventing late fees and access interruptions.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Emergency Contact -->
+                    <div class="card">
+                        <h3><i class="fas fa-user-friends"></i> Emergency Contact</h3>
+                        <div class="info-row">
+                            <span class="info-label">Name:</span>
+                            <span class="info-value" id="emergencyContactNameDisplay">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Phone:</span>
+                            <span class="info-value" id="emergencyContactPhoneDisplay">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Relationship:</span>
+                            <span class="info-value" id="emergencyContactRelationDisplay">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Autopay Tab -->
+                <div id="autopayTab" class="tab-content">
+                    <div class="card">
+                        <h3>Automatic Payments</h3>
+                        <div id="autopayStatus">
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value" id="autopayStatusValue">Checking...</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button class="btn btn-success" id="setupAutopayBtn" onclick="setupAutopay()" style="display: none;">
+                                <i class="fas fa-sync-alt"></i> Set Up Autopay
+                            </button>
+                            <button class="btn btn-danger" id="cancelAutopayBtn" onclick="cancelAutopay()" style="display: none;">
+                                <i class="fas fa-ban"></i> Cancel Autopay
+                            </button>
+                            <button class="btn btn-secondary" id="manageCardsBtn" onclick="managePaymentMethods()" style="display: none;">
+                                <i class="fas fa-credit-card"></i> Manage Payment Methods
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const RENTAL_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfSwpb2EKeibKH0fyolMgAAfNPz1w18SYjVQqc63DPdWJWIgTLDp2iHI4z_ilp8I8Tsg/exec';
+        
+        let currentUser = null;
+        let currentProperty = null;
+
+        // Check if user is already logged in (from URL params)
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('email');
+            const token = urlParams.get('token');
+            const autologin = urlParams.get('autologin');
+            const redirectTab = urlParams.get('tab') || 'profile';
+            
+            if (email && (token || autologin)) {
+                // Try to auto-login
+                if (autologin === 'true') {
+                    // Direct login attempt - set user and load dashboard
+                    currentUser = { email: email };
+                    // Small delay to ensure DOM is ready
+                    setTimeout(() => {
+                        loadDashboard();
+                        // Switch to profile tab if specified
+                        if (redirectTab) {
+                            setTimeout(() => switchTab(redirectTab), 1000);
+                        }
+                    }, 100);
+                } else {
+                    // Just populate email field
+                document.getElementById('loginEmail').value = email;
+                }
+            }
+        };
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.toLowerCase().trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email) {
+                showAlert('loginAlert', 'Please enter your email address', 'error');
+                return;
+            }
+
+            showAlert('loginAlert', 'Logging in...', 'info');
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'tenantLogin');
+                formData.append('email', email);
+                formData.append('password', password);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = { email: email };
+                    currentProperty = data.property;
+                    loadDashboard();
+                    
+                    // Check if this is a storage unit customer and redirect to profile
+                    if (data.property && data.property.propertyType === 'Storage Unit') {
+                        setTimeout(() => switchTab('profile'), 500);
+                    }
+                } else {
+                    showAlert('loginAlert', data.message || 'Login failed. Please check your email and try again.', 'error');
+                }
+            } catch (error) {
+                showAlert('loginAlert', 'Error connecting to server. Please try again.', 'error');
+                console.error('Login error:', error);
+            }
+        });
+
+        // Load dashboard data
+        async function loadDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+
+            // Try to load storage unit first, fallback to regular property
+            try {
+                // Try storage unit
+                const storageResponse = await fetch(RENTAL_SCRIPT_URL + '?action=getStorageUnitDetails&email=' + encodeURIComponent(currentUser.email));
+                const storageData = await storageResponse.json();
+
+                if (storageData.success && storageData.unit) {
+                    // This is a storage unit
+                    displayStorageUnitInfo(storageData.unit);
+                    await loadStoragePaymentHistory();
+                    await loadStorageAutopayStatus();
+                    return;
+                }
+            } catch (error) {
+                console.log('Not a storage unit, trying regular property');
+            }
+
+            // Load regular property data
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getTenantProperty&email=' + encodeURIComponent(currentUser.email));
+                const data = await response.json();
+
+                if (data.success) {
+                    currentProperty = data.property;
+                    displayPropertyInfo(data.property);
+                    displayPaymentHistory(data.paymentHistory || []);
+                    displayAutopayStatus(data.autopay || { enabled: false });
+                    loadLeases();
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Display storage unit information
+        function displayStorageUnitInfo(unit) {
+            document.getElementById('propertyName').textContent = 'Storage Unit ' + (unit.unitNumber || '');
+            document.getElementById('propertyAddress').textContent = unit.size || '';
+            document.getElementById('monthlyRent').textContent = '$' + parseFloat(unit.monthlyRent || 0).toFixed(2);
+            document.getElementById('propertyStatus').textContent = 'Occupied';
+            
+            // Show gate code
+            if (unit.gateCode) {
+                document.getElementById('gateCodeDisplay').textContent = unit.gateCode;
+                document.getElementById('gateCodeRow').style.display = 'flex';
+            } else {
+                document.getElementById('gateCodeRow').style.display = 'none';
+            }
+            
+            // Hide regular tenant fields or repurpose them
+            document.getElementById('tenantName').textContent = '-';
+            document.getElementById('tenantEmail').textContent = currentUser.email || '-';
+            document.getElementById('tenantPhone').textContent = '-';
+            
+            // Show profile tab for storage units
+            const profileTab = document.querySelector('.tab[onclick*="profile"]');
+            if (profileTab) {
+                profileTab.style.display = 'inline-block';
+            }
+            
+            // Display profile information
+            displayProfileInfo(unit);
+        }
+        
+        // Display profile information
+        function displayProfileInfo(unit) {
+            // Vehicle information
+            document.getElementById('licensePlateDisplay').textContent = unit.licensePlate || 'Not set';
+            document.getElementById('vehicleColorDisplay').textContent = unit.vehicleColor || 'Not set';
+            
+            // Emergency contact
+            document.getElementById('emergencyContactNameDisplay').textContent = unit.emergencyContactName || '-';
+            document.getElementById('emergencyContactPhoneDisplay').textContent = unit.emergencyContactPhone || '-';
+            document.getElementById('emergencyContactRelationDisplay').textContent = unit.emergencyContactRelation || '-';
+            
+            // Autopay status
+            const autopayStatus = unit.autopayEnabled ? 'Active' : 'Not Set Up';
+            document.getElementById('profileAutopayStatus').textContent = autopayStatus;
+            
+            // Show/hide setup autopay button
+            const setupBtn = document.getElementById('setupAutopayBtnProfile');
+            if (setupBtn) {
+                setupBtn.style.display = unit.autopayEnabled ? 'none' : 'block';
+            }
+        }
+
+        // Display property information (for regular properties)
+        function displayPropertyInfo(property) {
+            document.getElementById('propertyName').textContent = property.propertyName;
+            document.getElementById('propertyAddress').textContent = property.address || '';
+            document.getElementById('monthlyRent').textContent = '$' + parseFloat(property.monthlyRent || 0).toFixed(2);
+            document.getElementById('propertyStatus').textContent = property.status || 'Active';
+            document.getElementById('tenantName').textContent = property.tenantName || '-';
+            document.getElementById('tenantEmail').textContent = property.tenantEmail || '-';
+            document.getElementById('tenantPhone').textContent = property.tenantPhone || '-';
+            document.getElementById('gateCodeRow').style.display = 'none';
+            
+            // Hide profile tab for regular properties
+            const profileTab = document.querySelector('.tab[onclick*="profile"]');
+            if (profileTab) {
+                profileTab.style.display = 'none';
+            }
+        }
+
+        // Copy gate code to clipboard
+        function copyGateCode() {
+            const gateCode = document.getElementById('gateCodeDisplay').textContent;
+            navigator.clipboard.writeText(gateCode).then(() => {
+                alert('Gate code copied to clipboard!');
+            });
+        }
+
+        // Load storage payment history
+        async function loadStoragePaymentHistory() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getStoragePaymentHistory&email=' + encodeURIComponent(currentUser.email));
+                const data = await response.json();
+
+                if (data.success) {
+                    displayStoragePaymentHistory(data.payments || []);
+                }
+            } catch (error) {
+                console.error('Error loading storage payment history:', error);
+            }
+        }
+
+        // Display storage payment history
+        function displayStoragePaymentHistory(payments) {
+            const loading = document.getElementById('paymentsLoading');
+            const table = document.getElementById('paymentsTable');
+            const tbody = document.getElementById('paymentsBody');
+            const noPayments = document.getElementById('noPayments');
+
+            if (loading) loading.style.display = 'none';
+
+            if (!payments || payments.length === 0) {
+                if (noPayments) noPayments.style.display = 'block';
+                if (table) table.style.display = 'none';
+                return;
+            }
+
+            if (table) table.style.display = 'table';
+            if (tbody) {
+                tbody.innerHTML = '';
+
+                payments.forEach(payment => {
+                    const row = document.createElement('tr');
+                    const dateDue = payment.dateDue ? new Date(payment.dateDue).toLocaleDateString() : '-';
+                    const datePaid = payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : '-';
+                    const status = payment.status || 'Pending';
+                    const statusClass = status === 'Paid' ? 'status-paid' : 'status-pending';
+
+                    row.innerHTML = `
+                        <td>${dateDue}</td>
+                        <td>${datePaid}</td>
+                        <td>$${parseFloat(payment.rent || 0).toFixed(2)}</td>
+                        <td>$${parseFloat(payment.lateFee || 0).toFixed(2)}</td>
+                        <td><strong>$${parseFloat(payment.total || 0).toFixed(2)}</strong></td>
+                        <td><span class="status-badge ${statusClass}">${status}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // Load storage autopay status
+        async function loadStorageAutopayStatus() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getStorageUnitDetails&email=' + encodeURIComponent(currentUser.email));
+                const data = await response.json();
+                
+                if (data.success && data.unit) {
+                    const setupBtn = document.getElementById('setupAutopayBtn');
+                    if (setupBtn && !data.unit.autopayEnabled) {
+                        setupBtn.style.display = 'block';
+                        setupBtn.onclick = setupStorageAutopay;
+                    } else if (setupBtn) {
+                        setupBtn.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading autopay status:', error);
+            }
+        }
+
+        // Setup storage autopay
+        async function setupStorageAutopay() {
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'setupStorageAutopay');
+                formData.append('email', currentUser.email);
+
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.checkoutUrl) {
+                    window.location.href = data.checkoutUrl;
+                } else {
+                    alert('Failed to setup autopay: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error setting up autopay:', error);
+                alert('Error setting up autopay. Please try again.');
+            }
+        }
+        
+        // Edit license plate
+        function editLicensePlate() {
+            const currentPlate = document.getElementById('licensePlateDisplay').textContent;
+            document.getElementById('editLicensePlate').value = currentPlate === 'Not set' ? '' : currentPlate;
+            document.getElementById('licensePlateEditForm').style.display = 'block';
+        }
+        
+        function cancelEditLicensePlate() {
+            document.getElementById('licensePlateEditForm').style.display = 'none';
+        }
+        
+        async function saveLicensePlate() {
+            const licensePlate = document.getElementById('editLicensePlate').value.trim().toUpperCase();
+            const vehicleColor = document.getElementById('vehicleColorDisplay').textContent;
+            
+            if (!licensePlate) {
+                alert('License plate is required');
+                return;
+            }
+            
+            if (vehicleColor === 'Not set') {
+                alert('Please set vehicle color first');
+                return;
+            }
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'updateStorageVehicleInfo');
+                formData.append('email', currentUser.email);
+                formData.append('licensePlate', licensePlate);
+                formData.append('vehicleColor', vehicleColor);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('licensePlateDisplay').textContent = licensePlate;
+                    document.getElementById('licensePlateEditForm').style.display = 'none';
+                    alert('License plate updated successfully');
+                    // Reload unit info
+                    await loadStorageUnitDetails();
+                } else {
+                    alert('Failed to update license plate: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error updating license plate:', error);
+                alert('Error updating license plate. Please try again.');
+            }
+        }
+        
+        // Edit vehicle color
+        function editVehicleColor() {
+            const currentColor = document.getElementById('vehicleColorDisplay').textContent;
+            document.getElementById('editVehicleColor').value = currentColor === 'Not set' ? '' : currentColor;
+            document.getElementById('vehicleColorEditForm').style.display = 'block';
+        }
+        
+        function cancelEditVehicleColor() {
+            document.getElementById('vehicleColorEditForm').style.display = 'none';
+        }
+        
+        async function saveVehicleColor() {
+            const vehicleColor = document.getElementById('editVehicleColor').value.trim();
+            const licensePlate = document.getElementById('licensePlateDisplay').textContent;
+            
+            if (!vehicleColor) {
+                alert('Vehicle color is required');
+                return;
+            }
+            
+            if (licensePlate === 'Not set') {
+                alert('Please set license plate first');
+                return;
+            }
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'updateStorageVehicleInfo');
+                formData.append('email', currentUser.email);
+                formData.append('licensePlate', licensePlate);
+                formData.append('vehicleColor', vehicleColor);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('vehicleColorDisplay').textContent = vehicleColor;
+                    document.getElementById('vehicleColorEditForm').style.display = 'none';
+                    alert('Vehicle color updated successfully');
+                    // Reload unit info
+                    await loadStorageUnitDetails();
+                } else {
+                    alert('Failed to update vehicle color: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error updating vehicle color:', error);
+                alert('Error updating vehicle color. Please try again.');
+            }
+        }
+        
+        // Open Stripe Customer Portal
+        async function openStripeCustomerPortal() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=createStorageCustomerPortal&email=' + encodeURIComponent(currentUser.email));
+                const data = await response.json();
+                
+                if (data.success && data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Failed to open payment methods: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error opening customer portal:', error);
+                alert('Error opening payment methods. Please try again.');
+            }
+        }
+        
+        // Load storage unit details for profile
+        async function loadStorageUnitDetails() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getStorageUnitDetails&email=' + encodeURIComponent(currentUser.email));
+                const data = await response.json();
+                
+                if (data.success && data.unit) {
+                    displayProfileInfo(data.unit);
+                }
+            } catch (error) {
+                console.error('Error loading storage unit details:', error);
+            }
+        }
+
+        // Display payment history (for regular properties)
+        function displayPaymentHistory(payments) {
+            const loading = document.getElementById('paymentsLoading');
+            const table = document.getElementById('paymentsTable');
+            const tbody = document.getElementById('paymentsBody');
+            const noPayments = document.getElementById('noPayments');
+
+            if (loading) loading.style.display = 'none';
+
+            if (!payments || payments.length === 0) {
+                if (noPayments) noPayments.style.display = 'block';
+                if (table) table.style.display = 'none';
+                return;
+            }
+
+            if (table) table.style.display = 'table';
+            if (tbody) {
+            tbody.innerHTML = '';
+
+            payments.forEach(payment => {
+                const row = document.createElement('tr');
+                const dateDue = payment.dateDue ? new Date(payment.dateDue).toLocaleDateString() : '-';
+                const datePaid = payment.datePaid ? new Date(payment.datePaid).toLocaleDateString() : '-';
+                const status = payment.status || 'Pending';
+                const statusClass = status === 'Paid' ? 'status-paid' : 'status-pending';
+
+                row.innerHTML = `
+                    <td>${dateDue}</td>
+                    <td>${datePaid}</td>
+                    <td>$${parseFloat(payment.rentAmount || 0).toFixed(2)}</td>
+                    <td>$${parseFloat(payment.lateFee || 0).toFixed(2)}</td>
+                    <td><strong>$${parseFloat(payment.totalAmount || 0).toFixed(2)}</strong></td>
+                    <td><span class="status-badge ${statusClass}">${status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+            }
+        }
+
+        // Load leases
+        async function loadLeases() {
+            const loading = document.getElementById('leasesLoading');
+            const list = document.getElementById('leasesList');
+            const noLeases = document.getElementById('noLeases');
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getTenantLeases&email=' + encodeURIComponent(currentUser.email));
+                const data = await response.json();
+
+                loading.style.display = 'none';
+
+                if (data.success && data.leases && data.leases.length > 0) {
+                    list.style.display = 'block';
+                    list.innerHTML = '';
+
+                    data.leases.forEach(lease => {
+                        const item = document.createElement('div');
+                        item.className = 'lease-item';
+                        const dateModified = new Date(lease.dateModified).toLocaleDateString();
+                        item.innerHTML = `
+                            <div class="lease-item-info">
+                                <h4>${lease.name}</h4>
+                                <p>Modified: ${dateModified}</p>
+                            </div>
+                            <a href="${lease.url}" target="_blank" class="btn btn-secondary" style="width: auto; padding: 8px 16px;">
+                                <i class="fas fa-download"></i> View
+                            </a>
+                        `;
+                        list.appendChild(item);
+                    });
+                } else {
+                    noLeases.style.display = 'block';
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                noLeases.style.display = 'block';
+                console.error('Error loading leases:', error);
+            }
+        }
+
+        // Display autopay status
+        function displayAutopayStatus(autopay) {
+            const statusValue = document.getElementById('autopayStatusValue');
+            const setupBtn = document.getElementById('setupAutopayBtn');
+            const cancelBtn = document.getElementById('cancelAutopayBtn');
+            const manageBtn = document.getElementById('manageCardsBtn');
+
+            if (autopay.enabled) {
+                statusValue.textContent = 'Active';
+                statusValue.style.color = '#10b981';
+                setupBtn.style.display = 'none';
+                cancelBtn.style.display = 'inline-block';
+                manageBtn.style.display = 'inline-block';
+            } else {
+                statusValue.textContent = 'Not Set Up';
+                statusValue.style.color = '#6b7280';
+                setupBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'none';
+                manageBtn.style.display = 'none';
+            }
+        }
+
+        // Pay rent
+        async function payRent() {
+            try {
+                // Check if this is a storage unit customer
+                const storageCheck = await fetch(RENTAL_SCRIPT_URL + '?action=getStorageUnitDetails&email=' + encodeURIComponent(currentUser.email));
+                const storageData = await storageCheck.json();
+                
+                if (storageData.success && storageData.unit) {
+                    // This is a storage unit - create storage payment link
+                    const formData = new URLSearchParams();
+                    formData.append('action', 'createStoragePaymentLink');
+                    formData.append('email', currentUser.email);
+                    formData.append('unitNumber', storageData.unit.unitNumber);
+                    
+                    const response = await fetch(RENTAL_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: formData.toString()
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.paymentUrl) {
+                        window.location.href = data.paymentUrl;
+                    } else {
+                        alert('Error creating payment link: ' + (data.message || 'Unknown error'));
+                    }
+                } else {
+                    // Regular property payment
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'tenantPayRent',
+                        email: currentUser.email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.paymentUrl) {
+                    window.location.href = data.paymentUrl;
+                } else {
+                    alert('Error creating payment link: ' + (data.message || 'Unknown error'));
+                    }
+                }
+            } catch (error) {
+                alert('Error: ' + error.toString());
+                console.error('Pay rent error:', error);
+            }
+        }
+
+        // Setup autopay
+        async function setupAutopay() {
+            if (!confirm('Set up automatic monthly payments? You will be redirected to Stripe to complete setup.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'setupAutopay',
+                        propertyId: currentProperty.id
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.checkoutUrl) {
+                    window.location.href = data.checkoutUrl;
+                } else {
+                    alert('Error setting up autopay: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.toString());
+                console.error('Setup autopay error:', error);
+            }
+        }
+
+        // Cancel autopay
+        async function cancelAutopay() {
+            if (!confirm('Are you sure you want to cancel autopay? You will need to pay manually each month.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'cancelAutopay',
+                        propertyId: currentProperty.id
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Autopay cancelled successfully');
+                    loadDashboard(); // Reload to update status
+                } else {
+                    alert('Error cancelling autopay: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.toString());
+                console.error('Cancel autopay error:', error);
+            }
+        }
+
+        // Manage payment methods (Stripe Customer Portal)
+        async function managePaymentMethods() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'createStripeCustomerPortal',
+                        email: currentUser.email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.portalUrl) {
+                    window.location.href = data.portalUrl;
+                } else {
+                    alert('Error opening payment methods: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.toString());
+                console.error('Manage payment methods error:', error);
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            const tabElement = document.getElementById(tabName + 'Tab');
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+            
+            // Add active class to clicked tab button (if event exists)
+            if (event && event.target) {
+            event.target.classList.add('active');
+            } else {
+                // Find the button and activate it
+                document.querySelectorAll('.tab').forEach(btn => {
+                    if (btn.textContent.trim().toLowerCase() === tabName || btn.getAttribute('onclick')?.includes(tabName)) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+            
+            // Load data for specific tabs
+            if (tabName === 'payments') {
+                loadPaymentHistory();
+            } else if (tabName === 'leases') {
+                loadLeases();
+            } else if (tabName === 'autopay') {
+                loadAutopayStatus();
+            } else if (tabName === 'profile') {
+                loadStorageUnitDetails();
+            }
+        }
+
+        // Show signup form
+        function showSignupForm() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('storageSignupScreen').style.display = 'none';
+            document.getElementById('signupScreen').style.display = 'block';
+            document.getElementById('loginAlert').innerHTML = '';
+        }
+
+        // Show login form
+        function showLoginForm() {
+            document.getElementById('signupScreen').style.display = 'none';
+            document.getElementById('storageSignupScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('signupAlert').innerHTML = '';
+            document.getElementById('signupForm').reset();
+        }
+
+        // Sign-up form submission
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+            const propertyId = document.getElementById('signupPropertyId').value.trim();
+            
+            // Validate passwords match
+            if (password !== passwordConfirm) {
+                document.getElementById('signupAlert').innerHTML = '<div class="alert alert-error">Passwords do not match</div>';
+                return;
+            }
+            
+            if (password.length < 6) {
+                document.getElementById('signupAlert').innerHTML = '<div class="alert alert-error">Password must be at least 6 characters</div>';
+                return;
+            }
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'tenantSignup');
+                formData.append('name', name);
+                formData.append('email', email);
+                formData.append('phone', phone);
+                formData.append('password', password);
+                if (propertyId) formData.append('propertyId', propertyId);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('signupAlert').innerHTML = '<div class="alert alert-success">' + data.message + '</div>';
+                    document.getElementById('signupForm').reset();
+                    
+                    // Switch back to login after 3 seconds
+                    setTimeout(() => {
+                        showLoginForm();
+                        document.getElementById('loginEmail').value = email;
+                    }, 3000);
+                } else {
+                    document.getElementById('signupAlert').innerHTML = '<div class="alert alert-error">' + (data.message || 'Error creating account') + '</div>';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                document.getElementById('signupAlert').innerHTML = '<div class="alert alert-error">Error: ' + error.toString() + '</div>';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                console.error('Sign-up error:', error);
+            }
+        });
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            currentProperty = null;
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('signupScreen').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        // Show alert
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // ==========================================
+        // STORAGE UNIT SIGNUP FUNCTIONS
+        // ==========================================
+
+        // Show storage signup form
+        // Unit map data
+        const UNIT_MAP_DATA = [
+            { id: '10x10-1', size: '10x10', count: 4, available: true, price: 150 },
+            { id: '10x10-2', size: '10x10', count: 4, available: true, price: 150 },
+            { id: '10x10-3', size: '10x10', count: 4, available: true, price: 150 },
+            { id: '10x10-4', size: '10x10', count: 4, available: true, price: 150 },
+            { id: '11x15-1', size: '11x15', count: 5, available: true, price: 180 },
+            { id: '11x15-2', size: '11x15', count: 5, available: true, price: 180 },
+            { id: '11x15-3', size: '11x15', count: 5, available: true, price: 180 },
+            { id: '11x15-4', size: '11x15', count: 5, available: true, price: 180 },
+            { id: '11x15-5', size: '11x15', count: 5, available: true, price: 180 },
+            { id: '10x20-1', size: '10x20', count: 2, available: true, price: 200 },
+            { id: '10x20-2', size: '10x20', count: 2, available: true, price: 200 },
+            { id: '14x45-1', size: '14x45', count: 4, available: true, price: 250 },
+            { id: '14x45-2', size: '14x45', count: 4, available: true, price: 250 },
+            { id: '14x45-3', size: '14x45', count: 4, available: true, price: 250 },
+            { id: '14x45-4', size: '14x45', count: 4, available: true, price: 250 },
+            { id: '14x35-1', size: '14x35', count: 4, available: true, price: 220 },
+            { id: '14x35-2', size: '14x35', count: 4, available: true, price: 220 },
+            { id: '14x35-3', size: '14x35', count: 4, available: true, price: 220 },
+            { id: '14x35-4', size: '14x35', count: 4, available: true, price: 220 },
+            { id: '14x40-1', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-2', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-3', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-4', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-5', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-6', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-7', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-8', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-9', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-10', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-11', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-12', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-13', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-14', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-15', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-16', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-17', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-18', size: '14x40', count: 19, available: true, price: 230 },
+            { id: '14x40-19', size: '14x40', count: 19, available: true, price: 230 }
+        ];
+
+        let selectedUnit = null;
+
+        function renderUnitMap() {
+            const mapContainer = document.getElementById('unitMap');
+            if (!mapContainer) return;
+
+            // Group units by size for better visualization
+            const unitsBySize = {};
+            UNIT_MAP_DATA.forEach(unit => {
+                if (!unitsBySize[unit.size]) {
+                    unitsBySize[unit.size] = [];
+                }
+                unitsBySize[unit.size].push(unit);
+            });
+
+            let html = '';
+            
+            // Render units grouped by size
+            Object.keys(unitsBySize).forEach(size => {
+                const units = unitsBySize[size];
+                html += `<div style="margin-bottom: 24px;">`;
+                html += `<div style="font-weight: 700; color: #1e3a8a; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">${size} Units (${units.length} available)</div>`;
+                html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;">`;
+                
+                units.forEach(unit => {
+                    const isSelected = selectedUnit && selectedUnit.id === unit.id;
+                    html += `
+                        <div 
+                            class="unit-box ${unit.available ? 'available' : 'occupied'} ${isSelected ? 'selected' : ''}"
+                            data-unit-id="${unit.id}"
+                            data-unit-size="${unit.size}"
+                            data-unit-price="${unit.price}"
+                            onclick="selectUnit('${unit.id}', '${unit.size}', ${unit.price})"
+                            style="
+                                aspect-ratio: 1;
+                                background: ${unit.available ? (isSelected ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : '#dcfce7') : '#f3f4f6'};
+                                border: 3px solid ${isSelected ? '#10b981' : (unit.available ? '#10b981' : '#d1d5db')};
+                                border-radius: 8px;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: ${unit.available ? 'pointer' : 'not-allowed'};
+                                transition: all 0.3s;
+                                position: relative;
+                                box-shadow: ${isSelected ? '0 4px 12px rgba(16, 185, 129, 0.3)' : '0 2px 4px rgba(0,0,0,0.1)'};
+                            "
+                            onmouseover="if(this.classList.contains('available')) { this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; }"
+                            onmouseout="if(!this.classList.contains('selected')) { this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'; }"
+                        >
+                            ${isSelected ? '<div style="position: absolute; top: 4px; right: 4px; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #10b981;"><i class="fas fa-check"></i></div>' : ''}
+                            <div style="font-weight: 700; color: ${unit.available ? (isSelected ? 'white' : '#065f46') : '#6b7280'}; font-size: 16px; margin-bottom: 4px;">${unit.size}</div>
+                            <div style="font-size: 11px; color: ${unit.available ? (isSelected ? 'rgba(255,255,255,0.9)' : '#047857') : '#9ca3af'}; font-weight: 600;">$${unit.price}/mo</div>
+                            ${!unit.available ? '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); width: 100%; height: 2px; background: #ef4444;"></div>' : ''}
+                        </div>
+                    `;
+                });
+                
+                html += `</div></div>`;
+            });
+
+            mapContainer.innerHTML = html;
+        }
+
+        function selectUnit(unitId, unitSize, unitPrice) {
+            const unit = UNIT_MAP_DATA.find(u => u.id === unitId);
+            if (!unit || !unit.available) return;
+
+            selectedUnit = { id: unitId, size: unitSize, price: unitPrice };
+            document.getElementById('selectedUnitId').value = unitId;
+            
+            // Update selected unit info display
+            document.getElementById('selectedUnitNumber').textContent = unitId;
+            document.getElementById('selectedUnitSize').textContent = unitSize;
+            document.getElementById('selectedUnitInfo').style.display = 'block';
+            
+            // Re-render map to show selection
+            renderUnitMap();
+            
+            // Update pricing
+            updateStorageProratedTotal();
+        }
+
+        function clearUnitSelection() {
+            selectedUnit = null;
+            document.getElementById('selectedUnitId').value = '';
+            document.getElementById('selectedUnitInfo').style.display = 'none';
+            renderUnitMap();
+            updateStorageProratedTotal();
+        }
+
+        function showStorageSignupForm() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('signupScreen').style.display = 'none';
+            document.getElementById('storageSignupScreen').style.display = 'block';
+            document.getElementById('storageSignupAlert').innerHTML = '';
+            document.getElementById('storageSignupForm').reset();
+            
+            // Set default start date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('storageStartDate').value = today;
+            document.getElementById('storageStartDate').min = today;
+            
+            // Update prorated total on load
+            updateStorageProratedTotal();
+        }
+
+        function hideStorageSignupForm() {
+            document.getElementById('storageSignupScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('storageSignupAlert').innerHTML = '';
+            document.getElementById('storageSignupForm').reset();
+        }
+
+        // Update insurance options based on selection
+        function updateInsuranceOptions() {
+            const insurancePaid = document.getElementById('storageInsurancePaid').checked;
+            const uploadSection = document.getElementById('insuranceUploadSection');
+            if (insurancePaid) {
+                uploadSection.style.display = 'none';
+                document.getElementById('storageInsuranceFile').required = false;
+                document.getElementById('storageInsurancePolicy').required = false;
+            } else {
+                uploadSection.style.display = 'block';
+                document.getElementById('storageInsuranceFile').required = true;
+            }
+            updateStorageProratedTotal();
+        }
+
+        // Load available units from server
+        async function loadAvailableUnits() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getAvailableStorageUnits');
+                const data = await response.json();
+                
+                if (data.success && data.units) {
+                    // Update unit availability based on server data
+                    data.units.forEach(serverUnit => {
+                        const localUnit = UNIT_MAP_DATA.find(u => u.id === serverUnit.unitId || u.id === serverUnit.unitNumber);
+                        if (localUnit) {
+                            localUnit.available = serverUnit.available !== false;
+                        }
+                    });
+                    renderUnitMap();
+                }
+            } catch (error) {
+                console.error('Error loading available units:', error);
+                // Continue with default availability
+            }
+        }
+
+        // Update prorated total when dates or insurance change
+        function updateStorageProratedTotal() {
+            // Use selected unit price, or average if no unit selected
+            const baseRent = selectedUnit ? selectedUnit.price : 200;
+            const insurancePaid = document.getElementById('storageInsurancePaid').checked;
+            const includeInsurance = insurancePaid;
+            const includePower = document.getElementById('storageIncludePower').checked;
+            const startDate = document.getElementById('storageStartDate').value;
+            
+            const insuranceFee = includeInsurance ? 25 : 0;
+            const powerFee = includePower ? 60 : 0;
+            const subtotal = baseRent + insuranceFee + powerFee;
+            const taxRate = 0.095; // 9.5% tax
+            const taxAmount = subtotal * taxRate;
+            const fullMonthlyTotal = subtotal + taxAmount;
+            
+            // Update insurance row visibility
+            const insuranceRow = document.getElementById('storageInsuranceRow');
+            if (includeInsurance && insuranceRow) {
+                insuranceRow.style.display = 'flex';
+                document.getElementById('storageInsuranceDisplay').textContent = '+$25.00';
+            } else if (insuranceRow) {
+                insuranceRow.style.display = 'none';
+            }
+            
+            // Update power row visibility
+            const powerRow = document.getElementById('storagePowerRow');
+            if (includePower && powerRow) {
+                powerRow.style.display = 'flex';
+                document.getElementById('storagePowerDisplay').textContent = '+$60.00';
+            } else if (powerRow) {
+                powerRow.style.display = 'none';
+            }
+            
+            // Update tax display
+            const taxRow = document.getElementById('storageTaxRow');
+            if (taxRow) {
+                taxRow.style.display = 'flex';
+                document.getElementById('storageTaxDisplay').textContent = '$' + taxAmount.toFixed(2);
+            }
+            
+            if (document.getElementById('storageFullMonthlyDisplay')) {
+                const displayText = selectedUnit 
+                    ? '$' + fullMonthlyTotal.toFixed(2) 
+                    : '$' + fullMonthlyTotal.toFixed(2) + ' (estimated - select unit for exact price)';
+                document.getElementById('storageFullMonthlyDisplay').textContent = displayText;
+            }
+            
+            if (document.getElementById('storageMonthlyRentDisplay')) {
+                const rentText = selectedUnit 
+                    ? '$' + baseRent.toFixed(2) + ' (' + selectedUnit.size + ' unit)'
+                    : '$' + baseRent.toFixed(2) + ' (estimated - select unit)';
+                document.getElementById('storageMonthlyRentDisplay').textContent = rentText;
+            }
+            
+            // Calculate prorated amount
+            if (startDate) {
+                const startDateObj = new Date(startDate);
+                startDateObj.setHours(0, 0, 0, 0);
+                
+                const currentMonth = startDateObj.getMonth();
+                const currentYear = startDateObj.getFullYear();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                const startDay = startDateObj.getDate();
+                const daysRemaining = daysInMonth - startDay + 1;
+                const proratedSubtotal = (subtotal / daysInMonth) * daysRemaining;
+                const proratedTax = (taxAmount / daysInMonth) * daysRemaining;
+                const proratedAmount = proratedSubtotal + proratedTax;
+                
+                if (document.getElementById('storageProratedDisplay')) {
+                    document.getElementById('storageProratedDisplay').textContent = '$' + proratedAmount.toFixed(2) + ' (estimated)';
+                }
+                if (document.getElementById('storageProratedDetails')) {
+                    document.getElementById('storageProratedDetails').textContent = `Prorated for ${daysRemaining} days (${daysInMonth} days in month) - Final amount based on assigned unit`;
+                }
+            } else {
+                if (document.getElementById('storageProratedDisplay')) {
+                    document.getElementById('storageProratedDisplay').textContent = '$0.00';
+                }
+                if (document.getElementById('storageProratedDetails')) {
+                    document.getElementById('storageProratedDetails').textContent = 'Amount will be calculated based on start date and assigned unit';
+                }
+            }
+        }
+
+        // Storage signup form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const storageSignupForm = document.getElementById('storageSignupForm');
+            if (storageSignupForm) {
+                storageSignupForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('storageSignupName').value.trim();
+                    const email = document.getElementById('storageSignupEmail').value.trim();
+                    const phone = document.getElementById('storageSignupPhone').value.trim();
+                    const password = document.getElementById('storageSignupPassword').value;
+                    const passwordConfirm = document.getElementById('storageSignupPasswordConfirm').value;
+                    const startDate = document.getElementById('storageStartDate').value;
+                    const insurancePaid = document.getElementById('storageInsurancePaid').checked;
+                    const includeInsurance = insurancePaid;
+                    const includePower = document.getElementById('storageIncludePower').checked;
+                    const emergencyName = document.getElementById('storageEmergencyName').value.trim();
+                    const emergencyPhone = document.getElementById('storageEmergencyPhone').value.trim();
+                    const emergencyRelation = document.getElementById('storageEmergencyRelation').value;
+                    const licensePlate = document.getElementById('storageLicensePlate').value.trim();
+                    const vehicleColor = document.getElementById('storageVehicleColor').value.trim();
+                    const termsAcceptedElement = document.getElementById('storageTermsAccepted');
+                    const termsAccepted = termsAcceptedElement ? termsAcceptedElement.checked : true;
+                    const insuranceFile = document.getElementById('storageInsuranceFile').files[0];
+                    const insurancePolicy = document.getElementById('storageInsurancePolicy').value.trim();
+                    const insuranceExpiry = document.getElementById('storageInsuranceExpiry').value;
+                    
+                    // Validate passwords match
+                    if (password !== passwordConfirm) {
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">Passwords do not match</div>';
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">Password must be at least 6 characters</div>';
+                        return;
+                    }
+                    
+                    if (!emergencyName || !emergencyPhone || !emergencyRelation) {
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">Please provide emergency contact information</div>';
+                        return;
+                    }
+                    
+                    if (!licensePlate || !vehicleColor) {
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">Please provide vehicle license plate and color</div>';
+                        return;
+                    }
+                    
+                    if (!termsAccepted) {
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">You must accept the terms and conditions</div>';
+                        return;
+                    }
+                    
+                    if (!includeInsurance && !insuranceFile) {
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">Please upload your insurance declarations page</div>';
+                        return;
+                    }
+                    
+                    // Validate unit selection
+                    const selectedUnitId = document.getElementById('selectedUnitId').value;
+                    if (!selectedUnitId) {
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">Please select a storage unit from the map</div>';
+                        return;
+                    }
+                    
+                    const submitBtn = e.target.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    
+                    try {
+                        // Convert insurance file to base64 if provided
+                        let insuranceFileData = '';
+                        let insuranceFileName = '';
+                        if (!includeInsurance && insuranceFile) {
+                            insuranceFileName = insuranceFile.name;
+                            const reader = new FileReader();
+                            reader.onload = async function(e) {
+                                const base64 = e.target.result.split(',')[1];
+                                await submitStorageSignup(base64, insuranceFileName);
+                            };
+                            reader.readAsDataURL(insuranceFile);
+                            return; // Will continue in callback
+                        } else {
+                            await submitStorageSignup('', '');
+                        }
+                        
+                        async function submitStorageSignup(fileData, fileName) {
+                            const formData = new URLSearchParams();
+                            formData.append('action', 'storageUnitSignup');
+                            formData.append('name', name);
+                            formData.append('email', email);
+                            formData.append('phone', phone);
+                            formData.append('password', password);
+                            formData.append('startDate', startDate);
+                            formData.append('includeInsurance', includeInsurance);
+                            formData.append('insuranceType', includeInsurance ? 'Paid' : 'Own');
+                            formData.append('includePower', includePower);
+                            formData.append('emergencyContactName', emergencyName);
+                            formData.append('emergencyContactPhone', emergencyPhone);
+                            formData.append('emergencyContactRelation', emergencyRelation);
+                            formData.append('licensePlate', licensePlate);
+                            formData.append('vehicleColor', vehicleColor);
+                            formData.append('termsAccepted', termsAccepted);
+                            formData.append('selectedUnitId', selectedUnitId);
+                            formData.append('selectedUnitSize', selectedUnit ? selectedUnit.size : '');
+                            if (fileData) {
+                                formData.append('insuranceFileData', fileData);
+                                formData.append('insuranceFileName', fileName);
+                            }
+                            if (insurancePolicy) {
+                                formData.append('insurancePolicyNumber', insurancePolicy);
+                            }
+                            if (insuranceExpiry) {
+                                formData.append('insuranceExpirationDate', insuranceExpiry);
+                            }
+                            
+                            const response = await fetch(RENTAL_SCRIPT_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: formData.toString()
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                // Show success message with unit assignment
+                                let successMsg = '<div style="padding: 20px; background: #dcfce7; border: 2px solid #10b981; border-radius: 8px; margin-bottom: 20px;">';
+                                successMsg += '<h3 style="margin: 0 0 15px 0; color: #065f46; font-size: 20px;"><i class="fas fa-check-circle"></i> Account Created Successfully!</h3>';
+                                successMsg += '<p style="margin: 0 0 15px 0; color: #047857; font-size: 16px;"><strong>Unit Assigned:</strong> ' + (data.unitNumber || 'N/A') + '</p>';
+                                if (data.gateCode) {
+                                    successMsg += '<div style="background: #fef3c7; padding: 15px; border-radius: 6px; margin: 15px 0;">';
+                                    successMsg += '<p style="margin: 0 0 8px 0; color: #92400e; font-weight: 600;">Your Gate Code:</p>';
+                                    successMsg += '<p style="margin: 0; font-size: 32px; font-weight: 700; color: #b45309; font-family: monospace; letter-spacing: 4px;">' + data.gateCode + '</p>';
+                                    successMsg += '<p style="margin: 8px 0 0 0; color: #92400e; font-size: 12px;">Please save this code - you\'ll need it to access the facility</p>';
+                                    successMsg += '</div>';
+                                }
+                                successMsg += '<p style="margin: 15px 0 0 0; color: #065f46; font-size: 14px;"><strong>First Month Payment:</strong> $' + (data.proratedAmount ? parseFloat(data.proratedAmount).toFixed(2) : '0.00') + '</p>';
+                                successMsg += '<p style="margin: 10px 0 0 0; color: #047857; font-size: 14px;">A confirmation email has been sent with all the details and payment rules.</p>';
+                                successMsg += '<p style="margin: 15px 0 0 0; color: #065f46; font-size: 14px; font-weight: 600;">Redirecting you to your profile to complete setup...</p>';
+                                successMsg += '</div>';
+                                
+                                document.getElementById('storageSignupAlert').innerHTML = successMsg;
+                                document.getElementById('storageSignupForm').reset();
+                                
+                                // Redirect to login and auto-login after 3 seconds
+                                setTimeout(() => {
+                                    if (data.redirectToProfile && data.email) {
+                                        // Auto-login and redirect to profile
+                                        currentUser = { email: data.email };
+                                        hideStorageSignupForm();
+                                        loadDashboard();
+                                        setTimeout(() => switchTab('profile'), 500);
+                                    } else {
+                                        hideStorageSignupForm();
+                                        showLoginForm();
+                                        document.getElementById('loginEmail').value = email;
+                                    }
+                                }, 3000);
+                            } else {
+                                document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">' + (data.message || 'Error creating account') + '</div>';
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = originalText;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Signup error:', error);
+                        document.getElementById('storageSignupAlert').innerHTML = '<div class="alert alert-error">Error creating account. Please try again.</div>';
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+
+                // Update prorated total when date changes
+                const startDateInput = document.getElementById('storageStartDate');
+                const powerCheckbox = document.getElementById('storageIncludePower');
+                if (startDateInput) {
+                    startDateInput.addEventListener('change', updateStorageProratedTotal);
+                }
+                if (powerCheckbox) {
+                    powerCheckbox.addEventListener('change', updateStorageProratedTotal);
+                }
+                // Insurance radio buttons already handled by updateInsuranceOptions()
+            }
+        });
+    </script>
+</body>
+</html>
+

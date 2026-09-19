@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Report Web App</title>
+  <style>
+    :root {
+      --bg: #0a1f4e;
+      --card: #112c68;
+      --card-2: #17387f;
+      --accent: #1e90d4;
+      --text: #ffffff;
+      --muted: #b7caef;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --radius: 16px;
+      --touch: 48px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+
+    .app {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 12px 24px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(180deg, rgba(10,31,78,0.98), rgba(10,31,78,0.92));
+      backdrop-filter: blur(5px);
+      padding: 8px 0 12px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 14px;
+    }
+
+    .logo-wrap img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .logo-wrap h1 {
+      font-size: 16px;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .nav button {
+      min-height: var(--touch);
+      border: 0;
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 8px;
+    }
+
+    .nav button.active {
+      background: var(--accent);
+    }
+
+    .view { display: none; margin-top: 12px; }
+    .view.active { display: block; }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+      margin-bottom: 10px;
+    }
+
+    .appointment-card {
+      border: 1px solid rgba(255,255,255,0.14);
+      cursor: pointer;
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    .badge.warn { background: rgba(245,158,11,.18); color: #ffd38e; border: 1px solid rgba(245,158,11,.5); }
+    .badge.ok { background: rgba(34,197,94,.18); color: #a7f3d0; border: 1px solid rgba(34,197,94,.5); }
+    .badge.status { background: rgba(30,144,212,.2); color: #d7efff; }
+
+    .btn {
+      min-height: var(--touch);
+      padding: 12px 14px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .btn.secondary { background: var(--card-2); }
+    .btn.ghost { background: transparent; border: 1px solid rgba(255,255,255,.25); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+
+    @media (min-width: 680px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .input, select, textarea {
+      width: 100%;
+      min-height: var(--touch);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      background: #0e2a64;
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    textarea { min-height: 100px; }
+
+    label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+
+    .accordion .section {
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 10px;
+      background: var(--card);
+    }
+
+    .section-head {
+      min-height: var(--touch);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .section-body {
+      max-height: 0;
+      transition: max-height .28s ease;
+      overflow: hidden;
+      padding: 0 14px;
+    }
+
+    .section.open .section-body {
+      max-height: 2000px;
+      padding-bottom: 14px;
+    }
+
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 1fr 140px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .helper { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .table-like { border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); }
+    .table-row { display: grid; grid-template-columns: 1fr 70px 90px 80px 70px; gap: 6px; padding: 8px; background: rgba(255,255,255,.03); border-bottom: 1px solid rgba(255,255,255,.08); }
+
+    .thumbs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .thumb {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px;
+      padding: 8px;
+    }
+    .thumb img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; }
+
+    .equipment-card {
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      padding: 10px;
+      margin-bottom: 8px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .toast-wrap {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      display: grid;
+      gap: 8px;
+      max-width: 360px;
+    }
+
+    .toast {
+      background: #fff;
+      color: #111827;
+      border-left: 6px solid #1e90d4;
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.25);
+      animation: slideIn .2s ease;
+      font-size: 14px;
+    }
+
+    .toast.success { border-left-color: var(--ok); }
+    .toast.error { border-left-color: var(--danger); }
+
+    @keyframes slideIn {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .loading { opacity: 0.6; pointer-events: none; }
+
+    canvas {
+      width: 100%;
+      height: 160px;
+      background: #fff;
+      border-radius: 12px;
+      touch-action: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="topbar">
+      <div class="logo-wrap">
+        <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763-p-500.jpg" alt="A Quality Pool Company" />
+        <h1>A Quality Pool Company<br><span class="muted small">Service Report Web App</span></h1>
+      </div>
+      <div class="nav">
+        <button class="active" id="navDashboard" onclick="showView('dashboard')">Dashboard</button>
+        <button id="navReport" onclick="showView('report')">Service Report</button>
+        <button id="navEquipment" onclick="showView('equipment')">Equipment</button>
+      </div>
+    </div>
+
+    <section id="view-dashboard" class="view active">
+      <div class="card row" style="flex-wrap:wrap; gap:12px;">
+        <div style="min-width:220px;">
+          <div style="font-weight:700;">Appointments (Last 7 Days)</div>
+          <div class="muted small">⚠️ missing report / ✅ report complete</div>
+        </div>
+        <div style="min-width:220px;">
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Sort by</label>
+          <select class="input" onchange="setAppointmentSort(this.value)">
+            <option value="date">Date</option>
+            <option value="customer">Customer</option>
+          </select>
+        </div>
+        <button class="btn secondary" style="width:auto;margin:0;" onclick="loadAppointments()">Refresh</button>
+      </div>
+      <div id="appointmentsList"></div>
+    </section>
+
+    <section id="view-report" class="view">
+      <div class="card">
+        <div style="font-weight:700; margin-bottom:6px;">Current Appointment</div>
+        <div id="selectedApptMeta" class="muted small">Select an appointment from Dashboard.</div>
+      </div>
+
+      <div class="card">
+        <div style="font-weight:700; margin-bottom:6px;">Report Details</div>
+        <div class="grid-3" style="gap:8px;">
+          <div>
+            <label>Customer Name</label>
+            <input id="manualCustomerName" class="input" placeholder="Customer name" oninput="updateManualCustomerField('name', this.value)" />
+          </div>
+          <div>
+            <label>Customer Email</label>
+            <input id="manualCustomerEmail" class="input" placeholder="Customer email" oninput="updateManualCustomerField('email', this.value)" />
+          </div>
+          <div>
+            <label>Customer Phone</label>
+            <input id="manualCustomerPhone" class="input" placeholder="Customer phone" oninput="updateManualCustomerField('phone', this.value)" />
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:10px; gap:8px;">
+          <div>
+            <label>Appointment Type</label>
+            <select id="manualServiceType" class="input" onchange="setServiceType(this.value)">
+              <option value="">Select type...</option>
+              <option value="Opening">Opening</option>
+              <option value="Weekly Service">Weekly Service</option>
+              <option value="Repair">Repair</option>
+              <option value="Inspection">Inspection</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div id="cleaningCheckboxRow" style="display:none; align-self:flex-end;">
+            <label style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" id="cleaningCheckbox" onchange="setCleaningAdded(this.checked)" /> Add Cleaning ($250)
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion" id="reportAccordion">
+        <div class="section open">
+          <div class="section-head" onclick="toggleSection(this)">A. Opening Checklist <span>▾</span></div>
+          <div class="section-body" id="openingChecklistBox"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">B. Customer Equipment Profile <span>▾</span></div>
+          <div class="section-body">
+            <div id="equipmentInlineList"></div>
+            <button class="btn secondary" onclick="addEquipmentInline()">Add Equipment</button>
+            <button class="btn" onclick="saveInlineEquipment()">Save Equipment Profile</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">C. Water Chemistry <span>▾</span></div>
+          <div class="section-body" id="chemistryBox"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">D. Chemicals Added <span>▾</span></div>
+          <div class="section-body">
+            <div class="grid-2" id="presetChemBtns"></div>
+            <div class="table-like" id="chemicalsTable"></div>
+            <button class="btn secondary" onclick="addChemicalRow()">Add Chemical Row</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">E. Actions Performed <span>▾</span></div>
+          <div class="section-body" id="actionsBox"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">F. Equipment Readings <span>▾</span></div>
+          <div class="section-body" id="equipmentReadingsBox"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">G. Photo Documentation <span>▾</span></div>
+          <div class="section-body">
+            <input class="input" id="photoInput" type="file" accept="image/*" multiple onchange="handlePhotoUpload(event)" />
+            <div class="thumbs" id="photoThumbs"></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">H. Closing Checklist <span>▾</span></div>
+          <div class="section-body" id="closingChecklistBox"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">I. Recommended Options / Notes / Signature <span>▾</span></div>
+          <div class="section-body">
+            <label>Recommendations</label>
+            <textarea id="recommendationText" placeholder="Recommended services / repairs..."></textarea>
+            <div class="table-like" id="recommendedTable"></div>
+            <button class="btn secondary" onclick="addRecommendedRow()">Add Recommended Service</button>
+            <label style="margin-top:10px;">General Notes</label>
+            <textarea id="notesField" placeholder="Technician notes..."></textarea>
+            <label style="margin-top:10px;">Technician Signature</label>
+            <canvas id="signaturePad"></canvas>
+            <button class="btn ghost" onclick="clearSignature()">Clear Signature</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head" onclick="toggleSection(this)">J. Invoice / Billing <span>▾</span></div>
+          <div class="section-body">
+            <div class="table-like" id="invoiceTable"></div>
+            <button class="btn secondary" onclick="addInvoiceRow()">Add Line Item</button>
+            <button class="btn secondary" onclick="addRecommendedToInvoice()">Add Recommended Options</button>
+            <div class="grid-3" style="margin-top:8px;">
+              <div><label>Subtotal</label><input id="invSubtotal" class="input" readonly /></div>
+              <div><label>Tax</label><input id="invTax" class="input" value="0" oninput="recalcInvoice()" /></div>
+              <div><label>Total</label><input id="invTotal" class="input" readonly /></div>
+            </div>
+            <button class="btn" onclick="saveInvoiceAction()">Save Invoice</button>
+            <button class="btn secondary" onclick="sendInvoiceAction()">Send Invoice</button>
+            <button class="btn ghost" onclick="sendServiceReportAction()">Send Service Report</button>
+            <button class="btn secondary" onclick="draftTextAction()">Draft Text</button>
+            <button class="btn ghost" onclick="sendTelegramAction()">Send to Telegram</button>
+
+            <div class="card" style="margin-top:10px;padding:10px;">
+              <label>Draft Text Preview</label>
+              <textarea id="draftTextPreview" placeholder="Tap Draft Text to generate a full customer text message..." style="min-height:140px;"></textarea>
+              <button class="btn secondary" onclick="copyDraftTextAction()">Copy Draft Text</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" onclick="saveReportAction()">Save Service Report</button>
+    </section>
+
+    <section id="view-equipment" class="view">
+      <div class="card">
+        <label>Select Customer</label>
+        <input class="input" id="customerSearch" placeholder="Search by name or ID" oninput="renderCustomerOptions()" />
+        <select id="customerSelect" class="input" onchange="loadCustomerEquipmentManager()"></select>
+      </div>
+      <div id="customerEquipmentManager"></div>
+      <button class="btn secondary" onclick="addEquipmentManagerRow()">Add New Equipment</button>
+      <button class="btn" onclick="saveEquipmentManager()">Save Equipment Profile</button>
+    </section>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script>
+    const state = {
+      appointments: [],
+      selectedAppointment: null,
+      report: null,
+      equipmentInline: [],
+      photos: [],
+      customers: [],
+      managerEquipment: [],
+      currentInvoiceId: '',
+      manualCustomer: { name: '', email: '', phone: '' },
+      serviceType: '',
+      cleaningAdded: false,
+      sortBy: 'date'
+    };
+
+    const openingItems = [
+      'Gate closed on arrival', 'Water level OK', 'Equipment running', 'Visible damage', 'Debris in pool', 'Safety equipment present'
+    ];
+    const closingItems = [
+      'Gate closed/locked', 'Equipment running properly', 'Chemical feeder filled', 'Timer set correctly', 'Area cleaned up', 'Customer notified'
+    ];
+    const chemistryFields = [
+      ['pH', '7.2-7.6'], ['Free Chlorine', '1-3 ppm'], ['Total Chlorine', '1-4 ppm'], ['Alkalinity', '80-120 ppm'],
+      ['Stabilizer/CYA', '30-80 ppm'], ['Calcium Hardness', '200-400 ppm'], ['Salt (ppm)', '2700-3400 ppm'],
+      ['Phosphates', '0-200 ppb'], ['TDS', '< 1500'], ['Water Temp', '78-84°F']
+    ];
+    const actionPresets = [
+      'Vacuumed', 'Brushed walls', 'Skimmed surface', 'Emptied baskets', 'Backwashed filter', 'Cleaned filter',
+      'Checked equipment', 'Adjusted water level', 'Removed algae', 'Winterized', 'Opened pool', 'Closed pool'
+    ];
+
+    function showView(view) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('view-' + view).classList.add('active');
+      document.getElementById('nav' + capitalize(view)).classList.add('active');
+    }
+
+    function capitalize(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    function toast(msg, type) {
+      const wrap = document.getElementById('toastWrap');
+      const el = document.createElement('div');
+      el.className = 'toast ' + (type || '');
+      el.textContent = msg;
+      wrap.appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
+
+    function setAppointmentSort(value) {
+      state.sortBy = String(value || 'date');
+      renderAppointments();
+    }
+
+    function setLoading(on) {
+      document.getElementById('app').classList.toggle('loading', !!on);
+    }
+
+    function updateManualCustomerField(field, value) {
+      state.manualCustomer[field] = String(value || '').trim();
+    }
+
+    function setServiceType(value) {
+      state.serviceType = String(value || '');
+      updateCleaningVisibility();
+      syncOpeningPricing();
+    }
+
+    function setCleaningAdded(checked) {
+      state.cleaningAdded = !!checked;
+      syncOpeningPricing();
+    }
+
+    function updateCleaningVisibility() {
+      const row = document.getElementById('cleaningCheckboxRow');
+      if (!row) return;
+      row.style.display = state.serviceType === 'Opening' ? 'block' : 'none';
+    }
+
+    function findInvoiceRowElement(description) {
+      return Array.from(document.querySelectorAll('#invoiceTable .table-row')).find(r => {
+        const desc = r.querySelector('[data-inv-desc]');
+        return desc && String(desc.value || '').trim() === description;
+      });
+    }
+
+    function ensureInvoiceLine(description, qty, unitPrice) {
+      const existing = findInvoiceRowElement(description);
+      if (existing) {
+        existing.querySelector('[data-inv-qty]').value = qty;
+        existing.querySelector('[data-inv-unit]').value = Number(unitPrice || 0).toFixed(2);
+        recalcInvoice();
+        return;
+      }
+      addInvoiceRow({ description: description, qty: qty, unitPrice: unitPrice });
+    }
+
+    function removeInvoiceLine(description) {
+      const existing = findInvoiceRowElement(description);
+      if (existing) {
+        existing.remove();
+        recalcInvoice();
+      }
+    }
+
+    function syncOpeningPricing() {
+      if (state.serviceType === 'Opening') {
+        ensureInvoiceLine('Opening Service', 1, 250);
+        if (state.cleaningAdded) {
+          ensureInvoiceLine('Cleaning Service', 1, 250);
+        } else {
+          removeInvoiceLine('Cleaning Service');
+        }
+      } else {
+        removeInvoiceLine('Opening Service');
+        removeInvoiceLine('Cleaning Service');
+      }
+      recalcInvoice();
+    }
+
+    const SR_DEFAULT_API_URL = (window.location.hostname !== 'script.google.com')
+      ? '/.netlify/functions/gas-proxy?t=sr'
+      : 'https://script.google.com/macros/s/AKfycbwIQFP_7t1zr74hGD6bZ4IopoHaOzZ971J0FhGTI_AA1fk4w9dfv--sB3QsVwUD9jFg/exec';
+
+    function callServer(fnName, ...args) {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        return new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)[fnName](...args);
+        });
+      }
+
+      const baseUrl = window.SR_API_URL || SR_DEFAULT_API_URL;
+      const url = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 'api=1';
+
+      const form = new URLSearchParams();
+      form.set('api', '1');
+      form.set('action', fnName);
+      form.set('args', JSON.stringify(args || []));
+
+      return fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: form.toString()
+      })
+      .then(resp => {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status + ' ' + resp.statusText);
+        return resp.json();
+      })
+      .then(payload => {
+        if (!payload || payload.success !== true) {
+          throw new Error((payload && payload.error) || 'API error');
+        }
+        return payload.result;
+      });
+    }
+
+    function safeParse(v, fallback) {
+      try {
+        if (v === null || v === undefined || v === '') return fallback;
+        if (typeof v === 'object') return v;
+        return JSON.parse(v);
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function toggleSection(headEl) {
+      headEl.closest('.section').classList.toggle('open');
+    }
+
+    async function loadAppointments() {
+      setLoading(true);
+      try {
+        const rows = await callServer('getAppointmentsLastWeek');
+        state.appointments = Array.isArray(rows) ? rows : [];
+        renderAppointments();
+      } catch (err) {
+        toast('Failed loading appointments: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderAppointments() {
+      const root = document.getElementById('appointmentsList');
+      if (!state.appointments.length) {
+        root.innerHTML = '<div class="card muted">No appointments in last 7 days.</div>';
+        return;
+      }
+      const appointments = state.appointments.slice();
+      appointments.sort((a, b) => {
+        if (state.sortBy === 'customer') {
+          const aName = String(a.customerName || '').toLowerCase();
+          const bName = String(b.customerName || '').toLowerCase();
+          if (aName < bName) return -1;
+          if (aName > bName) return 1;
+          return 0;
+        }
+        const aDate = new Date(a.date + 'T' + (a.time || '00:00:00')).getTime() || 0;
+        const bDate = new Date(b.date + 'T' + (b.time || '00:00:00')).getTime() || 0;
+        return bDate - aDate;
+      });
+      root.innerHTML = appointments.map(a => {
+        const reportBadge = a.hasReport
+          ? '<span class="badge ok">✅ Report Complete</span>'
+          : '<span class="badge warn">⚠️ Report Missing</span>';
+        return `
+          <div class="card appointment-card" onclick="openAppointment('${String(a.appointmentId).replace(/'/g, '&#39;')}')">
+            <div class="row">
+              <div style="font-weight:700;">${escapeHtml(a.customerName || 'Unknown')}</div>
+              ${reportBadge}
+            </div>
+            <div class="small muted" style="margin-top:6px;">${escapeHtml(a.address || '')}</div>
+            <div class="row small" style="margin-top:8px;">
+              <div>${escapeHtml(a.date || '')} ${escapeHtml(a.time || '')}</div>
+              <span class="badge status">${escapeHtml(a.status || 'Unknown')}</span>
+            </div>
+            <div class="small" style="margin-top:6px;">${escapeHtml(a.serviceType || '')}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function openAppointment(appointmentId) {
+      const appt = state.appointments.find(a => String(a.appointmentId) === String(appointmentId));
+      if (!appt) return;
+      state.selectedAppointment = appt;
+      state.currentInvoiceId = appt.linkedInvoiceId || '';
+      state.manualCustomer = {
+        name: appt.customerName || '',
+        email: appt.customerEmail || '',
+        phone: appt.customerPhone || ''
+      };
+      state.serviceType = appt.serviceType || '';
+      state.cleaningAdded = false;
+
+      document.getElementById('selectedApptMeta').innerHTML =
+        `<strong>${escapeHtml(appt.customerName)}</strong><br>${escapeHtml(appt.address || '')}<br>${escapeHtml(appt.date || '')} ${escapeHtml(appt.time || '')}`;
+
+      showView('report');
+      setLoading(true);
+      try {
+        const report = await callServer('getServiceReport', appt.appointmentId);
+        state.report = report || null;
+        const equipment = await callServer('getCustomerEquipment', appt.customerId);
+        state.equipmentInline = Array.isArray(equipment) ? equipment : [];
+        const invoice = await callServer('getInvoiceData', appt.appointmentId);
+        renderReportForm(report, invoice);
+      } catch (err) {
+        toast('Error opening appointment: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderChecklistBox(containerId, items, values) {
+      const root = document.getElementById(containerId);
+      const existing = values || {};
+      root.innerHTML = items.map(item => `
+        <div class="toggle-row">
+          <div>${escapeHtml(item)}</div>
+          <select class="input" data-check-item="${escapeHtml(item)}">
+            <option value="Yes" ${existing[item] === 'Yes' ? 'selected' : ''}>Yes</option>
+            <option value="No" ${existing[item] === 'No' ? 'selected' : ''}>No</option>
+            <option value="N/A" ${existing[item] === 'N/A' ? 'selected' : ''}>N/A</option>
+          </select>
+        </div>
+      `).join('');
+    }
+
+    function renderChemistryBox(values) {
+      const root = document.getElementById('chemistryBox');
+      const v = values || {};
+      root.innerHTML = chemistryFields.map(([name, ideal]) => `
+        <div style="margin-bottom:8px;">
+          <label>${escapeHtml(name)}</label>
+          <input class="input" data-chem="${escapeHtml(name)}" value="${escapeAttr(v[name] || '')}" />
+          <div class="helper">Ideal: ${escapeHtml(ideal)}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderPresetChemButtons() {
+      const root = document.getElementById('presetChemBtns');
+      const names = ['Chlorine', 'Shock', 'Algaecide', 'pH Up', 'pH Down', 'Alkalinity Up', 'CYA', 'Salt', 'Clarifier'];
+      root.innerHTML = names.map(n => `<button class="btn secondary" onclick="addPresetChemical('${escapeAttr(n)}')">${escapeHtml(n)}</button>`).join('');
+    }
+
+    function addPresetChemical(name) {
+      addChemicalRow({ name, amount: '', unit: 'oz' });
+    }
+
+    function addChemicalRow(data) {
+      const root = document.getElementById('chemicalsTable');
+      const row = document.createElement('div');
+      row.className = 'table-row';
+      row.innerHTML = `
+        <input class="input" data-chem-name value="${escapeAttr((data && data.name) || '')}" placeholder="Chemical Name" />
+        <input class="input" data-chem-amt value="${escapeAttr((data && data.amount) || '')}" placeholder="Amt" />
+        <select class="input" data-chem-unit>
+          ${['oz','lbs','gallons','tablets'].map(u => `<option value="${u}" ${(data && data.unit === u) ? 'selected' : ''}>${u}</option>`).join('')}
+        </select>
+        <div></div>
+        <button class="btn ghost" onclick="this.parentElement.remove()">Remove</button>
+      `;
+      root.appendChild(row);
+    }
+
+    function renderActionsBox(text) {
+      const existing = safeParse(text, {});
+      const selected = existing.selected || [];
+      const note = existing.note || '';
+      const root = document.getElementById('actionsBox');
+      root.innerHTML = `
+        <div class="grid-2">
+          ${actionPresets.map(a => `
+            <label style="display:flex;align-items:center;gap:8px;color:#fff;">
+              <input type="checkbox" data-action="${escapeAttr(a)}" ${selected.includes(a) ? 'checked' : ''} /> ${escapeHtml(a)}
+            </label>`).join('')}
+        </div>
+        <label style="margin-top:10px;">Action Notes</label>
+        <textarea id="actionsNote">${escapeHtml(note)}</textarea>
+      `;
+    }
+
+    function renderEquipmentReadingsBox(values) {
+      const v = values || {};
+      const fields = ['Pump PSI', 'Filter PSI', 'Salt Cell reading', 'Flow rate', 'Run time'];
+      document.getElementById('equipmentReadingsBox').innerHTML = fields.map(f => `
+        <div style="margin-bottom:8px;">
+          <label>${escapeHtml(f)}</label>
+          <input class="input" data-eq-read="${escapeAttr(f)}" value="${escapeAttr(v[f] || '')}" />
+        </div>
+      `).join('');
+    }
+
+    function renderPhotos() {
+      const root = document.getElementById('photoThumbs');
+      if (!state.photos.length) {
+        root.innerHTML = '<div class="muted small">No photos added yet.</div>';
+        return;
+      }
+      root.innerHTML = state.photos.map((p, i) => `
+        <div class="thumb">
+          <img src="${p.data}" alt="Photo ${i + 1}" />
+          <select class="input" onchange="state.photos[${i}].label=this.value">
+            ${['Before','After','Issue','Equipment'].map(l => `<option ${p.label===l?'selected':''}>${l}</option>`).join('')}
+          </select>
+          <input class="input" placeholder="Caption" value="${escapeAttr(p.caption || '')}" oninput="state.photos[${i}].caption=this.value" />
+          <button class="btn ghost" onclick="removePhoto(${i})">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    function removePhoto(i){ state.photos.splice(i,1); renderPhotos(); }
+
+    function handlePhotoUpload(event) {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
+      const readers = files.map(file => new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => resolve({ data: r.result, label: 'Before', caption: file.name || '' });
+        r.readAsDataURL(file);
+      }));
+      Promise.all(readers).then(items => {
+        state.photos = state.photos.concat(items);
+        renderPhotos();
+      });
+    }
+
+    function renderEquipmentInline() {
+      const root = document.getElementById('equipmentInlineList');
+      if (!state.equipmentInline.length) {
+        root.innerHTML = '<div class="muted small">No equipment profile on file.</div>';
+        return;
+      }
+      root.innerHTML = state.equipmentInline.map((e, i) => `
+        <div class="equipment-card">
+          <div class="row"><strong>${escapeHtml(e.type || 'Equipment')}</strong><button class="btn ghost" style="width:auto;margin:0;" onclick="deleteEquipmentInline(${i})">Delete</button></div>
+          <div class="grid-2" style="margin-top:8px;">
+            <input class="input" placeholder="Type" value="${escapeAttr(e.type || '')}" oninput="state.equipmentInline[${i}].type=this.value" />
+            <input class="input" placeholder="Brand" value="${escapeAttr(e.brand || '')}" oninput="state.equipmentInline[${i}].brand=this.value" />
+            <input class="input" placeholder="Model" value="${escapeAttr(e.model || '')}" oninput="state.equipmentInline[${i}].model=this.value" />
+            <input class="input" placeholder="Install date" value="${escapeAttr(e.installDate || '')}" oninput="state.equipmentInline[${i}].installDate=this.value" />
+          </div>
+          <textarea placeholder="Notes" oninput="state.equipmentInline[${i}].notes=this.value">${escapeHtml(e.notes || '')}</textarea>
+        </div>
+      `).join('');
+    }
+
+    function addEquipmentInline() {
+      state.equipmentInline.push({ type: 'Pump', brand: '', model: '', installDate: '', notes: '' });
+      renderEquipmentInline();
+    }
+
+    function deleteEquipmentInline(i) {
+      state.equipmentInline.splice(i, 1);
+      renderEquipmentInline();
+    }
+
+    async function saveInlineEquipment() {
+      if (!state.selectedAppointment) return toast('Select appointment first', 'error');
+      setLoading(true);
+      try {
+        await callServer('saveCustomerEquipment', state.selectedAppointment.customerId, state.equipmentInline);
+        toast('Equipment profile saved', 'success');
+      } catch (err) {
+        toast('Save failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderRecommendedTable(items) {
+      const root = document.getElementById('recommendedTable');
+      const rows = items || [];
+      root.innerHTML = '';
+      rows.forEach(addRecommendedRow);
+      if (!rows.length) addRecommendedRow();
+    }
+
+    function addRecommendedRow(prefill) {
+      const root = document.getElementById('recommendedTable');
+      const row = document.createElement('div');
+      row.className = 'table-row';
+      row.style.gridTemplateColumns = '1fr 100px 80px';
+      row.innerHTML = `
+        <input class="input" data-rec-desc placeholder="Description" value="${escapeAttr((prefill && prefill.description) || '')}" />
+        <input class="input" data-rec-price placeholder="Price" value="${escapeAttr((prefill && prefill.price) || '')}" />
+        <button class="btn ghost" onclick="this.parentElement.remove()">Delete</button>
+      `;
+      root.appendChild(row);
+    }
+
+    function getRecommendedRows() {
+      return Array.from(document.querySelectorAll('#recommendedTable .table-row')).map(r => ({
+        description: r.querySelector('[data-rec-desc]').value || '',
+        price: Number(r.querySelector('[data-rec-price]').value || 0)
+      })).filter(x => x.description || x.price);
+    }
+
+    function renderInvoiceRows(items) {
+      const root = document.getElementById('invoiceTable');
+      root.innerHTML = '';
+      (items && items.length ? items : [{ description:'', qty:1, unitPrice:0 }]).forEach(addInvoiceRow);
+      recalcInvoice();
+    }
+
+    function addInvoiceRow(prefill) {
+      const root = document.getElementById('invoiceTable');
+      const row = document.createElement('div');
+      row.className = 'table-row';
+      row.innerHTML = `
+        <input class="input" data-inv-desc placeholder="Description" value="${escapeAttr((prefill && prefill.description) || '')}" />
+        <input class="input" data-inv-qty placeholder="Qty" value="${escapeAttr((prefill && prefill.qty) || 1)}" oninput="recalcInvoice()" />
+        <input class="input" data-inv-unit placeholder="Unit Price" value="${escapeAttr((prefill && prefill.unitPrice) || 0)}" oninput="recalcInvoice()" />
+        <input class="input" data-inv-total readonly value="0" />
+        <button class="btn ghost" onclick="this.parentElement.remove();recalcInvoice()">Delete</button>
+      `;
+      root.appendChild(row);
+      recalcInvoice();
+    }
+
+    function addRecommendedToInvoice() {
+      const recs = getRecommendedRows();
+      recs.forEach(r => addInvoiceRow({ description: r.description, qty: 1, unitPrice: Number(r.price || 0) }));
+    }
+
+    function getInvoiceRows() {
+      return Array.from(document.querySelectorAll('#invoiceTable .table-row')).map(r => {
+        const qty = Number(r.querySelector('[data-inv-qty]').value || 0);
+        const unitPrice = Number(r.querySelector('[data-inv-unit]').value || 0);
+        const total = qty * unitPrice;
+        r.querySelector('[data-inv-total]').value = total.toFixed(2);
+        return {
+          description: r.querySelector('[data-inv-desc]').value || '',
+          qty,
+          unitPrice,
+          total
+        };
+      }).filter(x => x.description || x.qty || x.unitPrice);
+    }
+
+    function recalcInvoice() {
+      const lines = getInvoiceRows();
+      const subtotal = lines.reduce((s, x) => s + Number(x.total || 0), 0);
+      const tax = Number(document.getElementById('invTax').value || 0);
+      document.getElementById('invSubtotal').value = subtotal.toFixed(2);
+      document.getElementById('invTotal').value = (subtotal + tax).toFixed(2);
+    }
+
+    function collectChecklist(containerId) {
+      const out = {};
+      document.querySelectorAll('#' + containerId + ' [data-check-item]').forEach(el => {
+        out[el.getAttribute('data-check-item')] = el.value;
+      });
+      return out;
+    }
+
+    function collectChemistry() {
+      const out = {};
+      document.querySelectorAll('[data-chem]').forEach(el => out[el.getAttribute('data-chem')] = el.value || '');
+      return out;
+    }
+
+    function collectChemicalsAdded() {
+      return Array.from(document.querySelectorAll('#chemicalsTable .table-row')).map(r => ({
+        name: r.querySelector('[data-chem-name]').value || '',
+        amount: r.querySelector('[data-chem-amt]').value || '',
+        unit: r.querySelector('[data-chem-unit]').value || ''
+      })).filter(x => x.name || x.amount);
+    }
+
+    function collectActionsPerformed() {
+      const selected = Array.from(document.querySelectorAll('[data-action]:checked')).map(el => el.getAttribute('data-action'));
+      const note = (document.getElementById('actionsNote') || {}).value || '';
+      return JSON.stringify({ selected, note });
+    }
+
+    function collectEquipmentReadings() {
+      const out = {};
+      document.querySelectorAll('[data-eq-read]').forEach(el => out[el.getAttribute('data-eq-read')] = el.value || '');
+      return out;
+    }
+
+    function collectSignature() {
+      try { return document.getElementById('signaturePad').toDataURL('image/png'); }
+      catch (e) { return ''; }
+    }
+
+    function buildReportPayload() {
+      const appt = state.selectedAppointment;
+      if (!appt) return null;
+      const recRows = getRecommendedRows();
+      return {
+        reportId: state.report && state.report.reportId ? state.report.reportId : '',
+        appointmentId: appt.appointmentId,
+        customerId: appt.customerId,
+        customerName: state.manualCustomer.name || appt.customerName,
+        date: appt.date,
+        serviceType: state.serviceType || appt.serviceType,
+        techName: '',
+        openingChecklist: collectChecklist('openingChecklistBox'),
+        waterChemistry: collectChemistry(),
+        chemicalsAdded: collectChemicalsAdded(),
+        actionsPerformed: collectActionsPerformed(),
+        equipmentReadings: collectEquipmentReadings(),
+        closingChecklist: collectChecklist('closingChecklistBox'),
+        recommendedOptions: recRows,
+        photos: state.photos,
+        notes: (document.getElementById('notesField').value || '') + '\n\nSignature: ' + collectSignature(),
+        invoiceId: state.currentInvoiceId || ''
+      };
+    }
+
+    async function saveReportAction() {
+      const payload = buildReportPayload();
+      if (!payload) return toast('Select appointment first', 'error');
+      setLoading(true);
+      try {
+        const res = await callServer('saveServiceReport', payload);
+        if (res && res.reportId) {
+          state.report = state.report || {};
+          state.report.reportId = res.reportId;
+          toast('Service report saved: ' + res.reportId, 'success');
+          await loadAppointments();
+        }
+      } catch (err) {
+        toast('Save report failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function sendServiceReportAction() {
+      if (!state.report || !state.report.reportId) {
+        await saveReportAction();
+      }
+      if (!state.report || !state.report.reportId) return;
+      setLoading(true);
+      try {
+        await callServer('sendServiceReportEmail', state.report.reportId);
+        toast('Service report emailed to customer', 'success');
+      } catch (err) {
+        toast('Email failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function draftTextAction() {
+      if (!state.report || !state.report.reportId) {
+        await saveReportAction();
+      }
+      if (!state.report || !state.report.reportId) return;
+
+      setLoading(true);
+      try {
+        const res = await callServer('getServiceReportDraftText', state.report.reportId);
+        const txt = (res && res.draftText) ? res.draftText : '';
+        document.getElementById('draftTextPreview').value = txt;
+        toast('Draft text generated', 'success');
+      } catch (err) {
+        toast('Draft text failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function sendTelegramAction() {
+      if (!state.report || !state.report.reportId) {
+        await saveReportAction();
+      }
+      if (!state.report || !state.report.reportId) return;
+
+      setLoading(true);
+      try {
+        const res = await callServer('sendServiceReportTelegram', state.report.reportId);
+        if (res && res.draftText) {
+          document.getElementById('draftTextPreview').value = res.draftText;
+        }
+        toast('Service details sent to Telegram', 'success');
+      } catch (err) {
+        toast('Telegram send failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function copyDraftTextAction() {
+      const txt = (document.getElementById('draftTextPreview').value || '').trim();
+      if (!txt) return toast('No draft text to copy', 'error');
+
+      try {
+        await navigator.clipboard.writeText(txt);
+        toast('Draft text copied', 'success');
+      } catch (err) {
+        toast('Copy failed', 'error');
+      }
+    }
+
+    async function saveInvoiceAction() {
+      if (!state.selectedAppointment) return toast('Select appointment first', 'error');
+      const lines = getInvoiceRows();
+      const subtotal = Number(document.getElementById('invSubtotal').value || 0);
+      const tax = Number(document.getElementById('invTax').value || 0);
+      const total = Number(document.getElementById('invTotal').value || 0);
+      setLoading(true);
+      try {
+        const res = await callServer('saveInvoice', {
+          invoiceId: state.currentInvoiceId || '',
+          appointmentId: state.selectedAppointment.appointmentId,
+          customerId: state.selectedAppointment.customerId,
+          customerName: state.manualCustomer.name || state.selectedAppointment.customerName,
+          date: state.selectedAppointment.date,
+          lineItems: lines,
+          subtotal, tax, total,
+          status: 'Draft'
+        });
+        state.currentInvoiceId = res.invoiceId || '';
+        toast('Invoice saved: ' + state.currentInvoiceId, 'success');
+        await saveReportAction();
+      } catch (err) {
+        toast('Save invoice failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function sendInvoiceAction() {
+      if (!state.currentInvoiceId) {
+        await saveInvoiceAction();
+      }
+      if (!state.currentInvoiceId) return;
+      setLoading(true);
+      try {
+        await callServer('sendInvoiceEmail', state.currentInvoiceId);
+        toast('Invoice sent to customer', 'success');
+      } catch (err) {
+        toast('Send invoice failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function renderReportForm(report, invoice) {
+      const r = report || {};
+      renderChecklistBox('openingChecklistBox', openingItems, safeParse(r.openingChecklist, {}));
+      renderChecklistBox('closingChecklistBox', closingItems, safeParse(r.closingChecklist, {}));
+      renderChemistryBox(safeParse(r.waterChemistry, {}));
+      renderPresetChemButtons();
+      document.getElementById('chemicalsTable').innerHTML = '';
+      (safeParse(r.chemicalsAdded, []) || []).forEach(addChemicalRow);
+      if (!document.querySelector('#chemicalsTable .table-row')) addChemicalRow();
+      renderActionsBox(r.actionsPerformed || '{}');
+      renderEquipmentReadingsBox(safeParse(r.equipmentReadings, {}));
+      state.photos = safeParse(r.photos, []);
+      renderPhotos();
+      renderEquipmentInline();
+      document.getElementById('notesField').value = (r.notes || '').replace(/^([\s\S]*?)\n\nSignature:[\s\S]*$/,'$1');
+      renderRecommendedTable(safeParse(r.recommendedOptions, []));
+
+      document.getElementById('manualCustomerName').value = state.manualCustomer.name;
+      document.getElementById('manualCustomerEmail').value = state.manualCustomer.email;
+      document.getElementById('manualCustomerPhone').value = state.manualCustomer.phone;
+      document.getElementById('manualServiceType').value = state.serviceType;
+
+      if (invoice && state.serviceType === 'Opening') {
+        const loadedLines = safeParse(invoice.lineItems, []);
+        state.cleaningAdded = Array.isArray(loadedLines) && loadedLines.some(l => String(l.description || '').trim().toLowerCase() === 'cleaning service');
+      } else if (state.serviceType !== 'Opening') {
+        state.cleaningAdded = false;
+      }
+
+      document.getElementById('cleaningCheckbox').checked = state.cleaningAdded;
+      updateCleaningVisibility();
+      syncOpeningPricing();
+
+      if (invoice) {
+        state.currentInvoiceId = invoice.invoiceId || '';
+        renderInvoiceRows(safeParse(invoice.lineItems, []));
+        document.getElementById('invTax').value = Number(invoice.tax || 0).toFixed(2);
+      } else {
+        renderInvoiceRows([]);
+        document.getElementById('invTax').value = '0';
+      }
+      recalcInvoice();
+    }
+
+    async function loadCustomers() {
+      try {
+        const rows = await callServer('getCustomersBasic');
+        state.customers = Array.isArray(rows) ? rows : [];
+        renderCustomerOptions();
+      } catch (err) {
+        toast('Failed loading customers', 'error');
+      }
+    }
+
+    function renderCustomerOptions() {
+      const q = (document.getElementById('customerSearch').value || '').toLowerCase();
+      const options = state.customers.filter(c => (c.name || '').toLowerCase().includes(q) || (c.customerId || '').toLowerCase().includes(q));
+      const sel = document.getElementById('customerSelect');
+      sel.innerHTML = '<option value="">Select customer...</option>' + options.map(c => `<option value="${escapeAttr(c.customerId)}">${escapeHtml(c.name || c.customerId)} (${escapeHtml(c.customerId)})</option>`).join('');
+    }
+
+    function loadCustomerEquipmentManager() {
+      const id = document.getElementById('customerSelect').value;
+      const customer = state.customers.find(c => String(c.customerId) === String(id));
+      state.managerEquipment = safeParse(customer && customer.equipmentProfile, []);
+      renderManagerEquipment();
+    }
+
+    function renderManagerEquipment() {
+      const root = document.getElementById('customerEquipmentManager');
+      if (!state.managerEquipment.length) {
+        root.innerHTML = '<div class="card muted">No equipment records yet.</div>';
+        return;
+      }
+      root.innerHTML = state.managerEquipment.map((e, i) => `
+        <div class="equipment-card">
+          <div class="row"><strong>${iconForType(e.type)} ${escapeHtml(e.type || 'Equipment')}</strong><button class="btn ghost" style="width:auto;margin:0;" onclick="deleteManagerEquipment(${i})">Delete</button></div>
+          <div class="grid-2" style="margin-top:8px;">
+            <input class="input" placeholder="Type" value="${escapeAttr(e.type || '')}" oninput="state.managerEquipment[${i}].type=this.value" />
+            <input class="input" placeholder="Brand" value="${escapeAttr(e.brand || '')}" oninput="state.managerEquipment[${i}].brand=this.value" />
+            <input class="input" placeholder="Model" value="${escapeAttr(e.model || '')}" oninput="state.managerEquipment[${i}].model=this.value" />
+            <input class="input" placeholder="Install date" value="${escapeAttr(e.installDate || '')}" oninput="state.managerEquipment[${i}].installDate=this.value" />
+          </div>
+          <textarea placeholder="Notes" oninput="state.managerEquipment[${i}].notes=this.value">${escapeHtml(e.notes || '')}</textarea>
+        </div>
+      `).join('');
+    }
+
+    function iconForType(type) {
+      const t = (type || '').toLowerCase();
+      if (t.includes('pump')) return '🌀';
+      if (t.includes('filter')) return '🧰';
+      if (t.includes('heater')) return '🔥';
+      if (t.includes('cleaner')) return '🧹';
+      if (t.includes('light')) return '💡';
+      if (t.includes('salt')) return '🧂';
+      if (t.includes('controller')) return '🎛️';
+      if (t.includes('cover')) return '🛡️';
+      return '🔧';
+    }
+
+    function addEquipmentManagerRow() {
+      state.managerEquipment.push({ type: 'Pump', brand: '', model: '', installDate: '', notes: '' });
+      renderManagerEquipment();
+    }
+
+    function deleteManagerEquipment(i) {
+      state.managerEquipment.splice(i, 1);
+      renderManagerEquipment();
+    }
+
+    async function saveEquipmentManager() {
+      const id = document.getElementById('customerSelect').value;
+      if (!id) return toast('Select a customer first', 'error');
+      setLoading(true);
+      try {
+        await callServer('saveCustomerEquipment', id, state.managerEquipment);
+        toast('Equipment profile saved', 'success');
+        await loadCustomers();
+      } catch (err) {
+        toast('Save failed: ' + (err.message || err), 'error');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    function escapeHtml(v) {
+      return String(v || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeAttr(v) { return escapeHtml(v).replace(/`/g, ''); }
+
+    function setupSignature() {
+      const canvas = document.getElementById('signaturePad');
+      const ctx = canvas.getContext('2d');
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+      ctx.scale(ratio, ratio);
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#0a1f4e';
+      let drawing = false;
+
+      function point(e) {
+        const r = canvas.getBoundingClientRect();
+        const t = e.touches && e.touches[0] ? e.touches[0] : e;
+        return { x: t.clientX - r.left, y: t.clientY - r.top };
+      }
+
+      function start(e){ drawing = true; const p = point(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); e.preventDefault(); }
+      function move(e){ if(!drawing) return; const p = point(e); ctx.lineTo(p.x, p.y); ctx.stroke(); e.preventDefault(); }
+      function end(){ drawing = false; }
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      canvas.addEventListener('mouseup', end);
+      canvas.addEventListener('mouseleave', end);
+      canvas.addEventListener('touchstart', start, { passive:false });
+      canvas.addEventListener('touchmove', move, { passive:false });
+      canvas.addEventListener('touchend', end);
+    }
+
+    function clearSignature() {
+      const canvas = document.getElementById('signaturePad');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function init() {
+      renderPresetChemButtons();
+      renderChecklistBox('openingChecklistBox', openingItems, {});
+      renderChecklistBox('closingChecklistBox', closingItems, {});
+      renderChemistryBox({});
+      renderActionsBox('{}');
+      renderEquipmentReadingsBox({});
+      renderPhotos();
+      renderRecommendedTable([]);
+      renderInvoiceRows([]);
+      addChemicalRow();
+      loadAppointments();
+      loadCustomers();
+      setupSignature();
+      setTimeout(clearSignature, 0);
+    }
+
+    init();
+  </script>
+</body>
+</html>

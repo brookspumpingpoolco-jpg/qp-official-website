@@ -1,0 +1,41 @@
+[build]
+  # Netlify serves everything in this directory
+  publish = "."
+  # Command: none needed (static site + serverless functions)
+  command = ""
+
+[functions]
+  # Netlify Functions directory (contains gas-proxy.mjs)
+  directory = "netlify/functions"
+  # Increase timeout for long-running operations like PDF generation + email sending
+  # Free tier max: 10 seconds, Pro tier max: 26 seconds
+  # Set to Pro tier max to allow PDF generation + email
+  node_bundler = "esbuild"
+
+[build.environment]
+  NODE_VERSION = "20"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+  # Login_Embed uses /.netlify/functions/gas-proxy?t=auth → AuthenticationScript.
+  # If login returns "HTML instead of JSON", set GAS_AUTH_URL in Netlify UI (Site → Env):
+  #   https://script.google.com/macros/s/<YOUR_DEPLOYMENT_ID>/exec
+  # Apps Script: Deploy → Manage deployments → Web app → Who has access: Anyone.
+
+# DEPLOYMENT INSTRUCTIONS:
+# 1. Via CLI: netlify deploy --prod
+# 2. Via Git: Connect GitHub repo to Netlify, set Base directory = "invoice-netlify"
+# 3. DO NOT use drag-and-drop — functions won't deploy
+# 4. Verify deployment: Check that /.netlify/functions/gas-proxy responds
+# 5. IMPORTANT: Functions timeout on free tier is 10 seconds
+#    For sending emails + PDFs, upgrade to Pro tier (26 second timeout)
+#    OR split sendInvoiceEstimate into async tasks
+
+[[redirects]]
+  from = "/"
+  to = "/Login_Embed.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/Dashboard_Embed.html"
+  status = 200
+

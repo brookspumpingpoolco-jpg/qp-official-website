@@ -1,0 +1,348 @@
+<!-- 
+  ===========================================
+  INLINE PAYMENT SCHEDULE BUILDER
+  ===========================================
+  
+  Replace the existing payment schedule section in InvoiceEstimateUI.html
+  with this cleaner, inline version (no modal popup).
+  
+  Find the section around line 2407-2431 and replace with this code.
+-->
+
+<!-- Payment Schedule Builder (Inline - No Modal) -->
+<div id="paymentScheduleSection" style="display: block; margin-top: 24px; padding: 24px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0ea5e9; border-radius: 12px;">
+  
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);">
+        <i class="fas fa-calendar-check" style="color: white; font-size: 18px;"></i>
+      </div>
+      <div>
+        <h2 style="font-size: 18px; margin: 0; color: #0c4a6e; font-weight: 700;">Payment Schedule</h2>
+        <p style="font-size: 13px; margin: 0; color: #0369a1;">Milestone-based payment tracking</p>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-secondary" onclick="autoGeneratePaymentSchedule()" style="padding: 8px 16px; font-size: 13px; background: white; border: 2px solid #0ea5e9; color: #0ea5e9;">
+        <i class="fas fa-magic"></i> Auto-Generate
+      </button>
+      <button class="btn btn-success" onclick="addPaymentMilestone()" style="padding: 8px 16px; font-size: 13px;">
+        <i class="fas fa-plus"></i> Add Milestone
+      </button>
+    </div>
+  </div>
+
+  <!-- Payment Schedule Table -->
+  <div id="paymentScheduleTable" style="background: white; border-radius: 8px; border: 2px solid #bae6fd; overflow: hidden;">
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);">
+          <th style="padding: 12px 16px; text-align: left; color: #0c4a6e; font-weight: 600; font-size: 13px; width: 40%;">Milestone Name</th>
+          <th style="padding: 12px 16px; text-align: center; color: #0c4a6e; font-weight: 600; font-size: 13px; width: 15%;">Percent</th>
+          <th style="padding: 12px 16px; text-align: right; color: #0c4a6e; font-weight: 600; font-size: 13px; width: 25%;">Amount</th>
+          <th style="padding: 12px 16px; text-align: center; color: #0c4a6e; font-weight: 600; font-size: 13px; width: 10%;">Paid</th>
+          <th style="padding: 12px 16px; text-align: center; color: #0c4a6e; font-weight: 600; font-size: 13px; width: 10%;"></th>
+        </tr>
+      </thead>
+      <tbody id="paymentScheduleEntries">
+        <!-- Payment schedule rows will be added here -->
+        <tr>
+          <td colspan="5" style="padding: 40px; text-align: center; color: #64748b;">
+            <i class="fas fa-calendar-plus" style="font-size: 36px; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
+            <p style="margin: 0; font-size: 14px;">No milestones added yet. Click "Add Milestone" or "Auto-Generate" to create a payment schedule.</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary Row -->
+  <div id="paymentScheduleSummary" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding: 16px; background: white; border-radius: 8px; border: 2px solid #bae6fd;">
+    <div style="display: flex; gap: 24px;">
+      <div>
+        <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">Total Percentage</div>
+        <div id="totalPercent" style="font-size: 20px; font-weight: 700; color: #0ea5e9;">0.00%</div>
+      </div>
+      <div>
+        <div style="font-size: 12px; color: #64748b; margin-bottom: 4px;">Total Amount</div>
+        <div id="totalScheduleAmount" style="font-size: 20px; font-weight: 700; color: #0ea5e9;">$0.00</div>
+      </div>
+    </div>
+    <div id="validationStatus">
+      <!-- Validation messages will appear here -->
+    </div>
+  </div>
+
+  <!-- Collapse/Expand for single payment -->
+  <div id="singlePaymentMode" style="display: none; padding: 20px; text-align: center; background: white; border-radius: 8px; border: 2px solid #bae6fd;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 16px;">
+      <div>
+        <div style="font-size: 14px; color: #64748b; margin-bottom: 4px;">Single Payment</div>
+        <div style="font-size: 24px; font-weight: 700; color: #0ea5e9;" id="singlePaymentAmount">$0.00</div>
+      </div>
+      <button class="btn btn-secondary" onclick="expandPaymentSchedule()" style="padding: 10px 20px; font-size: 13px;">
+        <i class="fas fa-expand"></i> Create Multiple Milestones
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================= -->
+<!-- JAVASCRIPT FOR INLINE PAYMENT SCHEDULE       -->
+<!-- ============================================= -->
+<script>
+  let paymentScheduleMilestones = [];
+
+  // Add a new milestone
+  function addPaymentMilestone() {
+    const total = getGrandTotal();
+    const newMilestone = {
+      id: Date.now(),
+      name: 'Payment ' + (paymentScheduleMilestones.length + 1),
+      percent: 0,
+      amount: 0,
+      isPaid: false
+    };
+    
+    paymentScheduleMilestones.push(newMilestone);
+    renderPaymentScheduleInline();
+    updatePaymentScheduleTotals();
+  }
+
+  // Remove a milestone
+  function removePaymentMilestone(id) {
+    paymentScheduleMilestones = paymentScheduleMilestones.filter(m => m.id !== id);
+    renderPaymentScheduleInline();
+    updatePaymentScheduleTotals();
+  }
+
+  // Update milestone field
+  function updatePaymentMilestone(id, field, value) {
+    const milestone = paymentScheduleMilestones.find(m => m.id === id);
+    if (!milestone) return;
+    
+    milestone[field] = value;
+    
+    // If percent changed, recalculate amount
+    if (field === 'percent') {
+      const total = getGrandTotal();
+      milestone.amount = (total * parseFloat(value || 0)) / 100;
+    }
+    
+    // If amount changed, recalculate percent
+    if (field === 'amount') {
+      const total = getGrandTotal();
+      milestone.percent = total > 0 ? (parseFloat(value || 0) / total) * 100 : 0;
+    }
+    
+    renderPaymentScheduleInline();
+    updatePaymentScheduleTotals();
+  }
+
+  // Toggle paid status
+  function toggleMilestonePaid(id) {
+    const milestone = paymentScheduleMilestones.find(m => m.id === id);
+    if (milestone) {
+      milestone.isPaid = !milestone.isPaid;
+      renderPaymentScheduleInline();
+    }
+  }
+
+  // Render the inline payment schedule
+  function renderPaymentScheduleInline() {
+    const tbody = document.getElementById('paymentScheduleEntries');
+    
+    if (paymentScheduleMilestones.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="padding: 40px; text-align: center; color: #64748b;">
+            <i class="fas fa-calendar-plus" style="font-size: 36px; color: #cbd5e1; margin-bottom: 12px; display: block;"></i>
+            <p style="margin: 0; font-size: 14px;">No milestones added yet. Click "Add Milestone" or "Auto-Generate" to create a payment schedule.</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    // Check if single payment (hide extra columns if only 1 milestone)
+    const isSinglePayment = paymentScheduleMilestones.length === 1;
+    
+    tbody.innerHTML = paymentScheduleMilestones.map((milestone, index) => {
+      const rowBg = milestone.isPaid ? '#d1fae5' : (index % 2 === 0 ? '#f9fafb' : 'white');
+      
+      return `
+        <tr style="background: ${rowBg}; border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 12px 16px;">
+            <input 
+              type="text" 
+              value="${milestone.name || ''}" 
+              onchange="updatePaymentMilestone(${milestone.id}, 'name', this.value)"
+              placeholder="Milestone name"
+              style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+            >
+          </td>
+          <td style="padding: 12px 16px; text-align: center;">
+            <input 
+              type="number" 
+              value="${(milestone.percent || 0).toFixed(2)}" 
+              onchange="updatePaymentMilestone(${milestone.id}, 'percent', this.value)"
+              step="0.01"
+              min="0"
+              max="100"
+              style="width: 80px; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; text-align: center; font-size: 14px;"
+            >
+            <span style="margin-left: 4px; color: #64748b;">%</span>
+          </td>
+          <td style="padding: 12px 16px; text-align: right;">
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+              <span style="color: #64748b;">$</span>
+              <input 
+                type="number" 
+                value="${(milestone.amount || 0).toFixed(2)}" 
+                onchange="updatePaymentMilestone(${milestone.id}, 'amount', this.value)"
+                step="0.01"
+                min="0"
+                style="width: 120px; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; text-align: right; font-size: 14px;"
+              >
+            </div>
+          </td>
+          <td style="padding: 12px 16px; text-align: center;">
+            <input 
+              type="checkbox" 
+              ${milestone.isPaid ? 'checked' : ''} 
+              onchange="toggleMilestonePaid(${milestone.id})"
+              style="width: 20px; height: 20px; cursor: pointer; accent-color: #10b981;"
+            >
+          </td>
+          <td style="padding: 12px 16px; text-align: center;">
+            <button 
+              onclick="removePaymentMilestone(${milestone.id})" 
+              style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 8px; font-size: 16px;"
+              title="Remove milestone"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Update totals and validation
+  function updatePaymentScheduleTotals() {
+    const total = getGrandTotal();
+    let totalPercent = 0;
+    let totalScheduleAmount = 0;
+    
+    paymentScheduleMilestones.forEach(m => {
+      totalPercent += parseFloat(m.percent || 0);
+      totalScheduleAmount += parseFloat(m.amount || 0);
+    });
+
+    document.getElementById('totalPercent').textContent = totalPercent.toFixed(2) + '%';
+    document.getElementById('totalScheduleAmount').textContent = '$' + totalScheduleAmount.toFixed(2);
+
+    // Validation
+    const validationDiv = document.getElementById('validationStatus');
+    const diff = Math.abs(totalPercent - 100);
+    
+    if (paymentScheduleMilestones.length === 0) {
+      validationDiv.innerHTML = '';
+    } else if (diff < 0.01) {
+      validationDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; color: #059669; font-weight: 600; font-size: 14px;">
+          <i class="fas fa-check-circle"></i>
+          <span>Perfect! 100%</span>
+        </div>
+      `;
+    } else if (totalPercent < 100) {
+      validationDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; color: #f59e0b; font-weight: 600; font-size: 14px;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>Missing ${(100 - totalPercent).toFixed(2)}%</span>
+        </div>
+      `;
+    } else {
+      validationDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; color: #ef4444; font-weight: 600; font-size: 14px;">
+          <i class="fas fa-times-circle"></i>
+          <span>Over by ${(totalPercent - 100).toFixed(2)}%</span>
+        </div>
+      `;
+    }
+
+    // Show single payment mode if only 1 milestone at 100%
+    if (paymentScheduleMilestones.length === 1 && diff < 0.01) {
+      document.getElementById('singlePaymentMode').style.display = 'block';
+      document.getElementById('paymentScheduleTable').style.display = 'none';
+      document.getElementById('paymentScheduleSummary').style.display = 'none';
+      document.getElementById('singlePaymentAmount').textContent = '$' + totalScheduleAmount.toFixed(2);
+    } else {
+      document.getElementById('singlePaymentMode').style.display = 'none';
+      document.getElementById('paymentScheduleTable').style.display = 'block';
+      document.getElementById('paymentScheduleSummary').style.display = 'flex';
+    }
+  }
+
+  // Auto-generate payment schedule (pool installation standard)
+  function autoGeneratePaymentSchedule() {
+    if (paymentScheduleMilestones.length > 0) {
+      if (!confirm('This will replace your current payment schedule. Continue?')) {
+        return;
+      }
+    }
+
+    const total = getGrandTotal();
+    
+    paymentScheduleMilestones = [
+      { id: Date.now() + 1, name: 'Deposit', percent: 25, amount: total * 0.25, isPaid: false },
+      { id: Date.now() + 2, name: 'Pool Kit Delivery', percent: 35, amount: total * 0.35, isPaid: false },
+      { id: Date.now() + 3, name: 'Final Payment', percent: 40, amount: total * 0.40, isPaid: false }
+    ];
+
+    renderPaymentScheduleInline();
+    updatePaymentScheduleTotals();
+  }
+
+  // Expand to multiple milestones
+  function expandPaymentSchedule() {
+    const currentMilestone = paymentScheduleMilestones[0];
+    const total = currentMilestone.amount;
+    
+    paymentScheduleMilestones = [
+      { id: Date.now() + 1, name: 'Deposit', percent: 50, amount: total * 0.50, isPaid: false },
+      { id: Date.now() + 2, name: 'Final Payment', percent: 50, amount: total * 0.50, isPaid: false }
+    ];
+
+    renderPaymentScheduleInline();
+    updatePaymentScheduleTotals();
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    renderPaymentScheduleInline();
+    updatePaymentScheduleTotals();
+  });
+</script>
+
+<style>
+  /* Additional styles for inline payment schedule */
+  #paymentScheduleSection input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  }
+
+  #paymentScheduleSection button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  #paymentScheduleSection input[type="checkbox"]:hover {
+    transform: scale(1.1);
+  }
+</style>
+
+

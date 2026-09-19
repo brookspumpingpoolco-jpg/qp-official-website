@@ -1,0 +1,42 @@
+<!-- 
+    SIMPLE ANALYTICS SOLUTION - Replace the analytics section in Dashboard_Embed.html
+    
+    This uses Google Analytics Looker Studio embed - NO OAuth setup needed!
+    
+    INSTRUCTIONS:
+    1. Go to https://datastudio.google.com
+    2. Create a new report
+    3. Connect to Google Analytics 4
+    4. Build your report with metrics you want
+    5. Click "Share" → "Embed report"
+    6. Copy the iframe src URL
+    7. Replace YOUR_LOOKER_STUDIO_REPORT_URL below
+    8. Replace the analytics section in Dashboard_Embed.html with this code
+-->
+
+<!-- Replace the analytics-container div (around line 1013) with this: -->
+<div class="analytics-container" id="analyticsContainer" style="width: 100%; height: 800px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+    <iframe 
+        src="YOUR_LOOKER_STUDIO_REPORT_URL"
+        width="100%" 
+        height="100%" 
+        frameborder="0" 
+        style="border: none;"
+        allowfullscreen>
+    </iframe>
+</div>
+
+<!-- 
+    ALTERNATIVE: If you want to keep the stats cards but use Looker Studio for the main view:
+    
+    Keep the stats cards (lines 963-1004) and replace just the analytics-container with the iframe above.
+    
+    For the stats cards, you can either:
+    1. Leave them showing 0 (they won't update without backend API)
+    2. Remove them
+    3. Use a different method to populate them (like client-side GA4 API)
+-->
+
+
+
+

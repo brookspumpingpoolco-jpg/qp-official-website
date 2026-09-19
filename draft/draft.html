@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pool Inspection & Leak Detection | A Quality Pool Company</title>
+    <meta name="description" content="Comprehensive pool inspections with full leak detection included. Serving Kentucky & Tennessee with the most thorough pool inspection service available.">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            color: #1f2937;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section - SMALLER NOW */
+        .hero {
+            position: relative;
+            height: 50vh;
+            min-height: 400px;
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="white" stroke-width="1" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            max-width: 900px;
+            padding: 0 20px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 32px;
+            opacity: 0.95;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #0369a1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #0369a1;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 60px;
+        }
+
+        .section-badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            padding: 60px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat {
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            background: #f9fafb;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .benefit-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .benefit-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .benefit-card p {
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Process Section */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            position: relative;
+        }
+
+        .process-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .process-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0 auto 24px;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        .process-step h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .process-step p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* What's Included Section */
+        .whats-included {
+            background: linear-gradient(to bottom, #f9fafb 0%, white 100%);
+        }
+
+        .included-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .included-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .included-item:hover {
+            border-color: #0284c7;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+        }
+
+        .included-check {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: #dcfce7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #16a34a;
+            font-size: 16px;
+        }
+
+        .included-content h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #111827;
+        }
+
+        .included-content p {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Value Proposition */
+        .value-prop {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .value-prop h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .value-highlight {
+            font-size: 72px;
+            font-weight: 900;
+            color: #38bdf8;
+            display: block;
+            margin: 24px 0;
+            text-shadow: 0 0 40px rgba(56, 189, 248, 0.5);
+        }
+
+        .value-prop p {
+            font-size: 20px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        /* FAQ Section */
+        .faq {
+            background: #f9fafb;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            padding: 24px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            border: none;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: #0284c7;
+        }
+
+        .faq-icon {
+            font-size: 20px;
+            color: #0284c7;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-answer-content {
+            padding: 0 24px 24px;
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+
+        /* Booking Section with Iframe */
+        .booking-section {
+            background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-section h2 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        .booking-section p {
+            text-align: center;
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .booking-button-wrapper {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .booking-big-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            padding: 18px 36px;
+            border-radius: 12px;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(3, 105, 161, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .booking-big-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(3, 105, 161, 0.4);
+        }
+
+        .booking-big-button i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* Full Screen Booking Modal */
+        .booking-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .booking-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .booking-modal-content {
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.4s ease;
+        }
+
+        .booking-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0369a1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .booking-modal-close:hover {
+            transform: rotate(90deg) scale(1.1);
+            background: #0369a1;
+            color: white;
+        }
+
+        .booking-modal iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .booking-modal-content {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .booking-big-button {
+                font-size: 20px;
+                padding: 24px 40px;
+            }
+        }
+
+        /* Floating Pool Floats - BUMPER CARS! */
+        .pool-float {
+            position: fixed;
+            font-size: 65px;
+            opacity: 0.6;
+            z-index: 5;
+            cursor: pointer;
+            user-select: none;
+            pointer-events: auto;
+            will-change: transform;
+            transition: opacity 0.2s ease;
+        }
+
+        .pool-float:hover {
+            opacity: 1;
+            filter: drop-shadow(0 12px 30px rgba(3, 105, 161, 0.7));
+            z-index: 1000;
+        }
+
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .cta-section h2 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .cta-section p {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                height: auto;
+                min-height: 350px;
+                padding: 60px 0;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .section-header h2 {
+                font-size: 32px;
+            }
+
+            .stat-number {
+                font-size: 36px;
+            }
+
+            .value-highlight {
+                font-size: 48px;
+            }
+
+            .cta-section h2 {
+                font-size: 32px;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+
+            .booking-iframe-wrapper iframe {
+                height: 600px;
+            }
+
+            .pool-float {
+                font-size: 40px;
+                opacity: 0.4;
+            }
+
+            .pool-float:hover {
+                opacity: 0.8;
+            }
+
+            .booking-section h2 {
+                font-size: 28px;
+            }
+
+            .booking-section p {
+                font-size: 15px;
+            }
+
+            .booking-big-button {
+                font-size: 16px;
+                padding: 18px 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Pool Floats - All Over The Page -->
+    <div class="pool-float">🏊‍♂️</div>
+    <div class="pool-float">🦩</div>
+    <div class="pool-float">🏖️</div>
+    <div class="pool-float">🌊</div>
+    <div class="pool-float">⛱️</div>
+    <div class="pool-float">🏄‍♂️</div>
+
+    <!-- 
+    ╔══════════════════════════════════════════════════════════╗
+    ║  WEBFLOW IMPORT INSTRUCTIONS:                            ║
+    ║  1. Copy each section separately into Webflow            ║
+    ║  2. Use "Embed" element for custom HTML sections         ║
+    ║  3. Copy the CSS into your page settings or site CSS     ║
+    ║  4. The FAQ JS goes into page settings "Before </body>"  ║
+    ╚══════════════════════════════════════════════════════════╝
+    -->
+
+    <!-- ========== HERO SECTION ========== -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-shield-check"></i> Gold Standard Inspection Service
+            </div>
+            <h1>Comprehensive Pool Inspection & Leak Detection</h1>
+            <p class="hero-subtitle">Full inspections on ANY pool – filled or unfilled, concrete, vinyl, or gunite. The most complete inspection service in Kentucky & Tennessee.</p>
+            <div class="hero-cta">
+                <a href="#booking" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i> Schedule Inspection
+                </a>
+                <a href="#whats-included" class="btn btn-secondary">
+                    <i class="fas fa-list-check"></i> What's Included
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== STATS BAR ========== -->
+    <section class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat">
+                    <span class="stat-number">40+</span>
+                    <span class="stat-label">Years of Experience</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">$500</span>
+                    <span class="stat-label">Free Leak Detection Value</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">All Types</span>
+                    <span class="stat-label">Concrete, Vinyl & Gunite</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24-48hrs</span>
+                    <span class="stat-label">Report Turnaround</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== BENEFITS SECTION ========== -->
+    <section class="benefits">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Why Choose Us</span>
+                <h2>We Inspect Pools Others Won't Touch</h2>
+                <p>Filled, unfilled, or partially drained – we inspect ALL pool types at ANY water level. Plus advanced leak detection and comprehensive diagnostics that most companies skip entirely.</p>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <h3>Full Leak Detection Included</h3>
+                    <p>Every inspection includes professional leak detection (a $500 value) using pressure testing, acoustic devices, and dye testing to find hidden leaks.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <h3>Advanced Diagnostic Tools</h3>
+                    <p>Industry-leading technology including pressure testing equipment, acoustic listening devices, and specialized inspection tools.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3>Detailed Digital Reports</h3>
+                    <p>Receive a comprehensive report with photos, findings, and clear recommendations within 24-48 hours of inspection.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Expert Technicians</h3>
+                    <p>Experienced pool professionals who understand pool systems, plumbing, equipment, and structural integrity inside and out.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-water-ladder"></i>
+                    </div>
+                    <h3>Filled or Unfilled – We Inspect Both</h3>
+                    <p>Unlike other companies, we provide complete inspections on pools at ANY water level. Concrete, vinyl, gunite – we inspect all pool types, full or empty.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Perfect for Home Buyers</h3>
+                    <p>Know exactly what you're getting before you buy. Avoid costly surprises and negotiate with confidence.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-badge-dollar"></i>
+                    </div>
+                    <h3>Transparent & Honest</h3>
+                    <p>Our detailed inspections give you complete transparency about your pool's condition. Clear findings, honest recommendations, and professional repair services including vinyl liner patching and leak fixes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== PROCESS SECTION ========== -->
+    <section class="process">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Our Process</span>
+                <h2>How It Works</h2>
+                <p>A simple, thorough process designed to give you complete confidence in your pool's condition.</p>
+            </div>
+            <div class="process-grid">
+                <div class="process-step">
+                    <div class="process-number">1</div>
+                    <h3>Schedule Your Inspection</h3>
+                    <p>Contact us to book your inspection. We'll find a convenient time and answer any questions.</p>
+                </div>
+                <div class="process-step">
+                    <div class="process-number">2</div>
+                    <h3>Comprehensive On-Site Inspection</h3>
+                    <p>Our expert technicians inspect every component, run leak tests, and document all findings with photos.</p>
+                </div>
+                <div class="process-step">
+                    <div class="process-number">3</div>
+                    <h3>Receive Detailed Report</h3>
+                    <p>Get your comprehensive digital report within 24-48 hours with clear findings and recommendations.</p>
+                </div>
+                <div class="process-step">
+                    <div class="process-number">4</div>
+                    <h3>Make Informed Decisions</h3>
+                    <p>Use your report to negotiate, plan repairs, or have peace of mind about your pool investment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== WHAT'S INCLUDED SECTION ========== -->
+    <section id="whats-included" class="whats-included">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">What's Included</span>
+                <h2>Every Inspection Covers Everything</h2>
+                <p>This isn't a quick visual check. We perform a comprehensive, multi-point inspection of your entire pool system.</p>
+            </div>
+            <div class="included-grid">
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Professional Leak Detection</h4>
+                        <p>Full leak check using pressure testing, acoustic devices, and dye testing (normally $500+ standalone)</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Complete Pressure Testing</h4>
+                        <p>All accessible pipes and plumbing lines tested to confirm proper pressure and identify hidden leaks</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>All Pool Types, Any Water Level</h4>
+                        <p>Concrete, vinyl, or gunite – filled, unfilled, or partially drained. We inspect when others won't!</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Structure & Surface Inspection</h4>
+                        <p>Check for cracks, movement, settling, liner condition, tile integrity, and structural concerns</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Equipment Pad Assessment</h4>
+                        <p>Pump, filter, heater, valves, plumbing connections - all tested for proper operation and condition</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Safety & Electrical Review</h4>
+                        <p>Safety features, bonding, grounding, GFCI protection, and accessible electrical components</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Deck & Surrounding Areas</h4>
+                        <p>Concrete, coping, decking, drainage, and any issues that could affect safety or property value</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Hot Tub/Spa Inspection Available</h4>
+                        <p>Add hot tub inspection and service for complete coverage of your entire aquatic setup</p>
+                    </div>
+                </div>
+                <div class="included-item">
+                    <div class="included-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="included-content">
+                        <h4>Comprehensive Digital Report</h4>
+                        <p>Easy-to-understand report with photos, detailed findings, and prioritized recommendations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== VALUE PROPOSITION ========== -->
+    <section class="value-prop">
+        <div class="container">
+            <h2>The True Value of Our Inspection</h2>
+            <span class="value-highlight">$500</span>
+            <p>That's the value of professional leak detection alone – and it's included FREE with every inspection. Plus comprehensive pressure testing, equipment evaluation, and structural assessment.</p>
+            <a href="#booking" class="btn btn-primary">Get Your Inspection Today</a>
+        </div>
+    </section>
+
+    <!-- ========== FAQ SECTION ========== -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">FAQ</span>
+                <h2>Common Questions</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How long does an inspection take?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Most inspections take 1-2 hours depending on pool size, complexity, and whether additional features like spas are included. We never rush – thoroughness is our priority.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can you inspect a pool that's not filled or partially empty?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <strong>Yes – and this sets us apart!</strong> Most inspection companies refuse to inspect pools that aren't fully filled. We specialize in comprehensive inspections at ANY water level – filled, unfilled, or partially drained. We inspect all pool types: concrete, vinyl, and gunite. This is especially valuable for home buyers, winter closures, or pools undergoing maintenance.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What if you find a leak?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            We'll document the location, severity, and likely cause in your report with detailed photos and findings. If repairs are needed, we can provide you with a clear quote and professionally handle the work – including vinyl liner patching, leak fixes, and restoring your pool to perfect condition.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can I use this for a home purchase?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Absolutely! Our reports are designed for real estate transactions. They're detailed, professional, and provide the information buyers, sellers, and agents need to make informed decisions or negotiate repairs.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How much does an inspection cost?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Pricing varies based on pool size, location, and complexity. Contact us for a custom quote. Remember – you're getting professional leak detection (a $500 value) included, making this an incredible value.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What areas do you serve?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            We provide pool inspection services throughout Kentucky and Tennessee. Contact us to confirm service availability in your specific area.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do I need to be present during the inspection?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            You're welcome to be present but it's not required. Many clients prefer to attend so we can walk them through findings in real-time and answer questions on the spot.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== BOOKING SECTION WITH MODAL ========== -->
+    <section id="booking" class="booking-section">
+        <div class="container">
+            <h2>Schedule Your Pool Inspection</h2>
+            <p>Click below to open our secure booking portal. Select your preferred date and time - it takes less than 2 minutes!</p>
+            <div class="booking-button-wrapper">
+                <button class="booking-big-button" id="openBookingBtn">
+                    <i class="fas fa-calendar-check"></i>
+                    Book Your Inspection Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ========== FINAL CTA ========== -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <h2>Questions? We're Here to Help!</h2>
+            <p>Prefer to speak with us directly? Give us a call or send an email.</p>
+            <div class="hero-cta">
+                <a href="mailto:brookspumpingpoolco@gmail.com" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Email Us
+                </a>
+                <a href="tel:+15027069172" class="btn btn-secondary">
+                    <i class="fas fa-phone"></i> Call Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const faqItem = button.parentElement;
+                const isActive = faqItem.classList.contains('active');
+                
+                // Close all FAQ items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    faqItem.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // BUMPER CAR POOL FLOATS! 🏊‍♂️💥
+        const floats = document.querySelectorAll('.pool-float');
+        const floatData = [];
+        
+        // Initialize each float with physics properties
+        floats.forEach((float, index) => {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 3; // Speed between 2-5
+            
+            const data = {
+                element: float,
+                x: Math.random() * (window.innerWidth - 100),
+                y: Math.random() * (window.innerHeight - 100),
+                vx: Math.cos(angle) * speed, // Random velocity X
+                vy: Math.sin(angle) * speed, // Random velocity Y
+                rotation: Math.random() * 360,
+                rotationSpeed: (Math.random() - 0.5) * 5,
+                size: 65
+            };
+            floatData.push(data);
+            
+            // Position initially
+            float.style.left = data.x + 'px';
+            float.style.top = data.y + 'px';
+            
+            // Click to BOOST!
+            float.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Give it a random boost in a random direction
+                const angle = Math.random() * Math.PI * 2;
+                data.vx += Math.cos(angle) * 8;
+                data.vy += Math.sin(angle) * 8;
+                data.rotationSpeed += (Math.random() - 0.5) * 10;
+            });
+        });
+        
+        // Physics animation loop
+        function animateFloats() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            floatData.forEach((data, i) => {
+                // Update position
+                data.x += data.vx;
+                data.y += data.vy;
+                data.rotation += data.rotationSpeed;
+                
+                // Bounce off edges with good energy retention
+                if (data.x <= 0) {
+                    data.x = 0;
+                    data.vx = Math.abs(data.vx) * 0.9;
+                    data.rotationSpeed *= -1.2;
+                } else if (data.x >= width - data.size) {
+                    data.x = width - data.size;
+                    data.vx = -Math.abs(data.vx) * 0.9;
+                    data.rotationSpeed *= -1.2;
+                }
+                
+                if (data.y <= 0) {
+                    data.y = 0;
+                    data.vy = Math.abs(data.vy) * 0.9;
+                    data.rotationSpeed *= -1.2;
+                } else if (data.y >= height - data.size) {
+                    data.y = height - data.size;
+                    data.vy = -Math.abs(data.vy) * 0.9;
+                    data.rotationSpeed *= -1.2;
+                }
+                
+                // Check collisions with other floats
+                for (let j = i + 1; j < floatData.length; j++) {
+                    const other = floatData[j];
+                    const dx = other.x - data.x;
+                    const dy = other.y - data.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // If collision detected
+                    if (distance < data.size) {
+                        // Bounce off each other
+                        const angle = Math.atan2(dy, dx);
+                        const sin = Math.sin(angle);
+                        const cos = Math.cos(angle);
+                        
+                        // Swap velocities with some bounce
+                        const vx1 = data.vx * cos + data.vy * sin;
+                        const vy1 = data.vy * cos - data.vx * sin;
+                        const vx2 = other.vx * cos + other.vy * sin;
+                        const vy2 = other.vy * cos - other.vx * sin;
+                        
+                        data.vx = vx2 * cos - vy1 * sin;
+                        data.vy = vy1 * cos + vx2 * sin;
+                        other.vx = vx1 * cos - vy2 * sin;
+                        other.vy = vy2 * cos + vx1 * sin;
+                        
+                        // Separate them
+                        const overlap = data.size - distance;
+                        data.x -= overlap * cos * 0.5;
+                        data.y -= overlap * sin * 0.5;
+                        other.x += overlap * cos * 0.5;
+                        other.y += overlap * sin * 0.5;
+                        
+                        // Spin!
+                        data.rotationSpeed += (Math.random() - 0.5) * 5;
+                        other.rotationSpeed += (Math.random() - 0.5) * 5;
+                    }
+                }
+                
+                // Very light friction
+                data.vx *= 0.995;
+                data.vy *= 0.995;
+                data.rotationSpeed *= 0.99;
+                
+                // Keep them moving with good speed
+                const speed = Math.sqrt(data.vx * data.vx + data.vy * data.vy);
+                if (speed < 2) {
+                    // Add random boost to maintain speed
+                    const angle = Math.atan2(data.vy, data.vx) + (Math.random() - 0.5) * 0.5;
+                    data.vx += Math.cos(angle) * 1.5;
+                    data.vy += Math.sin(angle) * 1.5;
+                }
+                
+                // Cap maximum speed to keep it reasonable
+                if (speed > 8) {
+                    data.vx *= 0.9;
+                    data.vy *= 0.9;
+                }
+                
+                // Apply transform
+                data.element.style.left = data.x + 'px';
+                data.element.style.top = data.y + 'px';
+                data.element.style.transform = `rotate(${data.rotation}deg)`;
+            });
+            
+            requestAnimationFrame(animateFloats);
+        }
+        
+        // Start the animation!
+        animateFloats();
+        
+        // Handle window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                floatData.forEach(data => {
+                    // Keep them in bounds after resize
+                    data.x = Math.min(data.x, window.innerWidth - data.size);
+                    data.y = Math.min(data.y, window.innerHeight - data.size);
+                });
+            }, 100);
+        });
+
+        // Direct booking - opens Square in NEW TAB (Square blocks iframe embedding)
+        const openBookingBtn = document.getElementById('openBookingBtn');
+        const squareURL = 'https://book.squareup.com/appointments/vxsbuetckkjrmv/location/LDNXGCDY0JZXC/services';
+
+        openBookingBtn.addEventListener('click', function() {
+            // Open in new tab with proper attributes
+            window.open(squareURL, '_blank', 'noopener,noreferrer');
+        });
+    </script>
+</body>
+</html>

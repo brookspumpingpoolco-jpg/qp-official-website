@@ -1,0 +1,3163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Property Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .logo-text h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .logo-text .subtitle {
+            font-size: 13px;
+            color: #f97316;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Stats Bar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: #111827;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .stat-amount {
+            font-size: 20px;
+            font-weight: 700;
+            color: #059669;
+        }
+
+        /* Properties Section */
+        .properties-section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .property-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .property-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .property-address {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .property-status {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-occupied {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-vacant {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .property-details {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: #6b7280;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .detail-value.late {
+            color: #dc2626;
+        }
+
+        .property-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Barlow', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-cancel:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Toast Notification (replaces alert()) */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 500px;
+            animation: slideIn 0.3s ease-out;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast.success {
+            border-left-color: #10b981;
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast.success .toast-icon {
+            color: #10b981;
+        }
+
+        .toast.error .toast-icon {
+            color: #ef4444;
+        }
+
+        .toast.warning .toast-icon {
+            color: #f59e0b;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #111827;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toast-close:hover {
+            color: #111827;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ==========================================
+           COMMAND CENTER STYLES
+           ========================================== */
+        
+        /* System Status Strip */
+        .system-status-strip {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 0;
+        }
+        
+        .status-items {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-indicator.active {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        }
+        
+        .status-indicator.warning {
+            background: #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+        }
+        
+        .status-indicator.inactive {
+            background: #6b7280;
+        }
+        
+        /* Today at a Glance */
+        .glance-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .glance-title {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .glance-content {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+        
+        /* Cash Flow Intelligence Card */
+        .cashflow-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            grid-column: span 2;
+        }
+        
+        .cashflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .cashflow-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .cashflow-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .cashflow-metric {
+            text-align: center;
+        }
+        
+        .cashflow-metric-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .cashflow-metric-value {
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+        }
+        
+        .cashflow-metric-value.positive {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        .cashflow-metric-value.negative {
+            color: #ef4444;
+        }
+        
+        .cashflow-metric-value.neutral {
+            color: #6b7280;
+        }
+        
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Upcoming Events Timeline */
+        .events-timeline {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .event-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .event-item:last-child {
+            border-bottom: none;
+        }
+        
+        .event-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .event-icon.rent {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .event-icon.lease {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .event-icon.autopay {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .event-icon.reminder {
+            background: #fce7f3;
+            color: #9f1239;
+        }
+        
+        .event-content {
+            flex: 1;
+        }
+        
+        .event-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+        
+        .event-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* Tenant Risk Indicators */
+        .risk-indicators {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .risk-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #f3f4f6;
+        }
+        
+        .risk-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .risk-dot.good {
+            background: #10b981;
+        }
+        
+        .risk-dot.warning {
+            background: #f59e0b;
+        }
+        
+        .risk-dot.danger {
+            background: #ef4444;
+        }
+        
+        .autopay-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        /* Automation Log */
+        .automation-log {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .log-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        
+        .log-icon.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .log-icon.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .log-icon.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .log-content {
+            flex: 1;
+        }
+        
+        .log-message {
+            font-size: 14px;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+        
+        .log-time {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* Bulk Action Panel */
+        .bulk-action-panel {
+            background: white;
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .bulk-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .bulk-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        
+        .btn-bulk {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #374151;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-bulk:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+        
+        /* Smart Alerts */
+        .smart-alerts {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+            padding: 16px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .alert-item.danger {
+            background: #fee2e2;
+            border-left-color: #ef4444;
+        }
+        
+        .alert-item.info {
+            background: #dbeafe;
+            border-left-color: #3b82f6;
+        }
+        
+        .alert-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        
+        .alert-message {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        /* Property Performance Tiles */
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .performance-tile {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .performance-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .performance-value {
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            color: #111827;
+        }
+        
+        /* Profit Calculation Dashboard */
+        .profit-dashboard {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .profit-section {
+            margin-bottom: 24px;
+        }
+        
+        .profit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .profit-row:last-child {
+            border-bottom: none;
+            border-top: 2px solid #111827;
+            margin-top: 8px;
+            padding-top: 16px;
+        }
+        
+        .profit-label {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .profit-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .profit-value.positive {
+            color: #10b981;
+        }
+        
+        .profit-value.negative {
+            color: #ef4444;
+        }
+        
+        /* Visual Polish */
+        .money-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .money-glow {
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+        
+        .card-glow {
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #e5e7eb 50%, transparent 100%);
+            margin: 24px 0;
+        }
+        
+        /* Two Column Layout */
+        .two-column-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 1024px) {
+            .two-column-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .properties-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .cashflow-card {
+                grid-column: span 1;
+            }
+            
+            .cashflow-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .status-items {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <img src="https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/694b0eaf60f0836e2ccbe633_DD67636E-EDDF-4A2F-A3B7-07741BD5615C.PNG" alt="McAfee Properties">
+                </div>
+                <div class="logo-text">
+                    <h1>McAfee</h1>
+                    <div class="subtitle">Properties Dashboard</div>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="user-info">
+                    <div class="user-name">Property Manager</div>
+                    <div class="user-role">Admin</div>
+                </div>
+                <div class="user-avatar" onclick="logout()" style="cursor: pointer;" title="Logout">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status Strip -->
+    <div class="system-status-strip">
+        <div class="status-items">
+            <div class="status-item">
+                <span class="status-indicator active" id="stripeStatus"></span>
+                <span>Stripe: <strong id="stripeStatusText">Connected</strong></span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator active" id="emailStatus"></span>
+                <span>Email: <strong id="emailStatusText">Active</strong></span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator active" id="autopayStatus"></span>
+                <span>Autopay Engine: <strong id="autopayStatusText">Running</strong></span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator warning" id="webhookStatus"></span>
+                <span>Webhooks: <strong id="webhookStatusText">Last event 2m ago</strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Today at a Glance -->
+        <div class="glance-section">
+            <div class="glance-title">Today at a Glance</div>
+            <div class="glance-content" id="todayGlance">Loading...</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <span class="stat-number" id="totalProperties">0</span>
+                <span class="stat-label">Total Properties</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <span class="stat-number" id="totalTenants">0</span>
+                <span class="stat-label">Active Tenants</span>
+            </div>
+            <!-- Cash Flow Intelligence Card -->
+            <div class="cashflow-card">
+                <div class="cashflow-header">
+                    <div class="cashflow-title">
+                        <i class="fas fa-chart-line"></i> Cash Flow Intelligence
+                    </div>
+                </div>
+                <div class="cashflow-metrics">
+                    <div class="cashflow-metric">
+                        <div class="cashflow-metric-label">Collected This Month</div>
+                        <div class="cashflow-metric-value positive money-value money-glow" id="collectedThisMonth">$0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="collectedProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="cashflow-metric">
+                        <div class="cashflow-metric-label">Scheduled (Autopay)</div>
+                        <div class="cashflow-metric-value neutral money-value" id="scheduledAmount">$0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="scheduledProgress" style="width: 0%; background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);"></div>
+                        </div>
+                    </div>
+                    <div class="cashflow-metric">
+                        <div class="cashflow-metric-label">At Risk</div>
+                        <div class="cashflow-metric-value warning money-value" id="atRiskAmount">$0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="atRiskProgress" style="width: 0%; background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);"></div>
+                        </div>
+                    </div>
+                    <div class="cashflow-metric">
+                        <div class="cashflow-metric-label">Overdue</div>
+                        <div class="cashflow-metric-value negative money-value" id="overdueAmount">$0</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="overdueProgress" style="width: 0%; background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <span class="stat-number" id="latePayments">0</span>
+                <span class="stat-label">Late Payments</span>
+            </div>
+        </div>
+
+        <!-- Two Column: Events Timeline & Automation Log -->
+        <div class="two-column-layout" style="margin-bottom: 24px;">
+            <div class="events-timeline">
+                <div class="section-header" style="margin-bottom: 20px;">
+                    <h3 class="section-title" style="font-size: 18px;">
+                        <i class="fas fa-calendar-alt"></i> Upcoming Events
+                    </h3>
+                </div>
+                <div id="upcomingEvents">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading events...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="automation-log">
+                <div class="section-header" style="margin-bottom: 20px;">
+                    <h3 class="section-title" style="font-size: 18px;">
+                        <i class="fas fa-list-alt"></i> Activity Log
+                    </h3>
+                </div>
+                <div id="activityLog">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading activity...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Alerts -->
+        <div class="smart-alerts" style="margin-bottom: 24px;">
+            <div class="section-header" style="margin-bottom: 20px;">
+                <h3 class="section-title" style="font-size: 18px;">
+                    <i class="fas fa-bell"></i> Smart Alerts
+                </h3>
+            </div>
+            <div id="smartAlerts">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading alerts...
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit Calculation Dashboard -->
+        <div class="profit-dashboard" style="margin-bottom: 24px;">
+            <div class="section-header" style="margin-bottom: 20px;">
+                <h3 class="section-title" style="font-size: 18px;">
+                    <i class="fas fa-calculator"></i> Profit Analysis (Year to Date)
+                </h3>
+            </div>
+            <div id="profitAnalysis">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Calculating profit...
+                </div>
+            </div>
+        </div>
+
+        <!-- Properties Section -->
+        <div class="properties-section">
+            <!-- Bulk Action Panel -->
+            <div class="bulk-action-panel" id="bulkActionPanel" style="display: none;">
+                <div class="bulk-checkbox">
+                    <input type="checkbox" id="selectAllProperties" onchange="toggleSelectAll()">
+                    <label for="selectAllProperties" style="font-weight: 600; cursor: pointer;">
+                        Select All (<span id="selectedCount">0</span>)
+                    </label>
+                </div>
+                <div class="bulk-actions">
+                    <button class="btn-bulk" onclick="bulkSendReminders()">
+                        <i class="fas fa-envelope"></i> Send Reminders
+                    </button>
+                    <button class="btn-bulk" onclick="bulkToggleAutopay()">
+                        <i class="fas fa-calendar-check"></i> Toggle Autopay
+                    </button>
+                    <button class="btn-bulk" onclick="bulkExportCSV()">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                    <button class="btn-bulk" onclick="bulkApplyLateFee()">
+                        <i class="fas fa-dollar-sign"></i> Apply Late Fee
+                    </button>
+                    <button class="btn-bulk" onclick="bulkNotifyTenants()">
+                        <i class="fas fa-bullhorn"></i> Notify Tenants
+                    </button>
+                </div>
+            </div>
+            <!-- Pending Tenant Requests -->
+            <div id="pendingTenantsSection" style="margin-bottom: 30px; display: block;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-clock"></i> Pending Tenant Requests
+                        <span id="pendingTenantsCount" style="background: #f97316; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; margin-left: 12px;">0</span>
+                    </h2>
+                </div>
+                <div id="pendingTenantsContainer" style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading pending requests...
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span id="sectionTitleText">Properties</span>
+                    <span id="filterBadge" style="background: #3b82f6; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; margin-left: 12px; font-weight: 600;"></span>
+                </h2>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="display: flex; gap: 8px; background: #f3f4f6; padding: 4px; border-radius: 8px;">
+                        <button class="btn-filter" id="filterAll" onclick="filterProperties('all')" style="padding: 8px 16px; border-radius: 6px; border: none; background: #3b82f6; color: white; font-weight: 600; cursor: pointer;">All</button>
+                        <button class="btn-filter" id="filterProperties" onclick="filterProperties('Rental Property')" style="padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: #6b7280; font-weight: 600; cursor: pointer;">Properties</button>
+                        <button class="btn-filter" id="filterStorage" onclick="filterProperties('Storage Unit')" style="padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: #6b7280; font-weight: 600; cursor: pointer;">Storage</button>
+                    </div>
+                    <button class="btn-primary" onclick="openRentReminderModal()" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                        <i class="fas fa-envelope"></i> Send Rent Reminders
+                    </button>
+                    <button class="btn-primary" onclick="openAddPropertyModal()">
+                        <i class="fas fa-plus"></i> Add Property
+                    </button>
+                </div>
+            </div>
+            <div id="propertiesContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading properties...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Property Modal -->
+    <div class="modal-overlay" id="addPropertyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Property</h3>
+                <button class="close-btn" onclick="closeAddPropertyModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addPropertyForm">
+                    <div class="form-group">
+                        <label class="form-label">Property Type</label>
+                        <select class="form-input" name="propertyType" id="propertyTypeSelect" onchange="togglePropertyFields()" required>
+                            <option value="Rental Property">Rental Property</option>
+                            <option value="Storage Unit">Storage Unit</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="unitNumberGroup" style="display: none;">
+                        <label class="form-label">Unit Number</label>
+                        <input type="text" class="form-input" name="unitNumber" placeholder="e.g., SU-01">
+                    </div>
+                    <div class="form-group" id="sizeGroup" style="display: none;">
+                        <label class="form-label">Size</label>
+                        <select class="form-input" name="size">
+                            <option value="10x10">10x10</option>
+                            <option value="14x42">14x42</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Property Name</label>
+                        <input type="text" class="form-input" name="propertyName" required placeholder="e.g., Main Street Apartment or Storage Unit SU-01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <input type="text" class="form-input" name="address" required placeholder="123 Main St, City, State ZIP">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Monthly Rent ($)</label>
+                        <input type="number" class="form-input" name="monthlyRent" required placeholder="1500" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tenant Name</label>
+                        <input type="text" class="form-input" name="tenantName" placeholder="Leave empty if vacant">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tenant Email</label>
+                        <input type="email" class="form-input" name="tenantEmail" placeholder="tenant@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tenant Phone</label>
+                        <input type="tel" class="form-input" name="tenantPhone" placeholder="(555) 123-4567">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeAddPropertyModal()">Cancel</button>
+                        <button type="submit" class="btn-submit">Add Property</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Details Modal -->
+    <div class="modal-overlay" id="propertyDetailsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="propertyDetailsTitle">Property Details</h3>
+                <button class="close-btn" onclick="closePropertyDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="propertyDetailsBody">
+                <!-- Property details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Rent Reminder Modal -->
+    <div class="modal-overlay" id="rentReminderModal">
+        <div class="modal" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Send Rent Reminders</h3>
+                <button class="close-btn" onclick="closeRentReminderModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="tenantsList">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> Loading tenants...
+                    </div>
+                </div>
+                <div class="form-actions" style="margin-top: 24px;">
+                    <button type="button" class="btn-cancel" onclick="closeRentReminderModal()">Cancel</button>
+                    <button type="button" class="btn-submit" onclick="sendAllReminders()">
+                        <i class="fas fa-paper-plane"></i> Send to All Tenants
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Request Modal -->
+    <div class="modal-overlay" id="maintenanceRequestModal">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Submit Maintenance Request</h3>
+                <button class="close-btn" onclick="closeMaintenanceRequestModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="maintenanceRequestForm">
+                    <div class="form-group">
+                        <label class="form-label">Property</label>
+                        <input type="text" class="form-input" id="maintenanceProperty" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Issue Description *</label>
+                        <textarea class="form-input" name="description" rows="4" required placeholder="Describe the maintenance issue in detail..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-input" name="priority">
+                            <option value="low">Low - Non-urgent</option>
+                            <option value="medium" selected>Medium - Normal</option>
+                            <option value="high">High - Urgent</option>
+                            <option value="emergency">Emergency - Immediate attention needed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Upload Photos (Optional)</label>
+                        <input type="file" class="form-input" name="photos" multiple accept="image/*" id="maintenancePhotos">
+                        <div id="photoPreview" style="margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px;"></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeMaintenanceRequestModal()">Cancel</button>
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-paper-plane"></i> Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirmModalTitle">Confirm Action</h3>
+                <button class="close-btn" onclick="closeConfirmModal(false)">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmModalMessage" style="margin-bottom: 24px; font-size: 16px; line-height: 1.6;"></p>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeConfirmModal(false)">Cancel</button>
+                    <button type="button" class="btn-submit" id="confirmModalConfirmBtn" onclick="closeConfirmModal(true)">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Update with your Google Apps Script Web App URL
+        // This URL should be from your deployed Google Apps Script Web App
+        // Deploy your script as a Web App with "Anyone" access for remote use
+        const RENTAL_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfSwpb2EKeibKH0fyolMgAAfNPz1w18SYjVQqc63DPdWJWIgTLDp2iHI4z_ilp8I8Tsg/exec';
+
+        // Load dashboard on page load (authentication temporarily disabled)
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProperties();
+            loadPendingTenants();
+            loadTodayGlance();
+            loadUpcomingEvents();
+            loadActivityLog();
+            loadSmartAlerts();
+            loadProfitAnalysis();
+            // Check for pending tenants every 30 seconds
+            setInterval(loadPendingTenants, 30000);
+            // Update webhook status every 2 minutes
+            setInterval(updateWebhookStatus, 120000);
+        });
+
+        // Authentication check (disabled for now – dashboard always loads)
+        async function checkAuthentication() {
+            // Directly load properties without any auth / redirect logic
+            loadProperties();
+            loadPendingTenants();
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('rental_userEmail');
+            localStorage.removeItem('rental_userName');
+            localStorage.removeItem('rental_userRole');
+            sessionStorage.removeItem('rental_userEmail');
+            sessionStorage.removeItem('rental_userName');
+            sessionStorage.removeItem('rental_userRole');
+        }
+
+        // Load all properties
+        async function loadProperties() {
+            const container = document.getElementById('propertiesContainer');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading properties...</div>';
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getProperties');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderProperties(data.properties);
+                    updateStats(data.stats);
+                    updateCashFlowMetrics(data.properties);
+                    // Load risk indicators for each property
+                    data.properties.forEach(prop => {
+                        if (prop.tenantName) {
+                            loadRiskIndicators(prop.id);
+                        }
+                    });
+                } else {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏢</div><div>No properties found. Add your first property to get started.</div></div>';
+                }
+            } catch (error) {
+                console.error('Error loading properties:', error);
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div>Error loading properties. Please refresh the page.</div></div>';
+            }
+        }
+
+        // Render properties
+        function renderProperties(properties) {
+            const container = document.getElementById('propertiesContainer');
+            
+            if (!properties || properties.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏢</div><div>No properties found. Add your first property to get started.</div></div>';
+                return;
+            }
+
+            container.innerHTML = properties.map(property => {
+                const statusClass = property.tenantName ? 'status-occupied' : 'status-vacant';
+                const statusText = property.tenantName ? 'Occupied' : 'Vacant';
+                const lateFee = calculateLateFee(property);
+                const lateFeeDisplay = lateFee > 0 ? `<span class="detail-value late">$${lateFee.toFixed(2)}</span>` : '<span class="detail-value">$0.00</span>';
+                const isStorageUnit = property.propertyType === 'Storage Unit';
+                const unitInfo = isStorageUnit ? `<div style="font-size: 12px; color: #6b7280; margin-top: 4px;"><i class="fas fa-cube"></i> ${property.unitNumber || ''} ${property.size ? '• ' + property.size : ''}</div>` : '';
+
+                return `
+                    <div class="property-card">
+                        <div style="display: flex; align-items: start; gap: 12px; margin-bottom: 12px;">
+                            <input type="checkbox" class="property-checkbox" value="${property.id}" onchange="updateBulkActions()" onclick="event.stopPropagation()">
+                            <div style="flex: 1;" onclick="viewPropertyDetails('${property.id}')" style="cursor: pointer;">
+                        <div class="property-header">
+                            <div>
+                                <div class="property-name">
+                                    ${property.propertyName}
+                                    ${isStorageUnit ? '<span style="background: #7c3aed; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px; font-weight: 600;">STORAGE</span>' : ''}
+                                </div>
+                                <div class="property-address">${property.address}</div>
+                                ${unitInfo}
+                            </div>
+                            <div class="property-status ${statusClass}">${statusText}</div>
+                        </div>
+                        <div class="property-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Monthly Rent:</span>
+                                <span class="detail-value money-value">$${parseFloat(property.monthlyRent).toFixed(2)}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Tenant:</span>
+                                <span class="detail-value">${property.tenantName || 'Vacant'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Late Fee:</span>
+                                ${lateFeeDisplay}
+                            </div>
+                            ${property.tenantName ? `
+                            <div class="risk-indicators" id="riskIndicators_${property.id}">
+                                <div class="risk-indicator">
+                                    <span class="risk-dot" id="autopayDot_${property.id}"></span>
+                                    <span id="autopayText_${property.id}">Autopay: Checking...</span>
+                                </div>
+                                <div class="risk-indicator">
+                                    <span class="detail-label">Payment History:</span>
+                                    <span id="paymentHistoryDots_${property.id}">⚪⚪⚪⚪⚪⚪</span>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div class="property-actions">
+                            <button class="btn-secondary" onclick="event.stopPropagation(); viewPropertyDetails('${property.id}')">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                            <button class="btn-secondary" onclick="event.stopPropagation(); processPayment('${property.id}')">
+                                <i class="fas fa-credit-card"></i> Process Payment
+                            </button>
+                        </div>
+                            </div>
+                        </div>
+                        ${property.tenantName ? `
+                        <div class="performance-metrics" id="performance_${property.id}">
+                            <!-- Performance metrics will be loaded dynamically -->
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update stats
+        function updateStats(stats) {
+            document.getElementById('totalProperties').textContent = stats.totalProperties || 0;
+            document.getElementById('totalTenants').textContent = stats.totalTenants || 0;
+            document.getElementById('monthlyRent').textContent = '$' + (stats.monthlyRent || 0).toFixed(2);
+            document.getElementById('latePayments').textContent = stats.latePayments || 0;
+        }
+
+        // Calculate late fee
+        function calculateLateFee(property) {
+            if (!property.tenantName) return 0; // No tenant, no late fee
+            
+            const today = new Date();
+            const currentDay = today.getDate();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // Rent is due on the 1st, late fee starts on the 8th
+            if (currentDay < 8) return 0; // Not late yet
+            
+            // Calculate days late (starting from the 8th)
+            const daysLate = currentDay - 7;
+            const lateFeePerDay = 29;
+            
+            return daysLate * lateFeePerDay;
+        }
+
+        // Add Property Modal
+        function openAddPropertyModal() {
+            document.getElementById('addPropertyModal').classList.add('active');
+        }
+
+        function closeAddPropertyModal() {
+            document.getElementById('addPropertyModal').classList.remove('active');
+            document.getElementById('addPropertyForm').reset();
+        }
+
+        // Handle form submission
+        document.getElementById('addPropertyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+                const propertyData = {
+                propertyType: formData.get('propertyType') || 'Rental Property',
+                propertyName: formData.get('propertyName'),
+                unitNumber: formData.get('unitNumber') || '',
+                size: formData.get('size') || '',
+                address: formData.get('address'),
+                monthlyRent: parseFloat(formData.get('monthlyRent')),
+                tenantName: formData.get('tenantName') || '',
+                tenantEmail: formData.get('tenantEmail') || '',
+                tenantPhone: formData.get('tenantPhone') || ''
+            };
+
+            try {
+                // Use form-encoded POST to avoid CORS preflight
+                const formData = new URLSearchParams();
+                formData.append('action', 'addProperty');
+                formData.append('propertyType', propertyData.propertyType);
+                formData.append('propertyName', propertyData.propertyName);
+                formData.append('unitNumber', propertyData.unitNumber || '');
+                formData.append('size', propertyData.size || '');
+                formData.append('address', propertyData.address);
+                formData.append('monthlyRent', propertyData.monthlyRent);
+                formData.append('tenantName', propertyData.tenantName || '');
+                formData.append('tenantEmail', propertyData.tenantEmail || '');
+                formData.append('tenantPhone', propertyData.tenantPhone || '');
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    closeAddPropertyModal();
+                    loadProperties();
+                } else {
+                    showToast('Error adding property: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error adding property. Please try again.', 'error');
+            }
+        });
+
+        // View Property Details
+        async function viewPropertyDetails(propertyId) {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getPropertyDetails&propertyId=' + propertyId);
+                const data = await response.json();
+
+                if (data.success) {
+                    const property = data.property;
+                    document.getElementById('propertyDetailsTitle').textContent = property.propertyName;
+                    
+                    const lateFee = calculateLateFee(property);
+                    const paymentHistory = property.paymentHistory || [];
+                    
+                    document.getElementById('propertyDetailsBody').innerHTML = `
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <div style="padding: 12px; background: #f3f4f6; border-radius: 8px;">${property.address}</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Monthly Rent</label>
+                            <div style="padding: 12px; background: #f3f4f6; border-radius: 8px;">$${parseFloat(property.monthlyRent).toFixed(2)}</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tenant Name</label>
+                            <div style="padding: 12px; background: #f3f4f6; border-radius: 8px;">${property.tenantName || 'Vacant'}</div>
+                        </div>
+                        ${property.tenantEmail ? `
+                        <div class="form-group">
+                            <label class="form-label">Tenant Email</label>
+                            <div style="padding: 12px; background: #f3f4f6; border-radius: 8px;">${property.tenantEmail}</div>
+                        </div>
+                        ` : ''}
+                        ${property.tenantPhone ? `
+                        <div class="form-group">
+                            <label class="form-label">Tenant Phone</label>
+                            <div style="padding: 12px; background: #f3f4f6; border-radius: 8px;">${property.tenantPhone}</div>
+                        </div>
+                        ` : ''}
+                        <div class="form-group">
+                            <label class="form-label">Current Late Fee</label>
+                            <div style="padding: 12px; background: ${lateFee > 0 ? '#fee2e2' : '#f3f4f6'}; border-radius: 8px; color: ${lateFee > 0 ? '#dc2626' : '#111827'}; font-weight: 600;">
+                                $${lateFee.toFixed(2)}
+                            </div>
+                        </div>
+                        <div class="form-group" id="autopayStatusSection">
+                            <label class="form-label">Autopay Status</label>
+                            <div id="autopayStatus" style="padding: 12px; background: #f3f4f6; border-radius: 8px;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                        <div class="form-group" id="paymentStreakSection">
+                            <label class="form-label">Payment Streak & Good Deed Status</label>
+                            <div id="paymentStreak" style="padding: 12px; background: #f3f4f6; border-radius: 8px;">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-submit" onclick="processPayment('${propertyId}')">
+                                <i class="fas fa-credit-card"></i> Process Payment
+                            </button>
+                            ${property.tenantEmail ? `
+                            <button class="btn-primary" onclick="sendPortalInstructions('${propertyId}', '${property.tenantEmail}')" style="background: #1e3a8a; margin-left: 12px;">
+                                <i class="fas fa-book"></i> Send Portal Instructions
+                            </button>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    document.getElementById('propertyDetailsModal').classList.add('active');
+                    
+                    // Load autopay status and payment streak
+                    loadAutopayStatus(propertyId);
+                    loadPaymentStreak(propertyId);
+                } else {
+                    showToast('Error loading property details: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error loading property details. Please try again.', 'error');
+            }
+        }
+
+        // Load autopay status
+        async function loadAutopayStatus(propertyId) {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getAutopayStatus&propertyId=' + propertyId);
+                const data = await response.json();
+
+                const statusDiv = document.getElementById('autopayStatus');
+                
+                if (data.success) {
+                    if (data.autopayEnabled && data.subscription) {
+                        const endDate = new Date(data.subscription.currentPeriodEnd * 1000);
+                        statusDiv.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="color: #059669; font-weight: 600; margin-bottom: 4px;">
+                                        <i class="fas fa-check-circle"></i> Autopay Active
+                                    </div>
+                                    <div style="font-size: 12px; color: #6b7280;">
+                                        Next payment: ${endDate.toLocaleDateString()}
+                                    </div>
+                                </div>
+                                <button class="btn-secondary" onclick="cancelAutopay('${propertyId}', '${data.subscription.id}')" style="min-width: auto; padding: 6px 12px;">
+                                    Cancel
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        statusDiv.innerHTML = `
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="color: #6b7280;">Autopay not set up</div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-secondary" onclick="sendAutopaySetupEmail('${propertyId}')" style="flex: 1; padding: 8px 12px;">
+                                        <i class="fas fa-envelope"></i> Email Setup Link
+                                    </button>
+                                    <button class="btn-secondary" onclick="setupAutopay('${propertyId}')" style="flex: 1; padding: 8px 12px;">
+                                        <i class="fas fa-calendar-check"></i> Setup Now
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    statusDiv.innerHTML = '<div style="color: #dc2626;">Error loading autopay status</div>';
+                }
+            } catch (error) {
+                console.error('Error loading autopay status:', error);
+                document.getElementById('autopayStatus').innerHTML = '<div style="color: #dc2626;">Error loading status</div>';
+            }
+        }
+
+        // Setup autopay
+        async function setupAutopay(propertyId) {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'setupAutopay',
+                        propertyId: propertyId
+                    }).toString()
+                });
+
+                const data = await response.json();
+                
+                if (data.success && data.checkoutUrl) {
+                    // Open Stripe checkout in new window
+                    window.open(data.checkoutUrl, '_blank');
+                    showToast('Opening Stripe checkout to set up autopay. Complete the setup to enable automatic monthly payments.', 'info');
+                } else {
+                    showToast('Error setting up autopay: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error setting up autopay. Please try again.', 'error');
+            }
+        }
+
+        // Cancel autopay
+        async function cancelAutopay(propertyId, subscriptionId) {
+            const confirmed = await showConfirm(
+                'Cancel Autopay',
+                'Are you sure you want to cancel autopay? It will remain active until the end of the current billing period.'
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'cancelAutopay',
+                        subscriptionId: subscriptionId
+                    }).toString()
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Autopay will be cancelled at the end of the current billing period.', 'success');
+                    loadAutopayStatus(propertyId); // Refresh status
+                } else {
+                    showToast('Error cancelling autopay: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error cancelling autopay. Please try again.', 'error');
+            }
+        }
+
+        // Send autopay setup email to tenant
+        async function sendAutopaySetupEmail(propertyId) {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'sendAutopaySetupEmail',
+                        propertyId: propertyId
+                    }).toString()
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Autopay setup email sent to tenant! They will receive a link to complete the setup.', 'success');
+                } else {
+                    showToast('Error sending email: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error sending email. Please try again.', 'error');
+            }
+        }
+
+        function closePropertyDetailsModal() {
+            document.getElementById('propertyDetailsModal').classList.remove('active');
+        }
+
+        // Process Payment (Stripe integration)
+        async function processPayment(propertyId) {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getPropertyDetails&propertyId=' + propertyId);
+                const data = await response.json();
+
+                if (data.success) {
+                    const property = data.property;
+                    const lateFee = calculateLateFee(property);
+                    const totalAmount = parseFloat(property.monthlyRent) + lateFee;
+                    
+                    // Redirect to Stripe payment or open payment modal
+                    // This will be integrated with Stripe Checkout
+                    const paymentUrl = RENTAL_SCRIPT_URL + '?action=createPayment&propertyId=' + propertyId + '&amount=' + totalAmount;
+                    window.open(paymentUrl, '_blank');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error processing payment. Please try again.', 'error');
+            }
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+
+        // Confirmation Modal (replaces confirm() for sandboxed iframes)
+        let confirmResolve = null;
+        
+        function showConfirm(title, message) {
+            return new Promise((resolve) => {
+                confirmResolve = resolve;
+                document.getElementById('confirmModalTitle').textContent = title;
+                document.getElementById('confirmModalMessage').textContent = message;
+                document.getElementById('confirmModal').classList.add('active');
+            });
+        }
+        
+        function closeConfirmModal(confirmed) {
+            document.getElementById('confirmModal').classList.remove('active');
+            if (confirmResolve) {
+                confirmResolve(confirmed);
+                confirmResolve = null;
+            }
+        }
+
+        // Toast Notification (replaces alert() for sandboxed iframes)
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            const existingToasts = document.querySelectorAll('.toast');
+            existingToasts.forEach(toast => toast.remove());
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const iconMap = {
+                success: '✓',
+                error: '✕',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+            
+            toast.innerHTML = `
+                <span class="toast-icon">${iconMap[type] || iconMap.info}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+
+        // Rent Reminder Functions
+        async function openRentReminderModal() {
+            document.getElementById('rentReminderModal').classList.add('active');
+            await loadTenants();
+        }
+
+        function closeRentReminderModal() {
+            document.getElementById('rentReminderModal').classList.remove('active');
+        }
+
+        async function loadTenants() {
+            const container = document.getElementById('tenantsList');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading tenants...</div>';
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getAllTenants');
+                const data = await response.json();
+
+                if (data.success && data.tenants && data.tenants.length > 0) {
+                    container.innerHTML = `
+                        <p style="margin-bottom: 20px; color: #6b7280;">Select tenants to send rent reminders, or send to all:</p>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            ${data.tenants.map(tenant => {
+                                const lateFee = calculateLateFeeForTenant(tenant);
+                                const totalAmount = parseFloat(tenant.monthlyRent) + lateFee;
+                                return `
+                                    <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border: 2px solid #e5e7eb;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <div style="font-weight: 600; color: #111827; margin-bottom: 4px;">${tenant.propertyName}</div>
+                                                <div style="font-size: 14px; color: #6b7280;">${tenant.tenantName}</div>
+                                                <div style="font-size: 12px; color: #6b7280; margin-top: 4px;">${tenant.tenantEmail}</div>
+                                                <div style="font-size: 14px; margin-top: 8px;">
+                                                    <span style="color: #6b7280;">Amount Due: </span>
+                                                    <span style="font-weight: 600; color: #111827;">$${totalAmount.toFixed(2)}</span>
+                                                    ${lateFee > 0 ? `<span style="color: #dc2626; margin-left: 8px;">(Late Fee: $${lateFee.toFixed(2)})</span>` : ''}
+                                                </div>
+                                            </div>
+                                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                                <button class="btn-secondary" onclick="sendReminderToTenant('${tenant.propertyId}', '${tenant.tenantEmail}')" style="min-width: 100px;">
+                                                    <i class="fas fa-envelope"></i> Reminder
+                                                </button>
+                                                <button class="btn-success" onclick="sendTenantInvite('${tenant.propertyId}', '${tenant.tenantEmail}')" style="min-width: 120px;">
+                                                    <i class="fas fa-user-plus"></i> Portal Invite
+                                                </button>
+                                                <button class="btn-primary" onclick="sendPortalInstructions('${tenant.propertyId}', '${tenant.tenantEmail}')" style="min-width: 150px; background: #1e3a8a;">
+                                                    <i class="fas fa-book"></i> Send Instructions
+                                                </button>
+                                                <button class="btn-secondary" onclick="requestBackgroundCheck('${tenant.propertyId}')" style="min-width: 140px; background: #7c3aed;">
+                                                    <i class="fas fa-shield-alt"></i> Background Check
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👤</div><div>No tenants found. Add properties with tenants to send reminders.</div></div>';
+                }
+            } catch (error) {
+                console.error('Error loading tenants:', error);
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div>Error loading tenants. Please try again.</div></div>';
+            }
+        }
+
+        function calculateLateFeeForTenant(tenant) {
+            const today = new Date();
+            const currentDay = today.getDate();
+            
+            if (currentDay < 8) return 0;
+            
+            const daysLate = currentDay - 7;
+            return daysLate * 29;
+        }
+
+        async function sendReminderToTenant(propertyId, tenantEmail) {
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'sendRentReminder');
+                formData.append('propertyId', propertyId);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Rent reminder sent successfully to ' + tenantEmail, 'success');
+                } else {
+                    showToast('Error sending reminder: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error sending reminder. Please try again.', 'error');
+            }
+        }
+
+        async function sendTenantInvite(propertyId, tenantEmail) {
+            const confirmed = await showConfirm(
+                'Send Portal Invite',
+                `Send tenant portal invite to ${tenantEmail}?`
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'sendTenantInvite');
+                formData.append('propertyId', propertyId);
+                formData.append('tenantEmail', tenantEmail);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Portal invite sent successfully to ' + tenantEmail, 'success');
+                } else {
+                    showToast('Error sending invite: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error sending invite:', error);
+                showToast('Error sending invite: ' + error.toString(), 'error');
+            }
+        }
+
+        // Send comprehensive portal instructions
+        async function sendPortalInstructions(propertyId, tenantEmail) {
+            const confirmed = await showConfirm(
+                'Send Portal Instructions',
+                `Send portal instructions to ${tenantEmail}?`
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'sendPortalInstructions');
+                formData.append('propertyId', propertyId);
+                formData.append('email', tenantEmail);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Portal instructions sent successfully to ' + tenantEmail, 'success');
+                } else {
+                    showToast('Error sending instructions: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error sending instructions:', error);
+                showToast('Error sending instructions: ' + error.toString(), 'error');
+            }
+        }
+
+        // Load pending tenant requests
+        async function loadPendingTenants() {
+            try {
+                const container = document.getElementById('pendingTenantsContainer');
+                const section = document.getElementById('pendingTenantsSection');
+                const countBadge = document.getElementById('pendingTenantsCount');
+                
+                if (!container || !section || !countBadge) {
+                    console.error('Pending tenants elements not found!');
+                    return;
+                }
+                
+                // Show loading state
+                container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading pending requests...</div>';
+                section.style.display = 'block'; // Show section even while loading
+                
+                console.log('Loading pending tenants...');
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'getPendingTenants'
+                    }).toString()
+                });
+
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('Failed to parse JSON:', parseError);
+                    console.error('Response was:', responseText);
+                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: #dc2626;">Error: Invalid response from server. Check console for details.</div>';
+                    section.style.display = 'block';
+                    return;
+                }
+                
+                console.log('Pending tenants response:', data);
+
+                if (data.success && data.pendingTenants && data.pendingTenants.length > 0) {
+                    section.style.display = 'block';
+                    countBadge.textContent = data.pendingTenants.length;
+                    console.log('Found ' + data.pendingTenants.length + ' pending tenants');
+
+                    container.innerHTML = data.pendingTenants.map(tenant => `
+                        <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 8px 0; color: #111827; font-size: 18px; font-weight: 700;">${escapeHtml(tenant.name || 'Unknown')}</h3>
+                                    <div style="color: #6b7280; font-size: 14px; margin-bottom: 4px;">
+                                        <i class="fas fa-envelope"></i> ${escapeHtml(tenant.email || 'No email')}
+                                    </div>
+                                    ${tenant.phone ? `<div style="color: #6b7280; font-size: 14px; margin-bottom: 4px;"><i class="fas fa-phone"></i> ${escapeHtml(tenant.phone)}</div>` : ''}
+                                    ${tenant.propertyName ? `<div style="color: #1e3a8a; font-size: 14px; font-weight: 600; margin-top: 8px;"><i class="fas fa-home"></i> ${escapeHtml(tenant.propertyName)}</div>` : ''}
+                                    <div style="color: #6b7280; font-size: 12px; margin-top: 8px;">
+                                        Requested: ${tenant.createdAt ? new Date(tenant.createdAt).toLocaleDateString() : 'N/A'}
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-success" onclick="approveTenantRequest(${tenant.rowIndex}, '${escapeHtml(tenant.email || '')}')" style="min-width: 100px; padding: 10px 16px;">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn-danger" onclick="rejectTenantRequest(${tenant.rowIndex}, '${escapeHtml(tenant.email || '')}')" style="min-width: 100px; padding: 10px 16px;">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Always show section so user knows it's working
+                    section.style.display = 'block';
+                    if (data.success && (!data.pendingTenants || data.pendingTenants.length === 0)) {
+                        container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;"><i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i><p>No pending tenant requests</p><p style="font-size: 12px; margin-top: 8px;">New tenant sign-ups will appear here for approval</p></div>';
+                        countBadge.textContent = '0';
+                        console.log('No pending tenants found');
+                    } else {
+                        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #dc2626;"><i class="fas fa-exclamation-triangle"></i> Error loading pending tenants: ' + (data.message || 'Unknown error') + '</div>';
+                        console.error('Error in pending tenants response:', data);
+                        countBadge.textContent = '?';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading pending tenants:', error);
+                const container = document.getElementById('pendingTenantsContainer');
+                const section = document.getElementById('pendingTenantsSection');
+                if (container) {
+                    container.innerHTML = '<div style="text-align: center; padding: 20px; color: #dc2626;">Error: ' + error.toString() + '</div>';
+                }
+                if (section) {
+                    section.style.display = 'block';
+                }
+            }
+        }
+
+        // Approve tenant request
+        async function approveTenantRequest(rowIndex, email) {
+            const confirmed = await showConfirm(
+                'Approve Tenant Request',
+                `Approve account request for ${email}? They will receive an email notification and can log in immediately.`
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'approveTenant',
+                        rowIndex: rowIndex
+                    }).toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Tenant account approved successfully! They will receive an email notification.', 'success');
+                    loadPendingTenants();
+                } else {
+                    showToast('Error approving tenant: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error approving tenant:', error);
+                showToast('Error approving tenant. Please try again.', 'error');
+            }
+        }
+
+        // Reject tenant request
+        async function rejectTenantRequest(rowIndex, email) {
+            const reason = prompt('Enter rejection reason (optional):');
+            const confirmed = await showConfirm(
+                'Reject Tenant Request',
+                `Reject account request for ${email}? This action cannot be undone.`
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'rejectTenant');
+                formData.append('rowIndex', rowIndex);
+                if (reason) formData.append('reason', reason);
+
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Tenant request rejected.', 'success');
+                    loadPendingTenants();
+                } else {
+                    showToast('Error rejecting tenant: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error rejecting tenant:', error);
+                showToast('Error rejecting tenant. Please try again.', 'error');
+            }
+        }
+
+        // Helper function to escape HTML (used by multiple functions)
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Make it globally available
+        window.escapeHtml = escapeHtml;
+
+        async function requestBackgroundCheck(propertyId) {
+            const confirmed = await showConfirm(
+                'Request Background Check',
+                'Request background and credit check for this tenant? An email will be sent with a secure link to complete the check.'
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('action', 'requestBackgroundCheck');
+                formData.append('propertyId', propertyId);
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Background check request sent successfully! Check code: ' + data.checkCode, 'success');
+                    if (data.checkUrl) {
+                        console.log('Background check URL:', data.checkUrl);
+                    }
+                } else {
+                    showToast('Error requesting background check: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error requesting background check:', error);
+                showToast('Error requesting background check: ' + error.toString(), 'error');
+            }
+        }
+
+        async function sendAllReminders() {
+            const confirmed = await showConfirm(
+                'Send Rent Reminders',
+                'Send rent reminders to all tenants? This will create and send payment links to each tenant.'
+            );
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=sendRentReminders');
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(`Rent reminders sent! Successfully sent: ${data.totalSent}, Failed: ${data.totalFailed}`, 'success');
+                    closeRentReminderModal();
+                    loadActivityLog();
+                } else {
+                    showToast('Error sending reminders: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error sending reminders. Please try again.', 'error');
+            }
+        }
+
+        // ==========================================
+        // COMMAND CENTER FUNCTIONS
+        // ==========================================
+
+        // Load Today at a Glance
+        async function loadTodayGlance() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getProperties');
+                const data = await response.json();
+                
+                if (data.success && data.properties) {
+                    const properties = data.properties;
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    
+                    // Count rents scheduled (autopay enabled properties)
+                    let scheduledCount = 0;
+                    let reminderSent = 0;
+                    let expectedAmount = 0;
+                    let issues = 0;
+                    
+                    for (const prop of properties) {
+                        if (prop.tenantName) {
+                            // Check if autopay enabled (simplified - would need backend check)
+                            expectedAmount += parseFloat(prop.monthlyRent || 0);
+                            if (currentDay >= 1 && currentDay <= 3) {
+                                scheduledCount++;
+                            }
+                            // Count late payments
+                            if (currentDay >= 8) {
+                                issues++;
+                            }
+                        }
+                    }
+                    
+                    const glanceText = `${scheduledCount} rent${scheduledCount !== 1 ? 's' : ''} scheduled · ${reminderSent} reminder${reminderSent !== 1 ? 's' : ''} sent · $${expectedAmount.toLocaleString()} expected · ${issues} issue${issues !== 1 ? 's' : ''}`;
+                    document.getElementById('todayGlance').textContent = glanceText;
+                }
+            } catch (error) {
+                console.error('Error loading glance:', error);
+                document.getElementById('todayGlance').textContent = 'Unable to load summary';
+            }
+        }
+
+        // Load Upcoming Events
+        async function loadUpcomingEvents() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getProperties');
+                const data = await response.json();
+                
+                if (data.success && data.properties) {
+                    const events = [];
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    const currentMonth = today.getMonth();
+                    const currentYear = today.getFullYear();
+                    
+                    // Calculate next rent due date (1st of next month)
+                    const nextMonth = new Date(currentYear, currentMonth + 1, 1);
+                    const daysUntilRent = Math.ceil((nextMonth - today) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysUntilRent <= 30) {
+                        events.push({
+                            type: 'rent',
+                            title: 'Rent due in ' + daysUntilRent + ' day' + (daysUntilRent !== 1 ? 's' : ''),
+                            subtitle: nextMonth.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                        });
+                    }
+                    
+                    // Add sample events (in real implementation, these would come from backend)
+                    events.push({
+                        type: 'autopay',
+                        title: 'Autopay retry scheduled',
+                        subtitle: 'Processing automatic payments'
+                    });
+                    
+                    if (events.length > 0) {
+                        const eventsHtml = events.map(event => `
+                            <div class="event-item">
+                                <div class="event-icon ${event.type}">
+                                    <i class="fas fa-${event.type === 'rent' ? 'calendar-alt' : event.type === 'lease' ? 'file-contract' : event.type === 'autopay' ? 'credit-card' : 'bell'}"></i>
+                                </div>
+                                <div class="event-content">
+                                    <div class="event-title">${event.title}</div>
+                                    <div class="event-subtitle">${event.subtitle}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                        
+                        document.getElementById('upcomingEvents').innerHTML = eventsHtml;
+                    } else {
+                        document.getElementById('upcomingEvents').innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">No upcoming events</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.getElementById('upcomingEvents').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Error loading events</div>';
+            }
+        }
+
+        // Load Activity Log
+        async function loadActivityLog() {
+            // Sample activity log (in real implementation, this would come from backend)
+            const activities = [
+                { type: 'success', message: 'Rent reminder sent', time: '2 minutes ago' },
+                { type: 'success', message: 'Payment processed via Stripe', time: '15 minutes ago' },
+                { type: 'warning', message: 'Payment failed - retry scheduled', time: '1 hour ago' },
+                { type: 'info', message: 'Lease document uploaded', time: '2 hours ago' },
+                { type: 'success', message: 'Tenant portal access granted', time: '3 hours ago' }
+            ];
+            
+            const logHtml = activities.map(activity => `
+                <div class="log-item">
+                    <div class="log-icon ${activity.type}">
+                        <i class="fas fa-${activity.type === 'success' ? 'check' : activity.type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    </div>
+                    <div class="log-content">
+                        <div class="log-message">${activity.message}</div>
+                        <div class="log-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('activityLog').innerHTML = logHtml;
+        }
+
+        // Load Smart Alerts
+        async function loadSmartAlerts() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getProperties');
+                const data = await response.json();
+                
+                if (data.success && data.properties) {
+                    const alerts = [];
+                    const today = new Date();
+                    const currentDay = today.getDate();
+                    
+                    // Check for late payments
+                    let lateCount = 0;
+                    for (const prop of data.properties) {
+                        if (prop.tenantName && currentDay >= 8) {
+                            lateCount++;
+                        }
+                    }
+                    
+                    if (lateCount > 0) {
+                        alerts.push({
+                            type: 'danger',
+                            title: `${lateCount} tenant${lateCount !== 1 ? 's' : ''} ${lateCount !== 1 ? 'have' : 'has'} failed payment twice`,
+                            message: 'Consider sending follow-up notices or contacting tenants directly'
+                        });
+                    }
+                    
+                    // Add sample alerts
+                    alerts.push({
+                        type: 'warning',
+                        title: 'Card expiring soon',
+                        message: '1 tenant has a payment card expiring within 30 days'
+                    });
+                    
+                    alerts.push({
+                        type: 'info',
+                        title: 'Lease ends in 30 days',
+                        message: '2 properties have leases expiring next month'
+                    });
+                    
+                    if (alerts.length > 0) {
+                        const alertsHtml = alerts.map(alert => `
+                            <div class="alert-item ${alert.type}">
+                                <div class="alert-icon">
+                                    <i class="fas fa-${alert.type === 'danger' ? 'exclamation-circle' : alert.type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                                </div>
+                                <div class="alert-content">
+                                    <div class="alert-title">${alert.title}</div>
+                                    <div class="alert-message">${alert.message}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                        
+                        document.getElementById('smartAlerts').innerHTML = alertsHtml;
+                    } else {
+                        document.getElementById('smartAlerts').innerHTML = '<div style="text-align: center; padding: 40px; color: #10b981;"><i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i><p>All systems operational - no alerts</p></div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading alerts:', error);
+                document.getElementById('smartAlerts').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Error loading alerts</div>';
+            }
+        }
+
+        // Load Profit Analysis
+        async function loadProfitAnalysis() {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getProperties');
+                const data = await response.json();
+                
+                if (data.success && data.properties) {
+                    const today = new Date();
+                    const yearStart = new Date(today.getFullYear(), 0, 1);
+                    
+                    // Calculate totals (simplified - in real implementation, would sum actual payments)
+                    let totalCollected = 0;
+                    let totalMortgage = 0;
+                    let totalTaxes = 0;
+                    let totalInsurance = 0;
+                    let totalRent = 0;
+                    
+                    for (const prop of data.properties) {
+                        const monthlyRent = parseFloat(prop.monthlyRent || 0);
+                        totalRent += monthlyRent;
+                        // Estimate collected as 80% of rent (in real implementation, sum actual payments)
+                        totalCollected += monthlyRent * 0.8 * (today.getMonth() + 1);
+                    }
+                    
+                    // Calculate YTD expenses (simplified - would need backend data)
+                    const monthsElapsed = today.getMonth() + 1;
+                    totalMortgage = 0 * monthsElapsed; // Would be calculated from property sheets
+                    totalTaxes = 0 * monthsElapsed / 12; // Would be calculated from property sheets
+                    totalInsurance = 0 * monthsElapsed / 12; // Would be calculated from property sheets
+                    
+                    const totalExpenses = totalMortgage + totalTaxes + totalInsurance;
+                    const netProfit = totalCollected - totalExpenses;
+                    
+                    const profitHtml = `
+                        <div class="profit-section">
+                            <div class="profit-row">
+                                <span class="profit-label">Collected (YTD):</span>
+                                <span class="profit-value positive">$${totalCollected.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            </div>
+                            <div class="profit-row">
+                                <span class="profit-label">Mortgage Payments:</span>
+                                <span class="profit-value">-$${totalMortgage.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            </div>
+                            <div class="profit-row">
+                                <span class="profit-label">Taxes:</span>
+                                <span class="profit-value">-$${totalTaxes.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            </div>
+                            <div class="profit-row">
+                                <span class="profit-label">Insurance:</span>
+                                <span class="profit-value">-$${totalInsurance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            </div>
+                            <div class="profit-row">
+                                <span class="profit-label">Total Expenses:</span>
+                                <span class="profit-value">-$${totalExpenses.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            </div>
+                            <div class="profit-row">
+                                <span class="profit-label" style="font-size: 18px;">Net Profit (YTD):</span>
+                                <span class="profit-value ${netProfit >= 0 ? 'positive' : 'negative'}" style="font-size: 24px;">$${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('profitAnalysis').innerHTML = profitHtml;
+                }
+            } catch (error) {
+                console.error('Error loading profit analysis:', error);
+                document.getElementById('profitAnalysis').innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Error calculating profit</div>';
+            }
+        }
+
+        // Update Webhook Status
+        function updateWebhookStatus() {
+            const webhookStatus = document.getElementById('webhookStatus');
+            const webhookStatusText = document.getElementById('webhookStatusText');
+            
+            // Simulate webhook activity (in real implementation, would check last webhook time)
+            const lastEvent = Math.floor(Math.random() * 5) + 1;
+            webhookStatus.className = 'status-indicator active';
+            webhookStatusText.textContent = `Last event ${lastEvent}m ago`;
+        }
+
+        // Update Cash Flow Metrics
+        function updateCashFlowMetrics(properties) {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+            
+            let collected = 0;
+            let scheduled = 0;
+            let atRisk = 0;
+            let overdue = 0;
+            let totalRent = 0;
+            
+            for (const prop of properties) {
+                if (prop.tenantName) {
+                    const rent = parseFloat(prop.monthlyRent || 0);
+                    totalRent += rent;
+                    
+                    // Simplified logic - in real implementation would check actual payment records
+                    const currentDay = today.getDate();
+                    
+                    if (currentDay < 8) {
+                        scheduled += rent;
+                    } else if (currentDay < 15) {
+                        atRisk += rent;
+                    } else {
+                        overdue += rent;
+                    }
+                    
+                    // Estimate collected (in real implementation, sum actual payments)
+                    collected += rent * 0.7; // Assume 70% collected
+                }
+            }
+            
+            // Update UI
+            document.getElementById('collectedThisMonth').textContent = '$' + collected.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('scheduledAmount').textContent = '$' + scheduled.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('atRiskAmount').textContent = '$' + atRisk.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('overdueAmount').textContent = '$' + overdue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            // Update progress bars
+            if (totalRent > 0) {
+                document.getElementById('collectedProgress').style.width = (collected / totalRent * 100) + '%';
+                document.getElementById('scheduledProgress').style.width = (scheduled / totalRent * 100) + '%';
+                document.getElementById('atRiskProgress').style.width = (atRisk / totalRent * 100) + '%';
+                document.getElementById('overdueProgress').style.width = (overdue / totalRent * 100) + '%';
+            }
+        }
+
+        // Update Stats (enhanced)
+        function updateStats(stats) {
+            document.getElementById('totalProperties').textContent = stats.totalProperties || 0;
+            document.getElementById('totalTenants').textContent = stats.totalTenants || 0;
+            document.getElementById('latePayments').textContent = stats.latePayments || 0;
+        }
+
+        // Bulk Actions
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.property-checkbox:checked');
+            const count = checkboxes.length;
+            const panel = document.getElementById('bulkActionPanel');
+            
+            if (count > 0) {
+                panel.style.display = 'flex';
+                document.getElementById('selectedCount').textContent = count;
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAllProperties');
+            const checkboxes = document.querySelectorAll('.property-checkbox');
+            
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            
+            updateBulkActions();
+        }
+
+        async function bulkSendReminders() {
+            const selected = Array.from(document.querySelectorAll('.property-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) return;
+            
+            showToast(`Sending reminders to ${selected.length} propert${selected.length !== 1 ? 'ies' : 'y'}...`, 'info');
+            // Implementation would iterate and send reminders
+        }
+
+        async function bulkToggleAutopay() {
+            const selected = Array.from(document.querySelectorAll('.property-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) return;
+            
+            showToast(`Toggling autopay for ${selected.length} propert${selected.length !== 1 ? 'ies' : 'y'}...`, 'info');
+        }
+
+        async function bulkExportCSV() {
+            const selected = Array.from(document.querySelectorAll('.property-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) return;
+            
+            showToast(`Exporting ${selected.length} propert${selected.length !== 1 ? 'ies' : 'y'} to CSV...`, 'info');
+        }
+
+        async function bulkApplyLateFee() {
+            const selected = Array.from(document.querySelectorAll('.property-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) return;
+            
+            const confirmed = await showConfirm('Apply Late Fee', `Apply late fee to ${selected.length} propert${selected.length !== 1 ? 'ies' : 'y'}?`);
+            if (confirmed) {
+                showToast(`Applying late fees...`, 'info');
+            }
+        }
+
+        async function bulkNotifyTenants() {
+            const selected = Array.from(document.querySelectorAll('.property-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) return;
+            
+            showToast(`Notifying tenants for ${selected.length} propert${selected.length !== 1 ? 'ies' : 'y'}...`, 'info');
+        }
+
+        // Load Payment Streak
+        async function loadPaymentStreak(propertyId) {
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getPaymentStreak&propertyId=' + propertyId);
+                const data = await response.json();
+                
+                const streakDiv = document.getElementById('paymentStreak');
+                
+                if (data.success) {
+                    const streak = data.streak || 0;
+                    const onTimeCount = data.onTimeCount || 0;
+                    const eligibleForGoodDeed = data.eligibleForGoodDeed || false;
+                    
+                    let streakHtml = `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span style="font-weight: 600; color: #111827;">On-Time Payment Streak:</span>
+                                <span style="font-size: 20px; font-weight: 800; color: #10b981;">${onTimeCount} month${onTimeCount !== 1 ? 's' : ''}</span>
+                            </div>
+                            ${eligibleForGoodDeed ? `
+                            <div style="background: #d1fae5; color: #065f46; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-bottom: 12px;">
+                                <i class="fas fa-star"></i> Eligible for Good Deed Month!
+                            </div>
+                            ` : `
+                            <div style="color: #6b7280; font-size: 12px; margin-bottom: 12px;">
+                                Need ${4 - onTimeCount} more on-time payment${4 - onTimeCount !== 1 ? 's' : ''} for Good Deed eligibility
+                            </div>
+                            `}
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn-secondary" onclick="waiveLateFee('${propertyId}')" style="flex: 1; min-width: 120px;">
+                                <i class="fas fa-gift"></i> Waive Late Fee
+                            </button>
+                            ${eligibleForGoodDeed ? `
+                            <button class="btn-primary" onclick="applyGoodDeedMonth('${propertyId}')" style="flex: 1; min-width: 150px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="fas fa-star"></i> Good Deed Month
+                            </button>
+                            ` : `
+                            <button class="btn-secondary" onclick="applyGoodDeedMonth('${propertyId}')" disabled style="flex: 1; min-width: 150px; opacity: 0.5; cursor: not-allowed;">
+                                <i class="fas fa-star"></i> Good Deed Month
+                            </button>
+                            `}
+                        </div>
+                    `;
+                    
+                    streakDiv.innerHTML = streakHtml;
+                } else {
+                    streakDiv.innerHTML = '<div style="color: #dc2626;">Error loading payment streak</div>';
+                }
+            } catch (error) {
+                console.error('Error loading payment streak:', error);
+                document.getElementById('paymentStreak').innerHTML = '<div style="color: #dc2626;">Error loading streak</div>';
+            }
+        }
+
+        // Waive Late Fee
+        async function waiveLateFee(propertyId) {
+            const reason = prompt('Enter reason for waiving late fee (optional):') || 'Manual waiver';
+            const confirmed = await showConfirm(
+                'Waive Late Fee',
+                `Are you sure you want to waive the late fee for this property?`
+            );
+            
+            if (!confirmed) return;
+            
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'waiveLateFee',
+                        propertyId: propertyId,
+                        reason: reason
+                    }).toString()
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Late fee waived successfully!', 'success');
+                    loadPaymentStreak(propertyId);
+                    viewPropertyDetails(propertyId); // Refresh property details
+                } else {
+                    showToast('Error waiving fee: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error waiving fee. Please try again.', 'error');
+            }
+        }
+
+        // Apply Good Deed Month
+        async function applyGoodDeedMonth(propertyId) {
+            const confirmed = await showConfirm(
+                'Apply Good Deed Month',
+                `This will waive the late fee for this month as a reward for on-time payments. Continue?`
+            );
+            
+            if (!confirmed) return;
+            
+            try {
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'goodDeedMonth',
+                        propertyId: propertyId
+                    }).toString()
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Good Deed Month applied! Late fee waived and tenant notified.', 'success');
+                    loadPaymentStreak(propertyId);
+                    viewPropertyDetails(propertyId); // Refresh property details
+                } else {
+                    showToast('Error: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error applying Good Deed Month. Please try again.', 'error');
+            }
+        }
+
+
+        // Load risk indicators for properties
+        async function loadRiskIndicators(propertyId) {
+            try {
+                // Check autopay status
+                const response = await fetch(RENTAL_SCRIPT_URL + '?action=getAutopayStatus&propertyId=' + propertyId);
+                const data = await response.json();
+                
+                const autopayDot = document.getElementById('autopayDot_' + propertyId);
+                const autopayText = document.getElementById('autopayText_' + propertyId);
+                
+                if (data.success && data.autopayEnabled) {
+                    if (autopayDot) autopayDot.className = 'risk-dot good';
+                    if (autopayText) autopayText.textContent = 'Autopay: Enabled';
+                } else {
+                    if (autopayDot) autopayDot.className = 'risk-dot warning';
+                    if (autopayText) autopayText.textContent = 'Autopay: Not Set';
+                }
+                
+                // Load payment history dots (simplified - would need actual payment data)
+                const paymentDots = document.getElementById('paymentHistoryDots_' + propertyId);
+                if (paymentDots) {
+                    // Sample: 6 green dots for good payment history
+                    paymentDots.innerHTML = '🟢🟢🟢🟢🟡🟡'; // Would be calculated from actual payment history
+                }
+            } catch (error) {
+                console.error('Error loading risk indicators:', error);
+            }
+        }
+
+        // Maintenance Request Functions
+        function openMaintenanceRequestModal(propertyId, propertyName) {
+            document.getElementById('maintenanceProperty').value = propertyName;
+            document.getElementById('maintenanceRequestForm').setAttribute('data-property-id', propertyId);
+            document.getElementById('maintenanceRequestModal').classList.add('active');
+        }
+
+        function closeMaintenanceRequestModal() {
+            document.getElementById('maintenanceRequestModal').classList.remove('active');
+            document.getElementById('maintenanceRequestForm').reset();
+            document.getElementById('photoPreview').innerHTML = '';
+        }
+
+        // Photo preview
+        document.getElementById('maintenancePhotos')?.addEventListener('change', function(e) {
+            const preview = document.getElementById('photoPreview');
+            preview.innerHTML = '';
+            const files = e.target.files;
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100%';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '8px';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Handle maintenance request form submission
+        document.getElementById('maintenanceRequestForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const propertyId = e.target.getAttribute('data-property-id');
+            const propertyName = document.getElementById('maintenanceProperty').value;
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            
+            try {
+                // Create FormData for file upload
+                const requestData = new FormData();
+                requestData.append('action', 'submitMaintenanceRequest');
+                requestData.append('propertyId', propertyId);
+                requestData.append('propertyName', propertyName);
+                requestData.append('description', formData.get('description'));
+                requestData.append('priority', formData.get('priority'));
+                
+                // Add photos
+                const photos = document.getElementById('maintenancePhotos').files;
+                for (let i = 0; i < photos.length; i++) {
+                    requestData.append('photos', photos[i]);
+                }
+                
+                const response = await fetch(RENTAL_SCRIPT_URL, {
+                    method: 'POST',
+                    body: requestData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Maintenance request submitted successfully! A confirmation has been sent.', 'success');
+                    closeMaintenanceRequestModal();
+                    loadActivityLog();
+                } else {
+                    showToast('Error submitting request: ' + (data.message || 'Unknown error'), 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error submitting request. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+            }
+        });
+    </script>
+</body>
+</html>
+

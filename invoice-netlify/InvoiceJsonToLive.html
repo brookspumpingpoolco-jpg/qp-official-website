@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice JSON → Live Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f1f5f9;
+      padding: 24px;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+    .page { max-width: 1000px; margin: 0 auto; }
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .sub { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .row { grid-template-columns: 1fr; } }
+    .panel {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .panel-head {
+      padding: 14px 20px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .panel-body { padding: 20px; }
+    textarea.input-json {
+      width: 100%;
+      min-height: 320px;
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+    textarea.input-json:focus {
+      outline: none;
+      border-color: #0369a1;
+      box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.15);
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.95; }
+    .err {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: #fef2f2;
+      color: #991b1b;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    .err.show { display: block; }
+    /* Live invoice preview (matches your invoice look) */
+    .invoice-preview {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .inv-header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 28px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .inv-company h2 { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+    .inv-company p { font-size: 13px; opacity: 0.95; }
+    .inv-meta { text-align: right; }
+    .inv-meta .inv-num { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .inv-meta p { font-size: 13px; opacity: 0.95; }
+    .inv-body { padding: 32px; }
+    .inv-billing {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .inv-billing h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .inv-billing p { font-size: 14px; margin: 4px 0; color: #1a1a1a; }
+    .inv-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+    .inv-table thead { background: #f9fafb; }
+    .inv-table th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .inv-table .th-qty, .inv-table .th-amt { text-align: right; }
+    .inv-table td {
+      padding: 14px;
+      font-size: 14px;
+      color: #1a1a1a;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .inv-table .td-qty, .inv-table .td-amt { text-align: right; }
+    .inv-totals {
+      margin-left: auto;
+      width: 280px;
+    }
+    .inv-totals .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 14px;
+      color: #374151;
+    }
+    .inv-totals .row.grand {
+      margin-top: 12px;
+      padding-top: 16px;
+      border-top: 2px solid #0369a1;
+      font-size: 18px;
+      font-weight: 700;
+      color: #0369a1;
+    }
+    .inv-notes {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 14px;
+      color: #6b7280;
+      white-space: pre-wrap;
+    }
+    .placeholder {
+      color: #94a3b8;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Invoice JSON → Live Data</h1>
+    <p class="sub">Paste invoice JSON (from Sheets, API, or export) and see it as a live invoice. Supports your usual fields: customerName, items, subtotal, tax, total, etc.</p>
+
+    <div class="row">
+      <div class="panel">
+        <div class="panel-head">Paste JSON</div>
+        <div class="panel-body">
+          <textarea class="input-json" id="jsonInput" placeholder='Paste invoice JSON here, e.g.:
+{
+  "invoiceNumber": "INV-2026-001",
+  "customerName": "Jane Doe",
+  "customerEmail": "jane@example.com",
+  "customerAddress": "123 Main St, City ST 12345",
+  "date": "2026-03-11",
+  "dueDate": "2026-03-25",
+  "items": [{"name":"Pool Opening","quantity":1,"price":250,"total":250}],
+  "subtotal": 250,
+  "taxRate": 0,
+  "tax": 0,
+  "total": 250,
+  "notes": "Thank you!"
+}'></textarea>
+          <button type="button" class="btn" id="btnRender">Render live invoice</button>
+          <div class="err" id="parseError"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">Live preview</div>
+        <div class="panel-body">
+          <div id="previewWrap">
+            <div class="invoice-preview" id="invoicePreview">
+              <div class="inv-header">
+                <div class="inv-company">
+                  <h2>A Quality Pool Company</h2>
+                  <p>Invoice</p>
+                </div>
+                <div class="inv-meta">
+                  <div class="inv-num" id="pvNumber">—</div>
+                  <p>Date: <span id="pvDate">—</span></p>
+                  <p>Due: <span id="pvDue">—</span></p>
+                </div>
+              </div>
+              <div class="inv-body">
+                <div class="inv-billing">
+                  <div>
+                    <h3>Bill to</h3>
+                    <p id="pvCustomerName" class="placeholder">—</p>
+                    <p id="pvAddress">—</p>
+                    <p id="pvEmail">—</p>
+                    <p id="pvPhone">—</p>
+                  </div>
+                  <div></div>
+                </div>
+                <table class="inv-table">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th class="th-qty">Qty</th>
+                      <th class="th-amt">Unit price</th>
+                      <th class="th-amt">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pvItems"></tbody>
+                </table>
+                <div class="inv-totals">
+                  <div class="row"><span>Subtotal</span><span id="pvSubtotal">$0.00</span></div>
+                  <div class="row"><span>Tax</span><span id="pvTax">$0.00</span></div>
+                  <div class="row" id="rowDiscount" style="display:none;"><span>Discount</span><span id="pvDiscount">$0.00</span></div>
+                  <div class="row grand"><span>Total</span><span id="pvTotal">$0.00</span></div>
+                </div>
+                <div class="inv-notes" id="pvNotes" style="display:none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      function $(id) { return document.getElementById(id); }
+      function esc(s) {
+        if (s == null || s === '') return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+      function formatMoney(n) {
+        return '$' + parseFloat(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+      function formatDate(s) {
+        if (!s) return '—';
+        var d = new Date(s);
+        if (isNaN(d.getTime())) return String(s);
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+
+      function parseItems(raw) {
+        if (Array.isArray(raw)) return raw;
+        if (typeof raw === 'string' && raw.trim()) {
+          try { return JSON.parse(raw); } catch (e) { return []; }
+        }
+        return [];
+      }
+
+      function normalizeItem(item) {
+        var qty = parseFloat(item.quantity) || 1;
+        var price = parseFloat(item.price) || parseFloat(item.unitPrice) || 0;
+        var total = parseFloat(item.total);
+        if (isNaN(total) || total === 0) total = qty * price;
+        var desc = item.name || item.description || 'Item';
+        return { description: desc, quantity: qty, unitPrice: price, total: total };
+      }
+
+      function render() {
+        var errEl = $('parseError');
+        errEl.classList.remove('show');
+        errEl.textContent = '';
+
+        var raw = ($('jsonInput').value || '').trim();
+        if (!raw) {
+          errEl.textContent = 'Paste JSON first.';
+          errEl.classList.add('show');
+          return;
+        }
+
+        var data;
+        try {
+          data = JSON.parse(raw);
+        } catch (e) {
+          errEl.textContent = 'Invalid JSON: ' + (e.message || e);
+          errEl.classList.add('show');
+          return;
+        }
+
+        // Normalize from your sheet/API shape
+        var customerName = data.customerName || (data.customer && data.customer.name) || '';
+        var customerAddress = data.customerAddress || (data.customer && data.customer.address) || '';
+        var customerEmail = data.customerEmail || (data.customer && data.customer.email) || '';
+        var customerPhone = data.customerPhone || (data.customer && data.customer.phone) || '';
+
+        var invNum = data.invoiceNumber || data.quoteNumber || data.id || '—';
+        var date = data.date || data.invoiceDate || '';
+        var due = data.dueDate || '';
+
+        var items = parseItems(data.items || []);
+        var subtotal = parseFloat(data.subtotal);
+        if (isNaN(subtotal) && items.length) {
+          subtotal = items.reduce(function(s, i) {
+            var t = parseFloat(i.total) || (parseFloat(i.quantity) || 1) * (parseFloat(i.price) || parseFloat(i.unitPrice) || 0);
+            return s + t;
+          }, 0);
+        }
+        if (isNaN(subtotal)) subtotal = 0;
+
+        var taxRate = parseFloat(data.taxRate) || 0;
+        var tax = parseFloat(data.tax) || parseFloat(data.taxAmount);
+        if (isNaN(tax)) tax = subtotal * (taxRate / 100);
+        var discount = parseFloat(data.discount) || 0;
+        var total = parseFloat(data.total);
+        if (isNaN(total)) total = subtotal + tax - discount;
+
+        var notes = data.notes || '';
+
+        // Fill preview
+        $('pvNumber').textContent = invNum;
+        $('pvDate').textContent = formatDate(date);
+        $('pvDue').textContent = formatDate(due);
+
+        $('pvCustomerName').textContent = customerName || '—';
+        $('pvCustomerName').className = customerName ? '' : 'placeholder';
+        $('pvAddress').textContent = customerAddress || '—';
+        $('pvEmail').textContent = customerEmail || '—';
+        $('pvPhone').textContent = customerPhone || '—';
+
+        var tbody = $('pvItems');
+        tbody.innerHTML = '';
+        if (items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:#94a3b8;">No line items</td></tr>';
+        } else {
+          items.forEach(function(item) {
+            var n = normalizeItem(item);
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+              '<td>' + esc(n.description) + '</td>' +
+              '<td class="td-qty">' + n.quantity + '</td>' +
+              '<td class="td-amt">' + formatMoney(n.unitPrice) + '</td>' +
+              '<td class="td-amt"><strong>' + formatMoney(n.total) + '</strong></td>';
+            tbody.appendChild(tr);
+          });
+        }
+
+        $('pvSubtotal').textContent = formatMoney(subtotal);
+        $('pvTax').textContent = formatMoney(tax);
+        var discountRow = $('rowDiscount');
+        if (discount > 0) {
+          discountRow.style.display = 'flex';
+          $('pvDiscount').textContent = formatMoney(-discount);
+        } else {
+          discountRow.style.display = 'none';
+        }
+        $('pvTotal').textContent = formatMoney(total);
+
+        var notesEl = $('pvNotes');
+        if (notes) {
+          notesEl.textContent = notes;
+          notesEl.style.display = 'block';
+        } else {
+          notesEl.style.display = 'none';
+        }
+      }
+
+      $('btnRender').addEventListener('click', render);
+      $('jsonInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) render();
+      });
+    })();
+  </script>
+</body>
+</html>

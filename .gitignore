@@ -1,0 +1,11 @@
+.DS_Store
+**/.DS_Store
+.env
+.env.*
+*.pem
+node_modules/
+.netlify/
+*.log
+.claude/
+AQP_files/
+AQP.htm

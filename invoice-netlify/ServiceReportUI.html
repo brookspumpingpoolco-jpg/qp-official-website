@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Report - A Quality Pool Company</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f0f4f8;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0284c7;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: attr(data-icon);
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Checklist Styles */
+        .checklist-category {
+            margin-bottom: 20px;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #0284c7;
+        }
+
+        .checklist-category-title {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .checklist-items {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #0284c7;
+        }
+
+        .checklist-item label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .checklist-item input[type="checkbox"]:checked + label {
+            color: #64748b;
+            text-decoration: line-through;
+        }
+
+        .checklist-item-input {
+            margin-top: 4px;
+            width: 100%;
+            font-size: 12px;
+            padding: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* Photo Upload */
+        .photo-upload-area {
+            border: 2px dashed #0284c7;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f0f9ff;
+        }
+
+        .photo-upload-area:hover {
+            background: #e0f2fe;
+            border-color: #0369a1;
+        }
+
+        .photo-upload-area.dragover {
+            background: #bfdbfe;
+            border-color: #0369a1;
+        }
+
+        .photo-upload-area p {
+            margin: 10px 0;
+            color: #0284c7;
+            font-weight: 600;
+        }
+
+        .photo-upload-area small {
+            color: #64748b;
+            display: block;
+        }
+
+        #photoInput {
+            display: none;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .photo-item-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-item-label {
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+        }
+
+        button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        button.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        button.secondary:hover {
+            background: #e2e8f0;
+        }
+
+        button.success {
+            background: #16a34a;
+            color: white;
+        }
+
+        button.success:hover {
+            background: #15803d;
+        }
+
+        button.danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            color: #166534;
+            border-left: 4px solid #16a34a;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #0284c7;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            color: #0284c7;
+            border-bottom-color: #0284c7;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏊 Pool Service Report</h1>
+            <p>A Quality Pool Company</p>
+        </div>
+
+        <div class="content">
+            <!-- Alerts -->
+            <div id="alertContainer"></div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('basic')">Basic Info</button>
+                <button class="tab-button" onclick="switchTab('checklist')">Checklist</button>
+                <button class="tab-button" onclick="switchTab('photos')">Photos</button>
+                <button class="tab-button" onclick="switchTab('notes')">Notes & Pool</button>
+            </div>
+
+            <!-- Basic Info Tab -->
+            <div id="basic" class="tab-content active">
+                <div class="section">
+                    <div class="section-title" data-icon="👤">Customer Information</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Customer Name *</label>
+                            <input type="text" id="customerName" placeholder="John Smith">
+                        </div>
+                        <div class="form-group">
+                            <label>Customer Email *</label>
+                            <input type="email" id="customerEmail" placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Date *</label>
+                            <input type="date" id="serviceDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Type *</label>
+                            <select id="serviceType">
+                                <option value="weekly_service">Weekly Service</option>
+                                <option value="biweekly_service">Biweekly Service</option>
+                                <option value="monthly_service">Monthly Service</option>
+                                <option value="opening_service">Pool Opening</option>
+                                <option value="closing_service">Pool Closing</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title" data-icon="🕐">Time & Technician</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Start Time</label>
+                            <input type="time" id="startTime">
+                        </div>
+                        <div class="form-group">
+                            <label>End Time</label>
+                            <input type="time" id="endTime">
+                        </div>
+                        <div class="form-group full">
+                            <label>Technician Name</label>
+                            <input type="text" id="technician" placeholder="Your name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checklist Tab -->
+            <div id="checklist" class="tab-content">
+                <div class="section">
+                    <div class="section-title" data-icon="✅">Service Checklist</div>
+                    <div id="checklistContainer"></div>
+                </div>
+            </div>
+
+            <!-- Photos Tab -->
+            <div id="photos" class="tab-content">
+                <div class="section">
+                    <div class="section-title" data-icon="📸">Service Photos</div>
+                    <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()" 
+                         ondrop="handlePhotoDrop(event)" ondragover="handlePhotoDragOver(event)" ondragleave="handlePhotoDragLeave(event)">
+                        <p>📷 Click to upload or drag & drop</p>
+                        <small>PNG, JPG, GIF up to 10MB each</small>
+                    </div>
+                    <input type="file" id="photoInput" multiple accept="image/*" onchange="handlePhotoSelect(event)">
+                    <div id="photoGallery" class="photo-gallery"></div>
+                </div>
+            </div>
+
+            <!-- Notes & Pool Tab -->
+            <div id="notes" class="tab-content">
+                <div class="section">
+                    <div class="section-title" data-icon="🏠">Pool Details</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Pool Address</label>
+                            <input type="text" id="poolAddress" placeholder="123 Main St">
+                        </div>
+                        <div class="form-group">
+                            <label>Pool Size (gallons)</label>
+                            <input type="text" id="poolSize" placeholder="15000">
+                        </div>
+                        <div class="form-group">
+                            <label>Price Per Visit</label>
+                            <input type="text" id="pricePerVisit" placeholder="$85.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Equipment Type</label>
+                            <input type="text" id="equipmentType" placeholder="Salt Water / Chlorine">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title" data-icon="📝">Service Notes</div>
+                    <div class="form-grid full">
+                        <div class="form-group">
+                            <label>Any issues or observations?</label>
+                            <textarea id="notes" placeholder="E.g., Filter needs cleaning next visit, customer requested pH adjustment..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button class="primary" onclick="saveDraft()">💾 Save as Draft</button>
+                <button class="success" onclick="completeService()">✅ Complete & Send Report</button>
+                <button class="secondary" onclick="createInvoice()" id="invoiceBtn">📄 Create One-Off Invoice</button>
+                <button class="secondary" onclick="previewEmail()">👁️ Preview Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Preview Modal -->
+    <div id="emailPreviewModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('emailPreviewModal')">&times;</button>
+            <div class="modal-header">📧 Email Preview</div>
+            <div id="emailPreviewContent" style="max-height:400px;overflow-y:auto;background:#f8fafc;padding:15px;border-radius:6px;"></div>
+            <div class="button-group" style="margin-top:20px;">
+                <button class="secondary" onclick="closeModal('emailPreviewModal')">Cancel</button>
+                <button class="success" onclick="sendEmailConfirmed()">✅ Send Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">✅ Success!</div>
+            <p id="successMessage" style="color:#334155;margin:20px 0;"></p>
+            <div class="button-group">
+                <button class="primary" onclick="location.reload()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Photo data
+        let photos = [];
+        let currentReportId = null;
+        let checklistData = {
+            'Water Testing': ['pH Balance (7.2-7.6)', 'Chlorine Level (1-3 ppm)', 'Alkalinity (80-120 ppm)', 'Calcium Hardness (200-400 ppm)'],
+            'Cleaning': ['Skim Surface', 'Brush Walls & Floor', 'Empty Pump Basket', 'Clean Skimmer Basket'],
+            'Equipment': ['Check Filter Pressure', 'Inspect Pump Operation', 'Check for Leaks', 'Verify Timer Settings'],
+            'Chemicals': ['Add Chlorine (if needed)', 'Add Alkalinity Increaser (if needed)', 'Add pH Increaser/Decreaser (if needed)', 'Add Stabilizer (if needed)'],
+            'Notes': ['Equipment Issues', 'Customer Requests', 'Next Service Notes', 'Additional Observations']
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setDateToToday();
+            setTimeToNow();
+            renderChecklist();
+        });
+
+        function setDateToToday() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('serviceDate').value = today;
+        }
+
+        function setTimeToNow() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('startTime').value = hours + ':' + minutes;
+        }
+
+        function renderChecklist() {
+            const container = document.getElementById('checklistContainer');
+            container.innerHTML = '';
+
+            Object.keys(checklistData).forEach(category => {
+                const div = document.createElement('div');
+                div.className = 'checklist-category';
+                
+                let itemsHtml = '<div class="checklist-items">';
+                checklistData[category].forEach((item, idx) => {
+                    const id = `check_${category.replace(/\s/g, '_')}_${idx}`;
+                    itemsHtml += `
+                        <div class="checklist-item">
+                            <input type="checkbox" id="${id}">
+                            <label for="${id}">${item}</label>
+                        </div>
+                    `;
+                });
+                itemsHtml += '</div>';
+
+                div.innerHTML = `
+                    <div class="checklist-category-title">${category}</div>
+                    ${itemsHtml}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function handlePhotoDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handlePhotoDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handlePhotoDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            handlePhotoSelect({ target: { files: e.dataTransfer.files } });
+        }
+
+        function handlePhotoSelect(event) {
+            const files = event.target.files;
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        photos.push({
+                            name: file.name,
+                            data: e.target.result,
+                            category: 'General'
+                        });
+                        renderPhotoGallery();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        function renderPhotoGallery() {
+            const gallery = document.getElementById('photoGallery');
+            gallery.innerHTML = '';
+
+            photos.forEach((photo, idx) => {
+                const div = document.createElement('div');
+                div.className = 'photo-item';
+                div.innerHTML = `
+                    <img src="${photo.data}" alt="${photo.name}">
+                    <button class="photo-item-remove" onclick="removePhoto(${idx})">×</button>
+                    <select class="photo-item-label" onchange="updatePhotoCategory(${idx}, this.value)">
+                        <option value="General">General</option>
+                        <option value="Water">Water</option>
+                        <option value="Equipment">Equipment</option>
+                        <option value="Issue">Issue</option>
+                    </select>
+                `;
+                gallery.appendChild(div);
+            });
+        }
+
+        function removePhoto(idx) {
+            photos.splice(idx, 1);
+            renderPhotoGallery();
+        }
+
+        function updatePhotoCategory(idx, category) {
+            photos[idx].category = category;
+        }
+
+        function getFormData() {
+            const checklistItems = {};
+            document.querySelectorAll('.checklist-item input[type="checkbox"]').forEach(cb => {
+                const label = cb.nextElementSibling;
+                const category = cb.closest('.checklist-category');
+                const categoryTitle = category.querySelector('.checklist-category-title').textContent;
+                if (!checklistItems[categoryTitle]) checklistItems[categoryTitle] = [];
+                checklistItems[categoryTitle].push({
+                    item: label.textContent,
+                    completed: cb.checked
+                });
+            });
+
+            return {
+                customerName: document.getElementById('customerName').value,
+                customerEmail: document.getElementById('customerEmail').value,
+                serviceDate: document.getElementById('serviceDate').value,
+                serviceType: document.getElementById('serviceType').value,
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
+                technician: document.getElementById('technician').value,
+                notes: document.getElementById('notes').value,
+                poolDetails: {
+                    address: document.getElementById('poolAddress').value,
+                    size: document.getElementById('poolSize').value,
+                    pricePerVisit: document.getElementById('pricePerVisit').value,
+                    equipmentType: document.getElementById('equipmentType').value
+                },
+                checklist: checklistItems,
+                photos: photos
+            };
+        }
+
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const div = document.createElement('div');
+            div.className = 'alert ' + type;
+            div.textContent = message;
+            container.appendChild(div);
+            setTimeout(() => div.remove(), 5000);
+        }
+
+        function saveDraft() {
+            const data = getFormData();
+            if (!data.customerName || !data.customerEmail) {
+                showAlert('❌ Please fill in customer name and email', 'error');
+                return;
+            }
+
+            document.body.innerHTML += '<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:30px;border-radius:8px;box-shadow:0 20px 25px rgba(0,0,0,0.1);z-index:2000;"><div class="spinner"></div><p style="margin-top:10px;">Saving...</p></div>';
+
+            google.script.run.withSuccessHandler(function(result) {
+                if (result.success) {
+                    currentReportId = result.reportId;
+                    showAlert('✅ Service report saved! ID: ' + currentReportId, 'success');
+                    document.querySelector('[style*="position:fixed"]').remove();
+                } else {
+                    showAlert('❌ Error: ' + result.error, 'error');
+                }
+            }).createServiceReport(data);
+        }
+
+        function completeService() {
+            if (!currentReportId) {
+                showAlert('❌ Please save draft first', 'error');
+                return;
+            }
+
+            const data = getFormData();
+            const checklist = JSON.stringify(data.checklist);
+
+            google.script.run.withSuccessHandler(function(result) {
+                if (result.success) {
+                    showAlert('✅ Service marked as complete!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('successMessage').textContent = 'Service report completed and email sent to customer.';
+                        document.getElementById('successModal').classList.add('active');
+                    }, 1000);
+                } else {
+                    showAlert('❌ Error: ' + result.error, 'error');
+                }
+            }).updateServiceReport(currentReportId, {
+                status: 'Completed',
+                endTime: document.getElementById('endTime').value,
+                checklist: checklist,
+                notes: data.notes
+            });
+
+            // Send email
+            setTimeout(() => {
+                google.script.run.withSuccessHandler(function(result) {
+                    if (!result.success) showAlert('⚠️ Report saved but email may not have sent', 'error');
+                }).sendServiceReportEmail(currentReportId);
+            }, 500);
+        }
+
+        function previewEmail() {
+            if (!currentReportId) {
+                showAlert('❌ Please save draft first', 'error');
+                return;
+            }
+
+            google.script.run.withSuccessHandler(function(result) {
+                if (result.success) {
+                    document.getElementById('emailPreviewContent').innerHTML = result.html;
+                    document.getElementById('emailPreviewModal').classList.add('active');
+                }
+            }).getServiceReportEmailPreview(currentReportId);
+        }
+
+        function sendEmailConfirmed() {
+            sendServiceReportEmail();
+            closeModal('emailPreviewModal');
+        }
+
+        function createInvoice() {
+            if (!currentReportId) {
+                showAlert('❌ Please save service report first', 'error');
+                return;
+            }
+
+            const lineItems = [{
+                description: 'Pool Service - ' + document.getElementById('serviceDate').value,
+                quantity: 1,
+                rate: parseFloat(document.getElementById('pricePerVisit').value) || 0,
+                amount: parseFloat(document.getElementById('pricePerVisit').value) || 0
+            }];
+
+            google.script.run.withSuccessHandler(function(result) {
+                if (result.success) {
+                    showAlert('✅ Invoice created! ID: ' + result.invoiceId, 'success');
+                    document.getElementById('invoiceBtn').disabled = true;
+                } else {
+                    showAlert('❌ Error: ' + result.error, 'error');
+                }
+            }).createInvoiceFromServiceReport(currentReportId, lineItems);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Close modals on background click
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

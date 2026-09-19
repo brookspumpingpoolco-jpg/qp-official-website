@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liner Order Tool — A Quality Pool Company</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/tinymce@7.9.1/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue:        #0369a1;
+  --blue-mid:    #0284c7;
+  --blue-light:  #e0f2fe;
+  --blue-xlight: #f0f9ff;
+  --slate:       #334155;
+  --slate-mid:   #475569;
+  --muted:       #94a3b8;
+  --border:      #e2e8f0;
+  --white:       #ffffff;
+  --bg:          #f1f5f9;
+  --success:     #059669;
+  --success-bg:  #d1fae5;
+  --error:       #dc2626;
+  --error-bg:    #fee2e2;
+  --warn:        #d97706;
+  --warn-bg:     #fef3c7;
+  --radius:      10px;
+  --shadow:      0 1px 8px rgba(0,0,0,.09);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--slate);
+  padding: 0 0 60px;
+}
+
+/* ── NAV TABS ─────────────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+  padding: 22px 24px 0;
+  color: white;
+}
+.app-header-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.app-header-top i { font-size: 26px; opacity:.9; }
+.app-header-top h1 { font-size: 20px; font-weight: 700; }
+.app-header-top p  { font-size: 12px; opacity:.8; margin-top: 2px; }
+
+.tab-bar {
+  display: flex;
+  gap: 4px;
+}
+.tab-btn {
+  padding: 10px 20px;
+  background: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.8);
+  border: none;
+  border-radius: 8px 8px 0 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tab-btn:hover { background: rgba(255,255,255,.25); color: white; }
+.tab-btn.active { background: var(--bg); color: var(--blue); }
+
+/* ── PAGE WRAPPER ──────────────────────────────────────── */
+.page { display: none; padding: 24px 20px; max-width: 860px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* ── CARD ──────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── FORM ──────────────────────────────────────────────── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:580px){ .form-row { grid-template-columns: 1fr; } }
+
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-mid);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 6px;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--slate);
+  background: #fafcff;
+  transition: border-color .15s, box-shadow .15s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--blue-mid);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(2,132,199,.12);
+}
+.form-group textarea { resize: vertical; min-height: 78px; }
+
+/* ── LINER SELECTOR ────────────────────────────────────── */
+.liner-search-wrap { position: relative; margin-bottom: 10px; }
+.liner-search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
+#linerSearch { padding-left: 34px; }
+
+.liner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  background: #f8fafc;
+}
+.liner-card {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.liner-card:hover { border-color: #93c5fd; }
+.liner-card.selected { border-color: var(--blue-mid); background: var(--blue-light); }
+.liner-card-name { font-size: 12px; font-weight: 700; color: var(--slate); margin-bottom: 4px; line-height: 1.3; }
+.liner-card-meta { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.liner-card.selected .liner-card-name { color: var(--blue); }
+
+.custom-liner-row {
+  margin-top: 10px;
+}
+.custom-liner-btn {
+  width: 100%;
+  text-align: left;
+  border: 2px dashed #93c5fd;
+  background: #f8fbff;
+  color: var(--slate);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .15s;
+}
+.custom-liner-btn:hover {
+  border-color: var(--blue-mid);
+  background: var(--blue-xlight);
+}
+.custom-liner-btn.active {
+  border-style: solid;
+  border-color: var(--blue-mid);
+  background: var(--blue-light);
+}
+.custom-liner-btn .title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 3px;
+}
+.custom-liner-btn .meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.liner-selection-display {
+  padding: 9px 14px;
+  background: var(--blue-light);
+  border: 1.5px solid #bfdbfe;
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: #1e40af;
+  font-weight: 600;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.liner-selection-display.empty { color: var(--muted); font-weight: 400; font-style: italic; }
+
+.mil-options { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+.mil-btn {
+  padding: 6px 14px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-mid);
+  font-family: inherit;
+  transition: all .15s;
+}
+.mil-btn:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
+.mil-btn.selected { background: var(--blue-mid); border-color: var(--blue-mid); color: white; }
+
+/* ── PHOTO UPLOAD ──────────────────────────────────────── */
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  background: #fafcff;
+}
+.upload-area:hover { border-color: var(--blue-mid); background: var(--blue-xlight); }
+.upload-area i { font-size: 20px; color: var(--muted); margin-bottom: 4px; display: block; }
+.upload-area p { font-size: 12px; color: var(--muted); margin: 0; }
+.upload-area p strong { color: var(--blue-mid); }
+input[type="file"] { display: none; }
+
+.photo-previews { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.photo-thumb { position: relative; width: 68px; height: 68px; border-radius: 6px; overflow: hidden; border: 2px solid var(--border); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.photo-thumb .remove-btn {
+  position: absolute; top: 2px; right: 2px;
+  background: rgba(0,0,0,.6); color: white; border: none; border-radius: 50%;
+  width: 16px; height: 16px; font-size: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── CUSTOMER SEARCH ───────────────────────────────────── */
+.cust-search-wrap { position: relative; }
+.cust-search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
+#customerSearchInput { padding-left: 34px; }
+
+.customer-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: white; border: 1.5px solid var(--border);
+  border-radius: var(--radius); max-height: 280px; overflow-y: auto;
+  z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,.13);
+}
+.customer-option { padding: 11px 14px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background .12s; font-size: 13px; }
+.customer-option:last-child { border-bottom: none; }
+.customer-option:hover { background: var(--blue-xlight); }
+.co-name { font-weight: 700; color: var(--slate); margin-bottom: 2px; }
+.co-email { font-size: 11px; color: var(--muted); }
+.co-phone { font-size: 11px; color: var(--muted); }
+
+/* ── SUBMIT / STATUS ───────────────────────────────────── */
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-mid) 100%);
+  color: white; border: none; border-radius: var(--radius);
+  font-size: 15px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: opacity .15s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn-submit:hover { opacity: .9; }
+.btn-submit:disabled { opacity: .55; cursor: default; }
+
+.submit-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.submit-actions .btn-submit {
+  flex: 1 1 320px;
+  width: auto;
+}
+.btn-secondary-action {
+  flex: 1 1 240px;
+  padding: 14px;
+  background: white;
+  color: var(--blue);
+  border: 1.5px solid #bfdbfe;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-secondary-action:hover {
+  border-color: var(--blue-mid);
+  background: var(--blue-xlight);
+}
+
+.status-box {
+  border-radius: var(--radius); padding: 14px 16px; margin-top: 14px;
+  font-size: 13px; display: none; line-height: 1.5;
+}
+.status-box.success { background: var(--success-bg); color: #065f46; border: 1.5px solid #6ee7b7; }
+.status-box.error   { background: var(--error-bg);   color: #991b1b; border: 1.5px solid #fca5a5; }
+.status-box.loading { background: var(--blue-light);  color: #1e40af; border: 1.5px solid #bfdbfe; }
+
+.email-preview-box {
+  background: #f8fafc; border: 1.5px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 14px; display: none;
+}
+.email-preview-box h4 { font-size: 14px; color: var(--slate); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.email-preview-box pre { font-size: 12px; white-space: pre-wrap; color: var(--slate); font-family: 'DM Mono', monospace; line-height: 1.6; background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+.btn-open-email {
+  margin-top: 12px; padding: 9px 18px; background: var(--blue-mid); color: white;
+  border: none; border-radius: 8px; font-size: 13px; font-weight: 700; font-family: inherit;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: background .15s;
+}
+.btn-open-email:hover { background: var(--blue); }
+
+.required-star { color: var(--error); margin-left: 2px; }
+
+/* ══════════════════════════════════════════════════════
+   ORDER TRACKER
+══════════════════════════════════════════════════════ */
+.tracker-toolbar {
+  display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center;
+}
+#trackerSearch {
+  flex: 1; min-width: 200px;
+  padding: 9px 12px 9px 36px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 14px; font-family: inherit; background: white;
+}
+#trackerSearch:focus { outline: none; border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(2,132,199,.12); }
+.tracker-search-wrap { position: relative; flex: 1; }
+.tracker-search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
+
+#statusFilter {
+  padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 13px; font-family: inherit; background: white; cursor: pointer; color: var(--slate);
+}
+.btn-refresh {
+  padding: 9px 16px; background: white; border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 13px; font-weight: 700; font-family: inherit;
+  cursor: pointer; color: var(--slate-mid); display: flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn-refresh:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
+
+/* order cards */
+.order-list { display: flex; flex-direction: column; gap: 12px; }
+.order-card {
+  background: white; border: 1.5px solid var(--border); border-radius: 12px;
+  padding: 16px 18px; box-shadow: var(--shadow); transition: box-shadow .15s;
+  cursor: pointer;
+}
+.order-card:hover { box-shadow: 0 4px 16px rgba(2,132,199,.13); border-color: #bfdbfe; }
+.order-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.order-card-name { font-size: 15px; font-weight: 700; color: var(--slate); }
+.order-card-id { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.order-card-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+.order-card-body { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.liner-pill {
+  background: var(--blue-xlight); color: var(--blue); border: 1px solid #bfdbfe;
+  border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 600;
+}
+.shape-pill {
+  background: #f1f5f9; color: var(--slate-mid); border: 1px solid var(--border);
+  border-radius: 20px; padding: 4px 10px; font-size: 12px; font-weight: 500;
+}
+.mil-pill {
+  background: #fefce8; color: #92400e; border: 1px solid #fde68a;
+  border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 600;
+}
+
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.status-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .7; }
+.s-submitted    { background: #f1f5f9; color: #475569; }
+.s-distributor  { background: #fef3c7; color: #92400e; }
+.s-processing   { background: #ffe4e6; color: #9f1239; }
+.s-production   { background: #fce7f3; color: #9d174d; }
+.s-shipment     { background: #dbeafe; color: #1d4ed8; }
+.s-pickup       { background: #d1fae5; color: #065f46; }
+.s-installed    { background: #ecfdf5; color: #047857; }
+.s-cancelled    { background: #fee2e2; color: #dc2626; }
+
+.order-card-footer { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-sm {
+  padding: 6px 12px; font-size: 12px; font-weight: 700; font-family: inherit;
+  border-radius: 7px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  transition: all .15s; border: 1.5px solid transparent;
+}
+.btn-sm-primary { background: var(--blue-mid); color: white; }
+.btn-sm-primary:hover { background: var(--blue); }
+.btn-sm-outline { background: white; color: var(--slate-mid); border-color: var(--border); }
+.btn-sm-outline:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
+.btn-sm-green { background: var(--success); color: white; }
+.btn-sm-green:hover { background: #047857; }
+
+/* ── MODAL ─────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(15,23,42,.45);
+  z-index: 500; display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: white; border-radius: 14px; padding: 24px;
+  width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25); transform: translateY(12px);
+  transition: transform .2s;
+}
+.modal-backdrop.open .modal { transform: translateY(0); }
+.modal-title { font-size: 17px; font-weight: 700; color: var(--slate); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+.modal-wide { max-width: 980px; }
+.modal-close {
+  margin-left: auto; background: none; border: none; cursor: pointer;
+  font-size: 18px; color: var(--muted); padding: 2px 6px; line-height: 1;
+}
+.modal-close:hover { color: var(--slate); }
+.modal-section { margin-bottom: 16px; }
+.modal-label { font-size: 11px; font-weight: 700; color: var(--slate-mid); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.modal-input, .modal-select, .modal-textarea {
+  width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 14px; font-family: inherit; color: var(--slate); background: #fafcff;
+}
+.modal-input:focus, .modal-select:focus, .modal-textarea:focus {
+  outline: none; border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(2,132,199,.12); background: white;
+}
+.modal-textarea { resize: vertical; min-height: 90px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.btn-modal-cancel { padding: 9px 18px; background: white; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; color: var(--slate-mid); }
+.btn-modal-cancel:hover { border-color: var(--muted); }
+.btn-modal-ok { padding: 9px 20px; background: var(--blue-mid); color: white; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; }
+.btn-modal-ok:hover { background: var(--blue); }
+
+.email-modal-preview {
+  background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px; font-family: 'DM Mono', monospace; font-size: 12px;
+  line-height: 1.6; color: var(--slate); white-space: pre-wrap;
+  max-height: 220px; overflow-y: auto; margin-top: 10px;
+}
+
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+.empty-state i { font-size: 36px; margin-bottom: 10px; display: block; }
+.empty-state p { font-size: 14px; }
+
+/* comment history */
+.comment-block {
+  background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; font-size: 12px; color: var(--slate-mid);
+  font-family: 'DM Mono', monospace; white-space: pre-wrap;
+  max-height: 120px; overflow-y: auto; line-height: 1.6;
+}
+
+.preview-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.preview-summary-card {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+.preview-summary-card h4 {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 8px;
+}
+.preview-summary-card p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--slate);
+  white-space: pre-wrap;
+}
+.preview-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.preview-meta {
+  flex: 1 1 260px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.preview-email-frame {
+  width: 100%;
+  min-height: 520px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+}
+.modal-help {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.order-photo-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.order-photo-link {
+  display: block;
+  width: 74px;
+  height: 74px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #dbeafe;
+  background: #eff6ff;
+  box-shadow: 0 2px 8px rgba(15,23,42,.08);
+}
+.order-photo-link:hover {
+  border-color: #0284c7;
+}
+.order-photo-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.order-photo-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  height: 74px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-header-top">
+    <i class="fas fa-layer-group"></i>
+    <div>
+      <h1>Liner Order Tool</h1>
+      <p>A Quality Pool Company — Merlin Liner Orders</p>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabOrder" onclick="switchTab('order')">
+      <i class="fas fa-file-alt"></i> New Order
+    </button>
+    <button class="tab-btn" id="tabTracker" onclick="switchTab('tracker')">
+      <i class="fas fa-list-check"></i> Order Tracker
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     NEW ORDER PAGE
+══════════════════════════════════════════════════════ -->
+<div class="page active" id="pageOrder">
+
+  <!-- customer search -->
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title"><i class="fas fa-search"></i> Find Customer</div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label>Search by Name or Email</label>
+      <div class="cust-search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="customerSearchInput" placeholder="Start typing…" oninput="searchCustomers()">
+        <div class="customer-dropdown" id="customerDropdown" style="display:none;"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:5px;">Or fill in manually below</div>
+    </div>
+  </div>
+
+  <!-- customer info -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-user"></i> Customer Information</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Customer Name <span class="required-star">*</span></label>
+        <input type="text" id="customerName" placeholder="First and last name">
+      </div>
+      <div class="form-group">
+        <label>Pool Shape</label>
+        <select id="poolShape">
+          <option value="">Select pool shape…</option>
+          <option>Rectangle</option><option>Oval</option><option>Round</option>
+          <option>L-Shape</option><option>Kidney</option><option>Freeform</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="customerPhone" placeholder="(555) 555-5555">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="customerEmail" placeholder="customer@example.com">
+      </div>
+    </div>
+  </div>
+
+  <!-- liner design -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-palette"></i> Liner Design Selection</div>
+    <div class="form-group" style="margin-bottom:6px;">
+      <label>Search Designs</label>
+      <div class="liner-search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="linerSearch" class="form-group input" placeholder="Filter designs…" oninput="filterLiners()" style="width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit;background:#fafcff;">
+      </div>
+    </div>
+    <div class="liner-grid" id="linerGrid"></div>
+    <div class="custom-liner-row">
+      <button type="button" class="custom-liner-btn" id="customPatternBtn" onclick="selectCustomPattern()">
+        <div class="title"><i class="fas fa-pen-ruler"></i> Other / Custom Pattern</div>
+        <div class="meta">Use this when the design is not listed above.</div>
+      </button>
+    </div>
+    <div class="form-group" style="margin-top:14px;">
+      <label>Selected Design</label>
+      <div class="liner-selection-display empty" id="linerDisplay">
+        <i class="fas fa-hand-pointer" style="font-size:13px;"></i>
+        <span id="linerDisplayText">No design selected — pick one above</span>
+      </div>
+    </div>
+    <div class="form-group" id="milGroup" style="display:none;">
+      <label>Mil Thickness / Series <span class="required-star">*</span></label>
+      <div class="mil-options" id="milOptions"></div>
+    </div>
+    <!-- Custom / Other pattern input — shown only when "Other / Custom Pattern" is selected -->
+    <div class="form-group" id="customLinerGroup" style="display:none; margin-top:4px;">
+      <label>Custom Pattern Name / Brand <span class="required-star">*</span></label>
+      <input type="text" id="customLinerName"
+             placeholder="e.g. Latham Blue Wave 27 mil, GLI Solid Aqua, custom description…"
+             style="border: 2px solid var(--blue-mid); background: var(--blue-xlight);">
+      <div style="margin-top:6px; font-size:12px; color:var(--muted);">
+        <i class="fas fa-info-circle"></i> Enter the brand, pattern name, and any mil/series details so the order is accurate.
+      </div>
+    </div>
+  </div>
+
+  <!-- pool measurements -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-ruler-combined"></i> Pool Dimensions &amp; Corners</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Add the key measurements so the liner order email is clear, polished, and impossible to miss.</p>
+    <div class="form-group">
+      <label>Corner Outline / Special Corners</label>
+      <input type="text" id="cornerOutline" placeholder="e.g. 4 radius corners, 2 step outs, hopper on deep end, etc.">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Wall Height</label>
+        <input type="text" id="wallHeight" placeholder="e.g. 4 ft, 4 ft 6 in, 52 in">
+      </div>
+      <div class="form-group">
+        <label>Width</label>
+        <input type="text" id="poolWidth" placeholder="e.g. 18 ft 6 in">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Length</label>
+        <input type="text" id="poolLength" placeholder="e.g. 32 ft 8 in">
+      </div>
+      <div class="form-group">
+        <label>Depth</label>
+        <input type="text" id="poolDepth" placeholder="e.g. 3 ft shallow / 8 ft deep">
+      </div>
+    </div>
+  </div>
+
+  <!-- photos -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-camera"></i> Photos</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Upload bead type, existing liner, and measurement sheet. All photos save to the customer's Drive folder.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Bead Type Photo</label>
+        <div class="upload-area" onclick="document.getElementById('photoBead').click()">
+          <i class="fas fa-camera"></i>
+          <p><strong>Click to upload</strong> or drag &amp; drop</p>
+        </div>
+        <input type="file" id="photoBead" accept="image/*" multiple onchange="addPhotos(this,'bead')">
+        <div class="photo-previews" id="previewBead"></div>
+      </div>
+      <div class="form-group">
+        <label>Existing Liner Photo</label>
+        <div class="upload-area" onclick="document.getElementById('photoLiner').click()">
+          <i class="fas fa-camera"></i>
+          <p><strong>Click to upload</strong> or drag &amp; drop</p>
+        </div>
+        <input type="file" id="photoLiner" accept="image/*" multiple onchange="addPhotos(this,'liner')">
+        <div class="photo-previews" id="previewLiner"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Measurement Sheet / Other</label>
+      <div class="upload-area" onclick="document.getElementById('photoMeasure').click()">
+        <i class="fas fa-ruler-combined"></i>
+        <p><strong>Click to upload</strong></p>
+      </div>
+      <input type="file" id="photoMeasure" accept="image/*" multiple onchange="addPhotos(this,'measure')">
+      <div class="photo-previews" id="previewMeasure"></div>
+    </div>
+  </div>
+
+  <!-- notes -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-sticky-note"></i> Notes &amp; Special Instructions</div>
+    <div class="form-group" style="margin-bottom:0;">
+      <textarea id="notes" placeholder="Pool dimensions, color preferences, special instructions…" rows="4"></textarea>
+    </div>
+  </div>
+
+  <!-- email routing -->
+  <div class="card">
+    <div class="card-title"><i class="fas fa-envelope-open-text"></i> Email Routing (Optional)</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Override who receives the order notification and add CC recipients.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Send Notification To</label>
+        <input type="email" id="notifyTo" placeholder="samuelroberts213@icloud.com">
+      </div>
+      <div class="form-group">
+        <label>CC Recipients</label>
+        <input type="text" id="notifyCc" placeholder="manager@company.com, office@company.com">
+      </div>
+    </div>
+  </div>
+
+  <!-- submit -->
+  <div class="card">
+    <div class="submit-actions">
+      <button class="btn-secondary-action" type="button" onclick="openOrderPreviewModal()">
+        <i class="fas fa-eye"></i> Preview / Generate Email
+      </button>
+      <button class="btn-submit" id="submitBtn" type="button" onclick="submitOrder()">
+        <i class="fas fa-paper-plane"></i> Save to Drive &amp; Send Email
+      </button>
+    </div>
+    <div class="status-box" id="statusBox"></div>
+    <div class="email-preview-box" id="emailPreviewBox">
+      <h4><i class="fas fa-envelope"></i> Email Preview — Ready to Send</h4>
+      <textarea id="emailPreviewEditor"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+        <button class="btn-open-email" id="openEmailBtn"><i class="fas fa-external-link-alt"></i> Open in Email Client</button>
+        <button class="btn-open-email" style="background:#059669;" onclick="switchTab('tracker')"><i class="fas fa-list-check"></i> View in Tracker</button>
+      </div>
+    </div>
+  </div>
+</div><!-- /pageOrder -->
+
+<!-- ══════════════════════════════════════════════════════
+     ORDER TRACKER PAGE
+══════════════════════════════════════════════════════ -->
+<div class="page" id="pageTracker">
+  <div style="margin-top:20px;">
+    <div class="tracker-toolbar">
+      <div class="tracker-search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="trackerSearch" placeholder="Search customer, liner, order ID…" oninput="renderOrders()">
+      </div>
+      <select id="statusFilter" onchange="renderOrders()">
+        <option value="">All Statuses</option>
+        <option>Order Submitted</option>
+        <option>Sent to Distributor</option>
+        <option>Processing</option>
+        <option>In Production</option>
+        <option>In Shipment</option>
+        <option>Ready for Pickup</option>
+        <option>Installed</option>
+        <option>Cancelled</option>
+      </select>
+      <button class="btn-refresh" onclick="loadOrders()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+
+    <div id="trackerLoading" class="empty-state" style="display:none;">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading orders…</p>
+    </div>
+
+    <div id="trackerError" class="empty-state" style="display:none;">
+      <i class="fas fa-exclamation-circle" style="color:#dc2626;"></i>
+      <p id="trackerErrorMsg">Could not load orders.</p>
+    </div>
+
+    <div id="orderList" class="order-list"></div>
+  </div>
+</div><!-- /pageTracker -->
+
+<!-- ══════════════════════════════════════════════════════
+     STATUS UPDATE MODAL
+══════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="statusModal">
+  <div class="modal">
+    <div class="modal-title">
+      <i class="fas fa-edit"></i> Update Order
+      <button class="modal-close" onclick="closeModal('statusModal')">✕</button>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Customer</div>
+      <div id="modalCustomerName" style="font-size:15px;font-weight:700;color:var(--slate);"></div>
+      <div id="modalOrderId" style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px;"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Status</div>
+      <select id="modalStatus" class="modal-select">
+        <option>Order Submitted</option>
+        <option>Sent to Distributor</option>
+        <option>Processing</option>
+        <option>In Production</option>
+        <option>In Shipment</option>
+        <option>Ready for Pickup</option>
+        <option>Installed</option>
+        <option>Cancelled</option>
+      </select>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Add Comment (optional)</div>
+      <textarea id="modalComment" class="modal-textarea" placeholder="e.g. Spoke with Timothy — liner ships Thursday…"></textarea>
+    </div>
+    <div class="modal-section" id="existingCommentsWrap" style="display:none;">
+      <div class="modal-label">Comment History</div>
+      <div class="comment-block" id="existingComments"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" onclick="closeModal('statusModal')">Cancel</button>
+      <button class="btn-modal-ok" onclick="saveStatus()"><i class="fas fa-check"></i> Save Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     CUSTOMER EMAIL MODAL
+══════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="emailModal">
+  <div class="modal">
+    <div class="modal-title">
+      <i class="fas fa-envelope"></i> <span id="emailModalTitleText">Email Customer</span>
+      <button class="modal-close" onclick="closeModal('emailModal')">✕</button>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">To</div>
+      <input type="email" id="emailModalTo" class="modal-input" placeholder="customer@example.com">
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Subject</div>
+      <input type="text" id="emailModalSubject" class="modal-input">
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">CC (optional)</div>
+      <input type="text" id="emailModalCc" class="modal-input" placeholder="name@company.com, second@company.com">
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Message</div>
+      <textarea id="emailModalBody" class="modal-textarea" style="min-height:160px;"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+      <button class="btn-sm btn-sm-outline" style="font-size:12px;" onclick="previewEmailModal()"><i class="fas fa-eye"></i> Preview</button>
+    </div>
+    <div id="emailModalPreview" class="email-modal-preview" style="display:none;"></div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" onclick="closeModal('emailModal')">Cancel</button>
+      <button class="btn-modal-ok" id="emailModalSendBtn" onclick="sendCustomerEmailFromModal()">
+        <i class="fas fa-paper-plane"></i> Send Now
+      </button>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center;">
+      Sends directly from A Quality Pool Company and logs to the order.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SAVE / EMAIL PREVIEW MODAL
+══════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="orderPreviewModal">
+  <div class="modal modal-wide">
+    <div class="modal-title">
+      <i class="fas fa-magnifying-glass"></i> Preview Save to Drive &amp; Generated Email
+      <button class="modal-close" onclick="closeModal('orderPreviewModal')">✕</button>
+    </div>
+    <div class="preview-toolbar">
+      <div class="preview-meta" id="orderPreviewMeta">Generate a preview to inspect the exact order notification before saving.</div>
+      <div style="flex:1 1 280px;min-width:260px;">
+        <div class="modal-label">Send Test Email To</div>
+        <input type="email" id="previewTestEmailTo" class="modal-input" placeholder="test@yourcompany.com">
+        <div class="modal-help">Test email uses current form values and attachments but does not save the order.</div>
+      </div>
+    </div>
+
+    <div class="preview-summary-grid">
+      <div class="preview-summary-card">
+        <h4>Customer</h4>
+        <p id="previewSummaryCustomer">—</p>
+      </div>
+      <div class="preview-summary-card">
+        <h4>Pool</h4>
+        <p id="previewSummaryPool">—</p>
+      </div>
+      <div class="preview-summary-card">
+        <h4>Liner</h4>
+        <p id="previewSummaryLiner">—</p>
+      </div>
+      <div class="preview-summary-card">
+        <h4>Notes / Files</h4>
+        <p id="previewSummaryNotes">—</p>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Generated Email</div>
+      <iframe id="orderPreviewFrame" class="preview-email-frame" title="Generated email preview"></iframe>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" onclick="closeModal('orderPreviewModal')">Close</button>
+      <button class="btn-modal-cancel" id="previewTestSendBtn" style="border-color:#bfdbfe;color:var(--blue);" onclick="sendTestOrderEmail()">
+        <i class="fas fa-flask"></i> Send Test Email
+      </button>
+      <button class="btn-modal-ok" id="previewSaveBtn" onclick="saveOrderFromPreview()">
+        <i class="fas fa-paper-plane"></i> Save to Drive &amp; Send Email
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════════════════
+// Set this to your deployed Apps Script /exec URL
+window.LINER_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWiBKiUhHuUWEu_1V3wr6yLaEzhgK6bT1IsYYU8xCIZIPuTc_DmhLB5mPUZd7JucZ2ag/exec';
+
+// ════════════════════════════════════════════════════
+//  LINER DATA
+// ════════════════════════════════════════════════════
+const LINERS = [
+  { name: "Aster Tile / Ocean Breeze Floor",        options: ["20 Mil — Traditional Vinyl"] },
+  { name: "Atlantic Stone / Sea Slate",             options: ["20 Mil — Traditional Vinyl"] },
+  { name: "Blue Lapis All Over Pattern",            options: ["27 Mil — Aqua Intense"] },
+  { name: "Blue Quartz All Over Pattern",           options: ["27 Mil — Aqua Intense"] },
+  { name: "Blue Trinidad Tile / Jamaica Floor",     options: ["20 Mil — Traditional Vinyl", "27 Mil — Traditional Vinyl"] },
+  { name: "Cape Elizabeth Tile / Oceanside Floor",  options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Caswell Beach Tile / Sandy Point Floor", options: ["27 Mil — Aqua Intense"] },
+  { name: "Celestial Stone / Island Clouds",        options: ["20 Mil — Aqua Max"] },
+  { name: "Corolla Beach Tile / Outer Banks Floor", options: ["20 Mil — Traditional Vinyl"] },
+  { name: "Diamond Cliff Tile / Blue Pointe Floor", options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Eagle Beach Tile / Gold Coast Floor",    options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Honeycomb Mosaic All Over Pattern",      options: ["27 Mil — Aqua Intense"] },
+  { name: "Horizon Tide / Gold Coast Floor",        options: ["20 Mil Wall | 20 Mil Floor — Traditional Vinyl", "20 Mil Wall | 27 Mil Floor — Traditional Vinyl"] },
+  { name: "Island Beaches All Over Pattern",        options: ["27 Mil — Traditional Vinyl"] },
+  { name: "Island Granite All Over Pattern",        options: ["27 Mil — Traditional Vinyl"] },
+  { name: "Island Nights All Over Pattern",         options: ["27 Mil — Traditional Vinyl"] },
+  { name: "Island Onyx All Over Pattern",           options: ["27 Mil — Traditional Vinyl"] },
+  { name: "Island Waves All Over Pattern",          options: ["20 Mil — Aqua Max"] },
+  { name: "Jamaica Tile / Jamaica Floor",           options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 27 Mil Floor — Traditional Vinyl"] },
+  { name: "Key Largo Tile / Blue Lagoon Floor",     options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Lake Como All Over Pattern",             options: ["27 Mil — Traditional Vinyl"] },
+  { name: "Lavender Haze",                          options: ["27 Mil — Traditional Vinyl"] },
+  { name: "Luxe Gemstone Tile / Ocean Breeze Floor",options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Marco Island Tile / Morro Bay Floor",    options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Mediterranean Mist",                     options: ["20 Mil — Aqua Max"] },
+  { name: "Midnight Opal",                          options: ["27 Mil — Aqua Intense"] },
+  { name: "Milos Tile / Blue Pointe Floor",         options: ["27 Mil Wall | 20 Mil Floor — Aqua Intense", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Moonstone Bay",                          options: ["27 Mil — Aqua Intense"] },
+  { name: "New Hampton Bays Tile / Sierra Floor",   options: ["27 Mil — Traditional Vinyl", "27 Mil — Super Value Max"] },
+  { name: "New Key Largo Tile / Sierra Floor",      options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Pacific Tile / Sea Slate Floor",         options: ["20 Mil — Traditional Vinyl"] },
+  { name: "Palmetto Bay Tile / Brava Beach Floor",  options: ["20 Mil — Aqua Max"] },
+  { name: "Royal Island Tile / Sea Storm Floor",    options: ["20 Mil — Traditional Vinyl", "27 Mil — Traditional Vinyl"] },
+  { name: "Sandy Cay Tile / Runaway Bay Floor",     options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Sanibel Tile / Highland Beach Floor",    options: ["20 Mil — Traditional Vinyl", "27 Mil — Traditional Vinyl"] },
+  { name: "Santa Maria Tile / Blue Cove Floor",     options: ["20 Mil — Aqua Max"] },
+  { name: "Sea Blossom Tile / Blue Pointe Floor",   options: ["20 Mil — Traditional Vinyl"] },
+  { name: "Serene Tile / Honey Pearl Floor",        options: ["20 Mil — Traditional Vinyl"] },
+  { name: "Shelter Cove All Over Pattern",          options: ["27 Mil — Aqua Intense"] },
+  { name: "Solid Black",        options: ["27 Mil — Solid Liners Traditional Vinyl"] },
+  { name: "Solid Blue",         options: ["20 Mil — Solid Liners Traditional Vinyl", "27 Mil — Solid Liners Traditional Vinyl"] },
+  { name: "Solid Dark Blue",    options: ["27 Mil — Solid Liners Traditional Vinyl"] },
+  { name: "Solid Dark Gray",    options: ["27 Mil — Solid Liners Traditional Vinyl"] },
+  { name: "Solid Light Blue",   options: ["20 Mil — Solid Liners Traditional Vinyl", "27 Mil — Solid Liners Traditional Vinyl"] },
+  { name: "Solid Light Gray",   options: ["27 Mil — Solid Liners Traditional Vinyl"] },
+  { name: "Solid White",        options: ["20 Mil — Solid Liners Traditional Vinyl", "27 Mil — Solid Liners Traditional Vinyl"] },
+  { name: "Starlight Swirl",    options: ["27 Mil — Aqua Intense"] },
+  { name: "Stone Jewel All Over Pattern",  options: ["27 Mil — Traditional Vinyl", "27 Mil — Super Value Max"] },
+  { name: "Terracina All Over Pattern",    options: ["34 Mil — Aqua Intense"] },
+  { name: "Thistle Bloom Tile / Highland Beach Floor", options: ["20 Mil — Traditional Vinyl", "27 Mil — Traditional Vinyl"] },
+  { name: "Valencia Tile / Ocean Mist Floor",  options: ["27 Mil Wall | 20 Mil Floor — Traditional Vinyl", "27 Mil Wall | 20 Mil Floor — Value Max"] },
+  { name: "Water Lily Tile / Ocean Mist Floor", options: ["27 Mil — Traditional Vinyl"] },
+];
+const CUSTOM_LINER = { name: 'Other / Custom Pattern', options: ['Custom / Other'], isCustom: true };
+
+// ════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════
+let selectedLiner           = null;
+let selectedMil             = null;
+let selectedCustomerAddress = '';
+const photos                = { bead: [], liner: [], measure: [] };
+let customersList = [];
+let allOrders     = [];
+let activeOrderId = null;
+let activeEmailTarget = 'customer';
+let activePreviewPayload = null;
+const DISTRIBUTOR_EMAIL = 'samuelroberts213@icloud.com';
+const COMPANY_LOGO_URL = 'https://cdn.prod.website-files.com/6931dc4e8e97334e195432df/6993ce0abcd54d3520799318_IMG_1763-p-500.jpg';
+
+// ════════════════════════════════════════════════════
+//  TAB SWITCHING
+// ════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.getElementById('pageOrder').classList.toggle('active', tab === 'order');
+  document.getElementById('pageTracker').classList.toggle('active', tab === 'tracker');
+  document.getElementById('tabOrder').classList.toggle('active', tab === 'order');
+  document.getElementById('tabTracker').classList.toggle('active', tab === 'tracker');
+  if (tab === 'tracker') loadOrders();
+}
+
+// ════════════════════════════════════════════════════
+//  CUSTOMER SEARCH
+// ════════════════════════════════════════════════════
+let searchTimer = null;
+async function searchCustomers() {
+  const query = document.getElementById('customerSearchInput').value.trim();
+  const dd    = document.getElementById('customerDropdown');
+  clearTimeout(searchTimer);
+  if (!query || query.length < 2) { dd.style.display = 'none'; return; }
+  searchTimer = setTimeout(async () => {
+    try {
+      const result = await callBackend({ action: 'searchCustomersByCompanyId', query, companyId: 'CMP-AQUALITYPOOL' });
+      if (result && result.success) {
+        customersList = result.suggestions || [];
+        renderCustomerDropdown(customersList);
+        dd.style.display = customersList.length ? 'block' : 'none';
+      }
+    } catch (e) {
+      dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--error);font-size:12px;">⚠ Search unavailable — fill in manually</div>';
+      dd.style.display = 'block';
+    }
+  }, 300);
+}
+
+function renderCustomerDropdown(list) {
+  const dd = document.getElementById('customerDropdown');
+  if (!list.length) {
+    dd.innerHTML = '<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px;">No customers found</div>';
+    return;
+  }
+  dd.innerHTML = list.map((c, i) => `
+    <div class="customer-option" onclick="selectCustomer(${i})">
+      <div class="co-name">${esc(c.name)}</div>
+      ${c.email ? `<div class="co-email">${esc(c.email)}</div>` : ''}
+      ${c.phone ? `<div class="co-phone">${esc(c.phone)}</div>` : ''}
+    </div>`).join('');
+}
+
+function selectCustomer(i) {
+  const c = customersList[i];
+  if (!c) return;
+  selectedCustomerAddress = c.address || '';
+  document.getElementById('customerSearchInput').value = '';
+  document.getElementById('customerName').value  = c.name  || '';
+  document.getElementById('customerEmail').value = c.email || '';
+  document.getElementById('customerPhone').value = c.phone || '';
+  document.getElementById('customerDropdown').style.display = 'none';
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.cust-search-wrap'))
+    document.getElementById('customerDropdown').style.display = 'none';
+});
+
+// ════════════════════════════════════════════════════
+//  LINER GRID
+// ════════════════════════════════════════════════════
+function renderLiners(list) {
+  const grid = document.getElementById('linerGrid');
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--muted);font-size:13px;">No designs match.</div>';
+    updateCustomPatternButton_();
+    return;
+  }
+  grid.innerHTML = list.map(l => `
+    <div class="liner-card ${selectedLiner && selectedLiner.name === l.name ? 'selected' : ''}"
+         onclick="selectLiner(${LINERS.indexOf(l)})">
+      <div class="liner-card-name">${esc(l.name)}</div>
+      <div class="liner-card-meta">${l.options.join('<br>')}</div>
+    </div>`).join('');
+  updateCustomPatternButton_();
+}
+
+function filterLiners() {
+  const q = document.getElementById('linerSearch').value.toLowerCase();
+  renderLiners(q ? LINERS.filter(l => l.name.toLowerCase().includes(q)) : LINERS);
+}
+
+function selectLiner(idx) {
+  selectedLiner = LINERS[idx];
+  selectedMil   = null;
+  document.getElementById('linerDisplay').classList.remove('empty');
+  document.getElementById('linerDisplayText').textContent = selectedLiner.name;
+
+  // Hide custom pattern input when normal design selected
+  document.getElementById('customLinerGroup').style.display = 'none';
+  document.getElementById('customLinerName').value = '';
+
+  const milGroup = document.getElementById('milGroup');
+  const milOpts  = document.getElementById('milOptions');
+  milGroup.style.display = 'block';
+  milOpts.innerHTML = selectedLiner.options.map(opt => `
+    <button class="mil-btn" onclick="selectMil(this,'${opt.replace(/'/g,"\\'")}')">
+      ${esc(opt)}
+    </button>`).join('');
+  if (selectedLiner.options.length === 1) {
+    selectMil(milOpts.querySelector('.mil-btn'), selectedLiner.options[0]);
+  }
+  renderLiners(LINERS.filter(l => l.name.toLowerCase().includes(
+    document.getElementById('linerSearch').value.toLowerCase()
+  )));
+}
+
+function selectCustomPattern() {
+  selectedLiner = Object.assign({}, CUSTOM_LINER);
+  selectedMil = 'Custom / Other';
+
+  document.getElementById('linerDisplay').classList.remove('empty');
+  document.getElementById('linerDisplayText').textContent = CUSTOM_LINER.name;
+  document.getElementById('customLinerGroup').style.display = 'block';
+  document.getElementById('milGroup').style.display = 'none';
+
+  renderLiners(LINERS.filter(l => l.name.toLowerCase().includes(
+    document.getElementById('linerSearch').value.toLowerCase()
+  )));
+
+  document.getElementById('customLinerName').focus();
+}
+
+function updateCustomPatternButton_() {
+  const btn = document.getElementById('customPatternBtn');
+  if (!btn) return;
+  btn.classList.toggle('active', !!(selectedLiner && selectedLiner.isCustom));
+}
+
+function selectMil(btn, opt) {
+  selectedMil = opt;
+  document.querySelectorAll('.mil-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+// ════════════════════════════════════════════════════
+//  PHOTO HANDLING
+// ════════════════════════════════════════════════════
+function addPhotos(input, category) {
+  Array.from(input.files).forEach(file => {
+    photos[category].push(file);
+    const reader = new FileReader();
+    reader.onload = e => {
+      const c     = document.getElementById('preview' + cap(category));
+      const thumb = document.createElement('div');
+      thumb.className = 'photo-thumb';
+      const idx   = photos[category].length - 1;
+      thumb.innerHTML = `<img src="${e.target.result}" alt="photo"><button class="remove-btn" onclick="removePhoto('${category}',${idx},this.parentElement)">✕</button>`;
+      c.appendChild(thumb);
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+function removePhoto(cat, idx, el) { photos[cat].splice(idx, 1); el.remove(); }
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function allPhotos() { return [...photos.bead, ...photos.liner, ...photos.measure]; }
+
+// ════════════════════════════════════════════════════
+//  SUBMIT ORDER
+// ════════════════════════════════════════════════════
+async function submitOrder() {
+  let payload;
+  try {
+    payload = buildCurrentOrderPayload();
+  } catch (err) {
+    showStatus('error', err.message);
+    return false;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  showStatus('loading', '<span class="spinner"></span> &nbsp;Saving to Google Drive…');
+
+  const formText = buildFormText(
+    payload.customerName,
+    payload.customerPhone,
+    payload.customerEmail,
+    payload.poolShape,
+    payload.cornerOutline,
+    payload.wallHeight,
+    payload.poolWidth,
+    payload.poolLength,
+    payload.poolDepth,
+    payload.notes,
+    payload.linerDesign,
+    payload.milSeries
+  );
+
+  let shouldShowPlainTextFallback = false;
+  try {
+    const photoData = await filesToBase64(allPhotos());
+    const result = await callBackend({
+      action:          'saveLinerOrder',
+      customerName:    payload.customerName,
+      customerPhone:   payload.customerPhone,
+      customerEmail:   payload.customerEmail,
+      customerAddress: selectedCustomerAddress,
+      poolShape:       payload.poolShape,
+      cornerOutline:   payload.cornerOutline,
+      wallHeight:      payload.wallHeight,
+      poolWidth:       payload.poolWidth,
+      poolLength:      payload.poolLength,
+      poolDepth:       payload.poolDepth,
+      linerDesign:     payload.linerDesign,
+      milSeries:       payload.milSeries,
+      notes:           payload.notes,
+      notifyTo:        payload.notifyTo,
+      notifyCc:        payload.notifyCc,
+      formText,
+      photoData:       JSON.stringify(photoData),
+    });
+    if (result && result.success) {
+      showStatus('success', '<i class="fas fa-check-circle"></i> &nbsp;Saved to Drive, logged in the Liner Orders sheet, and email sent.');
+      document.getElementById('emailPreviewBox').style.display = 'none';
+      activePreviewPayload = null;
+      btn.disabled = false;
+      return true;
+    } else {
+      showStatus('error', 'Drive save failed: ' + (result ? result.error : 'No response'));
+      shouldShowPlainTextFallback = true;
+    }
+  } catch (err) {
+    showStatus('error', '<i class="fas fa-exclamation-triangle"></i> &nbsp;Save/email backend failed: ' + esc(formatBackendError_(err)) + '<br><span style="font-size:12px;opacity:.9;">Plain text fallback is ready below.</span>');
+    shouldShowPlainTextFallback = true;
+  }
+
+  btn.disabled = false;
+  if (shouldShowPlainTextFallback) {
+    buildEmail(
+      payload.customerName,
+      payload.customerPhone,
+      payload.customerEmail,
+      payload.poolShape,
+      payload.cornerOutline,
+      payload.wallHeight,
+      payload.poolWidth,
+      payload.poolLength,
+      payload.poolDepth,
+      payload.notes,
+      payload.linerDesign,
+      payload.milSeries
+    );
+  }
+  return false;
+}
+
+function buildCurrentOrderPayload() {
+  const customerName  = document.getElementById('customerName').value.trim();
+  const customerPhone = document.getElementById('customerPhone').value.trim();
+  const customerEmail = document.getElementById('customerEmail').value.trim();
+  const poolShape     = document.getElementById('poolShape').value;
+  const cornerOutline = document.getElementById('cornerOutline').value.trim();
+  const wallHeight    = document.getElementById('wallHeight').value.trim();
+  const poolWidth     = document.getElementById('poolWidth').value.trim();
+  const poolLength    = document.getElementById('poolLength').value.trim();
+  const poolDepth     = document.getElementById('poolDepth').value.trim();
+  const notes         = document.getElementById('notes').value.trim();
+  const notifyTo      = document.getElementById('notifyTo').value.trim();
+  const notifyCc      = document.getElementById('notifyCc').value.trim();
+
+  if (!customerName) throw new Error('Please enter the customer name.');
+  if (!selectedLiner) throw new Error('Please select a liner design.');
+
+  const isOther = !!selectedLiner.isCustom;
+  const customLinerName = document.getElementById('customLinerName').value.trim();
+  if (isOther && !customLinerName) {
+    document.getElementById('customLinerName').focus();
+    throw new Error('Please enter a custom pattern name / brand.');
+  }
+  if (!selectedMil && selectedLiner.options.length > 1) {
+    throw new Error('Please select a mil thickness / series.');
+  }
+
+  return {
+    customerName,
+    customerPhone,
+    customerEmail,
+    poolShape,
+    cornerOutline,
+    wallHeight,
+    poolWidth,
+    poolLength,
+    poolDepth,
+    notes,
+    notifyTo,
+    notifyCc,
+    linerDesign: isOther ? customLinerName : selectedLiner.name,
+    milSeries: isOther ? 'Custom / Other' : (selectedMil || selectedLiner.options[0] || 'N/A'),
+  };
+}
+
+function buildFormText(name, phone, email, shape, cornerOutline, wallHeight, poolWidth, poolLength, poolDepth, notes, linerName, milSeries) {
+  const eName = linerName || 'N/A';
+  const eMil  = milSeries || 'N/A';
+  return [
+    '===== MERLIN LINER ORDER =====',
+    'Date: ' + new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }),
+    '', 'CUSTOMER', 'Name:  ' + name, 'Phone: ' + (phone||'N/A'), 'Email: ' + (email||'N/A'),
+    '', 'POOL', 'Shape: ' + (shape||'N/A'),
+    'Corner Outline: ' + (cornerOutline||'N/A'),
+    'Wall Height: ' + (wallHeight||'N/A'),
+    'Width: ' + (poolWidth||'N/A'),
+    'Length: ' + (poolLength||'N/A'),
+    'Depth: ' + (poolDepth||'N/A'),
+    '', 'LINER', 'Design: ' + eName, 'Mil/Series: ' + eMil,
+    '', 'NOTES', notes || 'None',
+    '', 'Photos: ' + allPhotos().length, '==============================',
+  ].join('\n');
+}
+
+function buildDistributorFancyHtmlEmail_(o) {
+  return [
+    '<!doctype html><html><body style="margin:0;padding:18px;background:#eef2ff;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">',
+    '<div style="max-width:780px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #dbeafe;box-shadow:0 10px 32px rgba(15,23,42,.14);">',
+    '<div style="padding:20px 24px;background:linear-gradient(135deg,#0f172a 0%,#0369a1 45%,#0284c7 100%);color:#fff;">',
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr>',
+    '<td style="width:72px;vertical-align:middle;">',
+    '<img src="' + esc(COMPANY_LOGO_URL) + '" alt="A Quality Pool Company" style="width:56px;height:56px;object-fit:contain;border-radius:10px;background:#fff;padding:4px;">',
+    '</td>',
+    '<td style="vertical-align:middle;">',
+    '<div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;opacity:.85;font-weight:700;">A Quality Pool Company</div>',
+    '<div style="font-size:26px;font-weight:800;margin-top:6px;">Finalized Liner Order</div>',
+    '<div style="font-size:13px;margin-top:8px;opacity:.9;">Order ID: ' + esc(o.orderId || 'N/A') + '</div>',
+    '</td>',
+    '</tr></table>',
+    '</div>',
+    '<div style="padding:20px 24px;">',
+    '<p style="margin:0 0 12px;line-height:1.55;">Hello,</p>',
+    '<p style="margin:0 0 16px;line-height:1.6;">Please see the finalized liner order details and submit for an order, this project has been finalized and please let me know of any missing measurements!</p>',
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0 10px;">',
+    '<tr><td style="width:170px;color:#475569;font-weight:700;">Customer</td><td style="font-weight:700;">' + esc(o.customerName || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Phone</td><td>' + esc(o.customerPhone || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Email</td><td>' + esc(o.customerEmail || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Pool Shape</td><td>' + esc(o.poolShape || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Corner Outline</td><td>' + esc(o.cornerOutline || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Wall Height</td><td>' + esc(o.wallHeight || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Width / Length / Depth</td><td>' + esc((o.poolWidth || 'N/A') + ' / ' + (o.poolLength || 'N/A') + ' / ' + (o.poolDepth || 'N/A')) + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Liner</td><td style="font-weight:700;">' + esc(o.linerDesign || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Mil / Series</td><td>' + esc(o.milSeries || 'N/A') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Status</td><td>' + esc(o.status || 'Order Submitted') + '</td></tr>',
+    '<tr><td style="color:#475569;font-weight:700;">Attachments</td><td>Order images are attached directly to this email.</td></tr>',
+    '</table>',
+    '<div style="margin-top:14px;padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">',
+    '<div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:#0369a1;margin-bottom:8px;">Notes</div>',
+    '<div style="white-space:pre-wrap;line-height:1.55;color:#334155;">' + esc(o.notes || 'None') + '</div>',
+    '</div>',
+    '<div style="margin-top:14px;padding:12px 14px;background:linear-gradient(135deg,#ecfeff,#f0f9ff);border:1px solid #bae6fd;border-radius:10px;color:#0f172a;">',
+    '<div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:#0369a1;margin-bottom:8px;">Attachment Notice</div>',
+    '<div style="line-height:1.55;color:#334155;">The reference JPG and PNG files for this liner order are being pulled from the saved order folder and attached to this resend automatically.</div>',
+    '</div>',
+    '</div>',
+    '</div>',
+    '</body></html>'
+  ].join('');
+}
+
+function htmlToPlainText_(html) {
+  const d = document.createElement('div');
+  d.innerHTML = html || '';
+  return (d.innerText || d.textContent || '').trim();
+}
+
+function buildEmail(name, phone, email, shape, cornerOutline, wallHeight, poolWidth, poolLength, poolDepth, notes, linerName, milSeries) {
+  linerName = linerName  || (selectedLiner ? selectedLiner.name : 'N/A');
+  milSeries = milSeries  || selectedMil || 'N/A';
+  const subject   = `Liner Order — ${name} — ${linerName}`;
+  const photoList = allPhotos().map(f => `  • ${f.name}`).join('\n') || '  (none attached)';
+  const html = buildDistributorFancyHtmlEmail_({
+    orderId: 'Pending Save',
+    customerName: name,
+    customerPhone: phone,
+    customerEmail: email,
+    poolShape: shape,
+    cornerOutline,
+    wallHeight,
+    poolWidth,
+    poolLength,
+    poolDepth,
+    linerDesign: linerName,
+    milSeries,
+    status: 'Order Submitted',
+    folderUrl: '#',
+    notes: (notes || 'None') + '\n\nPhotos:\n' + photoList,
+  });
+  setEditorHtml('emailPreviewEditor', html);
+  document.getElementById('emailPreviewBox').style.display = 'block';
+  document.getElementById('openEmailBtn').onclick = () => {
+    const fallbackTo = document.getElementById('notifyTo').value.trim() || DISTRIBUTOR_EMAIL;
+    const fallbackCc = document.getElementById('notifyCc').value.trim();
+    const body = htmlToPlainText_(getEditorHtml('emailPreviewEditor'));
+    const ccQuery = fallbackCc ? `&cc=${encodeURIComponent(fallbackCc)}` : '';
+    window.open(`mailto:${encodeURIComponent(fallbackTo)}?subject=${encodeURIComponent(subject)}${ccQuery}&body=${encodeURIComponent(body)}`, '_blank');
+  };
+}
+
+function showStatus(type, html) {
+  const b = document.getElementById('statusBox');
+  b.className = 'status-box ' + type;
+  b.innerHTML = html;
+  b.style.display = 'block';
+}
+
+function formatBackendError_(err) {
+  const msg = String((err && err.message) || err || 'Unknown backend error').trim();
+  if (!msg) return 'Unknown backend error';
+  if (/internal error\. id:/i.test(msg)) {
+    return 'Serverless proxy internal error (Netlify). Retry once, then reduce image size/count. If it keeps happening, check Netlify function logs and Apps Script executions.';
+  }
+  if (/failed to fetch|networkerror|load failed/i.test(msg)) {
+    return 'Network/proxy failure. If this page is not running on Netlify, the /.netlify/functions route will fail.';
+  }
+  if (/413|payload too large|entity too large/i.test(msg)) {
+    return 'Upload payload too large. Try fewer/smaller images and retry.';
+  }
+  if (/504|timeout/i.test(msg)) {
+    return 'Backend timeout. Retry, then check Apps Script execution logs if it persists.';
+  }
+  return msg;
+}
+
+function populateOrderPreviewSummary_(payload, attachmentCount, previewResult) {
+  document.getElementById('previewSummaryCustomer').textContent = [
+    payload.customerName || 'N/A',
+    payload.customerPhone || 'No phone',
+    payload.customerEmail || 'No email'
+  ].join('\n');
+
+  document.getElementById('previewSummaryPool').textContent = [
+    'Shape: ' + (payload.poolShape || 'N/A'),
+    'Corners: ' + (payload.cornerOutline || 'N/A'),
+    'Wall Height: ' + (payload.wallHeight || 'N/A'),
+    'Width / Length / Depth: ' + [payload.poolWidth || 'N/A', payload.poolLength || 'N/A', payload.poolDepth || 'N/A'].join(' / ')
+  ].join('\n');
+
+  document.getElementById('previewSummaryLiner').textContent = [
+    payload.linerDesign || 'N/A',
+    payload.milSeries || 'N/A',
+    'Subject: ' + ((previewResult && previewResult.subject) || `New Liner Order — ${payload.customerName || 'Customer'} — ${payload.linerDesign || 'Liner'}`)
+  ].join('\n');
+
+  document.getElementById('previewSummaryNotes').textContent = [
+    payload.notes || 'No notes entered.',
+    '',
+    'Uploads queued: ' + String(allPhotos().length),
+    'Email attachments expected: ' + String(attachmentCount || 0)
+  ].join('\n');
+
+  const toEmail = (previewResult && previewResult.toEmail) || payload.notifyTo || DISTRIBUTOR_EMAIL;
+  const cc = (previewResult && previewResult.ccEmails) || payload.notifyCc || 'None';
+  document.getElementById('orderPreviewMeta').innerHTML = `<strong>To:</strong> ${esc(toEmail)}<br><strong>CC:</strong> ${esc(cc)}<br><strong>Attachments:</strong> ${esc(String(attachmentCount || 0))}`;
+}
+
+function setOrderPreviewFrame_(html) {
+  document.getElementById('orderPreviewFrame').srcdoc = html || '<html><body style="font-family:Arial,sans-serif;padding:20px;color:#475569;">No preview available.</body></html>';
+}
+
+async function openOrderPreviewModal() {
+  let payload;
+  try {
+    payload = buildCurrentOrderPayload();
+  } catch (err) {
+    showStatus('error', err.message);
+    return;
+  }
+
+  const photoCount = allPhotos().length;
+  activePreviewPayload = payload;
+  document.getElementById('previewTestEmailTo').value = payload.notifyTo || '';
+  populateOrderPreviewSummary_(payload, photoCount, null);
+  setOrderPreviewFrame_('<html><body style="font-family:Arial,sans-serif;padding:24px;color:#334155;">Generating preview…</body></html>');
+  openModal('orderPreviewModal');
+
+  try {
+    const result = await callBackend({ action: 'previewLinerOrderEmail', ...payload, photoCount });
+    if (result && result.success) {
+      populateOrderPreviewSummary_(payload, Number(result.attachmentCount || photoCount), result);
+      setOrderPreviewFrame_(result.htmlBody || '');
+    } else {
+      throw new Error(result ? result.error : 'No preview response');
+    }
+  } catch (err) {
+    document.getElementById('orderPreviewMeta').innerHTML = `<strong>Preview unavailable:</strong> ${esc(err.message || 'Unknown error')}`;
+    setOrderPreviewFrame_(buildDistributorFancyHtmlEmail_({
+      orderId: 'Preview Only',
+      customerName: payload.customerName,
+      customerPhone: payload.customerPhone,
+      customerEmail: payload.customerEmail,
+      poolShape: payload.poolShape,
+      cornerOutline: payload.cornerOutline,
+      wallHeight: payload.wallHeight,
+      poolWidth: payload.poolWidth,
+      poolLength: payload.poolLength,
+      poolDepth: payload.poolDepth,
+      linerDesign: payload.linerDesign,
+      milSeries: payload.milSeries,
+      status: 'Order Submitted',
+      notes: payload.notes,
+    }));
+  }
+}
+
+async function sendTestOrderEmail() {
+  const btn = document.getElementById('previewTestSendBtn');
+  const original = btn.innerHTML;
+  let payload;
+
+  try {
+    payload = buildCurrentOrderPayload();
+  } catch (err) {
+    showStatus('error', err.message);
+    return;
+  }
+
+  const toEmail = document.getElementById('previewTestEmailTo').value.trim() || payload.notifyTo || '';
+  if (!toEmail) {
+    alert('Enter a test email recipient first.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>&nbsp;Sending Test...';
+  try {
+    const photoData = await filesToBase64(allPhotos());
+    const result = await callBackend({
+      action: 'sendTestLinerOrderEmail',
+      ...payload,
+      toEmail,
+      ccEmails: payload.notifyCc,
+      photoCount: allPhotos().length,
+      photoData: JSON.stringify(photoData),
+    });
+    if (result && result.success) {
+      alert('Test email sent to ' + toEmail + ' with ' + Number(result.attachmentCount || 0) + ' attachment' + (Number(result.attachmentCount || 0) === 1 ? '' : 's') + '.');
+    } else {
+      alert('Test email failed: ' + (result ? result.error : 'No response'));
+    }
+  } catch (err) {
+    alert('Test email failed: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+async function saveOrderFromPreview() {
+  const btn = document.getElementById('previewSaveBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>&nbsp;Saving...';
+  try {
+    const success = await submitOrder();
+    if (success) closeModal('orderPreviewModal');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  TRACKER — LOAD ORDERS
+// ════════════════════════════════════════════════════
+async function loadOrders() {
+  document.getElementById('trackerLoading').style.display = 'block';
+  document.getElementById('trackerError').style.display   = 'none';
+  document.getElementById('orderList').innerHTML           = '';
+
+  try {
+    const result = await callBackend({ action: 'getOrders' });
+    if (result && result.success) {
+      allOrders = result.orders || [];
+      renderOrders();
+    } else {
+      showTrackerError(result ? result.error : 'No response from backend.');
+    }
+  } catch (err) {
+    showTrackerError('Backend failed: ' + formatBackendError_(err));
+  }
+  document.getElementById('trackerLoading').style.display = 'none';
+}
+
+function showTrackerError(msg) {
+  document.getElementById('trackerError').style.display = 'block';
+  document.getElementById('trackerErrorMsg').textContent = msg;
+}
+
+function renderOrders() {
+  const q      = (document.getElementById('trackerSearch').value || '').toLowerCase();
+  const filt   = document.getElementById('statusFilter').value;
+  const list   = document.getElementById('orderList');
+
+  const filtered = allOrders.filter(o => {
+    const matchQ = !q || [o.customerName, o.linerDesign, o.orderId, o.customerPhone, o.customerEmail]
+      .join(' ').toLowerCase().includes(q);
+    const matchS = !filt || o.status === filt;
+    return matchQ && matchS;
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>${allOrders.length ? 'No orders match your filter.' : 'No orders yet. Submit one from the New Order tab.'}</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(o => `
+    <div class="order-card" id="card-${esc(o.orderId)}">
+      <div class="order-card-header">
+        <div>
+          <div class="order-card-name">${esc(o.customerName)}</div>
+          <div class="order-card-id">${esc(o.orderId)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <span class="status-badge ${statusClass(o.status)}">${esc(o.status)}</span>
+          <span class="order-card-date">${esc(o.date)}</span>
+        </div>
+      </div>
+      <div class="order-card-body">
+        <span class="liner-pill">${esc(o.linerDesign)}</span>
+        ${o.milSeries ? `<span class="mil-pill">${esc(o.milSeries)}</span>` : ''}
+        ${o.poolShape  ? `<span class="shape-pill">${esc(o.poolShape)}</span>` : ''}
+      </div>
+      ${renderOrderPhotos(o.photoFiles)}
+      ${o.comments ? `<div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:'DM Mono',monospace;line-height:1.4;padding-left:2px;">💬 ${esc(o.comments.split('\n').slice(-1)[0])}</div>` : ''}
+      <div class="order-card-footer">
+        <button class="btn-sm btn-sm-primary" onclick="openStatusModal('${esc(o.orderId)}')">
+          <i class="fas fa-edit"></i> Update Status
+        </button>
+        <button class="btn-sm btn-sm-outline" onclick="openDistributorEmailModal('${esc(o.orderId)}')">
+          <i class="fas fa-paper-plane"></i> Resend to Distributor
+        </button>
+        ${o.customerEmail ? `<button class="btn-sm btn-sm-green" onclick="openEmailModal('${esc(o.orderId)}')">
+          <i class="fas fa-envelope"></i> Email Customer
+        </button>` : ''}
+        ${o.folderUrl ? `<a href="${esc(o.folderUrl)}" target="_blank" class="btn-sm btn-sm-outline">
+          <i class="fas fa-folder-open"></i> Drive Folder
+        </a>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function renderOrderPhotos(photoFiles) {
+  const files = Array.isArray(photoFiles) ? photoFiles.filter(Boolean) : [];
+  if (!files.length) return '';
+
+  const thumbs = files.slice(0, 4).map(file => {
+    const viewUrl = esc(file.viewUrl || '#');
+    const thumbUrl = esc(file.thumbnailUrl || '');
+    const name = esc(file.name || 'Order Image');
+    return `<a href="${viewUrl}" target="_blank" class="order-photo-link" title="${name}"><img src="${thumbUrl}" alt="${name}"></a>`;
+  }).join('');
+
+  const extra = files.length > 4
+    ? `<div class="order-photo-more">+${files.length - 4} more</div>`
+    : '';
+
+  return `<div class="order-photo-strip">${thumbs}${extra}</div>`;
+}
+
+function statusClass(s) {
+  const map = {
+    'Order Submitted':    's-submitted',
+    'Sent to Distributor':'s-distributor',
+    'Processing':         's-processing',
+    'In Production':      's-production',
+    'In Shipment':        's-shipment',
+    'Ready for Pickup':   's-pickup',
+    'Installed':          's-installed',
+    'Cancelled':          's-cancelled',
+  };
+  return map[s] || 's-submitted';
+}
+
+// ════════════════════════════════════════════════════
+//  STATUS MODAL
+// ════════════════════════════════════════════════════
+function openStatusModal(orderId) {
+  activeOrderId = orderId;
+  const o = allOrders.find(x => x.orderId === orderId);
+  if (!o) return;
+  document.getElementById('modalCustomerName').textContent = o.customerName;
+  document.getElementById('modalOrderId').textContent      = o.orderId;
+  document.getElementById('modalStatus').value             = o.status || 'Order Submitted';
+  document.getElementById('modalComment').value            = '';
+  const ecWrap = document.getElementById('existingCommentsWrap');
+  if (o.comments) {
+    document.getElementById('existingComments').textContent = o.comments;
+    ecWrap.style.display = 'block';
+  } else {
+    ecWrap.style.display = 'none';
+  }
+  openModal('statusModal');
+}
+
+async function saveStatus() {
+  const newStatus = document.getElementById('modalStatus').value;
+  const comment   = document.getElementById('modalComment').value.trim();
+  try {
+    const result = await callBackend({ action: 'updateOrderStatus', orderId: activeOrderId, newStatus, comment });
+    if (result && result.success) {
+      // Update local state
+      const o = allOrders.find(x => x.orderId === activeOrderId);
+      if (o) {
+        o.status = newStatus;
+        if (comment) {
+          const stamp = new Date().toLocaleDateString('en-US');
+          o.comments = (o.comments ? o.comments + '\n' : '') + `[${stamp}] ${comment}`;
+        }
+      }
+      closeModal('statusModal');
+      renderOrders();
+    } else {
+      alert('Save failed: ' + (result ? result.error : 'No response'));
+    }
+  } catch (err) {
+    alert('Backend error: ' + err.message + '\n\nSet window.LINER_SCRIPT_URL to use live updates.');
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  EMAIL MODAL
+// ════════════════════════════════════════════════════
+function openEmailModal(orderId) {
+  activeEmailTarget = 'customer';
+  activeOrderId = orderId;
+  const o = allOrders.find(x => x.orderId === orderId);
+  if (!o) return;
+
+  document.getElementById('emailModalTitleText').textContent = 'Email Customer';
+
+  document.getElementById('emailModalTo').value = o.customerEmail || '';
+  document.getElementById('emailModalSubject').value =
+    `Your Pool Liner Order Update — A Quality Pool Company`;
+  document.getElementById('emailModalCc').value = '';
+
+  const html = [
+    '<!doctype html>',
+    '<html>',
+    '<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">',
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f1f5f9;">',
+    '<tr>',
+    '<td style="padding:14px 10px;">',
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;margin:0 auto;border-collapse:collapse;background:#ffffff;border:1px solid #dbeafe;border-radius:14px;overflow:hidden;box-shadow:0 8px 26px rgba(15,23,42,.12);">',
+    '<tr>',
+    '<td style="padding:16px 16px 14px;background:linear-gradient(135deg,#0f172a,#0284c7);color:#ffffff;">',
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">',
+    '<tr>',
+    '<td style="width:58px;vertical-align:middle;padding-right:10px;">',
+    '<img src="' + esc(COMPANY_LOGO_URL) + '" alt="A Quality Pool Company" style="width:48px;height:48px;object-fit:contain;border-radius:10px;background:#fff;padding:4px;display:block;">',
+    '</td>',
+    '<td style="vertical-align:middle;">',
+    '<div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.9;line-height:1.4;">A Quality Pool Company</div>',
+    '<div style="font-size:20px;font-weight:800;margin-top:4px;line-height:1.25;">Liner Order Update</div>',
+    '</td>',
+    '</tr>',
+    '</table>',
+    '</td>',
+    '</tr>',
+    '<tr>',
+    '<td style="padding:16px;">',
+    '<p style="margin:0 0 12px;line-height:1.55;">Hi ' + esc((o.customerName || 'there').split(' ')[0]) + ',</p>',
+    '<p style="margin:0 0 14px;line-height:1.55;">We have an update on your pool liner order.</p>',
+    '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;">',
+    '<p style="margin:0 0 8px;line-height:1.45;"><strong>Liner:</strong> ' + esc(o.linerDesign || 'N/A') + '</p>',
+    '<p style="margin:0;line-height:1.45;"><strong>Status:</strong> ' + esc(o.status || 'updated') + '</p>',
+    '</div>',
+    '<p style="margin:14px 0 0;line-height:1.55;">If you have any questions, give us a call — we\'d be happy to help.</p>',
+    '<p style="margin:14px 0 0;line-height:1.55;">Thanks for choosing A Quality Pool Company!</p>',
+    '</td>',
+    '</tr>',
+    '<tr>',
+    '<td style="padding:0 16px 16px;">',
+    '<div style="border-top:1px solid #e2e8f0;background:#f8fafc;border-radius:10px;padding:12px 14px;">',
+    '<div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#0369a1;font-weight:700;margin-bottom:6px;">Signature</div>',
+    '<div style="font-size:14px;font-weight:700;color:#0f172a;line-height:1.4;">A Quality Pool Company</div>',
+    '<div style="font-size:12px;color:#475569;line-height:1.5;">Customer Support Team</div>',
+    '</div>',
+    '</td>',
+    '</tr>',
+    '</table>',
+    '</td>',
+    '</tr>',
+    '</table>',
+    '</body>',
+    '</html>'
+  ].join('');
+  setEditorHtml('emailModalBody', html);
+
+  document.getElementById('emailModalPreview').style.display = 'none';
+  openModal('emailModal');
+}
+
+function openDistributorEmailModal(orderId) {
+  activeEmailTarget = 'distributor';
+  activeOrderId = orderId;
+  const o = allOrders.find(x => x.orderId === orderId);
+  if (!o) return;
+
+  document.getElementById('emailModalTitleText').textContent = 'Resend to Distributor';
+  document.getElementById('emailModalTo').value = DISTRIBUTOR_EMAIL;
+  document.getElementById('emailModalSubject').value = `Resend Liner Order — ${o.customerName || 'Customer'} — ${o.linerDesign || 'Liner'}`;
+  document.getElementById('emailModalCc').value = '';
+
+  setEditorHtml('emailModalBody', buildDistributorFancyHtmlEmail_(o));
+  document.getElementById('emailModalPreview').style.display = 'none';
+  openModal('emailModal');
+}
+
+function previewEmailModal() {
+  const p = document.getElementById('emailModalPreview');
+  p.innerHTML = getEditorHtml('emailModalBody');
+  p.style.display = 'block';
+}
+
+async function sendCustomerEmailFromModal() {
+  const to      = document.getElementById('emailModalTo').value.trim();
+  const ccEmails = document.getElementById('emailModalCc').value.trim();
+  const subject = document.getElementById('emailModalSubject').value.trim();
+  const htmlBody = getEditorHtml('emailModalBody').trim();
+  const bodyText = getEditorText('emailModalBody').trim();
+  if (!to) { alert('Please enter the customer email address.'); return; }
+
+  const sendBtn = document.getElementById('emailModalSendBtn');
+  const original = sendBtn.innerHTML;
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<span class="spinner"></span>&nbsp;Sending...';
+
+  try {
+    const result = await callBackend({
+      action: 'sendCustomerStatusEmail',
+      orderId: activeOrderId,
+      toEmail: to,
+      subject,
+      body: bodyText,
+      htmlBody,
+      ccEmails,
+      targetType: activeEmailTarget,
+      includeAttachments: activeEmailTarget === 'distributor',
+    });
+    if (result && result.success) {
+      closeModal('emailModal');
+      await loadOrders();
+      if (activeEmailTarget === 'distributor') {
+        const count = Number(result.attachmentCount || 0);
+        alert('Email sent successfully with ' + count + ' image attachment' + (count === 1 ? '' : 's') + '.');
+      } else {
+        alert('Email sent successfully.');
+      }
+    } else {
+      alert('Email failed: ' + (result ? result.error : 'No response'));
+    }
+  } catch (err) {
+    alert('Email failed: ' + err.message);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = original;
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  MODAL HELPERS
+// ════════════════════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(b => {
+  b.addEventListener('click', e => { if (e.target === b) b.classList.remove('open'); });
+});
+
+// ════════════════════════════════════════════════════
+//  BACKEND BRIDGE
+// ════════════════════════════════════════════════════
+async function callBackend(params) {
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(reject)
+        .handleWebRequest(params);
+    });
+  }
+  // On Netlify, route through the CORS proxy to avoid CORS blocks
+  const isNetlify = window.location.hostname !== 'script.google.com';
+  const linerExecUrl = (window.LINER_SCRIPT_URL || '').trim();
+  const url = isNetlify
+    ? '/.netlify/functions/gas-proxy?targetUrl=' + encodeURIComponent(linerExecUrl)
+    : linerExecUrl;
+  if (!linerExecUrl) throw new Error('window.LINER_SCRIPT_URL not set.');
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ action: params.action, data: JSON.stringify(params) }),
+  });
+  if (!resp.ok) {
+    let detail = '';
+    let rawText = '';
+    try {
+      rawText = await resp.text();
+      const parsed = JSON.parse(rawText);
+      detail = parsed.error || parsed.message || rawText;
+    } catch (e) {
+      detail = rawText ? rawText.slice(0, 260).replace(/\s+/g, ' ') : 'No response body from upstream service.';
+    }
+    throw new Error('Backend HTTP ' + resp.status + (detail ? ' — ' + detail : ''));
+  }
+  return resp.json();
+}
+
+// ════════════════════════════════════════════════════
+//  UTILITIES
+// ════════════════════════════════════════════════════
+async function filesToBase64(files) {
+  const MAX_DIMENSION = 1200;
+  const START_QUALITY = 0.72;
+
+  const out = await Promise.all((files || []).map(f => new Promise((res, rej) => {
+    const finishRawRead = () => {
+      const r = new FileReader();
+      r.onload = e => res({
+        name: (f && f.name) ? f.name : 'upload-file',
+        type: (f && f.type) ? f.type : 'application/octet-stream',
+        data: e.target.result,
+      });
+      r.onerror = () => rej(new Error('Could not read "' + (f && f.name ? f.name : 'file') + '"'));
+      r.readAsDataURL(f);
+    };
+
+    if (!f || !String(f.type || '').startsWith('image/')) {
+      finishRawRead();
+      return;
+    }
+
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(f);
+    img.onload = () => {
+      try {
+        let { width, height } = img;
+        let scale = 1;
+        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+          scale = MAX_DIMENSION / Math.max(width, height);
+        }
+        width = Math.max(1, Math.round(width * scale));
+        height = Math.max(1, Math.round(height * scale));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Canvas unavailable');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let quality = START_QUALITY;
+        let data = canvas.toDataURL('image/jpeg', quality);
+        while (data.length > 900000 && quality > 0.2) {
+          quality -= 0.1;
+          data = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        const cleanName = String(f.name || 'photo').replace(/\.[^.]+$/, '');
+        res({ name: cleanName + '.jpg', type: 'image/jpeg', data });
+      } catch (err) {
+        // If optimization fails for a valid file, fall back to raw base64 upload.
+        finishRawRead();
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      // Some camera formats are not canvas-decodable in all browsers.
+      // Keep upload working by using the original file bytes.
+      finishRawRead();
+    };
+    img.src = objectUrl;
+  })));
+
+  enforceUploadLimits_(out);
+  return out;
+}
+
+function enforceUploadLimits_(photoData) {
+  const maxFiles = 10;
+  const maxTotalBytes = Math.round(9 * 1024 * 1024);
+  if ((photoData || []).length > maxFiles) {
+    throw new Error('Too many photos selected. Limit is ' + maxFiles + ' files.');
+  }
+  let total = 0;
+  for (const p of (photoData || [])) {
+    const data = String((p && p.data) || '');
+    const b64 = data.split(',')[1] || '';
+    const bytes = Math.ceil((b64.length * 3) / 4);
+    total += bytes;
+  }
+  if (total > maxTotalBytes) {
+    throw new Error('Attachments are too large for the current upload path. Remove a few photos and retry.');
+  }
+}
+function esc(t) {
+  const d = document.createElement('div');
+  d.textContent = String(t || '');
+  return d.innerHTML;
+}
+
+function plainTextToHtml(text) {
+  return esc(text || '').replace(/\n/g, '<br>');
+}
+
+function initTinyMceEditors() {
+  if (typeof tinymce === 'undefined') return;
+  try {
+    tinymce.init({
+      selector: '#emailModalBody',
+      base_url: 'https://cdn.jsdelivr.net/npm/tinymce@7.9.1',
+      suffix: '.min',
+      license_key: 'gpl',
+      menubar: false,
+      plugins: 'lists link table code',
+      toolbar: 'undo redo | bold italic underline | bullist numlist | link table | code',
+      height: 220,
+      branding: false,
+    });
+    tinymce.init({
+      selector: '#emailPreviewEditor',
+      base_url: 'https://cdn.jsdelivr.net/npm/tinymce@7.9.1',
+      suffix: '.min',
+      license_key: 'gpl',
+      menubar: false,
+      toolbar: false,
+      readonly: true,
+      height: 220,
+      branding: false,
+      statusbar: false,
+    });
+  } catch (err) {
+    console.warn('TinyMCE failed to initialize, using plain textareas instead.', err);
+  }
+}
+
+function getTinyEditor(id) {
+  return (typeof tinymce !== 'undefined' && tinymce.get(id)) ? tinymce.get(id) : null;
+}
+
+function setEditorHtml(id, html) {
+  const ed = getTinyEditor(id);
+  if (ed) {
+    ed.setContent(html || '');
+    return;
+  }
+  const el = document.getElementById(id);
+  if (el) el.value = String(html || '').replace(/<br\s*\/?\s*>/gi, '\n').replace(/<[^>]*>/g, '');
+}
+
+function getEditorHtml(id) {
+  const ed = getTinyEditor(id);
+  if (ed) return ed.getContent();
+  const el = document.getElementById(id);
+  return el ? plainTextToHtml(el.value || '') : '';
+}
+
+function getEditorText(id) {
+  const ed = getTinyEditor(id);
+  if (ed) return ed.getContent({ format: 'text' });
+  const el = document.getElementById(id);
+  return el ? (el.value || '') : '';
+}
+
+// ════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════
+renderLiners(LINERS);
+initTinyMceEditors();
+</script>
+</body>
+</html>

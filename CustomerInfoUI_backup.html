@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Info & History</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      color: #111827;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(3, 105, 161, 0.3);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 16px;
+    }
+
+    /* Search Bar */
+    .search-section {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 250px;
+      padding: 14px 20px;
+      font-size: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-family: 'Barlow', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .btn {
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Barlow', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 20px;
+      min-height: 600px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Customer List */
+    .customer-list {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .customer-list h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #0369a1;
+    }
+
+    .customer-card {
+      padding: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .customer-card:hover {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      transform: translateX(4px);
+    }
+
+    .customer-card.active {
+      border-color: #0284c7;
+      background: #dbeafe;
+    }
+
+    .customer-card-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+
+    .customer-card-info {
+      font-size: 13px;
+      color: #6b7280;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* Customer Details */
+    .customer-details {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .no-selection {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .no-selection i {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .details-header h2 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0369a1;
+    }
+
+    .info-section {
+      margin-bottom: 30px;
+    }
+
+    .info-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      background: #f9fafb;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .info-value a {
+      color: #0284c7;
+      text-decoration: none;
+    }
+
+    .info-value a:hover {
+      text-decoration: underline;
+    }
+
+    /* Order History */
+    .order-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .order-card {
+      background: #f9fafb;
+      padding: 16px;
+      border-radius: 12px;
+      border-left: 4px solid #0284c7;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .order-id {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .order-date {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .order-total {
+      font-size: 18px;
+      font-weight: 800;
+      color: #059669;
+    }
+
+    /* File List */
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .file-card {
+      background: #f0f9ff;
+      padding: 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .file-card:hover {
+      background: #dbeafe;
+      transform: translateX(4px);
+    }
+
+    .file-icon {
+      width: 40px;
+      height: 40px;
+      background: #0284c7;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+
+    .file-info {
+      flex: 1;
+    }
+
+    .file-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+
+    .file-meta {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #9ca3af;
+    }
+
+    .empty-state i {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    /* Loading Spinner */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e5e7eb;
+      border-top-color: #0284c7;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Add Customer Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #0369a1;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-family: 'Barlow', sans-serif;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #0284c7;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .badge-info {
+      background: #dbeafe;
+      color: #0369a1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1><i class="fas fa-users"></i> Customer Info & History</h1>
+      <p>View customer details, order history, and files from Square & Google Drive</p>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <input 
+        type="text" 
+        class="search-input" 
+        id="searchInput" 
+        placeholder="🔍 Search by name, email, or phone..."
+        onkeyup="handleSearch(event)">
+      <button class="btn btn-primary" onclick="loadCustomers()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <button class="btn btn-secondary" onclick="showAddCustomerModal()">
+        <i class="fas fa-user-plus"></i> Add Customer
+      </button>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <!-- Customer List -->
+      <div class="customer-list">
+        <h2>
+          <span id="customerCount">0</span> Customers
+          <span id="listLoading" class="loading hidden" style="margin-left: 10px;"></span>
+        </h2>
+        <div id="customerListContainer">
+          <!-- Customer cards will load here -->
+        </div>
+      </div>
+
+      <!-- Customer Details -->
+      <div class="customer-details" id="customerDetails">
+        <div class="no-selection">
+          <i class="fas fa-hand-pointer"></i>
+          <h3>Select a customer to view details</h3>
+          <p>Choose a customer from the list to see their info, order history, and files</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal" id="addCustomerModal">
+    <div class="modal-content">
+      <h2 class="modal-header">Add New Customer</h2>
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" id="newFirstName" required>
+      </div>
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" id="newLastName" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="newEmail">
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="newPhone" placeholder="e.g. +15551234567">
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input type="text" id="newAddress">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="addNewCustomer()" style="flex: 1;">
+          <i class="fas fa-user-plus"></i> Add Customer
+        </button>
+        <button class="btn btn-secondary" onclick="closeAddCustomerModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allCustomers = [];
+    let selectedCustomerId = null;
+
+    // Load customers on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCustomers();
+    });
+
+    // Load all customers from Square
+    function loadCustomers() {
+      document.getElementById('listLoading').classList.remove('hidden');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          document.getElementById('listLoading').classList.add('hidden');
+          
+          if (result.success) {
+            allCustomers = result.customers;
+            displayCustomers(allCustomers);
+          } else {
+            alert('Error loading customers: ' + result.error);
+          }
+        })
+        .withFailureHandler(function(error) {
+          document.getElementById('listLoading').classList.add('hidden');
+          alert('Failed to load customers: ' + error);
+        })
+        .getSquareCustomers();
+    }
+
+    // Display customers in list
+    function displayCustomers(customers) {
+      const container = document.getElementById('customerListContainer');
+      document.getElementById('customerCount').textContent = customers.length;
+      
+      if (customers.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>No customers found</p></div>';
+        return;
+      }
+      
+      container.innerHTML = customers.map(customer => {
+        const name = `${customer.given_name || ''} ${customer.family_name || ''}`.trim() || 'No Name';
+        const email = customer.email_address || '';
+        const phone = customer.phone_number || '';
+        const address = customer.address ? customer.address.address_line_1 || '' : '';
+        
+        return `
+          <div class="customer-card" onclick="selectCustomer('${customer.id}')">
+            <div class="customer-card-name">${name}</div>
+            <div class="customer-card-info">
+              ${email ? `<span><i class="fas fa-envelope"></i> ${email}</span>` : ''}
+              ${phone ? `<span><i class="fas fa-phone"></i> ${phone}</span>` : ''}
+              ${address ? `<span><i class="fas fa-map-marker-alt"></i> ${address}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Search/filter customers
+    function handleSearch(event) {
+      const searchTerm = event.target.value.toLowerCase();
+      
+      if (searchTerm.length === 0) {
+        displayCustomers(allCustomers);
+        return;
+      }
+      
+      const filtered = allCustomers.filter(customer => {
+        const name = `${customer.given_name || ''} ${customer.family_name || ''}`.toLowerCase();
+        const email = (customer.email_address || '').toLowerCase();
+        const phone = (customer.phone_number || '').toLowerCase();
+        const address = customer.address ? (customer.address.address_line_1 || '').toLowerCase() : '';
+        
+        return name.includes(searchTerm) || 
+               email.includes(searchTerm) || 
+               phone.includes(searchTerm) ||
+               address.includes(searchTerm);
+      });
+      
+      displayCustomers(filtered);
+    }
+
+    // Select customer and load details
+    function selectCustomer(customerId) {
+      selectedCustomerId = customerId;
+      
+      // Update active state
+      document.querySelectorAll('.customer-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      event.target.closest('.customer-card').classList.add('active');
+      
+      // Load customer details
+      const detailsContainer = document.getElementById('customerDetails');
+      detailsContainer.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading"></div><p style="margin-top: 20px;">Loading customer details...</p></div>';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            displayCustomerDetails(result);
+          } else {
+            detailsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error loading customer details</p></div>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          detailsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Error: ' + error + '</p></div>';
+        })
+        .getCustomerDetails(customerId);
+    }
+
+    // Display customer details
+    let currentCustomerEmail = null;
+    let currentCustomerName = null;
+    let currentPortalAccess = null;
+
+    function displayCustomerDetails(result) {
+      const customer = result.customer;
+      const orders = result.orders || [];
+      const files = result.driveFiles || [];
+      
+      const name = `${customer.given_name || ''} ${customer.family_name || ''}`.trim() || 'No Name';
+      const email = customer.email_address || 'Not provided';
+      const phone = customer.phone_number || 'Not provided';
+      const address = customer.address ? customer.address.address_line_1 || 'Not provided' : 'Not provided';
+      const created = customer.created_at ? new Date(customer.created_at).toLocaleDateString() : 'Unknown';
+      
+      // Store current customer info
+      currentCustomerEmail = email !== 'Not provided' ? email : null;
+      currentCustomerName = name;
+      
+      // Check portal access if email is available
+      if (currentCustomerEmail) {
+        checkPortalAccess();
+      }
+      
+      let html = `
+        <div class="details-header">
+          <div>
+            <h2>${name}</h2>
+            <span class="badge badge-info">Square ID: ${customer.id}</span>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+            <h3 style="margin: 0;"><i class="fas fa-id-card"></i> Contact Information</h3>
+            ${currentCustomerEmail ? `
+              <div id="portalInviteSection" style="display: block;">
+                <button id="portalInviteBtn" class="btn btn-primary" onclick="sendPortalInvite()" style="padding: 8px 16px; font-size: 14px;">
+                  <i class="fas fa-envelope"></i> Send Portal Invite
+                </button>
+                <div id="portalAccessStatus" style="display: none; padding: 8px 12px; background: #d1fae5; color: #059669; border-radius: 6px; font-size: 14px; margin-top: 8px;">
+                  <i class="fas fa-check-circle"></i> Customer already has portal access
+                </div>
+              </div>
+            ` : ''}
+          </div>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Email</div>
+              <div class="info-value">${email !== 'Not provided' ? `<a href="mailto:${email}">${email}</a>` : email}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Phone</div>
+              <div class="info-value">${phone !== 'Not provided' ? `<a href="tel:${phone}">${phone}</a>` : phone}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Address</div>
+              <div class="info-value">${address}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Customer Since</div>
+              <div class="info-value">${created}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3><i class="fas fa-receipt"></i> Order History (${orders.length})</h3>
+          ${orders.length > 0 ? `
+            <div class="order-list">
+              ${orders.map(order => {
+                const date = new Date(order.created_at).toLocaleDateString();
+                const total = (order.total_money ? order.total_money.amount / 100 : 0).toFixed(2);
+                const currency = order.total_money ? order.total_money.currency : 'USD';
+                const state = order.state || 'Unknown';
+                
+                return `
+                  <div class="order-card">
+                    <div class="order-header">
+                      <div>
+                        <div class="order-id">Order #${order.id.substring(0, 8)}...</div>
+                        <div class="order-date">${date} • ${state}</div>
+                      </div>
+                      <div class="order-total">$${total} ${currency}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : '<div class="empty-state"><i class="fas fa-receipt"></i><p>No orders found</p></div>'}
+        </div>
+
+        <div class="info-section">
+          <h3><i class="fas fa-folder"></i> Files & Reports (${files.length})</h3>
+          ${files.length > 0 ? `
+            <div class="file-list">
+              ${files.map(file => {
+                const icon = file.type.includes('pdf') ? 'file-pdf' : 
+                            file.type.includes('image') ? 'file-image' : 
+                            file.type.includes('video') ? 'file-video' : 'file';
+                
+                return `
+                  <div class="file-card" onclick="window.open('${file.url}', '_blank')">
+                    <div class="file-icon"><i class="fas fa-${icon}"></i></div>
+                    <div class="file-info">
+                      <div class="file-name">${file.name}</div>
+                      <div class="file-meta">${file.size} • ${file.date}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : '<div class="empty-state"><i class="fas fa-folder-open"></i><p>No files found in Google Drive</p></div>'}
+        </div>
+      `;
+      
+      document.getElementById('customerDetails').innerHTML = html;
+    }
+
+    // Add Customer Modal
+    function showAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.add('active');
+    }
+
+    function closeAddCustomerModal() {
+      document.getElementById('addCustomerModal').classList.remove('active');
+      document.getElementById('newFirstName').value = '';
+      document.getElementById('newLastName').value = '';
+      document.getElementById('newEmail').value = '';
+      document.getElementById('newPhone').value = '';
+      document.getElementById('newAddress').value = '';
+    }
+
+    function addNewCustomer() {
+      const firstName = document.getElementById('newFirstName').value.trim();
+      const lastName = document.getElementById('newLastName').value.trim();
+      const email = document.getElementById('newEmail').value.trim();
+      const phone = document.getElementById('newPhone').value.trim();
+      const address = document.getElementById('newAddress').value.trim();
+      
+      if (!firstName || !lastName) {
+        alert('Please enter first and last name');
+        return;
+      }
+      
+      const customerData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email || null,
+        phone: phone || null,
+        address: address || null
+      };
+      
+      // Show loading
+      const modal = document.getElementById('addCustomerModal');
+      const btn = modal.querySelector('.btn-primary');
+      btn.innerHTML = '<div class="loading"></div> Adding...';
+      btn.disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            alert('✅ Customer added successfully!');
+            closeAddCustomerModal();
+            loadCustomers();
+            
+            // Auto-select the new customer
+            setTimeout(() => {
+              selectCustomer(result.customer.id);
+            }, 500);
+          } else {
+            alert('Error adding customer: ' + result.error);
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Add Customer';
+            btn.disabled = false;
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Failed to add customer: ' + error);
+          btn.innerHTML = '<i class="fas fa-user-plus"></i> Add Customer';
+          btn.disabled = false;
+        })
+        .addSquareCustomer(customerData);
+    }
+
+    // Check portal access for current customer
+    function checkPortalAccess() {
+      if (!currentCustomerEmail) return;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            currentPortalAccess = result.hasAccess;
+            const inviteSection = document.getElementById('portalInviteSection');
+            const inviteBtn = document.getElementById('portalInviteBtn');
+            const statusDiv = document.getElementById('portalAccessStatus');
+            
+            if (inviteSection) {
+              inviteSection.style.display = 'block';
+              
+              if (result.hasAccess) {
+                // Customer has completed sign-up and has active account
+                if (inviteBtn) inviteBtn.style.display = 'none';
+                if (statusDiv) {
+                  statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Customer has portal access';
+                  statusDiv.style.display = 'block';
+                }
+              } else if (result.pendingSignup) {
+                // Invitation sent, waiting for customer to complete sign-up
+                if (inviteBtn) inviteBtn.style.display = 'none';
+                if (statusDiv) {
+                  statusDiv.innerHTML = '<i class="fas fa-clock"></i> <strong>Pending Access</strong> - Invitation sent, waiting for customer to complete sign-up';
+                  statusDiv.style.background = '#fef3c7';
+                  statusDiv.style.color = '#92400e';
+                  statusDiv.style.display = 'block';
+                }
+              } else {
+                // No invitation sent yet
+                if (inviteBtn) inviteBtn.style.display = 'inline-block';
+                if (statusDiv) statusDiv.style.display = 'none';
+              }
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          console.error('Error checking portal access: ' + error);
+        })
+        .checkCustomerPortalAccess(currentCustomerEmail);
+    }
+    
+    // Send portal invite
+    function sendPortalInvite() {
+      if (!currentCustomerEmail || !currentCustomerName) {
+        alert('Customer email is required to send portal invite');
+        return;
+      }
+      
+      if (!confirm(`Send portal invite email to ${currentCustomerName} (${currentCustomerEmail})?`)) {
+        return;
+      }
+      
+      const btn = document.getElementById('portalInviteBtn');
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        btn.disabled = true;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            alert('✅ Portal invite sent successfully!');
+            checkPortalAccess(); // Refresh status
+          } else {
+            alert('Error: ' + (result.error || 'Failed to send invite'));
+            if (btn) {
+              btn.innerHTML = '<i class="fas fa-envelope"></i> Send Portal Invite';
+              btn.disabled = false;
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('Failed to send invite: ' + error);
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-envelope"></i> Send Portal Invite';
+            btn.disabled = false;
+          }
+        })
+        .sendCustomerPortalInvite(currentCustomerEmail, currentCustomerName);
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('addCustomerModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAddCustomerModal();
+      }
+    });
+  </script>
+</body>
+</html>
+

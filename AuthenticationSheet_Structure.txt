@@ -1,0 +1,72 @@
+AUTENTICATION SHEET STRUCTURE
+=============================
+
+Google Sheet: https://docs.google.com/spreadsheets/d/189Oj-P7s2WGJY2kk3gOUylTle4JWaWs0vfwuycOrjGA/edit
+
+SHEET NAME: "Authentication"
+
+ROW 1: LEFT BLANK (for company logo)
+
+ROW 2: HEADERS (formatted with bold and colored background)
+-----------------------------------------------------------
+Column A: Name
+Column B: Username  
+Column C: Password
+Column D: Email Address
+Column E: Phone Number
+Column F: Role
+Column G: Department
+Column H: Status
+Column I: Date Created
+Column J: Last Login
+
+ROW 3 AND BELOW: USER DATA
+---------------------------
+
+EXAMPLE ENTRY:
+--------------
+Row 3:
+A: John Smith
+B: jsmith
+C: password123 (will be hashed automatically)
+D: john.smith@aqualitypool.com
+E: (615) 555-1234
+F: Sales Manager
+G: Sales
+H: Active
+I: (auto-populated by script)
+J: (auto-updated on login)
+
+SUGGESTED ROLES FOR POOL COMPANY:
+----------------------------------
+- Admin
+- Sales Manager
+- Sales Representative
+- Estimator
+- Project Manager
+- Office Manager
+- Customer Service
+
+SUGGESTED DEPARTMENTS:
+----------------------
+- Sales
+- Operations
+- Installation
+- Customer Service
+- Management
+- Accounting
+
+STATUS VALUES:
+--------------
+- Active (user can log in)
+- Inactive (user cannot log in)
+
+NOTES:
+------
+- Row 1 is intentionally left blank for logo placement
+- Passwords can be entered as plain text initially (script will hash them)
+- Email addresses are case-insensitive for login
+- Username can also be used for login (in addition to email)
+- Last Login is automatically updated when user logs in
+- Date Created is automatically set when user is added via the script
+
