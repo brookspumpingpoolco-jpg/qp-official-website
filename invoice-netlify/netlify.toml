@@ -57,10 +57,12 @@
   to = "/WeeklyService.html"
   status = 200
 
+# frame-ancestors (not X-Frame-Options) so the marketing site can iframe login
+# and dashboard embeds. SAMEORIGIN on /* blocked aqualitypoolcompanyusa.com.
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "frame-ancestors 'self' https://aqualitypoolcompanyusa.com https://www.aqualitypoolcompanyusa.com"
     X-Content-Type-Options = "nosniff"
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
