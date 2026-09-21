@@ -8,7 +8,7 @@ const DEFAULTS = {
   payment: 'https://script.google.com/macros/s/AKfycbyhct9wCN-5LzNwqvnv4yofnzN-bGoPw1gF6BNqfZos23Nx5ktsKEVTP_CNxBB4FaOaFA/exec',
   scheduling: 'https://script.google.com/macros/s/AKfycbxZcMYdXanrOJRd-l5aKeL_qvZoJv7PWGlBp_1gVbgo5FAiC1U7-EMdoBQEqNP6QHmvjw/exec',
   /** PoolFlowPro / Login_Embed → AuthenticationScript web app */
-  auth: 'https://script.google.com/macros/s/AKfycby15jSZaAfFvMdKRV6nTFFmV1-Asmzunf4x4kSPHjVmXVqrwfTBVDy_oarEKgwR_bdZ/exec',
+  auth: 'https://script.google.com/macros/s/AKfycbw5FBpDpuc4brNeQUEx4vr9Ndbc01toRVApoBJiYSagFImliWscvHQ4kO1nuLp6wd82/exec',
   /** Heritage Pool Supply — Liner Order Tool (LinerOrderScript.gs) */
   liner: 'https://script.google.com/macros/s/AKfycbzWiBKiUhHuUWEu_1V3wr6yLaEzhgK6bT1IsYYU8xCIZIPuTc_DmhLB5mPUZd7JucZ2ag/exec',
   /** Service Report Web App (Code.gs) */

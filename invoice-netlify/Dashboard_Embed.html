@@ -3149,8 +3149,8 @@ lotRenderLiners(LOT_LINERS);
         const SCRIPT_URL = resolveNetlifyProxyUrl('https://script.google.com/macros/s/AKfycbw5FBpDpuc4brNeQUEx4vr9Ndbc01toRVApoBJiYSagFImliWscvHQ4kO1nuLp6wd82/exec');
         // Authentication Script URL - for approve/reject account actions
         const AUTH_SCRIPT_URL = _isNetlify
-            ? _proxyBase + '?targetUrl=' + encodeURIComponent('https://script.google.com/macros/s/AKfycby15jSZaAfFvMdKRV6nTFFmV1-Asmzunf4x4kSPHjVmXVqrwfTBVDy_oarEKgwR_bdZ/exec')
-            : 'https://script.google.com/macros/s/AKfycby15jSZaAfFvMdKRV6nTFFmV1-Asmzunf4x4kSPHjVmXVqrwfTBVDy_oarEKgwR_bdZ/exec';
+            ? _proxyBase + '?targetUrl=' + encodeURIComponent('https://script.google.com/macros/s/AKfycbw5FBpDpuc4brNeQUEx4vr9Ndbc01toRVApoBJiYSagFImliWscvHQ4kO1nuLp6wd82/exec')
+            : 'https://script.google.com/macros/s/AKfycbw5FBpDpuc4brNeQUEx4vr9Ndbc01toRVApoBJiYSagFImliWscvHQ4kO1nuLp6wd82/exec';
         const LOGIN_URL = _isNetlify ? '/Login_Embed.html' : 'YOUR_LOGIN_WEB_APP_URL_HERE';
         
         // Get webAppUrl from URL parameter or use SCRIPT_URL as fallback
