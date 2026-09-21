@@ -1,73 +1,13 @@
-# Netlify Configuration for Invoice/Estimate System
+# Pointer only — do not add [[redirects]], [functions], or publish here.
+#
+# The invoice site (aesthetic-kataifi-88ba27) is configured from
+# invoice-netlify/netlify.toml. Setting base here makes a Git-connected
+# deploy from the repo root use that folder so CLI (`cd invoice-netlify &&
+# netlify deploy --prod`) and Git deploys cannot pick different redirects
+# or a different gas-proxy.
+#
+# Preferred Netlify UI setting (matches CLI): Base directory = invoice-netlify
+# See invoice-netlify/DEPLOY.md
 
 [build]
-  # Force Netlify to use the app subdirectory as the build root.
-  # This prevents function 404s when the site is deployed from repo root.
   base = "invoice-netlify"
-  # No build command needed - this is a static site
-  publish = "."
-
-[functions]
-  directory = "netlify/functions"
-
-[build.environment]
-  # Major line only — Netlify uses latest cached Node 20.x patch (avoids slow/pinned downloads)
-  NODE_VERSION = "20"
-  # Repo includes referrer-restricted Google Maps / API key strings in HTML and .gs samples; smart scan flags AIza* as false positives for static client keys.
-  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
-
-[[redirects]]
-  # Redirect root to the invoice/estimate maker
-  from = "/"
-  to = "/InvoiceEstimateUI.html"
-  status = 200
-
-[[redirects]]
-  # Redirect /dashboard to the dashboard embed
-  from = "/dashboard"
-  to = "/Dashboard_Embed.html"
-  status = 200
-
-[[redirects]]
-  # Redirect /weekly to the weekly service dashboard
-  from = "/weekly"
-  to = "/WeeklyService.html"
-  status = 200
-
-[[redirects]]
-  # Redirect /weekly-service to the weekly service dashboard
-  from = "/weekly-service"
-  to = "/WeeklyService.html"
-  status = 200
-
-[[headers]]
-  # Security headers for all pages
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    X-XSS-Protection = "1; mode=block"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    
-[[headers]]
-  # Cache static assets for 1 year
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-    
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  # Don't cache HTML files
-  for = "/*.html"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-
-
-
-
-
-

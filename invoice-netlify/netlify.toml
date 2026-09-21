@@ -1,37 +1,45 @@
+# =============================================================================
+# Canonical Netlify config for the A Quality Pool Company invoice site
+# Production: aesthetic-kataifi-88ba27 (https://aesthetic-kataifi-88ba27.netlify.app)
+# =============================================================================
+#
+# Single source of truth. This file is the only place that defines publish
+# directory, functions, redirects, and headers for the invoice stack.
+#
+# Deploy (CLI or Git must use this folder as the site root):
+#   CLI:  cd invoice-netlify && netlify deploy --prod
+#   Git:  Netlify UI → Site settings → Build & deploy → Base directory = invoice-netlify
+#
+# The repo-root netlify.toml only sets [build] base = "invoice-netlify" so a
+# Git-connected deploy from the repo root still lands here. It has no redirects
+# of its own — competing [[redirects]] caused production to pick InvoiceEstimateUI
+# vs Login_Embed depending on whether the deploy used the root or this folder.
+#
+# GAS_* URLs and STRIPE_SECRET_KEY live in the Netlify UI (env vars). Do not
+# put secrets in this file. Login_Embed talks to gas-proxy?t=auth (GAS_AUTH_URL).
+# =============================================================================
+
 [build]
-  # Netlify serves everything in this directory
   publish = "."
-  # Command: none needed (static site + serverless functions)
   command = ""
 
 [functions]
-  # Netlify Functions directory (contains gas-proxy.mjs)
   directory = "netlify/functions"
-  # Increase timeout for long-running operations like PDF generation + email sending
-  # Free tier max: 10 seconds, Pro tier max: 26 seconds
-  # Set to Pro tier max to allow PDF generation + email
   node_bundler = "esbuild"
 
 [build.environment]
   NODE_VERSION = "20"
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
-  # Login_Embed uses /.netlify/functions/gas-proxy?t=auth → AuthenticationScript.
-  # If login returns "HTML instead of JSON", set GAS_AUTH_URL in Netlify UI (Site → Env):
-  #   https://script.google.com/macros/s/<YOUR_DEPLOYMENT_ID>/exec
-  # Apps Script: Deploy → Manage deployments → Web app → Who has access: Anyone.
 
-# DEPLOYMENT INSTRUCTIONS:
-# 1. Via CLI: netlify deploy --prod
-# 2. Via Git: Connect GitHub repo to Netlify, set Base directory = "invoice-netlify"
-# 3. DO NOT use drag-and-drop — functions won't deploy
-# 4. Verify deployment: Check that /.netlify/functions/gas-proxy responds
-# 5. IMPORTANT: Functions timeout on free tier is 10 seconds
-#    For sending emails + PDFs, upgrade to Pro tier (26 second timeout)
-#    OR split sendInvoiceEstimate into async tasks
-
+# Auth gate first. Invoice UI, dashboard, and weekly service have explicit paths.
 [[redirects]]
   from = "/"
   to = "/Login_Embed.html"
+  status = 200
+
+[[redirects]]
+  from = "/invoice"
+  to = "/InvoiceEstimateUI.html"
   status = 200
 
 [[redirects]]
@@ -39,3 +47,37 @@
   to = "/Dashboard_Embed.html"
   status = 200
 
+[[redirects]]
+  from = "/weekly"
+  to = "/WeeklyService.html"
+  status = 200
+
+[[redirects]]
+  from = "/weekly-service"
+  to = "/WeeklyService.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
