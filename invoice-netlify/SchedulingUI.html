@@ -363,6 +363,28 @@
     .service-type-option.pool-service.active{background:var(--service-pool);border-color:var(--service-pool);}
     .service-type-option.opening.active{background:#06b6d4;border-color:#06b6d4;}
     .service-type-option.closing.active{background:#6366f1;border-color:#6366f1;}
+/* New Appointment modal: compact chips + sticky footer. Calendar filter chips stay solid. */
+#newApptModal .modal{display:flex;flex-direction:column;overflow:hidden;max-height:90vh;}
+#newApptModal .modal-body{overflow-y:auto;flex:1 1 auto;min-height:0;}
+#newApptModal .modal-footer{flex-shrink:0;position:sticky;bottom:0;z-index:2;}
+#newApptModal .appt-section{margin:0 0 18px;padding:0 0 4px;}
+#newApptModal .appt-section-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--color-gray-500);margin:0 0 10px;}
+#newApptModal .service-type-grid{display:flex;flex-wrap:wrap;gap:8px;}
+#newApptModal .service-type-option{flex:0 1 auto;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid var(--color-gray-300);background:#fff;color:var(--color-gray-700);text-align:center;min-height:0;line-height:1.2;}
+#newApptModal .service-type-option i{margin-right:6px;}
+#newApptModal .service-type-option br{display:none;}
+#newApptModal .service-type-option.active,
+#newApptModal .service-type-option.closing.active{background:#e0f2fe;color:#0369a1;border:1px solid #0284c7;box-shadow:none;}
+#newApptModal .btn-browse-quiet{background:transparent;border:1px solid var(--color-gray-300);color:var(--color-gray-600);box-shadow:none;}
+#newApptModal .btn-browse-quiet:hover{background:var(--color-gray-50);border-color:var(--color-gray-400);color:var(--color-gray-800);}
+#newApptModal #saveApptBtn{background:#0284c7;border-color:#0284c7;color:#fff;}
+#newApptModal #saveApptBtn:hover{background:#0369a1;border-color:#0369a1;}
+#newApptModal .closing-options{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-top:12px;}
+#newApptModal .closing-total{font-size:18px;font-weight:800;color:#0369a1;margin-top:10px;}
+@media (max-width:768px){
+  #newApptModal .service-type-grid{display:flex;flex-wrap:wrap;}
+  #newApptModal .service-type-option{min-height:0;padding:8px 12px;}
+}
     .service-type-option.installation.active{background:var(--service-install);border-color:var(--service-install);}
     .service-type-option.renovation.active{background:var(--service-renovation);border-color:var(--service-renovation);}
     .service-type-option.snow-removal.active{background:var(--service-snow);border-color:var(--service-snow);}
@@ -665,7 +687,7 @@
           <button class="filter-chip active" onclick="toggleFilter(this,'all')">All</button>
           <button class="filter-chip pool" onclick="toggleFilter(this,'Pool Service')"><i class="fas fa-swimming-pool"></i> Pool</button>
           <button class="filter-chip opening" onclick="toggleFilter(this,'Opening')"><i class="fas fa-water"></i> Opening</button>
-          <button class="filter-chip closing" onclick="toggleFilter(this,'Closing')"><i class="fas fa-lock"></i> Closing</button>
+          <button class="filter-chip closing" onclick="toggleFilter(this,'Closing')"><i class="fas fa-house-chimney"></i> Closing</button>
           <button class="filter-chip install" onclick="toggleFilter(this,'Installation')"><i class="fas fa-tools"></i> Install</button>
           <button class="filter-chip renovation" onclick="toggleFilter(this,'Renovation')"><i class="fas fa-hard-hat"></i> Reno</button>
           <button class="filter-chip snow" onclick="toggleFilter(this,'Snow Removal')"><i class="fas fa-snowflake"></i> Snow</button>
@@ -725,16 +747,38 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="editApptId" value="">
+        <div class="appt-section">
+        <div class="appt-section-label">Service</div>
         <div class="form-group">
           <label>Service Type <span class="required">*</span></label>
           <div class="service-type-grid" style="grid-template-columns:repeat(3,1fr);">
             <div class="service-type-option pool-service active" onclick="selectServiceType(this,'Pool Service')"><i class="fas fa-swimming-pool"></i><br>Pool Service</div>
             <div class="service-type-option opening" onclick="selectServiceType(this,'Opening')"><i class="fas fa-water"></i><br>Opening</div>
-            <div class="service-type-option closing" onclick="selectServiceType(this,'Closing')"><i class="fas fa-lock"></i><br>Closing</div>
+            <div class="service-type-option closing" onclick="selectServiceType(this,'Closing')"><i class="fas fa-house-chimney"></i><br>Closing</div>
             <div class="service-type-option installation" onclick="selectServiceType(this,'Installation')"><i class="fas fa-tools"></i><br>Installation</div>
             <div class="service-type-option renovation" onclick="selectServiceType(this,'Renovation')"><i class="fas fa-hard-hat"></i><br>Renovation</div>
             <div class="service-type-option snow-removal" onclick="selectServiceType(this,'Snow Removal')"><i class="fas fa-snowflake"></i><br>Snow Removal</div>
           </div>
+        </div>
+        <!-- Pool closing is $350 plus heater +$40 and spillover spa +$50. Hot tub winterization only is $250 and does not add the $350 pool price. -->
+        <div id="closingOptionsPanel" class="closing-options" style="display:none;">
+          <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:8px;">Closing options</div>
+          <p style="font-size:12px;color:#64748b;margin:0 0 10px 0;">Pool closing is $350. Heater +$40. Attached / spillover spa +$50. Hot tub winterization only is $250 and does not include the pool closing price.</p>
+          <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:14px;cursor:pointer;">
+            <input type="radio" name="closingMode" id="closingModePool" value="pool" checked onchange="updateClosingQuote()"> Pool closing — $350
+          </label>
+          <div id="closingPoolAddons" style="margin:0 0 10px 22px;">
+            <label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:14px;cursor:pointer;">
+              <input type="checkbox" id="closingHeater" onchange="updateClosingQuote()"> Heater — +$40
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+              <input type="checkbox" id="closingSpilloverSpa" onchange="updateClosingQuote()"> Attached / spillover spa — +$50
+            </label>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+            <input type="radio" name="closingMode" id="closingModeHotTub" value="hotTub" onchange="updateClosingQuote()"> Hot tub winterization only — $250
+          </label>
+          <div id="closingQuoteTotal" class="closing-total" style="margin-top:12px;font-weight:700;color:#0369a1;">Quoted total: $350.00</div>
         </div>
         <div class="form-group">
           <label>Appointment Type</label>
@@ -748,6 +792,9 @@
           <label>Custom Appointment Note <span class="required">*</span></label>
           <textarea class="form-textarea" id="apptCustomNote" placeholder="Enter custom note for this appointment type..."></textarea>
         </div>
+        </div>
+        <div class="appt-section">
+        <div class="appt-section-label">Customer</div>
         <div class="form-group">
           <label>Customer <span class="required">*</span></label>
           <div class="customer-search-wrapper" style="display:flex;gap:8px;">
@@ -755,7 +802,7 @@
               <input type="text" class="form-input" id="customerSearch" placeholder="Search existing or type new name..." autocomplete="off" oninput="searchCustomers(this.value)">
               <div class="customer-results" id="customerResults"></div>
             </div>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleCustomerSidebar()" title="Browse all customers" style="white-space:nowrap;height:44px;border-color:var(--color-primary-200);color:var(--color-primary-600);"><i class="fas fa-address-book"></i> Browse</button>
+            <button type="button" class="btn btn-secondary btn-sm btn-browse-quiet" onclick="toggleCustomerSidebar()" title="Browse all customers" style="white-space:nowrap;height:44px;"><i class="fas fa-address-book"></i> Browse</button>
           </div>
           <input type="hidden" id="selectedCustomerId" value="">
         </div>
@@ -766,12 +813,15 @@
           </div>
           <div class="form-group"><label>Service Address <span class="required">*</span></label><input type="text" class="form-input" id="apptAddress" placeholder="123 Main St, Louisville, KY"></div>
         </div>
+        </div>
         <div id="openingSelfScheduleCard" style="display:none;padding:24px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px solid #22c55e;border-radius:var(--radius-lg);margin-bottom:20px;">
           <h3 style="margin:0 0 8px 0;font-size:18px;color:#166534;"><i class="fas fa-link"></i> Optional: Send Self Schedule Link</h3>
           <p style="margin:0 0 16px 0;font-size:14px;color:#15803d;">You can schedule this Opening manually below. If you prefer, send a link so the customer can pick their own date and you can approve it from the Pending tab.</p>
           <button type="button" class="btn" style="background:linear-gradient(135deg,#16a34a,#15803d);" id="sendSelfScheduleLinkBtn" onclick="sendOpeningSelfScheduleLink()"><i class="fas fa-paper-plane"></i> Send Telegram draft</button>
           <div id="openingSelfScheduleMessage" style="margin-top:12px;font-size:13px;"></div>
         </div>
+        <div class="appt-section">
+        <div class="appt-section-label">When &amp; who</div>
         <div id="apptFormFields">
         <div class="form-row">
           <div class="form-group"><label>Date <span class="required">*</span></label><input type="date" class="form-input" id="apptDate" onchange="updateRecurringHelperText()"></div>
@@ -921,10 +971,11 @@
           </div>
         </div>
         </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('newApptModal')">Cancel</button>
-        <button class="btn btn-success" id="saveApptBtn" onclick="saveAppointment()"><i class="fas fa-check"></i> Schedule Appointment</button>
+        <button class="btn btn-primary" id="saveApptBtn" onclick="saveAppointment()"><i class="fas fa-check"></i> Save Appointment</button>
       </div>
     </div>
   </div>
@@ -1334,6 +1385,7 @@
           </div>
         </div>
 
+        <div id="checklistCategoryPhotos" style="display:none;margin:10px 0 14px 0;"></div>
         <div style="margin:10px 0 14px 0;padding:12px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;">
           <div id="checklistBeforePhotosHeading" style="font-size:12px;font-weight:700;color:#334155;margin-bottom:8px;">Before Photos</div>
           <input id="checklistBeforePhotosInput" type="file" accept="image/*" capture="environment" multiple style="display:block;width:100%;font-size:12px;">
@@ -2020,6 +2072,8 @@
     let checklistAfterPhotos = [];
     let checklistCurrentServiceConfig = null;
     let checklistWaterWarningAcknowledged = false;
+    let checklistClosingOptions = null;
+    let checklistCategoryFiles = {};
 
     const SERVICE_CHECKLIST_CONFIG = {
       'Pool Service': {
@@ -2040,15 +2094,36 @@
         includeRenovationNotes: false,
         includeCustomerSignoff: false
       },
-      'Closing': {
-        items: ['Water level lowered', 'Lines blown & plugged', 'Equipment winterized', 'Cover installed & secured', 'Cover condition noted'],
-        includeFilterPressure: false,
-        includeChemistry: false,
-        includeChemicalUsage: false,
-        includeWaterLevel: false,
-        includeRenovationNotes: false,
-        includeCustomerSignoff: false
-      },
+'Closing': {
+  // Rodney's locked pool-closing list. Heater / spillover are required only when those options were selected.
+  items: [
+    { key: 'plugs', label: 'Plugs / returns removed or secured for winter', required: true },
+    { key: 'water', label: 'Water lowered / antifreeze applied as needed for this pool', required: true },
+    { key: 'airPillows', label: 'Air pillows installed and positioned correctly', required: true },
+    { key: 'pumpFilter', label: 'Pump, filter, and plumbing winterized (lines blown / drained as applicable)', required: true },
+    { key: 'heater', label: 'Heater winterized', requiredWhen: 'heater' },
+    { key: 'spilloverSpa', label: 'Spillover / attached spa winterized', requiredWhen: 'spilloverSpa' },
+    { key: 'chemicals', label: 'Chemicals / removable equipment stored or noted for customer', required: true },
+    { key: 'site', label: 'Site cleaned; customer notes / walkthrough recorded', required: true }
+  ],
+  hotTubItems: [
+    { key: 'spaCover', label: 'Spa cover secured for winter', required: true },
+    { key: 'drainBlow', label: 'Spa drained and lines blown', required: true },
+    { key: 'equipment', label: 'Spa equipment winterized', required: true }
+  ],
+  photoCategories: [
+    { key: 'equipmentPad', label: 'Equipment pad / equipment' },
+    { key: 'waterline', label: 'Waterline / air pillows' },
+    { key: 'overview', label: 'Overall yard / pool overview' }
+  ],
+  hotTubMinPhotos: 2,
+  includeFilterPressure: false,
+  includeChemistry: false,
+  includeChemicalUsage: false,
+  includeWaterLevel: false,
+  includeRenovationNotes: false,
+  includeCustomerSignoff: false
+},
       'Installation': {
         items: ['Equipment installed per scope', 'Pressure test passed', 'Startup completed', 'Customer walkthrough done'],
         includeFilterPressure: false,
@@ -2099,7 +2174,7 @@
     };
 
     const SERVICE_CLASSES = {'Pool Service':'pool-service','Opening':'opening','Closing':'closing','Installation':'installation','Renovation':'renovation','Snow Removal':'snow-removal'};
-    const SERVICE_ICONS = {'Pool Service':'fas fa-swimming-pool','Opening':'fas fa-water','Closing':'fas fa-lock','Installation':'fas fa-tools','Renovation':'fas fa-hard-hat','Snow Removal':'fas fa-snowflake'};
+    const SERVICE_ICONS = {'Pool Service':'fas fa-swimming-pool','Opening':'fas fa-water','Closing':'fas fa-house-chimney','Installation':'fas fa-tools','Renovation':'fas fa-hard-hat','Snow Removal':'fas fa-snowflake'};
     const SERVICE_BG = {'Pool Service':'#0ea5e9','Opening':'#06b6d4','Closing':'#6366f1','Installation':'#8b5cf6','Renovation':'#f59e0b','Snow Removal':'#64748b'};
     const RECURRING_VALUES = ['weekly','biweekly','monthly','daily','yearly'];
     const STATUS_NEEDS_REASON = ['Cancelled','Rescheduled','Other'];
@@ -2569,6 +2644,10 @@
       const paymentMethod = document.getElementById('apptPaymentMethod').value;
       const amountPaid = parseFloat(document.getElementById('apptAmountPaid').value) || 0;
       if (amountPaid > 0 && paidStatus === 'Unpaid') paidStatus = 'Partially Paid';
+      if (selectedServiceType === 'Closing') {
+        const closingQuote = getClosingOptionsFromForm();
+        document.getElementById('apptCost').value = closingQuote.quotedAmount;
+      }
 
       // Collect tags
       var hasPool = document.getElementById('apptHasPool').checked;
@@ -2608,7 +2687,8 @@
         customerTags: customerTags,
         hasPool: hasPool,
         linkedInvoiceId: document.getElementById('apptLinkedInvoice').value || '',
-        linkedProjectId: document.getElementById('apptLinkedProject').value || ''
+        linkedProjectId: document.getElementById('apptLinkedProject').value || '',
+        closingOptions: selectedServiceType === 'Closing' ? getClosingOptionsFromForm() : null
       };
 
       const btn = document.getElementById('saveApptBtn');
@@ -4441,7 +4521,7 @@
     function openNewAppointment(date,time) {
       document.getElementById('editApptId').value='';
       document.getElementById('apptModalTitle').textContent='New Appointment';
-      document.getElementById('saveApptBtn').innerHTML='<i class="fas fa-check"></i> Schedule Appointment';
+      document.getElementById('saveApptBtn').innerHTML='<i class="fas fa-check"></i> Save Appointment';
       document.getElementById('customerSearch').value='';
       document.getElementById('selectedCustomerId').value='';
       document.getElementById('apptEmail').value='';
@@ -4457,6 +4537,7 @@
       document.getElementById('apptDescription').value='';
       document.getElementById('apptStatus').value='Scheduled';
       document.getElementById('apptCost').value='';
+      resetClosingOptionsForm();
       document.getElementById('apptAmountPaid').value='';
       document.getElementById('apptPaymentMethod').value='None';
       document.getElementById('apptPaidStatus').value='Unpaid';
@@ -4482,6 +4563,7 @@
       document.getElementById('apptLinkedProject').innerHTML='<option value="">No project linked</option>';
       document.getElementById('apptLinkedProject').value='';
       selectServiceType(document.querySelector('.service-type-option.pool-service'),'Pool Service');
+      resetClosingOptionsForm();
       document.getElementById('newApptModal').classList.add('active');
     }
 
@@ -4540,6 +4622,7 @@
         selectedServiceType = a.serviceType || '';
         document.querySelectorAll('.service-type-option').forEach(o => o.classList.remove('active'));
       }
+      applyClosingOptionsToForm(a.closingOptions);
       // Load customer tags from JSON if we have an email
       if (a.customerEmail) {
         google.script.run
@@ -4764,8 +4847,8 @@
         if (reason === null) return;
       }
       if (newStatus === 'Completed') {
-        reason = prompt('Completion notes (optional):', '');
-        if (reason === null) return; // user cancelled
+        openServiceChecklist(apptId);
+        return;
       }
 
       showToast('Updating status to ' + newStatus + '...', 'info');
@@ -5241,20 +5324,163 @@
         .schedulingAddPmTask(COMPANY_ID, taskPayload);
     }
 
+    function checklistEsc_(text) {
+      return String(text == null ? '' : text)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function normalizeClosingOptions(raw) {
+      var o = raw;
+      if (!o) return { mode: 'pool', heater: false, spilloverSpa: false, hotTubWinterization: false, quotedAmount: 350 };
+      if (typeof o === 'string') {
+        try { o = JSON.parse(o); } catch (e) { o = {}; }
+      }
+      var mode = (o.mode === 'hotTub' || o.hotTubWinterization) ? 'hotTub' : 'pool';
+      return {
+        mode: mode,
+        heater: !!o.heater,
+        spilloverSpa: !!o.spilloverSpa,
+        hotTubWinterization: mode === 'hotTub',
+        quotedAmount: parseFloat(o.quotedAmount) || (mode === 'hotTub' ? 250 : 350)
+      };
+    }
+
+    function closingIsHotTub(opts) {
+      return !!(opts && (opts.mode === 'hotTub' || opts.hotTubWinterization));
+    }
+
+    function renderClosingCategoryPhotos(cfg, hotTub) {
+      var wrap = document.getElementById('checklistCategoryPhotos');
+      if (!wrap) return;
+      wrap.style.display = 'block';
+      var cats = hotTub
+        ? [{ key: 'hotTub', label: 'Spa / equipment photos (at least 2)' }]
+        : ((cfg && cfg.photoCategories) || []);
+      var html = '<div style="margin:12px 0 8px;font-weight:700;font-size:13px;color:#0f172a;">Required photos</div>';
+      cats.forEach(function(cat) {
+        var files = (checklistCategoryFiles && checklistCategoryFiles[cat.key]) || [];
+        html += '<div class="form-group" style="margin-bottom:10px;">';
+        html += '<label style="font-size:12px;font-weight:600;">' + checklistEsc_(cat.label) + '</label>';
+        html += '<input type="file" accept="image/*" multiple data-category="' + checklistEsc_(cat.key) + '" onchange="onCategoryPhotoInputChange(this)" style="display:block;margin-top:4px;">';
+        html += '<div id="catPhotoList_' + checklistEsc_(cat.key) + '" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">';
+        files.forEach(function(f) {
+          html += '<span style="font-size:11px;background:#f1f5f9;padding:2px 6px;border-radius:4px;">' + checklistEsc_((f.file && f.file.name) || 'photo') + '</span>';
+        });
+        html += '</div></div>';
+      });
+      wrap.innerHTML = html;
+    }
+
+    function onCategoryPhotoInputChange(input) {
+      var key = input.getAttribute('data-category') || '';
+      if (!key) return;
+      if (!checklistCategoryFiles) checklistCategoryFiles = {};
+      var existing = checklistCategoryFiles[key] || [];
+      Array.prototype.slice.call(input.files || []).forEach(function(file) {
+        existing.push({
+          id: 'cat_' + key + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+          file: file,
+          category: key
+        });
+      });
+      checklistCategoryFiles[key] = existing;
+      input.value = '';
+      var list = document.getElementById('catPhotoList_' + key);
+      if (list) {
+        list.innerHTML = existing.map(function(f) {
+          return '<span style="font-size:11px;background:#f1f5f9;padding:2px 6px;border-radius:4px;">' + checklistEsc_((f.file && f.file.name) || 'photo') + '</span>';
+        }).join('');
+      }
+    }
+    window.onCategoryPhotoInputChange = onCategoryPhotoInputChange;
+
+    function countCategoryPhotos(key) {
+      return ((checklistCategoryFiles && checklistCategoryFiles[key]) || []).length;
+    }
+
+    function countAllChecklistPhotos() {
+      var n = (checklistBeforePhotos || []).length + (checklistAfterPhotos || []).length;
+      if (checklistCategoryFiles) {
+        Object.keys(checklistCategoryFiles).forEach(function(k) {
+          n += (checklistCategoryFiles[k] || []).length;
+        });
+      }
+      return n;
+    }
+
+    function validateClosingCompletionRequirements(serviceType) {
+      var missing = [];
+      document.querySelectorAll('.checklist-task-item').forEach(function(cb) {
+        if (cb.getAttribute('data-na') === '1') return;
+        if (cb.getAttribute('data-required') === '1' && !cb.checked) {
+          missing.push(cb.getAttribute('data-label') || 'Required item');
+        }
+      });
+      if (missing.length) {
+        return { ok: false, message: 'Check required items before completing: ' + missing[0] };
+      }
+      if (serviceType !== 'Closing') return { ok: true };
+      var opts = normalizeClosingOptions(checklistClosingOptions);
+      if (closingIsHotTub(opts)) {
+        if (countAllChecklistPhotos() < 2) {
+          return { ok: false, message: 'Add at least 2 photos before completing this hot tub winterization.' };
+        }
+        return { ok: true };
+      }
+      var need = ['equipmentPad', 'waterline', 'overview'];
+      var labels = {
+        equipmentPad: 'Equipment pad / equipment',
+        waterline: 'Waterline / air pillows',
+        overview: 'Overall yard / pool overview'
+      };
+      for (var i = 0; i < need.length; i++) {
+        if (countCategoryPhotos(need[i]) < 1) {
+          return { ok: false, message: 'Add a photo for: ' + labels[need[i]] };
+        }
+      }
+      return { ok: true };
+    }
+
     function renderDynamicChecklistFields(serviceType) {
       var cfg = getChecklistConfigForServiceType(serviceType);
       checklistCurrentServiceConfig = cfg;
       var taskWrap = document.getElementById('checklistTaskList');
       if (taskWrap) {
         var html = '';
-        (cfg.items || []).forEach(function(label) {
-          var key = checklistKeyFromLabel(label);
-          html += '<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;">'
-            + '<input type="checkbox" class="checklist-task-item" data-key="' + esc(key) + '" data-label="' + esc(label) + '">'
-            + '<span style="font-size:13px;color:#0f172a;">' + escH(label) + '</span>'
+        var closingOpts = normalizeClosingOptions(checklistClosingOptions);
+        var hotTub = serviceType === 'Closing' && closingIsHotTub(closingOpts);
+        var sourceItems = (serviceType === 'Closing' && hotTub && cfg.hotTubItems) ? cfg.hotTubItems : (cfg.items || []);
+        sourceItems.forEach(function(item) {
+          var label = (item && typeof item === 'object') ? (item.label || '') : String(item || '');
+          var key = (item && typeof item === 'object' && item.key) ? item.key : checklistKeyFromLabel(label);
+          var required = false;
+          var na = false;
+          if (item && typeof item === 'object') {
+            if (item.requiredWhen) {
+              required = !!(closingOpts && closingOpts[item.requiredWhen]);
+              na = !required;
+            } else {
+              required = !!item.required;
+            }
+          }
+          html += '<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;background:' + (na ? '#f8fafc' : '#fff') + ';">'
+            + '<input type="checkbox" class="checklist-task-item" data-key="' + esc(key) + '" data-label="' + esc(label) + '"'
+            + (required ? ' data-required="1"' : '')
+            + (na ? ' data-na="1" disabled' : '')
+            + '>'
+            + '<span style="font-size:13px;color:' + (na ? '#94a3b8' : '#0f172a') + ';">' + escH(label) + (na ? ' (N/A)' : '') + '</span>'
             + '</label>';
         });
         taskWrap.innerHTML = html;
+        if (serviceType === 'Closing') {
+          renderClosingCategoryPhotos(cfg, hotTub);
+        } else {
+          var catWrap = document.getElementById('checklistCategoryPhotos');
+          if (catWrap) {
+            catWrap.style.display = 'none';
+            catWrap.innerHTML = '';
+          }
+        }
       }
 
       var chemistryWrap = document.getElementById('checklistChemistryWrap');
@@ -5378,8 +5604,24 @@
           };
         });
       };
+      var before = mapItems(checklistBeforePhotos, 'before');
+      if (checklistCategoryFiles) {
+        Object.keys(checklistCategoryFiles).forEach(function(cat) {
+          (checklistCategoryFiles[cat] || []).forEach(function(p) {
+            var name = (p.file && p.file.name) || 'photo.jpg';
+            before.push({
+              localId: p.id,
+              section: 'before',
+              category: cat,
+              fileName: cat + '_' + name,
+              mimeType: (p.file && p.file.type) || 'image/jpeg',
+              file: p.file
+            });
+          });
+        });
+      }
       return Promise.resolve({
-        before: mapItems(checklistBeforePhotos, 'before'),
+        before: before,
         after: mapItems(checklistAfterPhotos, 'after')
       });
     }
@@ -5445,6 +5687,7 @@
               var payloadPhoto = {
                 localId: photo.localId,
                 section: item.section,
+                category: photo.category || '',
                 fileName: photo.fileName,
                 mimeType: photo.mimeType,
                 dataUrl: entry.dataUrl
@@ -5510,11 +5753,20 @@
       [checklistBeforePhotos, checklistAfterPhotos].forEach(function(list) {
         list.forEach(function(photo) { photo.uploadError = ''; });
       });
+      Object.keys(checklistCategoryFiles || {}).forEach(function(key) {
+        (checklistCategoryFiles[key] || []).forEach(function(photo) { photo.uploadError = ''; });
+      });
       all.forEach(function(f) {
         var id = String((f && f.localId) || '');
         var msg = String((f && f.error) || 'Upload failed');
         var pool = String((f && f.section) || '').toLowerCase() === 'before' ? checklistBeforePhotos : checklistAfterPhotos;
         var match = pool.find(function(p) { return p.id === id; });
+        if (!match && checklistCategoryFiles) {
+          Object.keys(checklistCategoryFiles).some(function(key) {
+            match = (checklistCategoryFiles[key] || []).find(function(p) { return p.id === id; });
+            return !!match;
+          });
+        }
         if (match) match.uploadError = msg;
       });
       renderChecklistPhotoPreview('before');
@@ -5568,6 +5820,8 @@
       var includePhotosEl = document.getElementById('checklistIncludePhotosInEmail');
       if (includePhotosEl) includePhotosEl.checked = true;
 
+      checklistClosingOptions = (a && a.closingOptions) ? a.closingOptions : null;
+      checklistCategoryFiles = {};
       renderDynamicChecklistFields(normalizedServiceType);
       onChecklistSaltReadingChange();
       resetChecklistPhotoState();
@@ -5605,12 +5859,28 @@
 
       var checklistValues = {};
       var checklistReadable = [];
+      var checklistItemsForEmail = [];
       document.querySelectorAll('.checklist-task-item').forEach(function(cb) {
         var key = cb.getAttribute('data-key') || '';
         var label = cb.getAttribute('data-label') || key;
+        var required = cb.getAttribute('data-required') === '1';
+        var na = cb.getAttribute('data-na') === '1';
         checklistValues[key] = !!cb.checked;
         if (cb.checked) checklistReadable.push(label);
+        checklistItemsForEmail.push({
+          key: key,
+          label: label,
+          checked: !!cb.checked,
+          required: required,
+          na: na
+        });
       });
+      var closingGate = validateClosingCompletionRequirements(serviceType);
+      if (closingGate && closingGate.ok === false) {
+        showToast(closingGate.message || 'Complete the required closing checklist and photos.', 'error');
+        return;
+      }
+      if (serviceType === 'Closing') includePhotosInEmail = true;
       if (checklistCurrentServiceConfig && checklistCurrentServiceConfig.includeRenovationNotes) {
         checklistValues.beforeAfterNotes = (document.getElementById('checklistBeforeAfterNotes').value || '').trim();
       }
@@ -5659,7 +5929,8 @@
         checklist: {
           serviceType: serviceType,
           items: checklistValues,
-          completedItems: checklistReadable
+          completedItems: checklistReadable,
+          itemsForEmail: checklistItemsForEmail
         },
         waterLevelData: waterLevelData,
         chemicalReadings: {
@@ -5908,12 +6179,13 @@
                           checklistData: {
                             workPerformed: payload.workPerformed,
                             issuesFound: payload.issuesFound,
-                            checklist: payload.checklist
+                            checklist: payload.checklist,
+                            checklistItemsForEmail: (payload.checklist && payload.checklist.itemsForEmail) || []
                           },
                           invoiceId: invoiceCtx.invoiceId || '',
                           serviceDate: payload.date,
-                          includeBeforeAfterPhotos: includePhotosInEmail,
-                          photoSections: includePhotosInEmail ? payload.photoSummary : null,
+                          includeBeforeAfterPhotos: includePhotosInEmail || serviceType === 'Closing',
+                          photoSections: payload.photoSummary,
                           waterLevelData: payload.waterLevelData,
                           waterHoseWarningUnconfirmed: waterNeedsShutoffConfirmation
                         });
@@ -6003,12 +6275,13 @@
                           checklistData: {
                             workPerformed: payload.workPerformed,
                             issuesFound: payload.issuesFound,
-                            checklist: payload.checklist
+                            checklist: payload.checklist,
+                            checklistItemsForEmail: (payload.checklist && payload.checklist.itemsForEmail) || []
                           },
                           invoiceId: invoiceCtx.invoiceId || '',
                           serviceDate: payload.date,
-                          includeBeforeAfterPhotos: includePhotosInEmail,
-                          photoSections: includePhotosInEmail ? payload.photoSummary : null,
+                          includeBeforeAfterPhotos: includePhotosInEmail || serviceType === 'Closing',
+                          photoSections: payload.photoSummary,
                           waterLevelData: payload.waterLevelData,
                           waterHoseWarningUnconfirmed: waterNeedsShutoffConfirmation
                         });
@@ -6239,8 +6512,91 @@
       if (card) card.style.display = (type === 'Opening' && isNew) ? 'block' : 'none';
       if (fields) fields.style.display = 'block';
       if (saveBtn) saveBtn.style.display = '';
+      syncClosingOptionsVisibility();
     }
     function closeModal(id){document.getElementById(id).classList.remove('active');}
+
+    function getClosingOptionsFromForm() {
+      var hotTubEl = document.getElementById('closingModeHotTub');
+      var hotTub = !!(hotTubEl && hotTubEl.checked);
+      var heaterEl = document.getElementById('closingHeater');
+      var spillEl = document.getElementById('closingSpilloverSpa');
+      var heater = !hotTub && !!(heaterEl && heaterEl.checked);
+      var spilloverSpa = !hotTub && !!(spillEl && spillEl.checked);
+      var quoted = hotTub ? 250 : (350 + (heater ? 40 : 0) + (spilloverSpa ? 50 : 0));
+      return {
+        mode: hotTub ? 'hotTub' : 'pool',
+        heater: heater,
+        spilloverSpa: spilloverSpa,
+        hotTubWinterization: hotTub,
+        quotedAmount: quoted
+      };
+    }
+
+    function updateClosingQuote() {
+      var opts = getClosingOptionsFromForm();
+      var addons = document.getElementById('closingPoolAddons');
+      if (addons) addons.style.display = opts.mode === 'hotTub' ? 'none' : 'block';
+      var totalEl = document.getElementById('closingQuoteTotal');
+      if (totalEl) totalEl.textContent = 'Quoted total: $' + opts.quotedAmount.toFixed(2);
+      var cost = document.getElementById('apptCost');
+      if (cost && selectedServiceType === 'Closing') cost.value = opts.quotedAmount.toFixed(2);
+      return opts;
+    }
+
+    function syncClosingOptionsVisibility() {
+      var panel = document.getElementById('closingOptionsPanel');
+      if (!panel) return;
+      var show = selectedServiceType === 'Closing';
+      panel.style.display = show ? 'block' : 'none';
+      if (show) updateClosingQuote();
+    }
+
+    function resetClosingOptionsForm() {
+      var pool = document.getElementById('closingModePool');
+      var hot = document.getElementById('closingModeHotTub');
+      var heater = document.getElementById('closingHeater');
+      var spill = document.getElementById('closingSpilloverSpa');
+      if (pool) pool.checked = true;
+      if (hot) hot.checked = false;
+      if (heater) heater.checked = false;
+      if (spill) spill.checked = false;
+      var addons = document.getElementById('closingPoolAddons');
+      if (addons) addons.style.display = 'block';
+      var totalEl = document.getElementById('closingQuoteTotal');
+      if (totalEl) totalEl.textContent = 'Quoted total: $350.00';
+      syncClosingOptionsVisibility();
+    }
+
+    function applyClosingOptionsToForm(raw) {
+      var opts = raw;
+      if (typeof opts === 'string') {
+        try { opts = JSON.parse(opts); } catch (e) { opts = null; }
+      }
+      if (!opts || typeof opts !== 'object') {
+        resetClosingOptionsForm();
+        return;
+      }
+      var hotTub = opts.mode === 'hotTub' || opts.hotTubWinterization === true;
+      var pool = document.getElementById('closingModePool');
+      var hot = document.getElementById('closingModeHotTub');
+      var heater = document.getElementById('closingHeater');
+      var spill = document.getElementById('closingSpilloverSpa');
+      if (pool) pool.checked = !hotTub;
+      if (hot) hot.checked = hotTub;
+      if (heater) heater.checked = !hotTub && !!opts.heater;
+      if (spill) spill.checked = !hotTub && !!opts.spilloverSpa;
+      var panel = document.getElementById('closingOptionsPanel');
+      if (panel) panel.style.display = selectedServiceType === 'Closing' ? 'block' : 'none';
+      updateClosingQuote();
+      var quoted = parseFloat(opts.quotedAmount);
+      if (!isNaN(quoted)) {
+        var cost = document.getElementById('apptCost');
+        if (cost) cost.value = quoted.toFixed(2);
+        var totalEl = document.getElementById('closingQuoteTotal');
+        if (totalEl) totalEl.textContent = 'Quoted total: $' + quoted.toFixed(2);
+      }
+    }
 
     var uiConfirmAction = null;
     var uiConfirmCancelAction = null;
