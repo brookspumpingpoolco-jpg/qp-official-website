@@ -897,6 +897,13 @@ function createAppointment(data) {
   ];
 
   sheet.appendRow(row);
+  try {
+    if (data.closingOptions !== undefined) {
+      writeClosingOptionsCell_(sheet, sheet.getLastRow(), data.closingOptions);
+    }
+  } catch (closeWriteErr) {
+    Logger.log('⚠️ closingOptions write: ' + closeWriteErr.toString());
+  }
 
   if (data.linkedServiceReportId && String(data.linkedServiceReportId).trim() && typeof setLinkedAppointmentIdOnServiceReport === 'function') {
     try {
@@ -916,11 +923,23 @@ function createAppointment(data) {
     sendAppointmentNotification(data, 'new');
   }
 
+  var telegramWarning = '';
+  try {
+    if (String(data.status || 'Scheduled') === 'Scheduled') {
+      var tg = maybeSendAppointmentScheduledTelegram_(data, apptId);
+      if (tg && tg.success === false) telegramWarning = tg.error || 'Telegram draft was not sent';
+    }
+  } catch (tgErr) {
+    Logger.log('⚠️ appointment telegram: ' + tgErr.toString());
+    telegramWarning = tgErr.toString();
+  }
+
   return {
     success: true,
     appointmentId: apptId,
     calendarEventId: calendarEventId,
-    message: 'Appointment created' + (calendarEventId ? ' & added to Google Calendar' : '')
+    message: 'Appointment created' + (calendarEventId ? ' & added to Google Calendar' : ''),
+    telegramWarning: telegramWarning || undefined
   };
 }
 
@@ -977,7 +996,13 @@ function updateAppointment(data) {
       if (data.duration !== undefined && cDuration >= 0) sheet.getRange(row, cDuration + 1).setValue(data.duration !== '' ? data.duration : 60);
       if (data.description !== undefined && cDescription >= 0) sheet.getRange(row, cDescription + 1).setValue(data.description || '');
       if (data.assignedTo !== undefined && cAssignedTo >= 0) sheet.getRange(row, cAssignedTo + 1).setValue(data.assignedTo || '');
-      if (data.status !== undefined && cStatus >= 0) sheet.getRange(row, cStatus + 1).setValue(data.status || 'Scheduled');
+      var prevStatus = cStatus >= 0 ? String(r[cStatus] || '') : '';
+    if (data.status !== undefined && cStatus >= 0) sheet.getRange(row, cStatus + 1).setValue(data.status || 'Scheduled');
+    try {
+      if (data.closingOptions !== undefined) writeClosingOptionsCell_(sheet, row, data.closingOptions);
+    } catch (closeWriteErr) {
+      Logger.log('⚠️ closingOptions update: ' + closeWriteErr.toString());
+    }
       if (data.estimatedCost !== undefined && cEstimatedCost >= 0) sheet.getRange(row, cEstimatedCost + 1).setValue(data.estimatedCost !== '' ? data.estimatedCost : 0);
       if (data.amountPaid !== undefined && cAmountPaid >= 0) sheet.getRange(row, cAmountPaid + 1).setValue(data.amountPaid !== '' ? data.amountPaid : (r[cAmountPaid] || 0));
       if (data.notes !== undefined && cNotes >= 0) sheet.getRange(row, cNotes + 1).setValue(data.notes || '');
@@ -1037,7 +1062,18 @@ function updateAppointment(data) {
         Logger.log('updateAppointment calendar audit append failed: ' + auditErr.toString());
       }
 
-      return { success: true, message: 'Appointment updated' };
+      var telegramWarning = '';
+  try {
+    if (String(data.status || '') === 'Scheduled' && typeof prevStatus !== 'undefined' && String(prevStatus) !== 'Scheduled') {
+      var tg = maybeSendAppointmentScheduledTelegram_(data, data.id);
+      if (tg && tg.success === false) telegramWarning = tg.error || 'Telegram draft was not sent';
+    }
+  } catch (tgErr) {
+    Logger.log('⚠️ appointment telegram: ' + tgErr.toString());
+    telegramWarning = tgErr.toString();
+  }
+
+  return { success: true, message: 'Appointment updated', telegramWarning: telegramWarning || undefined };
     }
   }
 
@@ -1220,7 +1256,14 @@ function getScheduledAppointments(companyId) {
         appt.stripePaymentReceived = hasStripePayment;
         appt.needsStripePayment = !!(linkedInvoiceId && !hasStripePayment && !statusShowsPaid && !hasAmountPaid);
         
-        appointments.push(appt);
+            try {
+      appt.closingOptions = (typeof headers !== 'undefined' && headers)
+        ? parseClosingOptionsCell_(row[headers.indexOf('ClosingOptions')])
+        : null;
+    } catch (closeParseErr) {
+      appt.closingOptions = null;
+    }
+    appointments.push(appt);
       }
     }
 
@@ -1299,7 +1342,8 @@ function getAppointmentsHeaders() {
     'PreferredServiceDay',
     'PaidStatus', 'ArrivalWindowStart', 'ArrivalWindowEnd',
     'AutopayStatus', 'StripeCustomerID', 'StripePaymentMethodID',
-    'LinkedServiceReportID'
+    'LinkedServiceReportID',
+    'ClosingOptions'
   ];
 }
 
@@ -1696,7 +1740,14 @@ function getCustomerAppointments(customerEmail) {
           };
         }
         
-        appointments.push(appt);
+            try {
+      appt.closingOptions = (typeof headers !== 'undefined' && headers)
+        ? parseClosingOptionsCell_(row[headers.indexOf('ClosingOptions')])
+        : null;
+    } catch (closeParseErr) {
+      appt.closingOptions = null;
+    }
+    appointments.push(appt);
       }
     }
     
@@ -4139,6 +4190,75 @@ function sendBrooksTelegramDraftWithTracking_(appointmentId, batchToken, draftTe
   }
   logNotification(appointmentId, recipient, notificationType, 'Failed', telegramResult.error || 'Telegram send failed');
   return { success: false, error: telegramResult.error || 'Telegram send failed' };
+}
+
+function writeClosingOptionsCell_(sheet, rowNumber, closingOptions) {
+  if (!sheet || !rowNumber) return;
+  var headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0];
+  var col = headers.indexOf('ClosingOptions');
+  if (col < 0) {
+    var last = sheet.getLastColumn();
+    sheet.getRange(1, last + 1).setValue('ClosingOptions');
+    col = last;
+  }
+  var value = '';
+  if (closingOptions && typeof closingOptions === 'object') {
+    value = JSON.stringify(closingOptions);
+  } else if (typeof closingOptions === 'string' && String(closingOptions).trim()) {
+    value = closingOptions;
+  }
+  sheet.getRange(rowNumber, col + 1).setValue(value);
+}
+
+function parseClosingOptionsCell_(raw) {
+  if (raw === null || raw === undefined || raw === '') return null;
+  if (typeof raw === 'object') return raw;
+  try {
+    return JSON.parse(String(raw));
+  } catch (e) {
+    return null;
+  }
+}
+
+function maybeSendAppointmentScheduledTelegram_(data, appointmentId) {
+  var status = String((data && data.status) || 'Scheduled').trim();
+  if (status !== 'Scheduled') return { success: true, skipped: true };
+  var opts = data && data.closingOptions;
+  if (typeof opts === 'string') opts = parseClosingOptionsCell_(opts);
+  var when = [data.date || '', data.time || ''].filter(Boolean).join(' ');
+  var facts = [
+    { label: 'Customer', value: data.customerName || '' },
+    { label: 'Phone', value: data.customerPhone || '' },
+    { label: 'Address', value: data.address || '' },
+    { label: 'When', value: when },
+    { label: 'Service', value: data.serviceType || '' },
+    { label: 'Crew', value: data.assignedTo || '' }
+  ];
+  if (String(data.serviceType || '') === 'Closing' && opts) {
+    var hotTub = !!(opts.hotTubWinterization || opts.mode === 'hotTub');
+    var quote = opts.quotedAmount != null ? opts.quotedAmount : '';
+    if (hotTub) {
+      facts.push({ label: 'Closing', value: 'Hot tub winterization' + (quote !== '' ? ' · $' + quote : '') });
+    } else {
+      var bits = ['Pool closing'];
+      if (opts.heater) bits.push('heater');
+      if (opts.spilloverSpa) bits.push('spillover/spa');
+      facts.push({ label: 'Closing', value: bits.join(', ') + (quote !== '' ? ' · $' + quote : '') });
+    }
+  }
+  var draftText = 'Scheduled: ' + (data.serviceType || 'Appointment') +
+    (data.customerName ? ' for ' + data.customerName : '') +
+    (when ? ' on ' + when : '') +
+    (data.address ? ' at ' + data.address : '') + '.';
+  return sendBrooksTelegramDraft_(
+    appointmentId,
+    'appointment_scheduled',
+    'Appointment scheduled',
+    facts,
+    draftText,
+    'Open schedule',
+    ''
+  );
 }
 
 function sendBrooksTelegramDraft_(appointmentId, notificationType, title, facts, draftText, linkLabel, linkUrl) {
@@ -12543,6 +12663,61 @@ function buildPhotoLinksText_(photoSections) {
   }
 }
 
+function buildChecklistEmailSection_(checklistData) {
+  if (!checklistData) return '';
+  var items = checklistData.checklistItemsForEmail
+    || (checklistData.checklist && checklistData.checklist.itemsForEmail)
+    || [];
+  if (!items.length && checklistData.checklist && checklistData.checklist.items) {
+    var raw = checklistData.checklist.items;
+    if (Array.isArray(raw)) items = raw;
+    else if (raw && typeof raw === 'object') {
+      items = Object.keys(raw).map(function(k) {
+        return { key: k, label: k, checked: !!raw[k], required: false, na: false };
+      });
+    }
+  }
+  if (!items || !items.length) return '';
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  var rows = items.map(function(item) {
+    var label = esc(item.label || item.key || '');
+    var state = item.na ? 'N/A' : (item.checked ? 'Done' : (item.required ? 'Not checked' : '—'));
+    return '<tr><td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;">' + label + '</td><td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;">' + state + '</td></tr>';
+  }).join('');
+  return '<div style="margin:16px 0;"><h3 style="margin:0 0 8px 0;font-size:16px;">Completion checklist</h3><table style="width:100%;border-collapse:collapse;font-size:14px;">' + rows + '</table></div>';
+}
+
+function appendCompletionPhotoBlobs_(mailOptions, photoSections) {
+  if (!mailOptions || !photoSections) return;
+  var groups = [];
+  ['before', 'after'].forEach(function(k) {
+    if (photoSections[k] && photoSections[k].length) groups = groups.concat(photoSections[k]);
+  });
+  if (photoSections.photos && photoSections.photos.length) groups = groups.concat(photoSections.photos);
+  var attached = 0;
+  var maxPhotos = 8;
+  groups.forEach(function(photo) {
+    if (attached >= maxPhotos || !photo) return;
+    try {
+      var fileId = photo.fileId || '';
+      if (!fileId) {
+        var url = photo.url || photo.webViewLink || photo.publicUrl || photo.downloadUrl || '';
+        if (url && typeof driveFileIdFromUrl_ === 'function') fileId = driveFileIdFromUrl_(url);
+      }
+      if (!fileId) return;
+      var blob = DriveApp.getFileById(fileId).getBlob();
+      blob.setName(photo.fileName || photo.name || ('photo_' + (attached + 1)));
+      if (!mailOptions.attachments) mailOptions.attachments = [];
+      mailOptions.attachments.push(blob);
+      attached++;
+    } catch (photoErr) {
+      Logger.log('⚠️ completion photo attach: ' + photoErr.toString());
+    }
+  });
+}
+
 function sendServiceReportEmailForAppointment(appointmentId, payload) {
   try {
     const result = getScheduledAppointments();
@@ -12595,7 +12770,7 @@ function sendServiceReportEmailForAppointment(appointmentId, payload) {
 
       // If invoice was requested, enforce PDF availability for attachment.
       if (!invoiceSummary || !invoiceSummary.pdfUrl) {
-        return { success: false, error: 'Invoice PDF could not be generated for attachment' };
+        Logger.log('⚠️ Invoice PDF could not be generated for attachment; sending completion email without it');
       }
     }
 
@@ -12623,7 +12798,7 @@ function sendServiceReportEmailForAppointment(appointmentId, payload) {
 
     let html = '';
     if (isQuoteCompletion) {
-      html = buildQuoteCompletionEmail_(emailData, reportId, includeBeforeAfterPhotos ? photoSections : {});
+      html = buildQuoteCompletionEmail_(emailData, reportId, (includeBeforeAfterPhotos || (photoSections && (photoSections.before || photoSections.after))) ? photoSections : {});
     } else {
       html = buildServiceReportEmail_(emailData, reportId);
       if (includeBeforeAfterPhotos) {
@@ -12688,6 +12863,11 @@ function sendServiceReportEmailForAppointment(appointmentId, payload) {
       Logger.log('sendServiceReportEmailForAppointment review block: ' + reviewErr);
     }
 
+    const checklistSectionHtml = buildChecklistEmailSection_(checklistData);
+    if (checklistSectionHtml) {
+      html = html.replace(/<\/div><\/div>\s*$/, checklistSectionHtml + '</div></div>');
+    }
+
     const mailOptions = {
       to: customerEmail,
       subject: isQuoteCompletion ? 'Site Visit Completed - A Quality Pool Company' : 'Service Report - A Quality Pool Company',
@@ -12702,11 +12882,17 @@ function sendServiceReportEmailForAppointment(appointmentId, payload) {
           blob.setName('Invoice_' + (invoiceSummary.invoiceNumber || invoiceId) + '.pdf');
           mailOptions.attachments = [blob];
         } else if (invoiceId) {
-          return { success: false, error: 'Invoice PDF URL found, but file ID could not be parsed' };
+          Logger.log('⚠️ Invoice PDF URL found, but file ID could not be parsed');
         }
       } catch (attachErr) {
-        return { success: false, error: 'Invoice PDF attachment failed: ' + attachErr.toString() };
+        Logger.log('⚠️ Invoice PDF attachment failed: ' + attachErr.toString());
       }
+    }
+
+    try {
+      appendCompletionPhotoBlobs_(mailOptions, photoSections);
+    } catch (photoAttachErr) {
+      Logger.log('⚠️ completion photos: ' + photoAttachErr.toString());
     }
 
     MailApp.sendEmail(mailOptions);
