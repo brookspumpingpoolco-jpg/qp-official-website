@@ -2851,7 +2851,7 @@
 
       let html = '';
       matches.forEach(c => {
-        html += '<div class="customer-result-item" onclick="selectCustomer(\'' + esc(c.id) + '\',\'' + esc(c.name) + '\',\'' + esc(c.email) + '\',\'' + esc(c.phone) + '\',\'' + esc(c.address) + '\')"><div class="name">' + escH(c.name) + '</div><div class="details">' + escH(c.email||'') + (c.phone ? ' • '+escH(c.phone) : '') + (c.address ? ' • '+escH(c.address) : '') + '</div></div>';
+        html += '<div class="customer-result-item" onclick="selectCustomer(\'' + esc(c.id) + '\',\'' + esc(c.name || c.email) + '\',\'' + esc(c.email) + '\',\'' + esc(c.phone) + '\',\'' + esc(c.address) + '\')"><div class="name">' + escH(c.name || c.email) + '</div><div class="details">' + escH(c.email||'') + (c.phone ? ' • '+escH(c.phone) : '') + (c.address ? ' • '+escH(c.address) : '') + '</div></div>';
       });
       html += '<div class="customer-result-item" onclick="setNewCustomer()" style="background:#f0fdf4;"><div class="name"><i class="fas fa-plus-circle" style="color:var(--color-success);"></i> Add "<strong>' + escH(query) + '</strong>" as new customer <span class="new-customer-tag">NEW</span></div></div>';
       resultsDiv.innerHTML = html;
@@ -8793,7 +8793,7 @@
       var matches=(customers||[]).filter(function(c){ return (c.name||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.phone||'').includes(q); }).slice(0,7);
       var html='';
       matches.forEach(function(c){
-        html+='<div class="customer-result-item" onclick="selectDropInCustomer(\''+esc(c.id)+'\',\''+esc(c.name)+'\',\''+esc(c.email)+'\',\''+esc(c.phone)+'\',\''+esc(c.address)+'\')"><div class="name">'+escH(c.name)+'</div><div class="details">'+escH(c.email||'')+(c.phone?' • '+escH(c.phone):'')+(c.address?' • '+escH(c.address):'')+'</div></div>';
+        html+='<div class="customer-result-item" onclick="selectDropInCustomer(\''+esc(c.id)+'\',\''+esc(c.name || c.email)+'\',\''+esc(c.email)+'\',\''+esc(c.phone)+'\',\''+esc(c.address)+'\')"><div class="name">'+escH(c.name || c.email)+'</div><div class="details">'+escH(c.email||'')+(c.phone?' • '+escH(c.phone):'')+(c.address?' • '+escH(c.address):'')+'</div></div>';
       });
       res.innerHTML=html; res.classList.add('show');
     }
