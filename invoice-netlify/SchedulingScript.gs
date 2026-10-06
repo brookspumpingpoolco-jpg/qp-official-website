@@ -1434,6 +1434,23 @@ function getCustomersHeaders() {
 }
 
 /**
+ * Resolve a Customers column from the header row.
+ * Headers are lowercased and stripped to letters only ("ZIP Code" -> "zipcode").
+ * Falls back to the hard-coded CUST_COL index when no alias matches.
+ */
+function getCustColIndex(headers, aliases, fallback) {
+  var normalized = [];
+  for (var i = 0; i < headers.length; i++) {
+    normalized.push(String(headers[i] || '').toLowerCase().replace(/[^a-z]/g, ''));
+  }
+  for (var a = 0; a < aliases.length; a++) {
+    var found = normalized.indexOf(aliases[a]);
+    if (found !== -1) return found;
+  }
+  return fallback;
+}
+
+/**
  * Get all customers for a company
  */
 function getCustomers(companyId) {
@@ -1445,29 +1462,49 @@ function getCustomers(companyId) {
     const values = sheet.getDataRange().getValues();
     if (values.length < 2) return { success: true, customers: [] };
     
+    const headers = values[0];
+    // Live sheet has no Customer ID column. -1 means "header missing".
+    const idCol = getCustColIndex(headers, ['customerid'], -1);
+    const col = {
+      company: getCustColIndex(headers, ['companyid'], CUST_COL.COMPANY),
+      name: getCustColIndex(headers, ['name', 'customername', 'fullname'], CUST_COL.NAME),
+      email: getCustColIndex(headers, ['email', 'customeremail', 'emailaddress'], CUST_COL.EMAIL),
+      phone: getCustColIndex(headers, ['phone', 'customerphone', 'phonenumber'], CUST_COL.PHONE),
+      address: getCustColIndex(headers, ['address', 'streetaddress'], CUST_COL.ADDRESS),
+      city: getCustColIndex(headers, ['city'], CUST_COL.CITY),
+      state: getCustColIndex(headers, ['state'], CUST_COL.STATE),
+      zip: getCustColIndex(headers, ['zip', 'zipcode', 'postalcode'], CUST_COL.ZIP),
+      notes: getCustColIndex(headers, ['notes'], CUST_COL.NOTES),
+      created: getCustColIndex(headers, ['createddate', 'createdat'], CUST_COL.CREATED),
+      updated: getCustColIndex(headers, ['lastupdated', 'updatedat'], CUST_COL.UPDATED)
+    };
+    
     const targetCompanyId = companyId || DEFAULT_COMPANY_ID;
     const customers = [];
     
     for (let i = 1; i < values.length; i++) {
       const row = values[i];
-      const rowCompanyId = String(row[CUST_COL.COMPANY] || '').trim();
+      const rowCompanyId = String(row[col.company] || '').trim();
       
       // Filter by company ID
       if (rowCompanyId !== targetCompanyId) continue;
       
+      var email = String(row[col.email] || '');
+      var customerId = idCol === -1 ? email : String(row[idCol] || '');
+      
       customers.push({
-        id: String(row[CUST_COL.ID] || ''),
+        id: customerId,
         companyId: rowCompanyId,
-        name: String(row[CUST_COL.NAME] || ''),
-        email: String(row[CUST_COL.EMAIL] || ''),
-        phone: String(row[CUST_COL.PHONE] || ''),
-        address: String(row[CUST_COL.ADDRESS] || ''),
-        city: String(row[CUST_COL.CITY] || ''),
-        state: String(row[CUST_COL.STATE] || ''),
-        zip: String(row[CUST_COL.ZIP] || ''),
-        notes: String(row[CUST_COL.NOTES] || ''),
-        createdDate: String(row[CUST_COL.CREATED] || ''),
-        lastUpdated: String(row[CUST_COL.UPDATED] || '')
+        name: String(row[col.name] || ''),
+        email: email,
+        phone: String(row[col.phone] || ''),
+        address: String(row[col.address] || ''),
+        city: String(row[col.city] || ''),
+        state: String(row[col.state] || ''),
+        zip: String(row[col.zip] || ''),
+        notes: String(row[col.notes] || ''),
+        createdDate: String(row[col.created] || ''),
+        lastUpdated: String(row[col.updated] || '')
       });
     }
     
