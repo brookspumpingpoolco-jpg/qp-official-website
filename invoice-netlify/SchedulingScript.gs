@@ -1474,11 +1474,6 @@ function getCustCols_(headers) {
   };
 }
 
-/** First "Custom Data JSON" header. Fallback 12 matches the previous Column M write. */
-function getCustCustomJsonCol_(headers) {
-  return getCustColIndex(headers, ['customdatajson'], 12);
-}
-
 /**
  * Build a Customers row padded to lastCol, writing each field at its header index.
  * Customer ID is written only when that header exists.
@@ -3189,7 +3184,7 @@ function logCashPayment(data) {
 }
 
 /**
- * Update the Customer JSON data in the first Custom Data JSON column with spending info
+ * Update the Customer JSON data in Column M (index 12) with spending info
  * Tracks: totalSpent, paymentCount, lastPaymentDate, services
  */
 function updateCustomerSpending(email, amount, serviceType, paymentDate, paymentMethod) {
@@ -3202,7 +3197,7 @@ function updateCustomerSpending(email, amount, serviceType, paymentDate, payment
 
     const data = sheet.getDataRange().getValues();
     const col = getCustCols_(data[0] || []);
-    const jsonCol = getCustCustomJsonCol_(data[0] || []);
+    const jsonCol = 12; // Column M (0-indexed) — Service Data JSON
 
     for (let i = 1; i < data.length; i++) {
       const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
@@ -3210,7 +3205,7 @@ function updateCustomerSpending(email, amount, serviceType, paymentDate, payment
         // Read existing JSON
         let spendingData = {};
         try {
-          const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
+          const existing = data[i][jsonCol];
           if (existing && existing !== '{}' && typeof existing === 'string') {
             spendingData = JSON.parse(existing);
           }
@@ -3252,7 +3247,6 @@ function updateCustomerSpending(email, amount, serviceType, paymentDate, payment
         }
 
         // Write back
-        if (jsonCol < 0) return { success: false, error: 'Custom Data JSON column not found' };
         sheet.getRange(i + 1, jsonCol + 1).setValue(JSON.stringify(spendingData));
         return { success: true, spendingData: spendingData };
       }
@@ -3502,7 +3496,7 @@ function sendAppointmentPaymentReceipt_(opts) {
 }
 
 // ===========================================================================
-// CUSTOMER TAGS (stored in the first Custom Data JSON column)
+// CUSTOMER TAGS (stored in JSON Column M = index 12)
 // ===========================================================================
 
 /**
@@ -3520,14 +3514,14 @@ function updateCustomerTags(email, newTags) {
 
     const data = sheet.getDataRange().getValues();
     const col = getCustCols_(data[0] || []);
-    const jsonCol = getCustCustomJsonCol_(data[0] || []);
+    const jsonCol = 12; // Column M (0-indexed) — Service Data JSON
 
     for (let i = 1; i < data.length; i++) {
       const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
       if (rowEmail === email.toLowerCase().trim()) {
         let jsonData = {};
         try {
-          const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
+          const existing = data[i][jsonCol];
           if (existing && existing !== '{}' && typeof existing === 'string') {
             jsonData = JSON.parse(existing);
           }
@@ -3542,7 +3536,6 @@ function updateCustomerTags(email, newTags) {
           }
         });
 
-        if (jsonCol < 0) return { success: false, error: 'Custom Data JSON column not found' };
         sheet.getRange(i + 1, jsonCol + 1).setValue(JSON.stringify(jsonData));
         return { success: true, tags: jsonData.tags };
       }
@@ -3568,14 +3561,14 @@ function getCustomerTags(email) {
 
     const data = sheet.getDataRange().getValues();
     const col = getCustCols_(data[0] || []);
-    const jsonCol = getCustCustomJsonCol_(data[0] || []);
+    const jsonCol = 12; // Column M (0-indexed) — Service Data JSON
 
     for (let i = 1; i < data.length; i++) {
       const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
       if (rowEmail === email.toLowerCase().trim()) {
         let jsonData = {};
         try {
-          const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
+          const existing = data[i][jsonCol];
           if (existing && existing !== '{}' && typeof existing === 'string') {
             jsonData = JSON.parse(existing);
           }
@@ -3600,7 +3593,7 @@ function getAllCustomerTags() {
 
     const data = sheet.getDataRange().getValues();
     const col = getCustCols_(data[0] || []);
-    const jsonCol = getCustCustomJsonCol_(data[0] || []);
+    const jsonCol = 12; // Column M (0-indexed) — Service Data JSON
     const tagsMap = {};
 
     for (let i = 1; i < data.length; i++) {
@@ -3609,7 +3602,7 @@ function getAllCustomerTags() {
 
       let jsonData = {};
       try {
-        const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
+        const existing = data[i][jsonCol];
         if (existing && existing !== '{}' && typeof existing === 'string') {
           jsonData = JSON.parse(existing);
         }

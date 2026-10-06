@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const src = fs.readFileSync(path.join(__dirname, 'SchedulingScript.gs'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '..', 'invoice-netlify', 'SchedulingScript.gs'), 'utf8');
 
 function extractFunction(name) {
   const needle = 'function ' + name + '(';
@@ -33,17 +33,24 @@ const code = [
   extractFunction('getCustomersHeaders'),
   extractFunction('getCustColIndex'),
   extractFunction('getCustCols_'),
-  extractFunction('getCustCustomJsonCol_'),
   extractFunction('buildCustomerRow_')
 ].join('\n\n');
 
 const api = new Function(
-  code + '\nreturn { getCustCols_: getCustCols_, getCustCustomJsonCol_: getCustCustomJsonCol_, buildCustomerRow_: buildCustomerRow_, getCustomersHeaders: getCustomersHeaders, CUST_COL: CUST_COL };'
+  code + '\nreturn { getCustCols_: getCustCols_, buildCustomerRow_: buildCustomerRow_, getCustomersHeaders: getCustomersHeaders, CUST_COL: CUST_COL };'
 )();
 
 function assert(cond, msg) {
   if (!cond) throw new Error(msg);
 }
+
+assert(src.indexOf('function getCustCustomJsonCol_') === -1, 'getCustCustomJsonCol_ must stay deleted so tags stay on column 12');
+
+['updateCustomerSpending', 'updateCustomerTags', 'getCustomerTags', 'getAllCustomerTags'].forEach(function(name) {
+  const body = extractFunction(name);
+  assert(body.indexOf('const jsonCol = 12;') !== -1, name + ' must keep jsonCol at index 12 (Service Data JSON)');
+  assert(body.indexOf('getCustCustomJsonCol_') === -1, name + ' must not call getCustCustomJsonCol_');
+});
 
 const LIVE = [
   'Company ID', 'Name', 'Email', 'Phone', 'Address', 'City', 'State', 'Zip Code',
@@ -57,7 +64,6 @@ assert(liveCol.name === 1, 'live name column expected 1, got ' + liveCol.name);
 assert(liveCol.id === -1, 'live id column expected -1, got ' + liveCol.id);
 assert(liveCol.company === 0, 'live company column expected 0, got ' + liveCol.company);
 assert(liveCol.zip === 7, 'live zip column expected 7, got ' + liveCol.zip);
-assert(api.getCustCustomJsonCol_(LIVE) === 13, 'live custom json column expected 13, got ' + api.getCustCustomJsonCol_(LIVE));
 
 const built = api.buildCustomerRow_(LIVE, 18, {
   companyId: 'CMP',
@@ -100,7 +106,6 @@ assert(legacyBuilt.id === 'CUST-1', 'legacy id return expected CUST-1, got ' + l
 const emptyCol = api.getCustCols_([]);
 assert(emptyCol.id === -1, 'empty headers id expected -1, got ' + emptyCol.id);
 assert(emptyCol.email === api.CUST_COL.EMAIL, 'empty headers email expected CUST_COL.EMAIL (' + api.CUST_COL.EMAIL + '), got ' + emptyCol.email);
-assert(api.getCustCustomJsonCol_([]) === 12, 'empty custom json fallback expected 12, got ' + api.getCustCustomJsonCol_([]));
 
 const padded = api.buildCustomerRow_(LIVE, 20, { name: 'Ada', email: 'a@b.com' });
 assert(padded.row.length === 20, 'padded row length expected 20, got ' + padded.row.length);
