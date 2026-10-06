@@ -1361,29 +1361,36 @@ function createOrFindCustomer(data) {
 
   const values = sheet.getDataRange().getValues();
   const companyId = data.companyId || DEFAULT_COMPANY_ID;
+  const headers = (values.length > 0 && values[0] && values[0].length && String(values[0][0] || '').trim())
+    ? values[0]
+    : getCustomersHeaders();
+  const col = getCustCols_(headers);
+  const emailIn = String(data.email || '').trim();
 
   // Try to find existing customer by email or name+phone within same company
   for (let i = 1; i < values.length; i++) {
-    const rowCompany = (values[i][CUST_COL.COMPANY] || '').toString();
-    const rowEmail = (values[i][CUST_COL.EMAIL] || '').toString().toLowerCase().trim();
-    const rowName = (values[i][CUST_COL.NAME] || '').toString();
-    const rowPhone = (values[i][CUST_COL.PHONE] || '').toString();
+    const rowCompany = (col.company >= 0 ? values[i][col.company] : '').toString();
+    const rowEmail = (col.email >= 0 ? values[i][col.email] : '').toString().toLowerCase().trim();
+    const rowName = (col.name >= 0 ? values[i][col.name] : '').toString();
+    const rowPhone = (col.phone >= 0 ? values[i][col.phone] : '').toString();
 
     if (rowCompany === companyId) {
       if (
-        (data.email && rowEmail === data.email.toLowerCase().trim()) ||
+        (emailIn && rowEmail === emailIn.toLowerCase()) ||
         (rowName === data.name && rowPhone === data.phone)
       ) {
         // Update address if missing
-        if (data.address && !values[i][CUST_COL.ADDRESS]) {
-          sheet.getRange(i + 1, CUST_COL.ADDRESS + 1).setValue(data.address);
+        if (data.address && col.address >= 0 && !values[i][col.address]) {
+          sheet.getRange(i + 1, col.address + 1).setValue(data.address);
         }
-        return (values[i][CUST_COL.ID] || '').toString();
+        if (col.id === -1) return emailIn || rowEmail;
+        var existingId = String(values[i][col.id] || '');
+        return existingId || emailIn || rowEmail;
       }
     }
   }
 
-  // Create new customer matching the sheet layout
+  // Create new customer matching the live header layout
   const custId = 'CUST-' + new Date().getFullYear() + '-' + String(sheet.getLastRow()).padStart(4, '0');
   const now = new Date().toISOString();
 
@@ -1401,29 +1408,25 @@ function createOrFindCustomer(data) {
     }
   }
 
-  const newRow = [
-    companyId,        // Col 0 - Company ID
-    custId,           // Col 1 - Customer ID
-    data.name || '',  // Col 2 - Name
-    data.email || '', // Col 3 - Email
-    data.phone || '', // Col 4 - Phone
-    addr,             // Col 5 - Address
-    city,             // Col 6 - City
-    state,            // Col 7 - State
-    zip,              // Col 8 - ZIP
-    '',               // Col 9 - Notes
-    now               // Col 10 - Created Date
-  ];
+  const lastCol = Math.max(sheet.getLastColumn(), headers.length);
+  const built = buildCustomerRow_(headers, lastCol, {
+    companyId: companyId,
+    custId: custId,
+    name: data.name || '',
+    email: emailIn,
+    phone: data.phone || '',
+    address: addr,
+    city: city,
+    state: state,
+    zip: zip,
+    notes: '',
+    created: now,
+    updated: ''
+  });
 
-  // Pad with empty values for any additional columns the sheet might have
-  const headers = getCustomersHeaders();
-  while (newRow.length < headers.length) {
-    newRow.push('');
-  }
-
-  sheet.appendRow(newRow);
+  sheet.appendRow(built.row);
   Logger.log('✅ Created customer: ' + data.email);
-  return custId;
+  return built.id;
 }
 
 function getCustomersHeaders() {
@@ -1451,6 +1454,64 @@ function getCustColIndex(headers, aliases, fallback) {
 }
 
 /**
+ * Map Customers sheet columns from the live header row.
+ * id is -1 when the sheet has no Customer ID header (callers use email as the id).
+ */
+function getCustCols_(headers) {
+  return {
+    id: getCustColIndex(headers, ['customerid'], -1),
+    company: getCustColIndex(headers, ['companyid'], CUST_COL.COMPANY),
+    name: getCustColIndex(headers, ['name', 'customername', 'fullname'], CUST_COL.NAME),
+    email: getCustColIndex(headers, ['email', 'customeremail', 'emailaddress'], CUST_COL.EMAIL),
+    phone: getCustColIndex(headers, ['phone', 'customerphone', 'phonenumber'], CUST_COL.PHONE),
+    address: getCustColIndex(headers, ['address', 'streetaddress'], CUST_COL.ADDRESS),
+    city: getCustColIndex(headers, ['city'], CUST_COL.CITY),
+    state: getCustColIndex(headers, ['state'], CUST_COL.STATE),
+    zip: getCustColIndex(headers, ['zip', 'zipcode', 'postalcode'], CUST_COL.ZIP),
+    notes: getCustColIndex(headers, ['notes'], CUST_COL.NOTES),
+    created: getCustColIndex(headers, ['createddate', 'createdat'], CUST_COL.CREATED),
+    updated: getCustColIndex(headers, ['lastupdated', 'updatedat'], CUST_COL.UPDATED)
+  };
+}
+
+/** First "Custom Data JSON" header. Fallback 12 matches the previous Column M write. */
+function getCustCustomJsonCol_(headers) {
+  return getCustColIndex(headers, ['customdatajson'], 12);
+}
+
+/**
+ * Build a Customers row padded to lastCol, writing each field at its header index.
+ * Customer ID is written only when that header exists.
+ */
+function buildCustomerRow_(headers, lastCol, fields) {
+  var col = getCustCols_(headers);
+  var width = Math.max(lastCol || 0, (headers && headers.length) || 0, 0);
+  var row = [];
+  while (row.length < width) row.push('');
+  function set(idx, val) {
+    if (idx >= 0 && idx < row.length) row[idx] = val;
+  }
+  fields = fields || {};
+  set(col.company, fields.companyId || '');
+  if (col.id !== -1) set(col.id, fields.custId || '');
+  set(col.name, fields.name || '');
+  set(col.email, fields.email || '');
+  set(col.phone, fields.phone || '');
+  set(col.address, fields.address || '');
+  set(col.city, fields.city || '');
+  set(col.state, fields.state || '');
+  set(col.zip, fields.zip || '');
+  set(col.notes, fields.notes || '');
+  set(col.created, fields.created || '');
+  set(col.updated, fields.updated || '');
+  return {
+    row: row,
+    col: col,
+    id: col.id !== -1 ? (fields.custId || '') : (fields.email || '')
+  };
+}
+
+/**
  * Get all customers for a company
  */
 function getCustomers(companyId) {
@@ -1463,21 +1524,7 @@ function getCustomers(companyId) {
     if (values.length < 2) return { success: true, customers: [] };
     
     const headers = values[0];
-    // Live sheet has no Customer ID column. -1 means "header missing".
-    const idCol = getCustColIndex(headers, ['customerid'], -1);
-    const col = {
-      company: getCustColIndex(headers, ['companyid'], CUST_COL.COMPANY),
-      name: getCustColIndex(headers, ['name', 'customername', 'fullname'], CUST_COL.NAME),
-      email: getCustColIndex(headers, ['email', 'customeremail', 'emailaddress'], CUST_COL.EMAIL),
-      phone: getCustColIndex(headers, ['phone', 'customerphone', 'phonenumber'], CUST_COL.PHONE),
-      address: getCustColIndex(headers, ['address', 'streetaddress'], CUST_COL.ADDRESS),
-      city: getCustColIndex(headers, ['city'], CUST_COL.CITY),
-      state: getCustColIndex(headers, ['state'], CUST_COL.STATE),
-      zip: getCustColIndex(headers, ['zip', 'zipcode', 'postalcode'], CUST_COL.ZIP),
-      notes: getCustColIndex(headers, ['notes'], CUST_COL.NOTES),
-      created: getCustColIndex(headers, ['createddate', 'createdat'], CUST_COL.CREATED),
-      updated: getCustColIndex(headers, ['lastupdated', 'updatedat'], CUST_COL.UPDATED)
-    };
+    const col = getCustCols_(headers);
     
     const targetCompanyId = companyId || DEFAULT_COMPANY_ID;
     const customers = [];
@@ -1490,7 +1537,7 @@ function getCustomers(companyId) {
       if (rowCompanyId !== targetCompanyId) continue;
       
       var email = String(row[col.email] || '');
-      var customerId = idCol === -1 ? email : String(row[idCol] || '');
+      var customerId = col.id === -1 ? email : (String(row[col.id] || '') || email);
       
       customers.push({
         id: customerId,
@@ -1527,18 +1574,19 @@ function searchCustomersByCompanyId(companyId, query) {
     const targetCompanyId = companyId || DEFAULT_COMPANY_ID;
     const q = String(query || '').toLowerCase().trim();
     const suggestions = [];
+    const col = getCustCols_(values[0] || []);
     
     for (let i = 1; i < values.length && suggestions.length < 20; i++) {
       const row = values[i];
-      const rowCompanyId = String(row[CUST_COL.COMPANY] || '').trim();
+      const rowCompanyId = String(col.company >= 0 ? row[col.company] : '').trim();
       
       // Filter by company ID
       if (rowCompanyId !== targetCompanyId) continue;
       
-      const name = String(row[CUST_COL.NAME] || '').trim();
-      const email = String(row[CUST_COL.EMAIL] || '').trim();
-      const phone = String(row[CUST_COL.PHONE] || '').trim();
-      const address = String(row[CUST_COL.ADDRESS] || '').trim();
+      const name = String(col.name >= 0 ? row[col.name] : '').trim();
+      const email = String(col.email >= 0 ? row[col.email] : '').trim();
+      const phone = String(col.phone >= 0 ? row[col.phone] : '').trim();
+      const address = String(col.address >= 0 ? row[col.address] : '').trim();
       
       // If query provided, filter by name or email
       if (q) {
@@ -1764,10 +1812,11 @@ function getStateForCustomerEmail(customerEmail) {
   if (!sheet) return '';
   const data = sheet.getDataRange().getValues();
   const emailLower = customerEmail.toString().toLowerCase().trim();
+  const col = getCustCols_(data[0] || []);
   for (let i = 1; i < data.length; i++) {
-    const rowEmail = (data[i][CUST_COL.EMAIL] || '').toString().toLowerCase().trim();
+    const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
     if (rowEmail === emailLower) {
-      const state = (data[i][CUST_COL.STATE] || '').toString().trim().toUpperCase();
+      const state = (col.state >= 0 ? data[i][col.state] : '').toString().trim().toUpperCase();
       if (state === 'TN' || state === 'TENNESSEE') return 'TN';
       if (state === 'KY' || state === 'KENTUCKY') return 'KY';
       return state || '';
@@ -2730,24 +2779,27 @@ function lookupCustomerByEmail(email) {
   const values = sheet.getDataRange().getValues();
   const emailLower = String(email).toLowerCase().trim();
   const companyId = getSchedulingSettings_().defaultCompanyId || DEFAULT_COMPANY_ID;
+  const col = getCustCols_(values[0] || []);
   for (let i = 1; i < values.length; i++) {
     const row = values[i];
-    if (String(row[CUST_COL.COMPANY] || '') !== companyId) continue;
-    const rowEmail = (row[CUST_COL.EMAIL] || '').toString().toLowerCase().trim();
+    if (col.company >= 0 && String(row[col.company] || '') !== companyId) continue;
+    const rowEmailRaw = col.email >= 0 ? String(row[col.email] || '') : '';
+    const rowEmail = rowEmailRaw.toLowerCase().trim();
     if (rowEmail !== emailLower) continue;
-    const address = String(row[CUST_COL.ADDRESS] || '').trim();
+    const address = col.address >= 0 ? String(row[col.address] || '').trim() : '';
+    const storedId = col.id === -1 ? '' : String(row[col.id] || '');
     return {
       success: true,
       found: true,
       customer: {
-        id: String(row[CUST_COL.EMAIL] || ''),
-        name: String(row[CUST_COL.NAME] || ''),
-        email: String(row[CUST_COL.EMAIL] || ''),
-        phone: String(row[CUST_COL.PHONE] || ''),
+        id: storedId || rowEmailRaw,
+        name: col.name >= 0 ? String(row[col.name] || '') : '',
+        email: rowEmailRaw,
+        phone: col.phone >= 0 ? String(row[col.phone] || '') : '',
         address: address,
-        city: String(row[CUST_COL.CITY] || ''),
-        state: String(row[CUST_COL.STATE] || ''),
-        zip: String(row[CUST_COL.ZIP] || '')
+        city: col.city >= 0 ? String(row[col.city] || '') : '',
+        state: col.state >= 0 ? String(row[col.state] || '') : '',
+        zip: col.zip >= 0 ? String(row[col.zip] || '') : ''
       }
     };
   }
@@ -3137,7 +3189,7 @@ function logCashPayment(data) {
 }
 
 /**
- * Update the Customer JSON data in Column M (index 12) with spending info
+ * Update the Customer JSON data in the first Custom Data JSON column with spending info
  * Tracks: totalSpent, paymentCount, lastPaymentDate, services
  */
 function updateCustomerSpending(email, amount, serviceType, paymentDate, paymentMethod) {
@@ -3149,15 +3201,16 @@ function updateCustomerSpending(email, amount, serviceType, paymentDate, payment
     if (!sheet) return { success: false, error: 'Customers sheet not found' };
 
     const data = sheet.getDataRange().getValues();
-    const jsonCol = 12; // Column M (0-indexed = 12) — "Custom Data JSON" or first JSON col after new layout
+    const col = getCustCols_(data[0] || []);
+    const jsonCol = getCustCustomJsonCol_(data[0] || []);
 
     for (let i = 1; i < data.length; i++) {
-      const rowEmail = (data[i][CUST_COL.EMAIL] || '').toString().toLowerCase().trim();
+      const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
       if (rowEmail === email.toLowerCase().trim()) {
         // Read existing JSON
         let spendingData = {};
         try {
-          const existing = data[i][jsonCol];
+          const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
           if (existing && existing !== '{}' && typeof existing === 'string') {
             spendingData = JSON.parse(existing);
           }
@@ -3199,6 +3252,7 @@ function updateCustomerSpending(email, amount, serviceType, paymentDate, payment
         }
 
         // Write back
+        if (jsonCol < 0) return { success: false, error: 'Custom Data JSON column not found' };
         sheet.getRange(i + 1, jsonCol + 1).setValue(JSON.stringify(spendingData));
         return { success: true, spendingData: spendingData };
       }
@@ -3448,7 +3502,7 @@ function sendAppointmentPaymentReceipt_(opts) {
 }
 
 // ===========================================================================
-// CUSTOMER TAGS (stored in JSON Column M = index 12)
+// CUSTOMER TAGS (stored in the first Custom Data JSON column)
 // ===========================================================================
 
 /**
@@ -3465,14 +3519,15 @@ function updateCustomerTags(email, newTags) {
     if (!sheet) return { success: false, error: 'Customers sheet not found' };
 
     const data = sheet.getDataRange().getValues();
-    const jsonCol = 12; // Column M (0-indexed)
+    const col = getCustCols_(data[0] || []);
+    const jsonCol = getCustCustomJsonCol_(data[0] || []);
 
     for (let i = 1; i < data.length; i++) {
-      const rowEmail = (data[i][CUST_COL.EMAIL] || '').toString().toLowerCase().trim();
+      const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
       if (rowEmail === email.toLowerCase().trim()) {
         let jsonData = {};
         try {
-          const existing = data[i][jsonCol];
+          const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
           if (existing && existing !== '{}' && typeof existing === 'string') {
             jsonData = JSON.parse(existing);
           }
@@ -3487,6 +3542,7 @@ function updateCustomerTags(email, newTags) {
           }
         });
 
+        if (jsonCol < 0) return { success: false, error: 'Custom Data JSON column not found' };
         sheet.getRange(i + 1, jsonCol + 1).setValue(JSON.stringify(jsonData));
         return { success: true, tags: jsonData.tags };
       }
@@ -3511,14 +3567,15 @@ function getCustomerTags(email) {
     if (!sheet) return { success: false, tags: [] };
 
     const data = sheet.getDataRange().getValues();
-    const jsonCol = 12;
+    const col = getCustCols_(data[0] || []);
+    const jsonCol = getCustCustomJsonCol_(data[0] || []);
 
     for (let i = 1; i < data.length; i++) {
-      const rowEmail = (data[i][CUST_COL.EMAIL] || '').toString().toLowerCase().trim();
+      const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
       if (rowEmail === email.toLowerCase().trim()) {
         let jsonData = {};
         try {
-          const existing = data[i][jsonCol];
+          const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
           if (existing && existing !== '{}' && typeof existing === 'string') {
             jsonData = JSON.parse(existing);
           }
@@ -3542,16 +3599,17 @@ function getAllCustomerTags() {
     if (!sheet) return { success: true, tagsMap: {} };
 
     const data = sheet.getDataRange().getValues();
-    const jsonCol = 12;
+    const col = getCustCols_(data[0] || []);
+    const jsonCol = getCustCustomJsonCol_(data[0] || []);
     const tagsMap = {};
 
     for (let i = 1; i < data.length; i++) {
-      const rowEmail = (data[i][CUST_COL.EMAIL] || '').toString().toLowerCase().trim();
+      const rowEmail = (col.email >= 0 ? data[i][col.email] : '').toString().toLowerCase().trim();
       if (!rowEmail) continue;
 
       let jsonData = {};
       try {
-        const existing = data[i][jsonCol];
+        const existing = jsonCol >= 0 ? data[i][jsonCol] : '';
         if (existing && existing !== '{}' && typeof existing === 'string') {
           jsonData = JSON.parse(existing);
         }
@@ -11592,14 +11650,9 @@ function searchCustomersForServiceCompletion(query, companyId) {
     if (!sheet) return { success: false, customers: [] };
     
     const values = sheet.getDataRange().getValues();
-    const headers = values[0];
+    const headers = values[0] || [];
+    const col = getCustCols_(headers);
     
-    const colId = headers.indexOf('CustomerID');
-    const colName = headers.indexOf('Name');
-    const colEmail = headers.indexOf('Email');
-    const colPhone = headers.indexOf('Phone');
-    const colAddress = headers.indexOf('Address');
-    const colCompany = headers.indexOf('CompanyID');
     const colPoolSize = headers.indexOf('PoolSize');
     const colPoolType = headers.indexOf('PoolType');
     const colChemicalType = headers.indexOf('ChemicalType');
@@ -11609,18 +11662,20 @@ function searchCustomersForServiceCompletion(query, companyId) {
     
     for (let i = 1; i < values.length; i++) {
       const row = values[i];
-      if (colCompany >= 0 && String(row[colCompany] || '').trim() !== companyId) continue;
+      if (companyId && col.company >= 0 && String(row[col.company] || '').trim() !== companyId) continue;
       
-      const name = String(row[colName] || '').toLowerCase();
-      const email = String(row[colEmail] || '').toLowerCase();
+      const name = col.name >= 0 ? String(row[col.name] || '').toLowerCase() : '';
+      const emailRaw = col.email >= 0 ? String(row[col.email] || '').trim() : '';
+      const email = emailRaw.toLowerCase();
       
       if (name.includes(q) || email.includes(q)) {
+        var storedId = col.id === -1 ? '' : String(row[col.id] || '').trim();
         results.push({
-          customerId: colId >= 0 ? String(row[colId] || '').trim() : '',
-          name: String(row[colName] || '').trim(),
-          email: String(row[colEmail] || '').toLowerCase().trim(),
-          phone: colPhone >= 0 ? String(row[colPhone] || '').trim() : '',
-          address: colAddress >= 0 ? String(row[colAddress] || '').trim() : '',
+          customerId: storedId || emailRaw,
+          name: col.name >= 0 ? String(row[col.name] || '').trim() : '',
+          email: email,
+          phone: col.phone >= 0 ? String(row[col.phone] || '').trim() : '',
+          address: col.address >= 0 ? String(row[col.address] || '').trim() : '',
           poolSize: colPoolSize >= 0 ? String(row[colPoolSize] || '').trim() : '',
           poolType: colPoolType >= 0 ? String(row[colPoolType] || '').toLowerCase().trim() : '',
           chemicalType: colChemicalType >= 0 ? String(row[colChemicalType] || '').toLowerCase().trim() : ''
