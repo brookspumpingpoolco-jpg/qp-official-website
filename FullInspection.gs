@@ -590,14 +590,48 @@ function saveInspectionReport(reportData) {
     
     // Send email notification to team (do this BEFORE sheet save so emails aren't blocked)
     try {
-    sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, false);
-      Logger.log('✓ Team email sent');
+      const teamEmailResult = sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, false);
+      if (teamEmailResult && teamEmailResult.success) {
+        Logger.log('✓ Team email sent');
+        result.teamEmailSent = true;
+      } else {
+        const teamError = (teamEmailResult && teamEmailResult.error) || 'Team email failed';
+        Logger.log('Team email not sent: ' + teamError);
+        result.teamEmailSent = false;
+        result.teamEmailError = teamError;
+      }
     } catch (emailError) {
       Logger.log('Error sending team email: ' + emailError);
+      result.teamEmailSent = false;
+      result.teamEmailError = String(emailError);
     }
-    
-    // NOTE: Customer email and text message are now sent separately via UI buttons
-    // They are NOT sent automatically during report generation
+
+    // Send the inspection report to the customer when the UI checkbox is set.
+    // The inspection row may not exist yet, so resolve from the form email or Customers sheet.
+    if (wantsCustomerEmail_(reportData && reportData.emailCustomer)) {
+      try {
+        const resolvedCustomerEmail = resolveInspectionCustomerEmail_(
+          reportData,
+          reportData.customerEmail,
+          reportData.inspectionId || reportData.id || ''
+        );
+        if (resolvedCustomerEmail) {
+          reportData.customerEmail = resolvedCustomerEmail;
+        }
+        const customerEmailResult = sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, true);
+        result.customerEmailSent = !!(customerEmailResult && customerEmailResult.success);
+        if (result.customerEmailSent) {
+          Logger.log('✓ Customer email sent to ' + reportData.customerEmail);
+        } else {
+          result.customerEmailError = (customerEmailResult && customerEmailResult.error) || 'Customer email failed';
+          Logger.log('Customer email not sent: ' + result.customerEmailError);
+        }
+      } catch (customerEmailError) {
+        result.customerEmailSent = false;
+        result.customerEmailError = String(customerEmailError);
+        Logger.log('Error sending customer email: ' + customerEmailError);
+      }
+    }
     
     // Send SMS if requested (currently disabled)
     if (reportData.textCustomer && reportData.customerPhone && TWILIO_ENABLED) {
@@ -951,6 +985,18 @@ function loadInspection(inspectionId) {
           try {
             const reportData = JSON.parse(reportDataJson);
             Logger.log('Successfully parsed JSON. Has customerName: ' + (reportData.customerName || 'NO'));
+            if (!reportData.customerName && row[2]) {
+              reportData.customerName = row[2];
+            }
+            if (!looksLikeEmail_(reportData.customerEmail)) {
+              if (looksLikeEmail_(row[3])) {
+                reportData.customerEmail = String(row[3]).trim();
+              } else {
+                const resolvedEmail = resolveInspectionCustomerEmail_(reportData, '', inspectionId);
+                if (resolvedEmail) reportData.customerEmail = resolvedEmail;
+              }
+            }
+            reportData.inspectionId = inspectionId;
             
             return {
               success: true,
@@ -1305,6 +1351,12 @@ function resendInspectionEmail(inspectionId, emailCustomer = true) {
     }
     
     // Send email
+    if (emailCustomer) {
+      const resolvedCustomerEmail = resolveInspectionCustomerEmail_(reportData, reportData.customerEmail, inspectionId);
+      if (resolvedCustomerEmail) {
+        reportData.customerEmail = resolvedCustomerEmail;
+      }
+    }
     const emailResult = sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, emailCustomer);
     
     if (emailResult.success) {
@@ -1412,6 +1464,11 @@ function sendEmailToCustomer(inspectionId) {
       return { success: false, error: 'PDF file not found. Please regenerate the inspection report.' };
     }
     
+    const resolvedCustomerEmail = resolveInspectionCustomerEmail_(reportData, reportData.customerEmail, inspectionId);
+    if (resolvedCustomerEmail) {
+      reportData.customerEmail = resolvedCustomerEmail;
+    }
+
     if (!reportData.customerEmail) {
       return { success: false, error: 'Customer email not found in inspection data.' };
     }
@@ -1736,9 +1793,122 @@ function generateEmailHTML(reportData, photoGalleryHTML, inspectorNotesHTML, isC
 
 // ==================== EMAIL NOTIFICATIONS ====================
 
+function looksLikeEmail_(value) {
+  if (value === null || value === undefined) return false;
+  const s = String(value).trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+function wantsCustomerEmail_(flag) {
+  if (flag === true || flag === 1) return true;
+  if (flag === false || flag === 0 || flag === null || flag === undefined || flag === '') return false;
+  const s = String(flag).trim().toLowerCase();
+  return s === 'true' || s === 'yes' || s === '1';
+}
+
+function normalizeHeader_(header) {
+  return String(header || '').toLowerCase().replace(/[^a-z]/g, '');
+}
+
+function findCustCol_(headers, aliases) {
+  for (let i = 0; i < headers.length; i++) {
+    if (aliases.indexOf(normalizeHeader_(headers[i])) !== -1) return i;
+  }
+  return -1;
+}
+
+/**
+ * Resolve a customer email without calling getCustCols_ (that helper lives in SchedulingScript.gs).
+ * Order: explicit email, Pool Inspection column D for this inspection id, then Customers sheet by name.
+ * Never throws. Returns '' when nothing matches.
+ */
+function resolveInspectionCustomerEmail_(reportDataOrName, optionalEmail, inspectionId) {
+  try {
+    if (looksLikeEmail_(optionalEmail)) return String(optionalEmail).trim();
+
+    const reportData = (reportDataOrName && typeof reportDataOrName === 'object') ? reportDataOrName : null;
+    const nameFromArg = reportData ? '' : String(reportDataOrName || '').trim();
+
+    if (reportData && looksLikeEmail_(reportData.customerEmail)) {
+      return String(reportData.customerEmail).trim();
+    }
+
+    const id = String(
+      inspectionId ||
+      (reportData && (reportData.inspectionId || reportData.id)) ||
+      ''
+    ).trim();
+
+    if (id) {
+      try {
+        const sheet = initializeInspectionSheet();
+        if (sheet) {
+          const values = sheet.getDataRange().getValues();
+          for (let i = 1; i < values.length; i++) {
+            if (String(values[i][0] || '').trim() === id && looksLikeEmail_(values[i][3])) {
+              return String(values[i][3]).trim();
+            }
+          }
+        }
+      } catch (sheetErr) {
+        Logger.log('resolveInspectionCustomerEmail_ inspection sheet: ' + sheetErr);
+      }
+    }
+
+    const customerName = String(
+      (reportData && (reportData.customerName || reportData.name)) || nameFromArg || ''
+    ).trim();
+    if (!customerName) return '';
+
+    const custSheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(CUSTOMERS_SHEET);
+    if (!custSheet) {
+      Logger.log('resolveInspectionCustomerEmail_: Customers sheet not found');
+      return '';
+    }
+    const custValues = custSheet.getDataRange().getValues();
+    if (!custValues || custValues.length < 2) return '';
+
+    const nameCol = findCustCol_(custValues[0], ['name', 'customername', 'fullname']);
+    const emailCol = findCustCol_(custValues[0], ['email', 'customeremail', 'emailaddress']);
+    if (nameCol < 0 || emailCol < 0) {
+      Logger.log('resolveInspectionCustomerEmail_: name or email column not found');
+      return '';
+    }
+
+    const target = customerName.toLowerCase();
+    for (let r = 1; r < custValues.length; r++) {
+      const rowName = String(custValues[r][nameCol] || '').trim().toLowerCase();
+      if (rowName === target && looksLikeEmail_(custValues[r][emailCol])) {
+        return String(custValues[r][emailCol]).trim();
+      }
+    }
+    return '';
+  } catch (err) {
+    Logger.log('resolveInspectionCustomerEmail_ failed: ' + err);
+    return '';
+  }
+}
+
 function sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, isCustomer) {
   try {
-    const recipient = isCustomer ? reportData.customerEmail : NOTIFICATION_EMAIL;
+    let recipient = isCustomer ? (reportData && reportData.customerEmail) : NOTIFICATION_EMAIL;
+    if (isCustomer) {
+      const resolvedCustomerEmail = resolveInspectionCustomerEmail_(
+        reportData,
+        reportData && reportData.customerEmail,
+        (reportData && (reportData.inspectionId || reportData.id)) || ''
+      );
+      if (resolvedCustomerEmail) {
+        if (reportData) reportData.customerEmail = resolvedCustomerEmail;
+        recipient = resolvedCustomerEmail;
+      }
+      if (!looksLikeEmail_(recipient)) {
+        return {
+          success: false,
+          error: 'Customer email not found. Add an email on the inspection or match the customer name on the Customers sheet.'
+        };
+      }
+    }
     const subject = isCustomer 
       ? `Your Pool Inspection Report from A Quality Pool Company`
       : `Full Inspection - ${reportData.customerName} - ${reportData.propertyAddress}`;
