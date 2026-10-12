@@ -6,19 +6,35 @@
  *   RouteAppUI    HTML file (contents of RouteAppUI.html)
  *   routing       HTML file whose contents are routing.js (no markup)
  *
- * Data lives on sheet tabs Drivers, Routes, RouteStops, and Geocode.
+ * Drivers are rows on the shared Technicians tab (same columns as SchedulingScript.gs).
+ * Start addresses live on RouteDriverSettings so Technicians columns are not changed.
+ * Routes, RouteStops, and Geocode are created by this app.
+ * Geocoding uses Maps.newGeocoder() only. Do not embed Maps, Stripe, or Square keys.
  * Set script property SPREADSHEET_ID to use an existing spreadsheet.
  * Otherwise a container-bound sheet is used, or a new "Driver Routes" file is created.
  */
 
-var SHEET_DRIVERS = 'Drivers';
+var SHEET_TECHNICIANS = 'Technicians';
+var SHEET_DRIVER_SETTINGS = 'RouteDriverSettings';
 var SHEET_ROUTES = 'Routes';
 var SHEET_STOPS = 'RouteStops';
 var SHEET_GEOCODE = 'Geocode';
 var PROP_SS = 'SPREADSHEET_ID';
+var COMPANY_ID = 'CMP-AQUALITYPOOL';
+
+var TECH_HEADERS = [
+  'TechID', 'CompanyID', 'Name', 'Phone', 'Email', 'Role',
+  'HourlyRate', 'ServiceTypes', 'Color', 'Active', 'HireDate',
+  'Notes', 'CreatedAt', 'UpdatedAt',
+  'Metrics JSON', 'Schedule JSON', 'Custom JSON'
+];
+var SETTINGS_HEADERS = ['TechID', 'StartAddress', 'StartLat', 'StartLon', 'UpdatedAt'];
+var DEFAULT_SERVICE_TYPES = 'Pool Service,Opening,Closing,Snow Removal,Installation,Renovation';
+var DEFAULT_COLOR = '#0ea5e9';
+var DEFAULT_METRICS = '{"jobsCompleted":0,"hoursWorked":0,"revenue":0}';
+var DEFAULT_SCHEDULE = '{"availability":"full-time","dayOff":"Sunday"}';
 
 var HEADERS = {
-  Drivers: ['id', 'name', 'phone', 'startAddress', 'startLat', 'startLon', 'active', 'updatedAt'],
   Routes: ['id', 'date', 'driverId', 'driverName', 'stopCount', 'updatedAt'],
   RouteStops: ['id', 'routeId', 'date', 'driverId', 'seq', 'address', 'lat', 'lon', 'name', 'phone', 'notes', 'status', 'doneAt', 'updatedAt'],
   Geocode: ['addressKey', 'address', 'lat', 'lon', 'status', 'updatedAt']
@@ -107,10 +123,34 @@ function getSpreadsheet_() {
 }
 
 function ensureSheets_(ss) {
-  ensureOne_(ss, SHEET_DRIVERS, HEADERS.Drivers, [1, 8]);
+  ensureTechnicians_(ss);
+  ensureOne_(ss, SHEET_DRIVER_SETTINGS, SETTINGS_HEADERS, [1, 5]);
   ensureOne_(ss, SHEET_ROUTES, HEADERS.Routes, [1, 2, 3, 6]);
   ensureOne_(ss, SHEET_STOPS, HEADERS.RouteStops, [1, 2, 3, 4, 13, 14]);
   ensureOne_(ss, SHEET_GEOCODE, HEADERS.Geocode, [1, 6]);
+}
+
+function ensureTechnicians_(ss) {
+  var sheet = ss.getSheetByName(SHEET_TECHNICIANS);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_TECHNICIANS);
+  }
+  var width = Math.max(sheet.getLastColumn(), TECH_HEADERS.length, 1);
+  var first = sheet.getRange(1, 1, 1, width).getValues()[0];
+  var empty = true;
+  var i;
+  for (i = 0; i < first.length; i++) {
+    if (String(first[i] || '') !== '') {
+      empty = false;
+      break;
+    }
+  }
+  if (empty) {
+    sheet.getRange(1, 1, 1, TECH_HEADERS.length).setValues([TECH_HEADERS]);
+    sheet.setFrozenRows(1);
+  }
+  formatTextColumnsByHeader_(sheet, ['TechID', 'CompanyID', 'Phone', 'HireDate', 'CreatedAt', 'UpdatedAt']);
+  return sheet;
 }
 
 function ensureOne_(ss, name, headers, textCols) {
@@ -234,16 +274,128 @@ function addressKey_(address) {
   return String(address || '').toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
+function headerIndex_(sheet) {
+  var lastCol = Math.max(sheet.getLastColumn(), 1);
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var map = {};
+  var i;
+  for (i = 0; i < headers.length; i++) {
+    var name = String(headers[i] || '').trim();
+    if (name && map[name] === undefined) {
+      map[name] = i + 1;
+    }
+  }
+  return map;
+}
+
+function cell_(obj, name) {
+  if (!obj) {
+    return '';
+  }
+  if (Object.prototype.hasOwnProperty.call(obj, name)) {
+    return obj[name];
+  }
+  var want = String(name).toLowerCase();
+  var key;
+  for (key in obj) {
+    if (!Object.prototype.hasOwnProperty.call(obj, key) || key === '_row') {
+      continue;
+    }
+    if (String(key).toLowerCase() === want) {
+      return obj[key];
+    }
+  }
+  return '';
+}
+
+function writeCellsByHeader_(sheet, rowNumber, values) {
+  var index = headerIndex_(sheet);
+  var key;
+  for (key in values) {
+    if (!Object.prototype.hasOwnProperty.call(values, key)) {
+      continue;
+    }
+    var col = index[key];
+    if (!col) {
+      continue;
+    }
+    sheet.getRange(rowNumber, col).setValue(values[key]);
+  }
+}
+
+function appendByHeader_(sheet, values) {
+  var index = headerIndex_(sheet);
+  var lastCol = Math.max(sheet.getLastColumn(), 1);
+  var row = [];
+  var c;
+  for (c = 0; c < lastCol; c++) {
+    row.push('');
+  }
+  var wrote = false;
+  var key;
+  for (key in values) {
+    if (!Object.prototype.hasOwnProperty.call(values, key)) {
+      continue;
+    }
+    var col = index[key];
+    if (!col || col > lastCol) {
+      continue;
+    }
+    row[col - 1] = values[key];
+    wrote = true;
+  }
+  if (wrote) {
+    sheet.appendRow(row);
+  }
+}
+
+function formatTextColumnsByHeader_(sheet, names) {
+  var index = headerIndex_(sheet);
+  var maxRows = Math.max(sheet.getMaxRows(), 1);
+  var i;
+  for (i = 0; i < names.length; i++) {
+    var col = index[names[i]];
+    if (col) {
+      sheet.getRange(1, col, maxRows, 1).setNumberFormat('@');
+    }
+  }
+}
+
+function upsertDriverSettings_(sheet, techId, address, lat, lon) {
+  var rows = readObjects_(sheet);
+  var found = null;
+  var i;
+  for (i = 0; i < rows.length; i++) {
+    if (String(cell_(rows[i], 'TechID')) === String(techId)) {
+      found = rows[i];
+      break;
+    }
+  }
+  var values = {
+    TechID: String(techId),
+    StartAddress: address || '',
+    StartLat: lat === null || lat === undefined ? '' : lat,
+    StartLon: lon === null || lon === undefined ? '' : lon,
+    UpdatedAt: nowIso_()
+  };
+  if (found) {
+    writeCellsByHeader_(sheet, found._row, values);
+  } else {
+    appendByHeader_(sheet, values);
+  }
+}
+
 function getInitialData_() {
   var ss = getSpreadsheet_();
   ensureSheets_(ss);
   var tz = scriptTz_();
-  var drivers = readObjects_(ss.getSheetByName(SHEET_DRIVERS));
+  var techs = readObjects_(ss.getSheetByName(SHEET_TECHNICIANS));
+  var settings = readObjects_(ss.getSheetByName(SHEET_DRIVER_SETTINGS));
   var routes = readObjects_(ss.getSheetByName(SHEET_ROUTES));
   var stops = readObjects_(ss.getSheetByName(SHEET_STOPS));
   return {
     ok: true,
-    drivers: mapDrivers_(drivers),
+    drivers: mapDrivers_(techs, settings),
     routes: mapRoutes_(routes, tz),
     stops: mapStops_(stops, tz),
     today: today_(tz),
@@ -252,22 +404,35 @@ function getInitialData_() {
   };
 }
 
-function mapDrivers_(rows) {
-  var out = [];
+function mapDrivers_(techs, settings) {
+  var byTech = {};
   var i;
-  for (i = 0; i < rows.length; i++) {
-    var d = rows[i];
-    if (!d.id) {
+  for (i = 0; i < settings.length; i++) {
+    var sid = String(cell_(settings[i], 'TechID') || '').trim();
+    if (sid) {
+      byTech[sid] = settings[i];
+    }
+  }
+  var out = [];
+  for (i = 0; i < techs.length; i++) {
+    var tech = techs[i];
+    var techId = String(cell_(tech, 'TechID') || '').trim();
+    if (!techId) {
       continue;
     }
+    var company = String(cell_(tech, 'CompanyID') || '').trim();
+    if (company && company !== COMPANY_ID) {
+      continue;
+    }
+    var setting = byTech[techId] || {};
     out.push({
-      id: String(d.id),
-      name: String(d.name || ''),
-      phone: String(d.phone || ''),
-      startAddress: String(d.startAddress || ''),
-      startLat: numOrNull_(d.startLat),
-      startLon: numOrNull_(d.startLon),
-      active: isActive_(d.active)
+      id: techId,
+      name: String(cell_(tech, 'Name') || ''),
+      phone: String(cell_(tech, 'Phone') || ''),
+      startAddress: String(cell_(setting, 'StartAddress') || ''),
+      startLat: numOrNull_(cell_(setting, 'StartLat')),
+      startLon: numOrNull_(cell_(setting, 'StartLon')),
+      active: isActive_(cell_(tech, 'Active'))
     });
   }
   return out;
@@ -326,13 +491,13 @@ function saveDriver_(payload) {
   }
   var ss = getSpreadsheet_();
   ensureSheets_(ss);
-  var sheet = ss.getSheetByName(SHEET_DRIVERS);
+  var sheet = ss.getSheetByName(SHEET_TECHNICIANS);
   var rows = readObjects_(sheet);
   var id = String(payload.id || '').trim();
   var existing = null;
   var i;
   for (i = 0; i < rows.length; i++) {
-    if (String(rows[i].id) === id) {
+    if (id && String(cell_(rows[i], 'TechID')) === id) {
       existing = rows[i];
       break;
     }
@@ -353,22 +518,40 @@ function saveDriver_(payload) {
       warning = 'Saved the driver, but the start address could not be located.';
     }
   }
-  var record = [
-    id || newId_('DRV-'),
-    name,
-    String(payload.phone || '').trim(),
-    address,
-    lat === null ? '' : lat,
-    lon === null ? '' : lon,
-    payload.active === false ? false : true,
-    nowIso_()
-  ];
+  var stamp = nowIso_();
+  var active = payload.active === false ? 'No' : 'Yes';
+  var techId;
   if (existing) {
-    record[0] = String(existing.id);
-    sheet.getRange(existing._row, 1, 1, HEADERS.Drivers.length).setValues([record]);
+    techId = String(cell_(existing, 'TechID'));
+    writeCellsByHeader_(sheet, existing._row, {
+      Name: name,
+      Phone: String(payload.phone || '').trim(),
+      Active: active,
+      UpdatedAt: stamp
+    });
   } else {
-    sheet.appendRow(record);
+    techId = 'TECH-' + Date.now();
+    appendByHeader_(sheet, {
+      TechID: techId,
+      CompanyID: COMPANY_ID,
+      Name: name,
+      Phone: String(payload.phone || '').trim(),
+      Email: '',
+      Role: 'Technician',
+      HourlyRate: 0,
+      ServiceTypes: DEFAULT_SERVICE_TYPES,
+      Color: DEFAULT_COLOR,
+      Active: active,
+      HireDate: today_(scriptTz_()),
+      Notes: '',
+      CreatedAt: stamp,
+      UpdatedAt: stamp,
+      'Metrics JSON': DEFAULT_METRICS,
+      'Schedule JSON': DEFAULT_SCHEDULE,
+      'Custom JSON': '{}'
+    });
   }
+  upsertDriverSettings_(ss.getSheetByName(SHEET_DRIVER_SETTINGS), techId, address, lat, lon);
   var data = getInitialData_();
   if (warning) {
     data.warning = warning;
@@ -383,12 +566,12 @@ function deleteDriver_(driverId) {
   }
   var ss = getSpreadsheet_();
   ensureSheets_(ss);
-  var sheet = ss.getSheetByName(SHEET_DRIVERS);
+  var sheet = ss.getSheetByName(SHEET_TECHNICIANS);
   var rows = readObjects_(sheet);
   var found = null;
   var i;
   for (i = 0; i < rows.length; i++) {
-    if (String(rows[i].id) === id) {
+    if (String(cell_(rows[i], 'TechID')) === id) {
       found = rows[i];
       break;
     }
@@ -396,7 +579,10 @@ function deleteDriver_(driverId) {
   if (!found) {
     return { ok: false, error: 'Driver not found.' };
   }
-  sheet.deleteRow(found._row);
+  writeCellsByHeader_(sheet, found._row, {
+    Active: 'No',
+    UpdatedAt: nowIso_()
+  });
   return getInitialData_();
 }
 

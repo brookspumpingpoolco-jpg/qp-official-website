@@ -6,9 +6,9 @@ Mobile web app for splitting stops across drivers and days, ordering each drive,
 
 - **Plan:** paste addresses (one per line) or a CSV. Optional columns: `lat`, `lon`, `name`, `phone`, `notes`. Pool Maps rows (`lat, lon, address`) and Landglide-style headers work. Pick a date range, weekdays, drivers, and a max stops per day. The app clusters stops geographically, then orders each route from the driver’s start address.
 - **Drive:** pick a driver and a date (today by default). Each stop has Navigate (Apple Maps on iPhone and iPad, Google Maps otherwise) and Done. Done stores a timestamp. “Open whole route in Google Maps” includes waypoints up to the device limit.
-- **Drivers:** name, phone, start address, optional coordinates, active flag.
+- **Drivers:** name, phone, start address, optional coordinates, active flag. Each driver is a row on the shared `Technicians` tab, using the same columns as SchedulingScript.gs (`TechID`, `CompanyID`, `Name`, `Phone`, `Email`, `Role`, `HourlyRate`, `ServiceTypes`, `Color`, `Active`, `HireDate`, `Notes`, plus the created/updated and JSON columns). Start address and coordinates live on `RouteDriverSettings` (`TechID`, `StartAddress`, `StartLat`, `StartLon`, `UpdatedAt`) so the Technicians columns stay unchanged.
 
-`RouteStops` keeps empty `status` and `notes` columns for a later lead-tracking pass. This version shows notes and does not edit status.
+`RouteStops` keeps empty `status` and `notes` columns for a later lead-tracking pass. This version shows notes and does not edit status. Phase 2 can use `MarketingScript.gs` at the repo root, which already has the `MarketingVisits` sheet and `markLeadOutcome`.
 
 ## Files to paste into Apps Script
 
@@ -24,7 +24,7 @@ Create a new Apps Script project, or add these files to an existing one. The fil
 
 Optional script property: `SPREADSHEET_ID`. When it is empty, the script uses the spreadsheet bound to the project, or creates one named “Driver Routes”.
 
-Sheet tabs (created automatically): `Drivers`, `Routes`, `RouteStops`, `Geocode`.
+Sheet tabs: `Technicians` (shared; headers are written only when that row is empty), `RouteDriverSettings`, `Routes`, `RouteStops`, `Geocode`. Reads and writes use header names. Only technicians whose CompanyID is `CMP-AQUALITYPOOL` or blank are listed. Adding a driver appends a Technicians row in that format. Removing a driver sets Active to `No` and keeps the row and the start address. Geocoding uses `Maps.newGeocoder()` only. Do not paste Maps, Stripe, or Square keys into this project.
 
 ## Deploy
 
