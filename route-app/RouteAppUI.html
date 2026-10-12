@@ -93,6 +93,7 @@
     }
     .banner.preview { background: #fffbeb; color: #78350f; border: 1px solid #fcd34d; }
     .banner.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+  #bannerError { scroll-margin-top: 8px; }
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -437,6 +438,7 @@
     var el = $('bannerError');
     el.textContent = msg || '';
     el.hidden = !msg;
+    if (msg && el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
 
   function showToast(msg) {
