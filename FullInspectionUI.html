@@ -1649,6 +1649,74 @@
         </div>
       </div>
 
+      <details id="leakDiveSection" style="background:#f0f9ff;border:2px solid #0284c7;border-radius:12px;padding:16px;margin:20px 0;">
+        <summary style="font-size:18px;font-weight:700;color:#0369a1;cursor:pointer;">Leak Detection &amp; Dive</summary>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px;">
+          <div class="form-group" style="margin:0;">
+            <label>Dive performed</label>
+            <select id="leakDivePerformed">
+              <option value="">Select...</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Water loss (inches/day)</label>
+            <input type="number" id="leakDiveWaterLoss" inputmode="decimal" step="0.01" min="0" placeholder="0.00">
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Bucket test result</label>
+            <select id="leakDiveBucket">
+              <option value="">Select...</option>
+              <option value="pass">Pass</option>
+              <option value="fail">Fail</option>
+              <option value="inconclusive">Inconclusive</option>
+              <option value="not performed">Not performed</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Dye test notes</label>
+            <textarea id="leakDiveDyeNotes" rows="3" placeholder="Where dye was applied and what it showed"></textarea>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">Pressure tests</label>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="leak-dive-pressure" data-line="skimmer" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+                <strong style="min-width:110px;">Skimmer</strong>
+                <select class="ld-result" style="flex:1;min-width:120px;padding:8px;"><option value="">Pass/Fail</option><option value="pass">Pass</option><option value="fail">Fail</option></select>
+                <input class="ld-psi" type="number" inputmode="decimal" step="0.1" min="0" placeholder="PSI" style="width:90px;padding:8px;">
+                <input class="ld-hold" type="number" inputmode="decimal" step="1" min="0" placeholder="Hold min" style="width:110px;padding:8px;">
+              </div>
+              <div class="leak-dive-pressure" data-line="main drain" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+                <strong style="min-width:110px;">Main drain</strong>
+                <select class="ld-result" style="flex:1;min-width:120px;padding:8px;"><option value="">Pass/Fail</option><option value="pass">Pass</option><option value="fail">Fail</option></select>
+                <input class="ld-psi" type="number" inputmode="decimal" step="0.1" min="0" placeholder="PSI" style="width:90px;padding:8px;">
+                <input class="ld-hold" type="number" inputmode="decimal" step="1" min="0" placeholder="Hold min" style="width:110px;padding:8px;">
+              </div>
+              <div class="leak-dive-pressure" data-line="returns" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+                <strong style="min-width:110px;">Returns</strong>
+                <select class="ld-result" style="flex:1;min-width:120px;padding:8px;"><option value="">Pass/Fail</option><option value="pass">Pass</option><option value="fail">Fail</option></select>
+                <input class="ld-psi" type="number" inputmode="decimal" step="0.1" min="0" placeholder="PSI" style="width:90px;padding:8px;">
+                <input class="ld-hold" type="number" inputmode="decimal" step="1" min="0" placeholder="Hold min" style="width:110px;padding:8px;">
+              </div>
+              <div class="leak-dive-pressure" data-line="spa" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+                <strong style="min-width:110px;">Spa</strong>
+                <select class="ld-result" style="flex:1;min-width:120px;padding:8px;"><option value="">Pass/Fail</option><option value="pass">Pass</option><option value="fail">Fail</option></select>
+                <input class="ld-psi" type="number" inputmode="decimal" step="0.1" min="0" placeholder="PSI" style="width:90px;padding:8px;">
+                <input class="ld-hold" type="number" inputmode="decimal" step="1" min="0" placeholder="Hold min" style="width:110px;padding:8px;">
+              </div>
+            </div>
+          </div>
+          <div>
+            <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">Findings</label>
+            <div id="leakDiveFindings" style="display:flex;flex-direction:column;gap:8px;"></div>
+            <button type="button" class="btn btn-secondary" onclick="addLeakDiveFinding()" style="margin-top:8px;">
+              <i class="fas fa-plus"></i> Add finding
+            </button>
+          </div>
+        </div>
+      </details>
+
       <!-- Inspector Signature -->
       <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin: 20px 0;">
         <h3 style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 15px;">
@@ -2724,7 +2792,8 @@
         
         // Email options
         emailCustomer: document.getElementById('emailCustomerCheckbox').checked,
-        textCustomer: false // Disabled for now
+        textCustomer: false, // Disabled for now
+        leakDive: collectLeakDive()
       };
       
       // Include inspection ID if this is an update to a draft
@@ -3297,7 +3366,8 @@
         
         // Photos and videos (filter out empty slots)
         photos: photos ? photos.filter(p => p && p.data) : [],
-        videos: videos ? videos.filter(v => v && v.data) : []
+        videos: videos ? videos.filter(v => v && v.data) : [],
+        leakDive: collectLeakDive()
       };
     }
 
@@ -3462,6 +3532,108 @@
         .loadInspection(inspectionId);
     }
 
+    function leakDiveVal_(el) {
+      return el ? String(el.value || '').trim() : '';
+    }
+
+    function collectLeakDive() {
+      var pressureTests = [];
+      document.querySelectorAll('.leak-dive-pressure').forEach(function(row) {
+        pressureTests.push({
+          line: row.getAttribute('data-line') || '',
+          result: leakDiveVal_(row.querySelector('.ld-result')),
+          psi: leakDiveVal_(row.querySelector('.ld-psi')),
+          holdMinutes: leakDiveVal_(row.querySelector('.ld-hold'))
+        });
+      });
+      var findings = [];
+      document.querySelectorAll('#leakDiveFindings .leak-dive-finding').forEach(function(row) {
+        var finding = {
+          location: leakDiveVal_(row.querySelector('.ld-location')),
+          severity: leakDiveVal_(row.querySelector('.ld-severity')),
+          description: leakDiveVal_(row.querySelector('.ld-desc')),
+          recommendedRepair: leakDiveVal_(row.querySelector('.ld-repair')),
+          price: leakDiveVal_(row.querySelector('.ld-price'))
+        };
+        if (finding.location || finding.severity || finding.description || finding.recommendedRepair || finding.price) {
+          findings.push(finding);
+        }
+      });
+      return {
+        divePerformed: leakDiveVal_(document.getElementById('leakDivePerformed')),
+        waterLossInchesPerDay: leakDiveVal_(document.getElementById('leakDiveWaterLoss')),
+        bucketTestResult: leakDiveVal_(document.getElementById('leakDiveBucket')),
+        dyeTestNotes: leakDiveVal_(document.getElementById('leakDiveDyeNotes')),
+        pressureTests: pressureTests,
+        findings: findings
+      };
+    }
+
+    function applyLeakDive(raw) {
+      var data = raw;
+      if (typeof data === 'string') {
+        try { data = JSON.parse(data); } catch (e) { data = null; }
+      }
+      if (!data || typeof data !== 'object') data = {};
+      var performed = document.getElementById('leakDivePerformed');
+      var water = document.getElementById('leakDiveWaterLoss');
+      var bucket = document.getElementById('leakDiveBucket');
+      var dye = document.getElementById('leakDiveDyeNotes');
+      if (performed) performed.value = data.divePerformed || '';
+      if (water) water.value = data.waterLossInchesPerDay || '';
+      if (bucket) bucket.value = data.bucketTestResult || '';
+      if (dye) dye.value = data.dyeTestNotes || '';
+      var tests = Array.isArray(data.pressureTests) ? data.pressureTests : [];
+      document.querySelectorAll('.leak-dive-pressure').forEach(function(row) {
+        var line = row.getAttribute('data-line') || '';
+        var match = null;
+        for (var i = 0; i < tests.length; i++) {
+          if (tests[i] && tests[i].line === line) { match = tests[i]; break; }
+        }
+        var resultEl = row.querySelector('.ld-result');
+        var psiEl = row.querySelector('.ld-psi');
+        var holdEl = row.querySelector('.ld-hold');
+        if (resultEl) resultEl.value = match ? (match.result || '') : '';
+        if (psiEl) psiEl.value = match ? (match.psi || '') : '';
+        if (holdEl) holdEl.value = match ? (match.holdMinutes || '') : '';
+      });
+      var box = document.getElementById('leakDiveFindings');
+      if (box) box.innerHTML = '';
+      var findings = Array.isArray(data.findings) ? data.findings : [];
+      if (findings.length === 0) {
+        addLeakDiveFinding();
+      } else {
+        findings.forEach(function(f) { addLeakDiveFinding(f); });
+      }
+    }
+
+    function addLeakDiveFinding(f) {
+      var box = document.getElementById('leakDiveFindings');
+      if (!box) return;
+      f = f || {};
+      var locations = ['', 'skimmer', 'main drain', 'returns', 'spa', 'light niche', 'wall', 'floor', 'other'];
+      var severities = ['', 'minor', 'moderate', 'severe'];
+      function options(list, selected) {
+        return list.map(function(v) {
+          var label = v || '—';
+          return '<option value="' + escapeHtml(v) + '"' + (v === (selected || '') ? ' selected' : '') + '>' + escapeHtml(label) + '</option>';
+        }).join('');
+      }
+      var row = document.createElement('div');
+      row.className = 'leak-dive-finding';
+      row.style.cssText = 'border:1px solid #e5e7eb;border-radius:8px;padding:10px;margin-bottom:8px;background:#fff;';
+      row.innerHTML =
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
+          '<select class="ld-location" style="flex:1;min-width:120px;padding:8px;border:1px solid #d1d5db;border-radius:6px;">' + options(locations, f.location) + '</select>' +
+          '<select class="ld-severity" style="flex:1;min-width:110px;padding:8px;border:1px solid #d1d5db;border-radius:6px;">' + options(severities, f.severity) + '</select>' +
+          '<button type="button" onclick="this.closest(\'.leak-dive-finding\').remove()" style="padding:8px 10px;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;border-radius:6px;cursor:pointer;">Remove</button>' +
+        '</div>' +
+        '<input class="ld-desc" placeholder="Description" value="' + escapeHtml(f.description || '') + '" style="width:100%;margin-bottom:6px;padding:8px;border:1px solid #d1d5db;border-radius:6px;box-sizing:border-box;">' +
+        '<input class="ld-repair" placeholder="Recommended repair" value="' + escapeHtml(f.recommendedRepair || '') + '" style="width:100%;margin-bottom:6px;padding:8px;border:1px solid #d1d5db;border-radius:6px;box-sizing:border-box;">' +
+        '<input class="ld-price" type="number" step="0.01" min="0" placeholder="Price" value="' + escapeHtml(f.price || '') + '" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;box-sizing:border-box;">';
+      box.appendChild(row);
+    }
+
     // Populate form from inspection data
     function populateFormFromInspection(data) {
       console.log('Loading inspection data:', data);
@@ -3470,6 +3642,7 @@
         console.error('No data provided to populateFormFromInspection');
         return;
       }
+      applyLeakDive(data.leakDive || data.leakDiveJson);
       
       // Helper function to safely set value
       function setValue(id, value) {
