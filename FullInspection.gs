@@ -1866,8 +1866,71 @@ function readInspectionLeakDive_(sheet, rowValues) {
   }
 }
 
+function createInvoiceFromInspection(inspectionId) {
+  try {
+    var loaded = loadInspection(inspectionId);
+    if (!loaded || !loaded.success) {
+      return { success: false, error: (loaded && loaded.error) || 'Inspection not found' };
+    }
+    var inspection = loaded.inspection || {};
+    if (!looksLikeEmail_(inspection.customerEmail)) {
+      return { success: false, error: 'Inspection has no customer email' };
+    }
+    var sheet = initializeInspectionSheet();
+    ensureInspectionExtraColumns_(sheet);
+    var invoiceCol = findInspectionHeaderCol_(sheet, 'Invoice ID');
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = 0;
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === inspectionId) {
+        rowIndex = i + 1;
+        break;
+      }
+    }
+    if (!rowIndex) return { success: false, error: 'Inspection row not found' };
+    var existing = invoiceCol ? String(data[rowIndex - 1][invoiceCol - 1] || '').trim() : '';
+    if (existing) return { success: true, invoiceId: existing, duplicate: true };
+
+    var items = [{
+      name: 'Full Pool Inspection (dive + leak detection)',
+      description: 'Inspection ' + inspectionId,
+      quantity: 1,
+      price: 500
+    }];
+    var leak = inspection.leakDive || {};
+    var findings = Array.isArray(leak.findings) ? leak.findings : [];
+    findings.forEach(function(f) {
+      var price = parseFloat(f && f.price);
+      if (!f || isNaN(price) || price <= 0) return;
+      items.push({
+        name: f.recommendedRepair || f.location || 'Leak repair',
+        description: [f.location, f.severity, f.description].filter(Boolean).join(' — '),
+        quantity: 1,
+        price: price
+      });
+    });
+
+    var result = saveInvoiceEstimate({
+      type: 'Invoice',
+      customerName: inspection.customerName || '',
+      customerEmail: inspection.customerEmail,
+      customerAddress: inspection.propertyAddress || '',
+      items: JSON.stringify(items),
+      addProcessingFee: true,
+      notes: 'Created from pool inspection ' + inspectionId
+    });
+    if (!result || !result.success || !result.id) {
+      return { success: false, error: (result && result.error) || 'Invoice save failed' };
+    }
+    if (invoiceCol) sheet.getRange(rowIndex, invoiceCol).setValue(result.id);
+    return { success: true, invoiceId: result.id };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
 function leakDiveEmailTable_(reportData) {
-  var data = reportData && reportData.leakDive;
+    var data = reportData && reportData.leakDive;
   if (typeof data === 'string' && data) {
     try { data = JSON.parse(data); } catch (e) { data = null; }
   }

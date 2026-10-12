@@ -781,6 +781,9 @@
         <button class="btn btn-secondary" onclick="resendEmail()" style="margin-right: 10px;">
           <i class="fas fa-paper-plane"></i> Resend Email
         </button>
+        <button class="btn btn-primary" id="createInvoiceBtn" onclick="createInspectionInvoice()" style="margin-right: 10px;">
+          <i class="fas fa-file-invoice-dollar"></i> Create Invoice
+        </button>
         <button class="btn btn-secondary" onclick="clearLoadedInspection()">
           <i class="fas fa-times"></i> Clear
         </button>
@@ -4211,6 +4214,41 @@
           })
           .resendInspectionEmail(currentInspectionId, true);
       }
+    }
+
+    function createInspectionInvoice() {
+      if (!currentInspectionId) {
+        alert('Load a saved inspection first.');
+        return;
+      }
+      if (!confirm('Create an invoice from this inspection?')) return;
+      var btn = document.getElementById('createInvoiceBtn');
+      var originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+      }
+      function restoreBtn() {
+        if (!btn) return;
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+      google.script.run
+        .withSuccessHandler(function(result) {
+          restoreBtn();
+          if (result && result.success) {
+            alert(result.duplicate
+              ? 'An invoice already exists: ' + result.invoiceId
+              : 'Invoice created: ' + result.invoiceId);
+          } else {
+            alert('Could not create invoice: ' + ((result && result.error) || 'Unknown error'));
+          }
+        })
+        .withFailureHandler(function(error) {
+          restoreBtn();
+          alert('Could not create invoice: ' + (error && error.message ? error.message : error));
+        })
+        .createInvoiceFromInspection(currentInspectionId);
     }
 
     // Helper function to collect form data (used for email preview)
