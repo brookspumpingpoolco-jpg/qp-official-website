@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Routes">
+  <meta name="theme-color" content="#0f766e">
+  <title>Routes</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <style>
+    :root {
+      --bg: #f4f7f6;
+      --card: #ffffff;
+      --ink: #14221f;
+      --muted: #5c6f6a;
+      --line: #d7e2de;
+      --teal: #0f766e;
+      --teal-dark: #115e59;
+      --amber: #b45309;
+      --danger: #b91c1c;
+      --ok: #047857;
+      --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.05);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+      padding: env(safe-area-inset-top) 12px calc(16px + env(safe-area-inset-bottom));
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 2px 4px;
+    }
+    h1 { font-size: 28px; margin: 0; letter-spacing: -0.03em; }
+    h2 { font-size: 18px; margin: 0 0 8px; }
+    a { color: var(--teal-dark); }
+    button, .btn, input, select, textarea { font: inherit; }
+    button, .btn {
+      min-height: 44px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: var(--teal);
+      color: white;
+      font-weight: 650;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      touch-action: manipulation;
+    }
+    button.secondary, .btn.secondary {
+      background: white;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    button.ghost, .btn.ghost {
+      background: #ecfdf5;
+      color: var(--teal-dark);
+      border-color: #a7f3d0;
+    }
+    button.warn { background: white; color: var(--danger); border-color: #fecaca; }
+    button:disabled { opacity: 0.55; cursor: default; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg);
+      padding: 8px 0;
+    }
+    .tabs button { flex: 1; background: white; color: var(--ink); border: 1px solid var(--line); }
+    .tabs button.active { background: var(--teal); color: white; border-color: var(--teal); }
+    .banner {
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 8px 0;
+    }
+    .banner.preview { background: #fffbeb; color: #78350f; border: 1px solid #fcd34d; }
+    .banner.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      margin: 12px 0;
+    }
+    label { display: block; font-size: 13px; font-weight: 650; color: var(--muted); margin-bottom: 6px; }
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0;
+    }
+    input[type="checkbox"] { width: 22px; height: 22px; }
+    input[type="text"], input[type="tel"], input[type="date"], input[type="number"], select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+    }
+    textarea { min-height: 140px; resize: vertical; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row > * { flex: 1; min-width: 140px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .actions > button, .actions > .btn { flex: 1; min-width: 140px; }
+    .weekdays { display: flex; flex-wrap: wrap; gap: 6px; }
+    .weekdays .check {
+      flex: 1;
+      min-width: 72px;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0 8px;
+    }
+    .muted { color: var(--muted); font-size: 14px; margin: 6px 0; }
+    .stop, .route, .driver {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 8px 0;
+      background: #fbfefd;
+    }
+    .stop header, .route header, .driver header, .line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .seq {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+    .done .seq { background: var(--ok); }
+    .addr { font-weight: 700; }
+    .icon-btn { min-width: 64px; padding: 10px 8px; background: white; color: var(--ink); border: 1px solid var(--line); }
+    .map {
+      height: 320px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .pin { background: transparent; border: 0; }
+    .pin-bubble {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+    .swatch { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    #toast {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      background: #14221f;
+      color: white;
+      padding: 14px 16px;
+      border-radius: 12px;
+      z-index: 50;
+      box-shadow: var(--shadow);
+    }
+    .progress { font-weight: 750; font-size: 16px; }
+    .progress.complete { color: var(--ok); }
+    @media (min-width: 960px) {
+      .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+      .map { height: 480px; position: sticky; top: 72px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Routes</h1>
+      <p id="todayLabel" class="muted"></p>
+    </div>
+    <a id="sheetLink" class="btn secondary" hidden target="_blank" rel="noopener">Open sheet</a>
+  </header>
+
+  <p id="bannerPreview" class="banner preview" hidden>Preview on this device. Saves stay in this browser until you deploy the Apps Script web app.</p>
+  <p id="bannerError" class="banner error" hidden></p>
+
+  <nav class="tabs">
+    <button type="button" id="tabPlan" class="active" data-action="tab" data-view="plan">Plan</button>
+    <button type="button" id="tabDrive" data-action="tab" data-view="drive">Drive</button>
+    <button type="button" id="tabDrivers" data-action="tab" data-view="drivers">Drivers</button>
+  </nav>
+
+  <section id="viewPlan">
+    <div class="plan-grid">
+      <div>
+        <div class="card">
+          <h2>Stops</h2>
+          <p class="muted">One address per line, or CSV with address and optional lat, lon, name, phone, notes. Pool Maps rows (lat, lon, address) work too.</p>
+          <label for="stopInput">Addresses</label>
+          <textarea id="stopInput" placeholder="120 E Main St, Richmond, KY"></textarea>
+          <div class="actions">
+            <button type="button" id="btnReadStops" data-action="read-stops">Read stops</button>
+          </div>
+          <div id="draftStopList"></div>
+        </div>
+
+        <div class="card">
+          <h2>When and who</h2>
+          <div class="row">
+            <div>
+              <label for="dateStart">Start date</label>
+              <input type="date" id="dateStart">
+            </div>
+            <div>
+              <label for="dateEnd">End date</label>
+              <input type="date" id="dateEnd">
+            </div>
+          </div>
+          <label>Weekdays</label>
+          <div class="weekdays">
+            <label class="check"><input type="checkbox" id="wd0" checked> Sun</label>
+            <label class="check"><input type="checkbox" id="wd1" checked> Mon</label>
+            <label class="check"><input type="checkbox" id="wd2" checked> Tue</label>
+            <label class="check"><input type="checkbox" id="wd3" checked> Wed</label>
+            <label class="check"><input type="checkbox" id="wd4" checked> Thu</label>
+            <label class="check"><input type="checkbox" id="wd5" checked> Fri</label>
+            <label class="check"><input type="checkbox" id="wd6" checked> Sat</label>
+          </div>
+          <label for="maxStops">Max stops per driver per day</label>
+          <input type="number" id="maxStops" min="1" step="1" value="12">
+          <label>Drivers</label>
+          <div id="driverChecks"></div>
+          <p id="planStatus" class="muted"></p>
+          <div class="actions">
+            <button type="button" id="btnGeocode" class="secondary" data-action="geocode">Locate stops</button>
+            <button type="button" id="btnBuild" data-action="build">Build routes</button>
+            <button type="button" id="btnSavePlan" class="ghost" data-action="save-plan">Save plan</button>
+          </div>
+        </div>
+        <div id="planRoutes"></div>
+      </div>
+      <div>
+        <div id="planMap" class="map" role="region" aria-label="Planned routes map"></div>
+        <p id="mapFallback" class="muted" hidden>Map could not load. Lists and navigation links still work.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="viewDrive" hidden>
+    <div class="card">
+      <label for="driveDriver">Driver</label>
+      <select id="driveDriver"></select>
+      <div class="row" style="margin-top: 10px;">
+        <button type="button" id="btnPrevDay" class="secondary" data-action="shift-day" data-dir="-1">Previous day</button>
+        <div>
+          <label for="driveDate">Date</label>
+          <input type="date" id="driveDate">
+        </div>
+        <button type="button" id="btnNextDay" class="secondary" data-action="shift-day" data-dir="1">Next day</button>
+      </div>
+      <p id="driveProgress" class="progress">0 of 0 done</p>
+      <a id="btnWholeRoute" class="btn" target="_blank" rel="noopener noreferrer" hidden>Open whole route in Google Maps</a>
+    </div>
+    <div id="driveList"></div>
+    <div id="driveMap" class="map" role="region" aria-label="Today route map"></div>
+  </section>
+
+  <section id="viewDrivers" hidden>
+    <div class="card">
+      <h2 id="driverFormTitle">Add driver</h2>
+      <input type="hidden" id="drvId">
+      <label for="drvName">Name</label>
+      <input type="text" id="drvName" autocomplete="name">
+      <label for="drvPhone">Phone</label>
+      <input type="tel" id="drvPhone" autocomplete="tel">
+      <label for="drvStart">Start address</label>
+      <input type="text" id="drvStart" autocomplete="street-address" placeholder="100 Main St, Richmond, KY">
+      <div class="row">
+        <div>
+          <label for="drvLat">Start latitude (optional)</label>
+          <input type="text" id="drvLat" inputmode="decimal">
+        </div>
+        <div>
+          <label for="drvLon">Start longitude (optional)</label>
+          <input type="text" id="drvLon" inputmode="decimal">
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" id="drvActive" checked> Active</label>
+      <div class="actions">
+        <button type="button" id="btnSaveDriver" data-action="save-driver">Save driver</button>
+        <button type="button" id="btnClearDriver" class="secondary" data-action="clear-driver">Clear</button>
+      </div>
+    </div>
+    <div id="driverList"></div>
+  </section>
+
+  <div id="toast" hidden></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="routing.js"></script>
+  <script>
+(function () {
+  var STORAGE_KEY = 'routeApp.v1';
+  var COLORS = ['#0f766e', '#b45309', '#1d4ed8', '#be123c', '#6d28d9', '#047857', '#c2410c', '#0369a1'];
+  var SAMPLE = [
+    '120 E Main St, Richmond, KY',
+    '300 W Main St, Richmond, KY',
+    '500 Lancaster Ave, Richmond, KY',
+    '1000 Gibson Bay Dr, Richmond, KY',
+    '2500 Lantern Ridge Dr, Richmond, KY',
+    '800 Eastern Bypass, Richmond, KY',
+    '1500 Berea Rd, Richmond, KY',
+    '400 University Dr, Richmond, KY'
+  ].join('\n');
+
+  var state = {
+    drivers: [],
+    routes: [],
+    stops: [],
+    today: '',
+    timeZone: '',
+    spreadsheetUrl: '',
+    draftStops: [],
+    draftRoutes: [],
+    planDates: [],
+    selectedDriverIds: {},
+    driveDriverId: '',
+    driveDate: '',
+    view: 'plan',
+    busy: false,
+    preview: false
+  };
+
+  var planMap = null;
+  var driveMap = null;
+  var planLayers = null;
+  var driveLayers = null;
+  var toastTimer = null;
+
+  function $(id) { return document.getElementById(id); }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function localYMD(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1);
+    var day = String(d.getDate());
+    if (m.length < 2) m = '0' + m;
+    if (day.length < 2) day = '0' + day;
+    return y + '-' + m + '-' + day;
+  }
+
+  function addDays(ymd, n) {
+    var p = String(ymd || '').split('-');
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    if (isNaN(d.getTime())) d = new Date();
+    d.setDate(d.getDate() + n);
+    return localYMD(d);
+  }
+
+  function prettyDate(ymd) {
+    var p = String(ymd || '').split('-');
+    if (p.length < 3) return ymd || '';
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    var names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    if (isNaN(d.getTime())) return ymd;
+    return names[d.getDay()] + ' ' + ymd;
+  }
+
+  function numOrNull(v) {
+    if (v === null || v === undefined || v === '') return null;
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+
+  function isActive(v) {
+    if (v === false || v === 0) return false;
+    var s = String(v == null ? '' : v).toLowerCase();
+    return s !== 'false' && s !== '0';
+  }
+
+  function isDone(stop) {
+    return !!(stop && stop.doneAt && String(stop.doneAt).trim());
+  }
+
+  function normAddr(s) {
+    return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+
+  function newId(prefix) {
+    return prefix + Math.random().toString(36).slice(2, 10);
+  }
+
+  function showError(msg) {
+    var el = $('bannerError');
+    el.textContent = msg || '';
+    el.hidden = !msg;
+  }
+
+  function showToast(msg) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.hidden = true; }, 4200);
+  }
+
+  function setStatus(msg) {
+    $('planStatus').textContent = msg || '';
+  }
+
+  function setBusy(on) {
+    state.busy = on;
+    ['btnReadStops', 'btnGeocode', 'btnBuild', 'btnSavePlan', 'btnSaveDriver', 'btnClearDriver', 'btnPrevDay', 'btnNextDay'].forEach(function (id) {
+      var el = $(id);
+      if (el) el.disabled = on;
+    });
+  }
+
+  function useAppleMaps() {
+    var ua = navigator.userAgent || '';
+    if (/iPad|iPhone|iPod/.test(ua)) return true;
+    return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  }
+
+  function waypointCap() {
+    var narrow = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+    return (useAppleMaps() || narrow) ? 3 : 9;
+  }
+
+  function routing() {
+    if (!window.RouteRouting) throw new Error('Routing code did not load.');
+    return window.RouteRouting;
+  }
+
+  function hashGeocode(address) {
+    var h = 2166136261;
+    var s = String(address || '').toLowerCase();
+    var i;
+    for (i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul ? Math.imul(h, 16777619) : (h * 16777619);
+    }
+    h = h >>> 0;
+    var latJ = ((h % 1000) / 1000 - 0.5) * 0.28;
+    var lonJ = ((((h / 1000) | 0) % 1000) / 1000 - 0.5) * 0.28;
+    return {
+      lat: Math.round((37.74 + latJ) * 1e5) / 1e5,
+      lon: Math.round((-84.30 + lonJ) * 1e5) / 1e5
+    };
+  }
+
+  function emptyStore() {
+    return {
+      drivers: [
+        { id: 'DRV-alex', name: 'Alex', phone: '859-555-0101', startAddress: '100 Main St, Richmond, KY', startLat: 37.747, startLon: -84.294, active: true },
+        { id: 'DRV-jordan', name: 'Jordan', phone: '859-555-0102', startAddress: '200 E Main St, Richmond, KY', startLat: 37.748, startLon: -84.290, active: true }
+      ],
+      routes: [],
+      stops: [],
+      timeZone: (Intl.DateTimeFormat().resolvedOptions().timeZone) || 'America/New_York',
+      spreadsheetUrl: ''
+    };
+  }
+
+  function loadStore() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    var seeded = emptyStore();
+    saveStore(seeded);
+    return seeded;
+  }
+
+  function saveStore(store) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  }
+
+  function previewInitial(store) {
+    return {
+      ok: true,
+      drivers: JSON.parse(JSON.stringify(store.drivers || [])),
+      routes: JSON.parse(JSON.stringify(store.routes || [])),
+      stops: JSON.parse(JSON.stringify(store.stops || [])),
+      today: localYMD(new Date()),
+      timeZone: store.timeZone || 'America/New_York',
+      spreadsheetUrl: store.spreadsheetUrl || ''
+    };
+  }
+
+  function previewRpc(name, args) {
+    var store = loadStore();
+    if (name === 'getInitialData') return previewInitial(store);
+    if (name === 'saveDriver') return previewSaveDriver(store, args[0] || {});
+    if (name === 'deleteDriver') return previewDeleteDriver(store, args[0]);
+    if (name === 'geocodeAddresses') return previewGeocode(args[0] || []);
+    if (name === 'savePlan') return previewSavePlan(store, args[0] || {});
+    if (name === 'setStopDone') return previewSetStopDone(store, args[0], args[1]);
+    return { ok: false, error: 'Unknown action.' };
+  }
+
+  function previewSaveDriver(store, driver) {
+    if (!driver || !String(driver.name || '').trim()) {
+      return { ok: false, error: 'Driver name is required.' };
+    }
+    var lat = numOrNull(driver.startLat);
+    var lon = numOrNull(driver.startLon);
+    var warning = '';
+    if (lat == null || lon == null) {
+      if (String(driver.startAddress || '').trim()) {
+        var g = hashGeocode(driver.startAddress);
+        lat = g.lat;
+        lon = g.lon;
+      } else {
+        warning = 'Saved the driver, but the start address could not be located.';
+      }
+    }
+    var row = {
+      id: driver.id || newId('DRV-'),
+      name: String(driver.name).trim(),
+      phone: driver.phone || '',
+      startAddress: driver.startAddress || '',
+      startLat: lat,
+      startLon: lon,
+      active: isActive(driver.active)
+    };
+    var found = false;
+    var i;
+    for (i = 0; i < store.drivers.length; i++) {
+      if (store.drivers[i].id === row.id) {
+        store.drivers[i] = row;
+        found = true;
+      }
+    }
+    if (!found) store.drivers.push(row);
+    saveStore(store);
+    var out = previewInitial(store);
+    if (warning) out.warning = warning;
+    return out;
+  }
+
+  function previewDeleteDriver(store, id) {
+    if (!id) return { ok: false, error: 'Driver id is required.' };
+    var next = store.drivers.filter(function (d) { return d.id !== id; });
+    if (next.length === store.drivers.length) return { ok: false, error: 'Driver not found.' };
+    store.drivers = next;
+    saveStore(store);
+    return previewInitial(store);
+  }
+
+  function previewGeocode(addresses) {
+    var results = (addresses || []).map(function (raw) {
+      var address = String(raw == null ? '' : raw);
+      if (!address.trim()) {
+        return { address: address, ok: false, status: 'fail', lat: null, lon: null, cached: false, error: 'Empty address' };
+      }
+      var g = hashGeocode(address);
+      return { address: address, ok: true, status: 'ok', lat: g.lat, lon: g.lon, cached: false };
+    });
+    return { ok: true, results: results };
+  }
+
+  function previewSavePlan(store, payload) {
+    if (!payload || !payload.routes) return { ok: false, error: 'Nothing to save.' };
+    if (!Array.isArray(payload.routes)) return { ok: false, error: 'Routes must be a list.' };
+    var dates = {};
+    (payload.dates || []).forEach(function (d) { if (d) dates[d] = true; });
+    payload.routes.forEach(function (r) { if (r && r.date) dates[r.date] = true; });
+    store.routes = (store.routes || []).filter(function (r) { return !dates[r.date]; });
+    store.stops = (store.stops || []).filter(function (s) { return !dates[s.date]; });
+    payload.routes.forEach(function (r) {
+      if (!r || !r.stops || !r.stops.length) return;
+      var rid = newId('RTE-');
+      store.routes.push({
+        id: rid,
+        date: r.date,
+        driverId: r.driverId,
+        driverName: r.driverName || '',
+        stopCount: r.stops.length
+      });
+      r.stops.forEach(function (s, idx) {
+        store.stops.push({
+          id: newId('STP-'),
+          routeId: rid,
+          date: r.date,
+          driverId: r.driverId,
+          seq: idx + 1,
+          address: s.address || '',
+          lat: s.lat,
+          lon: s.lon,
+          name: s.name || '',
+          phone: s.phone || '',
+          notes: s.notes || '',
+          status: s.status || '',
+          doneAt: ''
+        });
+      });
+    });
+    saveStore(store);
+    return previewInitial(store);
+  }
+
+  function previewSetStopDone(store, stopId, done) {
+    if (!stopId) return { ok: false, error: 'Stop id is required.' };
+    var found = false;
+    (store.stops || []).forEach(function (s) {
+      if (s.id === stopId) {
+        found = true;
+        s.doneAt = done ? new Date().toISOString() : '';
+      }
+    });
+    if (!found) return { ok: false, error: 'Stop not found.' };
+    saveStore(store);
+    return previewInitial(store);
+  }
+
+  function rpc(name, args) {
+    args = args || [];
+    return new Promise(function (resolve, reject) {
+      if (window.google && google.script && google.script.run) {
+        var runner = google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(function (err) { reject(err); });
+        runner[name].apply(runner, args);
+      } else {
+        try { resolve(previewRpc(name, args)); }
+        catch (e) { reject(e); }
+      }
+    });
+  }
+
+  function applyInitial(data) {
+    if (!data) {
+      showError('No response from the server.');
+      return;
+    }
+    if (data.ok === false) {
+      showError(data.error || 'Something went wrong.');
+      return;
+    }
+    state.drivers = data.drivers || [];
+    state.routes = data.routes || [];
+    state.stops = data.stops || [];
+    state.today = data.today || state.today || localYMD(new Date());
+    state.timeZone = data.timeZone || '';
+    state.spreadsheetUrl = data.spreadsheetUrl || '';
+    if (!state.driveDate) state.driveDate = state.today;
+    syncDriverSelection();
+    var active = state.drivers.filter(function (d) { return isActive(d.active); });
+    var still = active.some(function (d) { return d.id === state.driveDriverId; });
+    if (!still) state.driveDriverId = active.length ? active[0].id : '';
+    var startEl = $('dateStart');
+    if (startEl && !startEl.value) {
+      startEl.value = state.today;
+      $('dateEnd').value = addDays(state.today, 4);
+    }
+    var driveDate = $('driveDate');
+    if (driveDate && !driveDate.value) driveDate.value = state.driveDate;
+    var link = $('sheetLink');
+    if (state.spreadsheetUrl) {
+      link.href = state.spreadsheetUrl;
+      link.hidden = false;
+    } else {
+      link.hidden = true;
+    }
+    $('todayLabel').textContent = state.timeZone ? ('Today ' + state.today + ' · ' + state.timeZone) : ('Today ' + state.today);
+    if (data.warning) showToast(data.warning);
+    renderAll();
+  }
+
+  function syncDriverSelection() {
+    var active = state.drivers.filter(function (d) { return isActive(d.active); });
+    var keep = {};
+    var any = false;
+    active.forEach(function (d) {
+      if (state.selectedDriverIds[d.id]) {
+        keep[d.id] = true;
+        any = true;
+      }
+    });
+    if (!any) active.forEach(function (d) { keep[d.id] = true; });
+    state.selectedDriverIds = keep;
+  }
+
+  function showView(name) {
+    state.view = name;
+    ['plan', 'drive', 'drivers'].forEach(function (v) {
+      var on = v === name;
+      var cap = v.charAt(0).toUpperCase() + v.slice(1);
+      $('view' + cap).hidden = !on;
+      $('tab' + cap).classList.toggle('active', on);
+    });
+    setTimeout(function () {
+      if (name === 'plan') drawPlanMap();
+      if (name === 'drive') drawDriveMap();
+    }, 40);
+  }
+
+  function renderAll() {
+    renderDraftStops();
+    renderDriverChecks();
+    renderPlanRoutes();
+    renderDrive();
+    renderDrivers();
+    if (state.view === 'plan') drawPlanMap();
+    if (state.view === 'drive') drawDriveMap();
+  }
+
+  function renderDraftStops() {
+    var box = $('draftStopList');
+    if (!state.draftStops.length) {
+      box.innerHTML = '<p class="muted">No stops read yet.</p>';
+      return;
+    }
+    box.innerHTML = state.draftStops.map(function (st, i) {
+      var loc = (st.lat != null && st.lon != null) ? (Number(st.lat).toFixed(5) + ', ' + Number(st.lon).toFixed(5)) : 'Not located';
+      return '<div class="stop"><div class="line"><div><div class="addr">' + esc(st.address) + '</div>' +
+        (st.name ? '<div class="muted">' + esc(st.name) + '</div>' : '') +
+        '<div class="muted">' + esc(loc) + '</div></div>' +
+        '<button type="button" class="icon-btn warn" data-action="remove-draft" data-index="' + i + '">Remove</button></div></div>';
+    }).join('');
+  }
+
+  function renderDriverChecks() {
+    var box = $('driverChecks');
+    var active = state.drivers.filter(function (d) { return isActive(d.active); });
+    if (!active.length) {
+      box.innerHTML = '<p class="muted">Add a driver first.</p>';
+      return;
+    }
+    box.innerHTML = active.map(function (d) {
+      var checked = state.selectedDriverIds[d.id] ? ' checked' : '';
+      return '<label class="check"><input type="checkbox" data-driver-check="' + esc(d.id) + '"' + checked + '> ' + esc(d.name) + '</label>';
+    }).join('');
+  }
+
+  function renderPlanRoutes() {
+    var box = $('planRoutes');
+    if (!state.draftRoutes.length) {
+      box.innerHTML = '';
+      return;
+    }
+    box.innerHTML = state.draftRoutes.map(function (route, ri) {
+      var color = COLORS[ri % COLORS.length];
+      var stops = (route.stops || []).map(function (st, i) {
+        return '<div class="stop"><div class="line"><div><span class="seq" style="background:' + color + '">' + (i + 1) + '</span> ' +
+          '<span class="addr">' + esc(st.name || st.address) + '</span>' +
+          (st.name ? '<div class="muted">' + esc(st.address) + '</div>' : '') +
+          (st.notes ? '<div class="muted">' + esc(st.notes) + '</div>' : '') +
+          '</div><div class="actions" style="margin:0">' +
+          '<button type="button" class="icon-btn" data-action="move-stop" data-route="' + ri + '" data-index="' + i + '" data-dir="-1">Up</button>' +
+          '<button type="button" class="icon-btn" data-action="move-stop" data-route="' + ri + '" data-index="' + i + '" data-dir="1">Down</button>' +
+          '</div></div></div>';
+      }).join('');
+      return '<article class="route"><header><div><span class="swatch" style="background:' + color + '"></span><strong>' +
+        esc(prettyDate(route.date)) + '</strong><div class="muted">' + esc(route.driverName || 'Driver') +
+        ' · ' + (route.stops || []).length + ' stops</div></div></header>' + stops + '</article>';
+    }).join('');
+  }
+
+  function driveStops() {
+    return state.stops.filter(function (s) {
+      return s.driverId === state.driveDriverId && s.date === state.driveDate;
+    }).sort(function (a, b) { return Number(a.seq) - Number(b.seq); });
+  }
+
+  function renderDrive() {
+    var select = $('driveDriver');
+    var active = state.drivers.filter(function (d) { return isActive(d.active); });
+    select.innerHTML = active.map(function (d) {
+      return '<option value="' + esc(d.id) + '">' + esc(d.name) + '</option>';
+    }).join('') || '<option value="">No drivers</option>';
+    if (state.driveDriverId) select.value = state.driveDriverId;
+    $('driveDate').value = state.driveDate || '';
+    var stops = driveStops();
+    var done = stops.filter(isDone).length;
+    var progress = $('driveProgress');
+    progress.textContent = done + ' of ' + stops.length + ' done';
+    progress.classList.toggle('complete', stops.length > 0 && done === stops.length);
+    var link = $('btnWholeRoute');
+    if (stops.length && window.RouteRouting) {
+      var built = RouteRouting.googleMapsRouteUrl(stops, waypointCap());
+      if (built.url) {
+        link.href = built.url;
+        link.hidden = false;
+        link.dataset.truncated = built.truncated ? '1' : '0';
+        link.dataset.included = String(built.included);
+      } else {
+        link.hidden = true;
+      }
+    } else {
+      link.hidden = true;
+    }
+    var list = $('driveList');
+    if (!stops.length) {
+      list.innerHTML = '<div class="card"><p class="muted">No stops for this driver on this date.</p></div>';
+      return;
+    }
+    var apple = useAppleMaps();
+    list.innerHTML = stops.map(function (st) {
+      var nav = window.RouteRouting ? RouteRouting.navigateUrl(st.lat, st.lon, apple, st.address) : '#';
+      var phone = st.phone ? '<div><a href="tel:' + esc(String(st.phone).replace(/[^\d+]/g, '')) + '">' + esc(st.phone) + '</a></div>' : '';
+      var notes = st.notes ? '<div class="muted">' + esc(st.notes) + '</div>' : '';
+      var doneNow = isDone(st);
+      return '<article class="card stop' + (doneNow ? ' done' : '') + '"><div class="line"><div><span class="seq">' + esc(st.seq) +
+        '</span> <span class="addr">' + esc(st.name || st.address) + '</span>' +
+        (st.name ? '<div class="muted">' + esc(st.address) + '</div>' : '') +
+        phone + notes + '</div></div><div class="actions">' +
+        '<a class="btn" target="_blank" rel="noopener noreferrer" href="' + esc(nav) + '">Navigate</a>' +
+        '<button type="button" class="' + (doneNow ? 'secondary' : 'ghost') + '" data-action="toggle-done" data-id="' + esc(st.id) + '" data-done="' + (doneNow ? '0' : '1') + '">' +
+        (doneNow ? 'Undo' : 'Done') + '</button></div></article>';
+    }).join('');
+  }
+
+  function renderDrivers() {
+    var box = $('driverList');
+    if (!state.drivers.length) {
+      box.innerHTML = '<div class="card"><p class="muted">No drivers yet.</p></div>';
+      return;
+    }
+    box.innerHTML = state.drivers.map(function (d) {
+      return '<article class="card driver"><header><div><strong>' + esc(d.name) + '</strong>' +
+        '<div class="muted">' + esc(d.phone || 'No phone') + '</div>' +
+        '<div class="muted">' + esc(d.startAddress || 'No start address') + '</div>' +
+        '<div class="muted">' + (isActive(d.active) ? 'Active' : 'Inactive') + '</div></div>' +
+        '<div class="actions" style="margin:0"><button type="button" class="secondary" data-action="edit-driver" data-id="' + esc(d.id) + '">Edit</button>' +
+        '<button type="button" class="warn" data-action="delete-driver" data-id="' + esc(d.id) + '">Remove</button></div></header></article>';
+    }).join('');
+  }
+
+  function ensureMap(which) {
+    if (typeof L === 'undefined') return null;
+    var id = which === 'plan' ? 'planMap' : 'driveMap';
+    var existing = which === 'plan' ? planMap : driveMap;
+    if (existing) return existing;
+    var map = L.map(id).setView([37.7479, -84.2947], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    if (which === 'plan') planMap = map;
+    else driveMap = map;
+    return map;
+  }
+
+  function pinIcon(n, color) {
+    return L.divIcon({
+      className: 'pin',
+      html: '<div class="pin-bubble" style="background:' + color + '">' + n + '</div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+  }
+
+  function drawStops(map, layersHolder, groups) {
+    if (!map) return;
+    if (layersHolder.layer) map.removeLayer(layersHolder.layer);
+    layersHolder.layer = L.layerGroup().addTo(map);
+    var bounds = [];
+    groups.forEach(function (group) {
+      group.stops.forEach(function (st, i) {
+        var lat = numOrNull(st.lat);
+        var lon = numOrNull(st.lon);
+        if (lat == null || lon == null) return;
+        L.marker([lat, lon], { icon: pinIcon(st.seq || (i + 1), group.color) })
+          .bindPopup(esc(st.name || st.address || ''))
+          .addTo(layersHolder.layer);
+        bounds.push([lat, lon]);
+      });
+    });
+    if (bounds.length) map.fitBounds(bounds, { padding: [24, 24] });
+    setTimeout(function () { map.invalidateSize(); }, 50);
+  }
+
+  var planHolder = { layer: null };
+  var driveHolder = { layer: null };
+
+  function drawPlanMap() {
+    var map = ensureMap('plan');
+    if (!map) return;
+    var groups;
+    if (state.draftRoutes.length) {
+      groups = state.draftRoutes.map(function (route, ri) {
+        return { color: COLORS[ri % COLORS.length], stops: route.stops || [] };
+      });
+    } else {
+      groups = [{ color: '#64748b', stops: state.draftStops.map(function (st, i) {
+        return { lat: st.lat, lon: st.lon, name: st.name, address: st.address, seq: i + 1 };
+      }) }];
+    }
+    drawStops(map, planHolder, groups);
+  }
+
+  function drawDriveMap() {
+    var map = ensureMap('drive');
+    if (!map) return;
+    drawStops(map, driveHolder, [{ color: '#0f766e', stops: driveStops() }]);
+  }
+
+  function readStopsFromInput() {
+    var parsed = routing().parseStopList($('stopInput').value || '');
+    state.draftStops = parsed.map(function (s) {
+      return {
+        address: s.address || '',
+        lat: numOrNull(s.lat),
+        lon: numOrNull(s.lon),
+        name: s.name || '',
+        phone: s.phone || '',
+        notes: s.notes || '',
+        status: ''
+      };
+    });
+    state.draftRoutes = [];
+    state.planDates = [];
+    renderDraftStops();
+    renderPlanRoutes();
+    drawPlanMap();
+    setStatus(state.draftStops.length ? (state.draftStops.length + ' stops ready.') : 'No stops found in that list.');
+  }
+
+  function selectedWeekdays() {
+    var days = [];
+    var i;
+    for (i = 0; i < 7; i++) {
+      if ($('wd' + i).checked) days.push(i);
+    }
+    if (days.length === 7) return null;
+    return days;
+  }
+
+  function selectedDrivers() {
+    return state.drivers.filter(function (d) {
+      return isActive(d.active) && state.selectedDriverIds[d.id];
+    }).map(function (d) {
+      return { id: d.id, name: d.name, startLat: d.startLat, startLon: d.startLon };
+    });
+  }
+
+  function applyGeocodeResults(results) {
+    (results || []).forEach(function (r) {
+      if (!r || !r.ok) return;
+      var key = normAddr(r.address);
+      state.draftStops.forEach(function (st) {
+        if (normAddr(st.address) === key && (st.lat == null || st.lon == null)) {
+          st.lat = r.lat;
+          st.lon = r.lon;
+        }
+      });
+    });
+    renderDraftStops();
+  }
+
+  function geocodeDraft() {
+    var missing = [];
+    var seen = {};
+    state.draftStops.forEach(function (st) {
+      if (st.lat == null || st.lon == null) {
+        var key = normAddr(st.address);
+        if (key && !seen[key]) {
+          seen[key] = true;
+          missing.push(st.address);
+        }
+      }
+    });
+    if (!missing.length) return Promise.resolve({ ok: true, results: [] });
+    var chunk = 15;
+    var index = 0;
+    function next() {
+      if (index >= missing.length) return Promise.resolve({ ok: true, results: [] });
+      var batch = missing.slice(index, index + chunk);
+      index += batch.length;
+      setStatus('Locating ' + Math.min(index, missing.length) + ' of ' + missing.length);
+      return rpc('geocodeAddresses', [batch]).then(function (data) {
+        applyGeocodeResults(data && data.results);
+        if (data && data.ok === false) return data;
+        return next();
+      });
+    }
+    return next();
+  }
+
+  function unlocated() {
+    return state.draftStops.filter(function (st) { return st.lat == null || st.lon == null; });
+  }
+
+  function onRead() {
+    readStopsFromInput();
+  }
+
+  function onGeocode() {
+    if (!state.draftStops.length) readStopsFromInput();
+    if (!state.draftStops.length) {
+      showError('Add at least one stop.');
+      return Promise.resolve();
+    }
+    return geocodeDraft().then(function (data) {
+      if (data && data.ok === false) {
+        showError(data.error || 'Geocoding quota reached. Try again later.');
+        return;
+      }
+      var failed = unlocated();
+      if (failed.length) {
+        showError('Could not locate: ' + failed.map(function (s) { return s.address; }).join(', '));
+        return;
+      }
+      setStatus('All stops located.');
+      showToast('Locations updated.');
+      drawPlanMap();
+    });
+  }
+
+  function onBuild() {
+    if (!state.draftStops.length) readStopsFromInput();
+    if (!state.draftStops.length) {
+      showError('Add at least one stop.');
+      return Promise.resolve();
+    }
+    var weekdays = selectedWeekdays();
+    if (weekdays && weekdays.length === 0) {
+      showError('Pick at least one weekday.');
+      return Promise.resolve();
+    }
+    return geocodeDraft().then(function (data) {
+      if (data && data.ok === false) {
+        showError(data.error || 'Geocoding quota reached. Try again later.');
+        return;
+      }
+      var failed = unlocated();
+      if (failed.length) {
+        showError('Could not locate: ' + failed.map(function (s) { return s.address; }).join(', '));
+        return;
+      }
+      var start = $('dateStart').value;
+      var end = $('dateEnd').value;
+      var dates = routing().enumerateDates(start, end, weekdays);
+      if (!dates.length) {
+        showError('Pick at least one date.');
+        return;
+      }
+      var maxStops = Math.max(1, parseInt($('maxStops').value, 10) || 12);
+      var plan = routing().planRoutes({
+        stops: state.draftStops,
+        drivers: selectedDrivers(),
+        dates: dates,
+        maxStopsPerDay: maxStops
+      });
+      if (!plan.ok) {
+        showError(plan.error || 'Could not build routes.');
+        return;
+      }
+      state.planDates = dates;
+      state.draftRoutes = plan.routes || [];
+      setStatus('Built ' + state.draftRoutes.length + ' routes. Reorder stops, then save.');
+      renderPlanRoutes();
+      drawPlanMap();
+    });
+  }
+
+  function onSavePlan() {
+    if (!state.draftRoutes.length) {
+      showError('Build routes before saving.');
+      return Promise.resolve();
+    }
+    var payload = {
+      dates: state.planDates.slice(),
+      routes: state.draftRoutes.map(function (r) {
+        return {
+          date: r.date,
+          driverId: r.driverId,
+          driverName: r.driverName,
+          stops: (r.stops || []).map(function (s) {
+            return {
+              address: s.address || '',
+              lat: s.lat,
+              lon: s.lon,
+              name: s.name || '',
+              phone: s.phone || '',
+              notes: s.notes || '',
+              status: s.status || ''
+            };
+          })
+        };
+      })
+    };
+    return rpc('savePlan', [payload]).then(function (data) {
+      applyInitial(data);
+      if (data && data.ok !== false && !data.warning) showToast('Plan saved.');
+    });
+  }
+
+  function clearDriverForm() {
+    $('drvId').value = '';
+    $('drvName').value = '';
+    $('drvPhone').value = '';
+    $('drvStart').value = '';
+    $('drvLat').value = '';
+    $('drvLon').value = '';
+    $('drvActive').checked = true;
+    $('driverFormTitle').textContent = 'Add driver';
+  }
+
+  function onSaveDriver() {
+    var latRaw = $('drvLat').value.trim();
+    var lonRaw = $('drvLon').value.trim();
+    var payload = {
+      name: $('drvName').value.trim(),
+      phone: $('drvPhone').value.trim(),
+      startAddress: $('drvStart').value.trim(),
+      active: $('drvActive').checked
+    };
+    if ($('drvId').value) payload.id = $('drvId').value;
+    if (latRaw !== '' || lonRaw !== '') {
+      payload.startLat = latRaw === '' ? null : Number(latRaw);
+      payload.startLon = lonRaw === '' ? null : Number(lonRaw);
+    }
+    return rpc('saveDriver', [payload]).then(function (data) {
+      applyInitial(data);
+      if (data && data.ok !== false) {
+        clearDriverForm();
+        if (!data.warning) showToast('Driver saved.');
+      }
+    });
+  }
+
+  function onEditDriver(id) {
+    var driver = null;
+    state.drivers.forEach(function (d) { if (d.id === id) driver = d; });
+    if (!driver) return;
+    $('drvId').value = driver.id;
+    $('drvName').value = driver.name || '';
+    $('drvPhone').value = driver.phone || '';
+    $('drvStart').value = driver.startAddress || '';
+    $('drvLat').value = driver.startLat == null ? '' : driver.startLat;
+    $('drvLon').value = driver.startLon == null ? '' : driver.startLon;
+    $('drvActive').checked = isActive(driver.active);
+    $('driverFormTitle').textContent = 'Edit driver';
+    showView('drivers');
+  }
+
+  function onDeleteDriver(id) {
+    if (!confirm('Remove this driver?')) return Promise.resolve();
+    return rpc('deleteDriver', [id]).then(function (data) {
+      applyInitial(data);
+      if (data && data.ok !== false) showToast('Driver removed.');
+    });
+  }
+
+  function moveStop(routeIndex, stopIndex, dir) {
+    var route = state.draftRoutes[routeIndex];
+    if (!route) return;
+    var j = stopIndex + dir;
+    if (j < 0 || j >= route.stops.length) return;
+    var tmp = route.stops[stopIndex];
+    route.stops[stopIndex] = route.stops[j];
+    route.stops[j] = tmp;
+    renderPlanRoutes();
+    drawPlanMap();
+  }
+
+  function run(fn) {
+    if (state.busy) return;
+    setBusy(true);
+    showError('');
+    Promise.resolve().then(fn).catch(function (err) {
+      showError(err && err.message ? err.message : String(err));
+    }).then(function () { setBusy(false); });
+  }
+
+  function actionFrom(node) {
+    while (node && node !== document.body) {
+      if (node.getAttribute && node.getAttribute('data-action')) return node;
+      node = node.parentNode;
+    }
+    return null;
+  }
+
+  function bind() {
+    document.body.addEventListener('click', function (e) {
+      var el = actionFrom(e.target);
+      if (!el) return;
+      var action = el.getAttribute('data-action');
+      if (action === 'whole-route') return;
+      if (action === 'tab') {
+        showView(el.getAttribute('data-view'));
+        return;
+      }
+      if (action === 'shift-day') {
+        state.driveDate = addDays($('driveDate').value || state.driveDate || state.today, Number(el.getAttribute('data-dir')) || 0);
+        $('driveDate').value = state.driveDate;
+        renderDrive();
+        drawDriveMap();
+        return;
+      }
+      if (el.tagName === 'A') return;
+      if (action === 'read-stops') run(onRead);
+      else if (action === 'geocode') run(onGeocode);
+      else if (action === 'build') run(onBuild);
+      else if (action === 'save-plan') run(onSavePlan);
+      else if (action === 'save-driver') run(onSaveDriver);
+      else if (action === 'clear-driver') clearDriverForm();
+      else if (action === 'remove-draft') {
+        state.draftStops.splice(Number(el.getAttribute('data-index')), 1);
+        state.draftRoutes = [];
+        renderDraftStops();
+        renderPlanRoutes();
+        drawPlanMap();
+      } else if (action === 'move-stop') {
+        moveStop(Number(el.getAttribute('data-route')), Number(el.getAttribute('data-index')), Number(el.getAttribute('data-dir')));
+      } else if (action === 'toggle-done') {
+        var id = el.getAttribute('data-id');
+        var done = el.getAttribute('data-done') === '1';
+        run(function () {
+          return rpc('setStopDone', [id, done]).then(function (data) { applyInitial(data); });
+        });
+      } else if (action === 'edit-driver') onEditDriver(el.getAttribute('data-id'));
+      else if (action === 'delete-driver') run(function () { return onDeleteDriver(el.getAttribute('data-id')); });
+    });
+
+    $('driverChecks').addEventListener('change', function (e) {
+      var id = e.target.getAttribute && e.target.getAttribute('data-driver-check');
+      if (!id) return;
+      if (e.target.checked) state.selectedDriverIds[id] = true;
+      else delete state.selectedDriverIds[id];
+    });
+
+    $('driveDriver').addEventListener('change', function () {
+      state.driveDriverId = this.value;
+      renderDrive();
+      drawDriveMap();
+    });
+    $('driveDate').addEventListener('change', function () {
+      state.driveDate = this.value;
+      renderDrive();
+      drawDriveMap();
+    });
+    $('btnWholeRoute').addEventListener('click', function () {
+      if (this.dataset.truncated === '1') {
+        showToast('Opened the first ' + this.dataset.included + ' stops. Google Maps limits waypoints on this device.');
+      }
+    });
+  }
+
+  function init() {
+    state.preview = !(window.google && google.script && google.script.run);
+    $('bannerPreview').hidden = !state.preview;
+    if (typeof L === 'undefined') $('mapFallback').hidden = false;
+    if (state.preview && !$('stopInput').value) $('stopInput').value = SAMPLE;
+    bind();
+    rpc('getInitialData', []).then(applyInitial).catch(function (err) {
+      showError(err && err.message ? err.message : String(err));
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+  </script>
+</body>
+</html>
