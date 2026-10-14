@@ -590,14 +590,48 @@ function saveInspectionReport(reportData) {
     
     // Send email notification to team (do this BEFORE sheet save so emails aren't blocked)
     try {
-    sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, false);
-      Logger.log('✓ Team email sent');
+      const teamEmailResult = sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, false);
+      if (teamEmailResult && teamEmailResult.success) {
+        Logger.log('✓ Team email sent');
+        result.teamEmailSent = true;
+      } else {
+        const teamError = (teamEmailResult && teamEmailResult.error) || 'Team email failed';
+        Logger.log('Team email not sent: ' + teamError);
+        result.teamEmailSent = false;
+        result.teamEmailError = teamError;
+      }
     } catch (emailError) {
       Logger.log('Error sending team email: ' + emailError);
+      result.teamEmailSent = false;
+      result.teamEmailError = String(emailError);
     }
-    
-    // NOTE: Customer email and text message are now sent separately via UI buttons
-    // They are NOT sent automatically during report generation
+
+    // Send the inspection report to the customer when the UI checkbox is set.
+    // The inspection row may not exist yet, so resolve from the form email or Customers sheet.
+    if (wantsCustomerEmail_(reportData && reportData.emailCustomer)) {
+      try {
+        const resolvedCustomerEmail = resolveInspectionCustomerEmail_(
+          reportData,
+          reportData.customerEmail,
+          reportData.inspectionId || reportData.id || ''
+        );
+        if (resolvedCustomerEmail) {
+          reportData.customerEmail = resolvedCustomerEmail;
+        }
+        const customerEmailResult = sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, true);
+        result.customerEmailSent = !!(customerEmailResult && customerEmailResult.success);
+        if (result.customerEmailSent) {
+          Logger.log('✓ Customer email sent to ' + reportData.customerEmail);
+        } else {
+          result.customerEmailError = (customerEmailResult && customerEmailResult.error) || 'Customer email failed';
+          Logger.log('Customer email not sent: ' + result.customerEmailError);
+        }
+      } catch (customerEmailError) {
+        result.customerEmailSent = false;
+        result.customerEmailError = String(customerEmailError);
+        Logger.log('Error sending customer email: ' + customerEmailError);
+      }
+    }
     
     // Send SMS if requested (currently disabled)
     if (reportData.textCustomer && reportData.customerPhone && TWILIO_ENABLED) {
@@ -715,6 +749,7 @@ function initializeInspectionSheet() {
       Logger.log('✓ Inspection sheet initialized');
     }
     
+    ensureInspectionExtraColumns_(sheet);
     return sheet;
   } catch (error) {
     Logger.log('Error initializing inspection sheet: ' + error);
@@ -839,6 +874,7 @@ function saveInspectionToSheet(reportData, result, status = 'generated') {
       sheet.appendRow(rowData);
     }
     
+    writeInspectionLeakDive_(sheet, rowIndex > 0 ? rowIndex : sheet.getLastRow(), reportData);
     Logger.log('✓ Inspection saved to sheet: ' + inspectionId);
     
     return {
@@ -951,6 +987,20 @@ function loadInspection(inspectionId) {
           try {
             const reportData = JSON.parse(reportDataJson);
             Logger.log('Successfully parsed JSON. Has customerName: ' + (reportData.customerName || 'NO'));
+            if (!reportData.customerName && row[2]) {
+              reportData.customerName = row[2];
+            }
+            if (!looksLikeEmail_(reportData.customerEmail)) {
+              if (looksLikeEmail_(row[3])) {
+                reportData.customerEmail = String(row[3]).trim();
+              } else {
+                const resolvedEmail = resolveInspectionCustomerEmail_(reportData, '', inspectionId);
+                if (resolvedEmail) reportData.customerEmail = resolvedEmail;
+              }
+            }
+            reportData.inspectionId = inspectionId;
+            var leakFromColumn = readInspectionLeakDive_(sheet, row);
+            if (leakFromColumn) reportData.leakDive = leakFromColumn;
             
             return {
               success: true,
@@ -1160,6 +1210,7 @@ function saveDraftInspection(reportData) {
       sheet.appendRow(rowData);
     }
     
+    writeInspectionLeakDive_(sheet, rowIndex > 0 ? rowIndex : sheet.getLastRow(), reportData);
     Logger.log('✓ Draft inspection saved to sheet: ' + inspectionId);
     
     return {
@@ -1305,6 +1356,12 @@ function resendInspectionEmail(inspectionId, emailCustomer = true) {
     }
     
     // Send email
+    if (emailCustomer) {
+      const resolvedCustomerEmail = resolveInspectionCustomerEmail_(reportData, reportData.customerEmail, inspectionId);
+      if (resolvedCustomerEmail) {
+        reportData.customerEmail = resolvedCustomerEmail;
+      }
+    }
     const emailResult = sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, emailCustomer);
     
     if (emailResult.success) {
@@ -1412,6 +1469,11 @@ function sendEmailToCustomer(inspectionId) {
       return { success: false, error: 'PDF file not found. Please regenerate the inspection report.' };
     }
     
+    const resolvedCustomerEmail = resolveInspectionCustomerEmail_(reportData, reportData.customerEmail, inspectionId);
+    if (resolvedCustomerEmail) {
+      reportData.customerEmail = resolvedCustomerEmail;
+    }
+
     if (!reportData.customerEmail) {
       return { success: false, error: 'Customer email not found in inspection data.' };
     }
@@ -1691,6 +1753,7 @@ function generateEmailHTML(reportData, photoGalleryHTML, inspectorNotesHTML, isC
                     
                       <!-- Inspector Notes (Simple - no duplicate summary) -->
                       ${inspectorNotesHTML}
+                      ${leakDiveEmailTable_(reportData)}
                     
                     <!-- Photo Gallery -->
                     ${photoGalleryHTML}
@@ -1736,9 +1799,286 @@ function generateEmailHTML(reportData, photoGalleryHTML, inspectorNotesHTML, isC
 
 // ==================== EMAIL NOTIFICATIONS ====================
 
+function looksLikeEmail_(value) {
+  if (value === null || value === undefined) return false;
+  const s = String(value).trim();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
+function wantsCustomerEmail_(flag) {
+  if (flag === true || flag === 1) return true;
+  if (flag === false || flag === 0 || flag === null || flag === undefined || flag === '') return false;
+  const s = String(flag).trim().toLowerCase();
+  return s === 'true' || s === 'yes' || s === '1';
+}
+
+function normalizeHeader_(header) {
+  return String(header || '').toLowerCase().replace(/[^a-z]/g, '');
+}
+
+function ensureInspectionExtraColumns_(sheet) {
+  if (!sheet) return;
+  var headers = ['Leak Dive JSON', 'Invoice ID'];
+  headers.forEach(function(header) {
+    if (findInspectionHeaderCol_(sheet, header)) return;
+    var col = Math.max(sheet.getLastColumn(), 0) + 1;
+    sheet.getRange(1, col).setValue(header);
+  });
+}
+
+function findInspectionHeaderCol_(sheet, headerName) {
+  if (!sheet) return 0;
+  var lastCol = Math.max(sheet.getLastColumn(), 1);
+  var row = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var target = normalizeHeader_(headerName);
+  for (var i = 0; i < row.length; i++) {
+    if (normalizeHeader_(row[i]) === target) return i + 1;
+  }
+  return 0;
+}
+
+function writeInspectionLeakDive_(sheet, rowIndex, reportData) {
+  if (!sheet || !rowIndex || !reportData) return;
+  ensureInspectionExtraColumns_(sheet);
+  var col = findInspectionHeaderCol_(sheet, 'Leak Dive JSON');
+  if (!col) return;
+  var payload = reportData.leakDive || {};
+  var json = '{}';
+  try {
+    json = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  } catch (e) {
+    json = '{}';
+  }
+  sheet.getRange(rowIndex, col).setValue(json);
+}
+
+function readInspectionLeakDive_(sheet, rowValues) {
+  if (!sheet || !rowValues) return null;
+  var col = findInspectionHeaderCol_(sheet, 'Leak Dive JSON');
+  if (!col || rowValues.length < col) return null;
+  var raw = rowValues[col - 1];
+  if (raw === '' || raw === null || raw === undefined) return null;
+  if (typeof raw === 'object') return raw;
+  try {
+    return JSON.parse(String(raw));
+  } catch (e) {
+    return null;
+  }
+}
+
+function createInvoiceFromInspection(inspectionId) {
+  try {
+    var loaded = loadInspection(inspectionId);
+    if (!loaded || !loaded.success) {
+      return { success: false, error: (loaded && loaded.error) || 'Inspection not found' };
+    }
+    var inspection = loaded.inspection || {};
+    if (!looksLikeEmail_(inspection.customerEmail)) {
+      return { success: false, error: 'Inspection has no customer email' };
+    }
+    var sheet = initializeInspectionSheet();
+    ensureInspectionExtraColumns_(sheet);
+    var invoiceCol = findInspectionHeaderCol_(sheet, 'Invoice ID');
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = 0;
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === inspectionId) {
+        rowIndex = i + 1;
+        break;
+      }
+    }
+    if (!rowIndex) return { success: false, error: 'Inspection row not found' };
+    var existing = invoiceCol ? String(data[rowIndex - 1][invoiceCol - 1] || '').trim() : '';
+    if (existing) return { success: true, invoiceId: existing, duplicate: true };
+
+    var items = [{
+      name: 'Full Pool Inspection (dive + leak detection)',
+      description: 'Inspection ' + inspectionId,
+      quantity: 1,
+      price: 500
+    }];
+    var leak = inspection.leakDive || {};
+    var findings = Array.isArray(leak.findings) ? leak.findings : [];
+    findings.forEach(function(f) {
+      var price = parseFloat(f && f.price);
+      if (!f || isNaN(price) || price <= 0) return;
+      items.push({
+        name: f.recommendedRepair || f.location || 'Leak repair',
+        description: [f.location, f.severity, f.description].filter(Boolean).join(' — '),
+        quantity: 1,
+        price: price
+      });
+    });
+
+    var result = saveInvoiceEstimate({
+      type: 'Invoice',
+      customerName: inspection.customerName || '',
+      customerEmail: inspection.customerEmail,
+      customerAddress: inspection.propertyAddress || '',
+      items: JSON.stringify(items),
+      addProcessingFee: true,
+      notes: 'Created from pool inspection ' + inspectionId
+    });
+    if (!result || !result.success || !result.id) {
+      return { success: false, error: (result && result.error) || 'Invoice save failed' };
+    }
+    if (invoiceCol) sheet.getRange(rowIndex, invoiceCol).setValue(result.id);
+    return { success: true, invoiceId: result.id };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+function leakDiveEmailTable_(reportData) {
+    var data = reportData && reportData.leakDive;
+  if (typeof data === 'string' && data) {
+    try { data = JSON.parse(data); } catch (e) { data = null; }
+  }
+  if (!data || typeof data !== 'object') return '';
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+  var tests = Array.isArray(data.pressureTests) ? data.pressureTests : [];
+  var findings = Array.isArray(data.findings) ? data.findings : [];
+  var testRows = tests.filter(function(t) {
+    return t && (t.result || t.psi || t.holdMinutes);
+  });
+  var findingRows = findings.filter(function(f) {
+    return f && (f.location || f.severity || f.description || f.recommendedRepair || f.price);
+  });
+  var hasSummary = data.divePerformed || data.waterLossInchesPerDay || data.bucketTestResult || data.dyeTestNotes;
+  if (!hasSummary && !testRows.length && !findingRows.length) return '';
+  var html = '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;border:1px solid #bae6fd;border-radius:8px;">';
+  html += '<tr><td style="background:#e0f2fe;padding:12px 16px;font-weight:700;color:#0c4a6e;">Leak Detection &amp; Dive</td></tr>';
+  html += '<tr><td style="padding:12px 16px;">';
+  html += '<p style="margin:0 0 8px 0;">Dive performed: ' + esc(data.divePerformed || '—') + '</p>';
+  html += '<p style="margin:0 0 8px 0;">Water loss (inches/day): ' + esc(data.waterLossInchesPerDay || '—') + '</p>';
+  html += '<p style="margin:0 0 8px 0;">Bucket test: ' + esc(data.bucketTestResult || '—') + '</p>';
+  if (data.dyeTestNotes) html += '<p style="margin:0 0 8px 0;">Dye test: ' + esc(data.dyeTestNotes) + '</p>';
+  if (testRows.length) {
+    html += '<table width="100%" cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;margin-top:8px;font-size:13px;">';
+    html += '<tr style="background:#f8fafc;"><th align="left">Line</th><th align="left">Result</th><th align="left">PSI</th><th align="left">Hold (min)</th></tr>';
+    testRows.forEach(function(t) {
+      html += '<tr><td>' + esc(t.line) + '</td><td>' + esc(t.result) + '</td><td>' + esc(t.psi) + '</td><td>' + esc(t.holdMinutes) + '</td></tr>';
+    });
+    html += '</table>';
+  }
+  if (findingRows.length) {
+    html += '<table width="100%" cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;margin-top:12px;font-size:13px;">';
+    html += '<tr style="background:#f8fafc;"><th align="left">Location</th><th align="left">Severity</th><th align="left">Description</th><th align="left">Repair</th><th align="left">Price</th></tr>';
+    findingRows.forEach(function(f) {
+      var price = f.price === '' || f.price == null ? '' : ('$' + esc(f.price));
+      html += '<tr><td>' + esc(f.location) + '</td><td>' + esc(f.severity) + '</td><td>' + esc(f.description) + '</td><td>' + esc(f.recommendedRepair) + '</td><td>' + price + '</td></tr>';
+    });
+    html += '</table>';
+  }
+  html += '</td></tr></table>';
+  return html;
+}
+
+function findCustCol_(headers, aliases) {
+  for (let i = 0; i < headers.length; i++) {
+    if (aliases.indexOf(normalizeHeader_(headers[i])) !== -1) return i;
+  }
+  return -1;
+}
+
+/**
+ * Resolve a customer email without calling getCustCols_ (that helper lives in SchedulingScript.gs).
+ * Order: explicit email, Pool Inspection column D for this inspection id, then Customers sheet by name.
+ * Never throws. Returns '' when nothing matches.
+ */
+function resolveInspectionCustomerEmail_(reportDataOrName, optionalEmail, inspectionId) {
+  try {
+    if (looksLikeEmail_(optionalEmail)) return String(optionalEmail).trim();
+
+    const reportData = (reportDataOrName && typeof reportDataOrName === 'object') ? reportDataOrName : null;
+    const nameFromArg = reportData ? '' : String(reportDataOrName || '').trim();
+
+    if (reportData && looksLikeEmail_(reportData.customerEmail)) {
+      return String(reportData.customerEmail).trim();
+    }
+
+    const id = String(
+      inspectionId ||
+      (reportData && (reportData.inspectionId || reportData.id)) ||
+      ''
+    ).trim();
+
+    if (id) {
+      try {
+        const sheet = initializeInspectionSheet();
+        if (sheet) {
+          const values = sheet.getDataRange().getValues();
+          for (let i = 1; i < values.length; i++) {
+            if (String(values[i][0] || '').trim() === id && looksLikeEmail_(values[i][3])) {
+              return String(values[i][3]).trim();
+            }
+          }
+        }
+      } catch (sheetErr) {
+        Logger.log('resolveInspectionCustomerEmail_ inspection sheet: ' + sheetErr);
+      }
+    }
+
+    const customerName = String(
+      (reportData && (reportData.customerName || reportData.name)) || nameFromArg || ''
+    ).trim();
+    if (!customerName) return '';
+
+    const custSheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(CUSTOMERS_SHEET);
+    if (!custSheet) {
+      Logger.log('resolveInspectionCustomerEmail_: Customers sheet not found');
+      return '';
+    }
+    const custValues = custSheet.getDataRange().getValues();
+    if (!custValues || custValues.length < 2) return '';
+
+    const nameCol = findCustCol_(custValues[0], ['name', 'customername', 'fullname']);
+    const emailCol = findCustCol_(custValues[0], ['email', 'customeremail', 'emailaddress']);
+    if (nameCol < 0 || emailCol < 0) {
+      Logger.log('resolveInspectionCustomerEmail_: name or email column not found');
+      return '';
+    }
+
+    const target = customerName.toLowerCase();
+    for (let r = 1; r < custValues.length; r++) {
+      const rowName = String(custValues[r][nameCol] || '').trim().toLowerCase();
+      if (rowName === target && looksLikeEmail_(custValues[r][emailCol])) {
+        return String(custValues[r][emailCol]).trim();
+      }
+    }
+    return '';
+  } catch (err) {
+    Logger.log('resolveInspectionCustomerEmail_ failed: ' + err);
+    return '';
+  }
+}
+
 function sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, isCustomer) {
   try {
-    const recipient = isCustomer ? reportData.customerEmail : NOTIFICATION_EMAIL;
+    let recipient = isCustomer ? (reportData && reportData.customerEmail) : NOTIFICATION_EMAIL;
+    if (isCustomer) {
+      const resolvedCustomerEmail = resolveInspectionCustomerEmail_(
+        reportData,
+        reportData && reportData.customerEmail,
+        (reportData && (reportData.inspectionId || reportData.id)) || ''
+      );
+      if (resolvedCustomerEmail) {
+        if (reportData) reportData.customerEmail = resolvedCustomerEmail;
+        recipient = resolvedCustomerEmail;
+      }
+      if (!looksLikeEmail_(recipient)) {
+        return {
+          success: false,
+          error: 'Customer email not found. Add an email on the inspection or match the customer name on the Customers sheet.'
+        };
+      }
+    }
     const subject = isCustomer 
       ? `Your Pool Inspection Report from A Quality Pool Company`
       : `Full Inspection - ${reportData.customerName} - ${reportData.propertyAddress}`;
@@ -1890,6 +2230,7 @@ function sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, isCust
                       
                       <!-- Inspector Notes -->
                       ${inspectorNotesHTML}
+                      ${leakDiveEmailTable_(reportData)}
                       
                       <!-- Photo Gallery -->
                       ${photoGalleryHTML}
