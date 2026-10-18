@@ -749,6 +749,7 @@ function initializeInspectionSheet() {
       Logger.log('✓ Inspection sheet initialized');
     }
     
+    ensureInspectionExtraColumns_(sheet);
     return sheet;
   } catch (error) {
     Logger.log('Error initializing inspection sheet: ' + error);
@@ -873,6 +874,7 @@ function saveInspectionToSheet(reportData, result, status = 'generated') {
       sheet.appendRow(rowData);
     }
     
+    writeInspectionLeakDive_(sheet, rowIndex > 0 ? rowIndex : sheet.getLastRow(), reportData);
     Logger.log('✓ Inspection saved to sheet: ' + inspectionId);
     
     return {
@@ -997,6 +999,8 @@ function loadInspection(inspectionId) {
               }
             }
             reportData.inspectionId = inspectionId;
+            var leakFromColumn = readInspectionLeakDive_(sheet, row);
+            if (leakFromColumn) reportData.leakDive = leakFromColumn;
             
             return {
               success: true,
@@ -1206,6 +1210,7 @@ function saveDraftInspection(reportData) {
       sheet.appendRow(rowData);
     }
     
+    writeInspectionLeakDive_(sheet, rowIndex > 0 ? rowIndex : sheet.getLastRow(), reportData);
     Logger.log('✓ Draft inspection saved to sheet: ' + inspectionId);
     
     return {
@@ -1748,6 +1753,7 @@ function generateEmailHTML(reportData, photoGalleryHTML, inspectorNotesHTML, isC
                     
                       <!-- Inspector Notes (Simple - no duplicate summary) -->
                       ${inspectorNotesHTML}
+                      ${leakDiveEmailTable_(reportData)}
                     
                     <!-- Photo Gallery -->
                     ${photoGalleryHTML}
@@ -1808,6 +1814,170 @@ function wantsCustomerEmail_(flag) {
 
 function normalizeHeader_(header) {
   return String(header || '').toLowerCase().replace(/[^a-z]/g, '');
+}
+
+function ensureInspectionExtraColumns_(sheet) {
+  if (!sheet) return;
+  var headers = ['Leak Dive JSON', 'Invoice ID'];
+  headers.forEach(function(header) {
+    if (findInspectionHeaderCol_(sheet, header)) return;
+    var col = Math.max(sheet.getLastColumn(), 0) + 1;
+    sheet.getRange(1, col).setValue(header);
+  });
+}
+
+function findInspectionHeaderCol_(sheet, headerName) {
+  if (!sheet) return 0;
+  var lastCol = Math.max(sheet.getLastColumn(), 1);
+  var row = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  var target = normalizeHeader_(headerName);
+  for (var i = 0; i < row.length; i++) {
+    if (normalizeHeader_(row[i]) === target) return i + 1;
+  }
+  return 0;
+}
+
+function writeInspectionLeakDive_(sheet, rowIndex, reportData) {
+  if (!sheet || !rowIndex || !reportData) return;
+  ensureInspectionExtraColumns_(sheet);
+  var col = findInspectionHeaderCol_(sheet, 'Leak Dive JSON');
+  if (!col) return;
+  var payload = reportData.leakDive || {};
+  var json = '{}';
+  try {
+    json = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  } catch (e) {
+    json = '{}';
+  }
+  sheet.getRange(rowIndex, col).setValue(json);
+}
+
+function readInspectionLeakDive_(sheet, rowValues) {
+  if (!sheet || !rowValues) return null;
+  var col = findInspectionHeaderCol_(sheet, 'Leak Dive JSON');
+  if (!col || rowValues.length < col) return null;
+  var raw = rowValues[col - 1];
+  if (raw === '' || raw === null || raw === undefined) return null;
+  if (typeof raw === 'object') return raw;
+  try {
+    return JSON.parse(String(raw));
+  } catch (e) {
+    return null;
+  }
+}
+
+function createInvoiceFromInspection(inspectionId) {
+  try {
+    var loaded = loadInspection(inspectionId);
+    if (!loaded || !loaded.success) {
+      return { success: false, error: (loaded && loaded.error) || 'Inspection not found' };
+    }
+    var inspection = loaded.inspection || {};
+    if (!looksLikeEmail_(inspection.customerEmail)) {
+      return { success: false, error: 'Inspection has no customer email' };
+    }
+    var sheet = initializeInspectionSheet();
+    ensureInspectionExtraColumns_(sheet);
+    var invoiceCol = findInspectionHeaderCol_(sheet, 'Invoice ID');
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = 0;
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] === inspectionId) {
+        rowIndex = i + 1;
+        break;
+      }
+    }
+    if (!rowIndex) return { success: false, error: 'Inspection row not found' };
+    var existing = invoiceCol ? String(data[rowIndex - 1][invoiceCol - 1] || '').trim() : '';
+    if (existing) return { success: true, invoiceId: existing, duplicate: true };
+
+    var items = [{
+      name: 'Full Pool Inspection (dive + leak detection)',
+      description: 'Inspection ' + inspectionId,
+      quantity: 1,
+      price: 500
+    }];
+    var leak = inspection.leakDive || {};
+    var findings = Array.isArray(leak.findings) ? leak.findings : [];
+    findings.forEach(function(f) {
+      var price = parseFloat(f && f.price);
+      if (!f || isNaN(price) || price <= 0) return;
+      items.push({
+        name: f.recommendedRepair || f.location || 'Leak repair',
+        description: [f.location, f.severity, f.description].filter(Boolean).join(' — '),
+        quantity: 1,
+        price: price
+      });
+    });
+
+    var result = saveInvoiceEstimate({
+      type: 'Invoice',
+      customerName: inspection.customerName || '',
+      customerEmail: inspection.customerEmail,
+      customerAddress: inspection.propertyAddress || '',
+      items: JSON.stringify(items),
+      addProcessingFee: true,
+      notes: 'Created from pool inspection ' + inspectionId
+    });
+    if (!result || !result.success || !result.id) {
+      return { success: false, error: (result && result.error) || 'Invoice save failed' };
+    }
+    if (invoiceCol) sheet.getRange(rowIndex, invoiceCol).setValue(result.id);
+    return { success: true, invoiceId: result.id };
+  } catch (e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+function leakDiveEmailTable_(reportData) {
+    var data = reportData && reportData.leakDive;
+  if (typeof data === 'string' && data) {
+    try { data = JSON.parse(data); } catch (e) { data = null; }
+  }
+  if (!data || typeof data !== 'object') return '';
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+  var tests = Array.isArray(data.pressureTests) ? data.pressureTests : [];
+  var findings = Array.isArray(data.findings) ? data.findings : [];
+  var testRows = tests.filter(function(t) {
+    return t && (t.result || t.psi || t.holdMinutes);
+  });
+  var findingRows = findings.filter(function(f) {
+    return f && (f.location || f.severity || f.description || f.recommendedRepair || f.price);
+  });
+  var hasSummary = data.divePerformed || data.waterLossInchesPerDay || data.bucketTestResult || data.dyeTestNotes;
+  if (!hasSummary && !testRows.length && !findingRows.length) return '';
+  var html = '<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;border:1px solid #bae6fd;border-radius:8px;">';
+  html += '<tr><td style="background:#e0f2fe;padding:12px 16px;font-weight:700;color:#0c4a6e;">Leak Detection &amp; Dive</td></tr>';
+  html += '<tr><td style="padding:12px 16px;">';
+  html += '<p style="margin:0 0 8px 0;">Dive performed: ' + esc(data.divePerformed || '—') + '</p>';
+  html += '<p style="margin:0 0 8px 0;">Water loss (inches/day): ' + esc(data.waterLossInchesPerDay || '—') + '</p>';
+  html += '<p style="margin:0 0 8px 0;">Bucket test: ' + esc(data.bucketTestResult || '—') + '</p>';
+  if (data.dyeTestNotes) html += '<p style="margin:0 0 8px 0;">Dye test: ' + esc(data.dyeTestNotes) + '</p>';
+  if (testRows.length) {
+    html += '<table width="100%" cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;margin-top:8px;font-size:13px;">';
+    html += '<tr style="background:#f8fafc;"><th align="left">Line</th><th align="left">Result</th><th align="left">PSI</th><th align="left">Hold (min)</th></tr>';
+    testRows.forEach(function(t) {
+      html += '<tr><td>' + esc(t.line) + '</td><td>' + esc(t.result) + '</td><td>' + esc(t.psi) + '</td><td>' + esc(t.holdMinutes) + '</td></tr>';
+    });
+    html += '</table>';
+  }
+  if (findingRows.length) {
+    html += '<table width="100%" cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;margin-top:12px;font-size:13px;">';
+    html += '<tr style="background:#f8fafc;"><th align="left">Location</th><th align="left">Severity</th><th align="left">Description</th><th align="left">Repair</th><th align="left">Price</th></tr>';
+    findingRows.forEach(function(f) {
+      var price = f.price === '' || f.price == null ? '' : ('$' + esc(f.price));
+      html += '<tr><td>' + esc(f.location) + '</td><td>' + esc(f.severity) + '</td><td>' + esc(f.description) + '</td><td>' + esc(f.recommendedRepair) + '</td><td>' + price + '</td></tr>';
+    });
+    html += '</table>';
+  }
+  html += '</td></tr></table>';
+  return html;
 }
 
 function findCustCol_(headers, aliases) {
@@ -2060,6 +2230,7 @@ function sendInspectionEmail(reportData, pdfFile, photoFiles, videoFiles, isCust
                       
                       <!-- Inspector Notes -->
                       ${inspectorNotesHTML}
+                      ${leakDiveEmailTable_(reportData)}
                       
                       <!-- Photo Gallery -->
                       ${photoGalleryHTML}
